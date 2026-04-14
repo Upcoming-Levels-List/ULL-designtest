@@ -9,7 +9,10 @@ export const mobileStore = Vue.reactive({
     players: [],
     showThumbnails: true,
     showColors: true,
-    filtersList: baseFiltersList.map(f => ({ ...f })),
+    filtersList: [
+        ...baseFiltersList.map(f => ({ ...f })),
+        { active: false, name: "Pending Removal", key: "Pending Removal" },
+    ],
     search: '',
     minDecoration: 0,
     minVerification: 0,

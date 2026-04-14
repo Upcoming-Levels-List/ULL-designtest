@@ -20,17 +20,17 @@ export default {
 
     <!-- Header 1 -->
     <header class="mob-header1">
-        <div class="logo">
+        <router-link to="/mobile/home" class="logo">
             <h2>ULL</h2>
             <p>v1.2.0</p>
-        </div>
+        </router-link>
     </header>
 
     <!-- Header 2 -->
     <div class="mob-header2">
         <div class="mob-header2-left">
             <button class="mob-tab-btn" :class="{ active: openMenu === 'pages' }" @click="toggleMenu('pages')">Pages</button>
-            <button v-if="$route.path !== '/mobile/pending'" class="mob-tab-btn" :class="{ active: openMenu === 'filters' }" @click="toggleMenu('filters')">Filters</button>
+            <button v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/home'" class="mob-tab-btn" :class="{ active: openMenu === 'filters' }" @click="toggleMenu('filters')">Filters</button>
             <button class="mob-tab-btn" :class="{ active: openMenu === 'settings' }" @click="toggleMenu('settings')">Settings</button>
         </div>
         <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-discord-btn">
@@ -123,6 +123,27 @@ export default {
     <!-- Page content via router-view -->
     <div v-else class="mob-content">
         <router-view></router-view>
+        <div class="mob-footer">
+            <h3>Upcoming Levels List</h3>
+            <p>A community-maintained catalogue forecasting the future of the Geometry Dash Demonlist.</p>
+            <div class="mob-footer-links">
+                <div class="mob-footer-col">
+                    <h4>Navigate</h4>
+                    <router-link to="/mobile/all">All Levels</router-link>
+                    <router-link to="/mobile/leaderboard">Leaderboard</router-link>
+                    <router-link to="/mobile/pending">Pending List</router-link>
+                    <router-link to="/mobile/upcoming">Upcoming Levels</router-link>
+                </div>
+                <div class="mob-footer-col">
+                    <h4>Community</h4>
+                    <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
+                    <a href="https://docs.google.com/document/d/13dmRfx2OCiLEaM2EcgEd-mKdok11_k8k7HsA5a-K6nY/edit?usp=sharing" target="_blank">Full Guidelines Doc</a>
+                </div>
+            </div>
+            <div class="mob-footer-bottom">
+                <p>&copy; 2024\u20132026 Upcoming Levels List. Not affiliated with RobTop Games or Pointercrate.</p>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -152,6 +173,22 @@ export default {
                 if (l.verifier?.toLowerCase() === 'open verification') {
                     if (!l.tags) l.tags = [];
                     if (!l.tags.includes('Open Verification')) l.tags.push('Open Verification');
+                }
+            });
+            // Auto-assign Pending Removal tag
+            const isOldLevel = (level) => {
+                if (!level.lastUpd) return false;
+                const p = level.lastUpd.split('.');
+                if (p.length !== 3) return false;
+                const d = new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));
+                const ago = new Date(); ago.setFullYear(ago.getFullYear() - 1);
+                return d < ago;
+            };
+            mobileStore.rawList.forEach(item => {
+                const l = item[0]; if (!l) return;
+                if (!l.isVerified && isOldLevel(l)) {
+                    if (!l.tags) l.tags = [];
+                    if (!l.tags.includes('Pending Removal')) l.tags.push('Pending Removal');
                 }
             });
             // Build player leaderboard

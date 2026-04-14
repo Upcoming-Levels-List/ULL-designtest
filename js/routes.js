@@ -14,6 +14,7 @@ import MobileLeaderboard from './pages/mobile/MobileLeaderboard.js';
 import MobileUpcoming from './pages/mobile/MobileUpcoming.js';
 import MobilePending from './pages/mobile/MobilePending.js';
 import MobileInfo from './pages/mobile/MobileInfo.js';
+import MobileHome from './pages/mobile/MobileHome.js';
 
 export default [
     { path: '/', redirect: '/home' },
@@ -30,7 +31,8 @@ export default [
         path: '/mobile',
         component: Mobile,
         children: [
-            { path: '', redirect: '/mobile/all' },
+            { path: '', redirect: '/mobile/home' },
+            { path: 'home', component: MobileHome },
             { path: 'all', component: MobileList, props: { pageType: 'all' } },
             { path: 'main', component: MobileList, props: { pageType: 'main' } },
             { path: 'future', component: MobileList, props: { pageType: 'future' } },
