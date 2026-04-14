@@ -9,6 +9,12 @@ import Home from './pages/Home.js';
 import UpcomingLevels from './pages/UpcomingLevels.js';
 import Information from './pages/Information.js';
 
+import MobileList from './pages/mobile/MobileList.js';
+import MobileLeaderboard from './pages/mobile/MobileLeaderboard.js';
+import MobileUpcoming from './pages/mobile/MobileUpcoming.js';
+import MobilePending from './pages/mobile/MobilePending.js';
+import MobileInfo from './pages/mobile/MobileInfo.js';
+
 export default [
     { path: '/', redirect: '/home' },
     { path: '/home', component: Home },
@@ -20,5 +26,18 @@ export default [
     { path: '/upcoming', component: UpcomingLevels },
     { path: '/information', component: Information },
     { path: '/generator', component: LevelGenerator },
-    { path: '/mobile', component: Mobile },
+    {
+        path: '/mobile',
+        component: Mobile,
+        children: [
+            { path: '', redirect: 'all' },
+            { path: 'all', component: MobileList, props: { pageType: 'all' } },
+            { path: 'main', component: MobileList, props: { pageType: 'main' } },
+            { path: 'future', component: MobileList, props: { pageType: 'future' } },
+            { path: 'leaderboard', component: MobileLeaderboard },
+            { path: 'upcoming', component: MobileUpcoming },
+            { path: 'pending', component: MobilePending },
+            { path: 'info', component: MobileInfo },
+        ],
+    },
 ];
