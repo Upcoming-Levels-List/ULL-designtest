@@ -133,69 +133,73 @@ export default {
         openMenu: null,
     }),
     async mounted() {
-        mobileStore.rawList = await fetchList() || [];
-        mobileStore.editors = await fetchEditors() || [];
-        const pending = await fetchPending();
-        if (pending) {
-            mobileStore.pendingPlacements = pending
-                .filter(p => !['up', 'down'].includes(p.placement.toLowerCase()))
-                .sort((a, b) => {
-                    const v = p => p === '?' ? 999999 : (parseInt(p) || 999999);
-                    return v(a.placement) - v(b.placement) || a.name.localeCompare(b.name);
-                });
-            mobileStore.pendingMovements = pending.filter(p => ['up', 'down'].includes(p.placement.toLowerCase()));
+        try {
+            mobileStore.rawList = await fetchList() || [];
+            mobileStore.editors = await fetchEditors() || [];
+            const pending = await fetchPending();
+            if (pending) {
+                mobileStore.pendingPlacements = pending
+                    .filter(p => !['up', 'down'].includes(p.placement.toLowerCase()))
+                    .sort((a, b) => {
+                        const v = p => p === '?' ? 999999 : (parseInt(p) || 999999);
+                        return v(a.placement) - v(b.placement) || a.name.localeCompare(b.name);
+                    });
+                mobileStore.pendingMovements = pending.filter(p => ['up', 'down'].includes(p.placement.toLowerCase()));
+            }
+            // Auto-assign Open Verification tag
+            mobileStore.rawList.forEach(item => {
+                const l = item[0]; if (!l) return;
+                if (l.verifier?.toLowerCase() === 'open verification') {
+                    if (!l.tags) l.tags = [];
+                    if (!l.tags.includes('Open Verification')) l.tags.push('Open Verification');
+                }
+            });
+            // Build player leaderboard
+            const playerMap = {};
+            mobileStore.rawList.forEach(([level, err], rank) => {
+                if (err || !level) return;
+                const levelRank = rank + 1;
+                const levelName = level.name;
+                if (level.isVerified && level.verifier) {
+                    const key = level.verifier.toLowerCase();
+                    if (!playerMap[key]) playerMap[key] = { name: level.verifier, records: [] };
+                    const sc = recordScore(levelRank, 100) * 2;
+                    playerMap[key].records.push({ levelName, levelRank, percent: 100, score: sc, type: 'verification' });
+                    return;
+                }
+                if (level.records) {
+                    level.records.forEach(record => {
+                        if (!record.user || record.percent <= 0) return;
+                        const key = record.user.toLowerCase();
+                        if (!playerMap[key]) playerMap[key] = { name: record.user, records: [] };
+                        const percent = Number(record.percent);
+                        playerMap[key].records.push({ levelName, levelRank, percent, score: recordScore(levelRank, percent), type: 'record' });
+                    });
+                }
+                if (level.run) {
+                    level.run.forEach(runRecord => {
+                        if (!runRecord.user) return;
+                        const parts = String(runRecord.percent).split('-').map(Number);
+                        if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return;
+                        const percent = Math.abs(parts[1] - parts[0]);
+                        if (percent <= 0) return;
+                        const key = runRecord.user.toLowerCase();
+                        if (!playerMap[key]) playerMap[key] = { name: runRecord.user, records: [] };
+                        playerMap[key].records.push({ levelName, levelRank, percent, displayPercent: String(runRecord.percent), score: recordScore(levelRank, percent), type: 'run' });
+                    });
+                }
+            });
+            mobileStore.players = Object.values(playerMap).map(p => {
+                p.records.sort((a, b) => b.score - a.score);
+                p.total = p.records.reduce((sum, r) => sum + r.score, 0);
+                return p;
+            }).sort((a, b) => b.total - a.total);
+            mobileStore.players.forEach((p, i) => { p.globalRank = i + 1; });
+        } catch (e) {
+            console.error('Mobile data load error:', e);
+        } finally {
+            mobileStore.loading = false;
         }
-        // Auto-assign Open Verification tag
-        mobileStore.rawList.forEach(item => {
-            const l = item[0]; if (!l) return;
-            if (l.verifier?.toLowerCase() === 'open verification') {
-                if (!l.tags) l.tags = [];
-                if (!l.tags.includes('Open Verification')) l.tags.push('Open Verification');
-            }
-        });
-        // Build player leaderboard
-        const playerMap = {};
-        mobileStore.rawList.forEach(([level, err], rank) => {
-            if (err || !level) return;
-            const levelRank = rank + 1;
-            const levelName = level.name;
-            if (level.isVerified && level.verifier) {
-                const key = level.verifier.toLowerCase();
-                if (!playerMap[key]) playerMap[key] = { name: level.verifier, records: [] };
-                const sc = recordScore(levelRank, 100) * 2;
-                playerMap[key].records.push({ levelName, levelRank, percent: 100, score: sc, type: 'verification' });
-                return;
-            }
-            if (level.records) {
-                level.records.forEach(record => {
-                    if (!record.user || record.percent <= 0) return;
-                    const key = record.user.toLowerCase();
-                    if (!playerMap[key]) playerMap[key] = { name: record.user, records: [] };
-                    const percent = Number(record.percent);
-                    playerMap[key].records.push({ levelName, levelRank, percent, score: recordScore(levelRank, percent), type: 'record' });
-                });
-            }
-            if (level.run) {
-                level.run.forEach(runRecord => {
-                    if (!runRecord.user) return;
-                    const parts = String(runRecord.percent).split('-').map(Number);
-                    if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return;
-                    const percent = Math.abs(parts[1] - parts[0]);
-                    if (percent <= 0) return;
-                    const key = runRecord.user.toLowerCase();
-                    if (!playerMap[key]) playerMap[key] = { name: runRecord.user, records: [] };
-                    playerMap[key].records.push({ levelName, levelRank, percent, displayPercent: String(runRecord.percent), score: recordScore(levelRank, percent), type: 'run' });
-                });
-            }
-        });
-        mobileStore.players = Object.values(playerMap).map(p => {
-            p.records.sort((a, b) => b.score - a.score);
-            p.total = p.records.reduce((sum, r) => sum + r.score, 0);
-            return p;
-        }).sort((a, b) => b.total - a.total);
-        mobileStore.players.forEach((p, i) => { p.globalRank = i + 1; });
-
-        mobileStore.loading = false;
     },
     methods: {
         applyFilters,

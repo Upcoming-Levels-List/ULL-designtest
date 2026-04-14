@@ -30,7 +30,7 @@ export default [
         path: '/mobile',
         component: Mobile,
         children: [
-            { path: '', redirect: 'all' },
+            { path: '', redirect: '/mobile/all' },
             { path: 'all', component: MobileList, props: { pageType: 'all' } },
             { path: 'main', component: MobileList, props: { pageType: 'main' } },
             { path: 'future', component: MobileList, props: { pageType: 'future' } },
