@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" href="/css/main.css" />
     <link rel="stylesheet" type="text/css" href="/css/pages/list.css" />
     <link rel="stylesheet" type="text/css" href="/css/pages/leaderboard.css" />
+    <link rel="stylesheet" type="text/css" href="/css/pages/mobile.css" />
     <link rel="stylesheet" type="text/css" href="/css/components/nav.css" />
     <link rel="stylesheet" type="text/css" href="/css/components/btn.css" />
     <link rel="stylesheet" type="text/css" href="/css/components/tabs.css" />
@@ -102,9 +103,9 @@
 <div v-cloak class="root" :class="{ dark: store.dark, shitty: store.shitty }">
     <!-- Vertical Sidebar (PC only) -->
     <!-- Sidebar toggle (visible only when sidebar is collapsed) -->
-    <button v-if="$route.path !== '/mobile'" class="sidebar-toggle" @click="store.sidebarOpen = !store.sidebarOpen">&#9776;</button>
+    <button v-if="!$route.path.startsWith('/mobile')" class="sidebar-toggle" @click="store.sidebarOpen = !store.sidebarOpen">&#9776;</button>
     <!-- Sidebar backdrop (overlay mode) -->
-    <div v-if="$route.path !== '/mobile' && store.sidebarOpen" class="sidebar-backdrop" @click="store.sidebarOpen = false"></div>
+    <div v-if="!$route.path.startsWith('/mobile') && store.sidebarOpen" class="sidebar-backdrop" @click="store.sidebarOpen = false"></div>
 
     <aside class="sidebar" :class="{ 'sidebar--open': store.sidebarOpen }">
         <router-link to="/home" class="sidebar__logo">
@@ -178,12 +179,12 @@
     </div>
 
     <!-- Page Content (PC) -->
-    <div v-if="$route.path !== '/mobile'" class="page-with-sidebar">
+    <div v-if="!$route.path.startsWith('/mobile')" class="page-with-sidebar">
         <router-view></router-view>
     </div>
 
     <!-- Page Content (Mobile) -->
-    <div v-if="$route.path === '/mobile'" class="mob">
+    <div v-if="$route.path.startsWith('/mobile')" class="mob">
         <router-view></router-view>
     </div>
 </div>
