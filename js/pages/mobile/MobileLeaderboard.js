@@ -3,6 +3,10 @@ import { mobileStore } from './mobileStore.js';
 export default {
     template: `
         <div class="mob-list">
+            <div class="mob-page-hero">
+                <h1>Leaderboard</h1>
+                <p>Top players ranked by their records on upcoming and unverified Demonlist levels.</p>
+            </div>
             <input v-model="playerSearch" class="mob-search" type="text" placeholder="Search players..." />
             <div v-for="(player, i) in filteredPlayers" :key="player.name" class="mob-level-row">
                 <button class="mob-level-btn" :class="{ active: playerSelected === i }" @click="playerSelected = playerSelected === i ? -1 : i">
