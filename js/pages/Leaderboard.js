@@ -15,7 +15,7 @@ export default {
             <div class="page-hero-content">
                 <div class="page-hero-badge">.../#/leaderboard</div>
                 <h1>Leaderboard</h1>
-                <p>Top players ranked by their records on upcoming levels and their verifications of Demonlist levels.</p>
+                <p>This page shows top players ranked by their records on upcoming levels and their verifications of Demonlist levels.</p>
             </div>
             <div class="page-hero-stat">
                 <span class="page-hero-stat-value">{{ players.length }}</span>
