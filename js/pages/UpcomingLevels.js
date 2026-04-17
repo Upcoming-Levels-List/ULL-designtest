@@ -45,7 +45,7 @@ export default {
 .upcoming-hero p::before, .upcoming-hero p::after { display: none !important; }
 .upcoming-hero-stat {
     flex-shrink: 0; display: flex; flex-direction: column; align-items: center; text-align: center;
-    padding: 0.6rem 1.2rem; border-radius: 0.65rem;
+    padding: 0.6rem 1.2rem; border-radius: 0.65rem; margin-right: 50px;
     background: rgba(128,128,128,0.06); border: 1px solid rgba(128,128,128,0.12);
 }
 .upcoming-hero-stat-value {
