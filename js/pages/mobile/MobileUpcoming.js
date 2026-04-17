@@ -4,6 +4,16 @@ import { mobileStore } from './mobileStore.js';
 export default {
     template: `
         <div class="mob-list">
+            <div class="mob-upcoming-hero">
+                <div class="mob-upcoming-hero-text">
+                    <h1>Upcoming Levels</h1>
+                    <p>Levels closest to verification — ranked by highest recorded progress.</p>
+                </div>
+                <div class="mob-upcoming-hero-stat">
+                    <span class="mob-upcoming-stat-value">{{ lbList.length }}</span>
+                    <span class="mob-upcoming-stat-label">tracked</span>
+                </div>
+            </div>
             <div v-for="([level, err], i) in lbList" :key="i" class="mob-level-row">
                 <button class="mob-level-btn" :class="{ active: lbSelected === i }" @click="lbSelected = lbSelected === i ? -1 : i">
                     <span class="mob-rank">#{{ i + 1 }}</span>

@@ -8,10 +8,69 @@ import LevelAuthors from '../components/List/LevelAuthors.js';
 export default {
     components: { Spinner, LevelAuthors },
     template: `
+<component :is="'style'">
+.page-upcoming { grid-template-rows: auto 1fr; }
+.upcoming-hero {
+    grid-column: 1 / -1;
+    overflow-y: unset !important;
+    display: flex; align-items: center; justify-content: space-between; gap: 2rem;
+    padding: 1rem 2rem 1rem 1.75rem;
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+    background: linear-gradient(105deg, rgba(102,10,239,0.07) 0%, transparent 55%);
+    position: relative;
+}
+.upcoming-hero::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 30%, transparent) 100%);
+}
+.upcoming-hero-content { flex: 1; min-width: 0; }
+.upcoming-hero-badge {
+    display: inline-block;
+    font-family: "Lexend Deca", sans-serif; font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: color-mix(in srgb, var(--color-primary) 65%, white);
+    background: rgba(102,10,239,0.1); padding: 0.15rem 0.6rem; border-radius: 2rem; margin-bottom: 0.35rem;
+}
+.root.dark .upcoming-hero-badge { color: color-mix(in srgb, var(--color-primary) 65%, black); }
+.upcoming-hero h1 {
+    font-family: "Lexend Deca", sans-serif; font-size: 1.15rem; font-weight: 700;
+    color: var(--color-on-background); line-height: 1.2; margin: 0 0 0.3rem;
+}
+.upcoming-hero h1::before, .upcoming-hero h1::after { display: none; }
+.upcoming-hero p {
+    font-family: "Lexend Deca", sans-serif; font-size: 0.78rem;
+    color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 500px;
+}
+.upcoming-hero-stat {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 0.6rem 1.2rem; border-radius: 0.65rem;
+    background: rgba(128,128,128,0.06); border: 1px solid rgba(128,128,128,0.12);
+}
+.upcoming-hero-stat-value {
+    font-family: "Lexend Deca", sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1;
+    color: color-mix(in srgb, var(--color-primary) 65%, white);
+}
+.root.dark .upcoming-hero-stat-value { color: color-mix(in srgb, var(--color-primary) 65%, black); }
+.upcoming-hero-stat-label {
+    font-family: "Lexend Deca", sans-serif; font-size: 0.58rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.4; margin-top: 0.25rem;
+}
+</component>
     <main v-if="loading" class="surface" style="display:flex;align-items:center;justify-content:center;">
         <Spinner></Spinner>
     </main>
-    <main v-else class="page-list-new">
+    <main v-else class="page-list-new page-upcoming">
+        <div class="upcoming-hero">
+            <div class="upcoming-hero-content">
+                <div class="upcoming-hero-badge">Progress Ranking</div>
+                <h1>Upcoming Levels</h1>
+                <p>Levels on the Upcoming Levels List closest to verification — ranked by highest recorded progress toward completing the level.</p>
+            </div>
+            <div class="upcoming-hero-stat">
+                <span class="upcoming-hero-stat-value">{{ list.length }}</span>
+                <span class="upcoming-hero-stat-label">Levels Tracked</span>
+            </div>
+        </div>
         <div class="list-container-new surface">
             <div class="search-row">
                 <input v-model="search" class="search-new" type="text" placeholder="Search levels..." />
