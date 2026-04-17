@@ -151,7 +151,15 @@
     color: white;
 }
 
-.filters-popup__btn--reset {
-    background: rgba(128, 128, 128, 0.2);
+.filters-popup__btn--benchmark {
+    background: rgba(128, 128, 128, 0.12);
     color: var(--color-on-background);
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    margin-right: auto;
+}
+
+.filters-popup__btn--benchmark.active {
+    background: rgba(102, 10, 239, 0.15);
+    color: color-mix(in srgb, var(--color-primary) 65%, white);
+    border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
