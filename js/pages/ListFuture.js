@@ -27,6 +27,10 @@ export default {
                 <h1>Future List</h1>
                 <p>Levels expected to place beyond the top 150 — the next wave of Extreme Demons.</p>
             </div>
+            <div class="page-hero-stat">
+                <span class="page-hero-stat-value">{{ list.length }}</span>
+                <span class="page-hero-stat-label">levels total</span>
+            </div>
         </div>
         <div class="list-container-new surface">
             <div class="search-row">

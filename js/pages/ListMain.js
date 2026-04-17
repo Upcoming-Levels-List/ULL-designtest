@@ -27,6 +27,10 @@ export default {
                 <h1>Main List</h1>
                 <p>Levels projected to enter the top 150 of the Demonlist upon verification.</p>
             </div>
+            <div class="page-hero-stat">
+                <span class="page-hero-stat-value">{{ list.length }}</span>
+                <span class="page-hero-stat-label">levels total</span>
+            </div>
         </div>
         <div class="list-container-new surface">
             <div class="search-row">

@@ -474,7 +474,7 @@ main.page-list--pending .list-container {
 .page-hero {
     grid-column: 1 / -1;
     overflow-y: unset !important;
-    display: flex; align-items: center; gap: 2rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 2rem;
     padding: 1rem 1.25rem 1rem 1.75rem;
     border-bottom: 1px solid rgba(128,128,128,0.15);
     background: linear-gradient(105deg, rgba(102,10,239,0.07) 0%, transparent 55%);
@@ -504,6 +504,20 @@ main.page-list--pending .list-container {
     color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 500px;
 }
 .page-hero p::before, .page-hero p::after { display: none !important; }
+.page-hero-stat {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 0.6rem 1.2rem; border-radius: 0.65rem;
+    background: rgba(128,128,128,0.06); border: 1px solid rgba(128,128,128,0.12);
+}
+.page-hero-stat-value {
+    font-family: "Lexend Deca", sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1;
+    color: color-mix(in srgb, var(--color-primary) 65%, white);
+}
+.root.dark .page-hero-stat-value { color: color-mix(in srgb, var(--color-primary) 65%, black); }
+.page-hero-stat-label {
+    font-family: "Lexend Deca", sans-serif; font-size: 0.58rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.4; margin-top: 0.25rem;
+}
 
 /* Upcoming Levels Hero */
 .page-upcoming { grid-template-rows: auto 1fr; }

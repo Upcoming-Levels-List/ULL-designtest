@@ -17,6 +17,10 @@ export default {
                 <h1>Leaderboard</h1>
                 <p>Top players ranked by their records on upcoming and unverified Demonlist levels.</p>
             </div>
+            <div class="page-hero-stat">
+                <span class="page-hero-stat-value">{{ players.length }}</span>
+                <span class="page-hero-stat-label">players</span>
+            </div>
         </div>
         <div class="list-container-new surface">
             <div class="search-row search-row--leaderboard">
