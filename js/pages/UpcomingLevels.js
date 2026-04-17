@@ -16,7 +16,7 @@ export default {
             <div class="upcoming-hero-content">
                 <div class="upcoming-hero-badge">.../#/upcoming</div>
                 <h1>Upcoming Levels</h1>
-                <p>Levels on the Upcoming Levels List closest to verification — ranked by highest progress toward completing the level.</p>
+                <p>Catalogue of levels on the Upcoming Levels List closest to verification, ranked by highest progress achieved toward completing the level.</p>
             </div>
             <div class="upcoming-hero-stat">
                 <span class="upcoming-hero-stat-value">{{ list.length }}</span>
