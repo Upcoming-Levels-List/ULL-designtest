@@ -14,7 +14,7 @@ export default {
     <main v-else class="page-list-new page-upcoming">
         <div class="upcoming-hero">
             <div class="upcoming-hero-content">
-                <div class="upcoming-hero-badge">Progress Ranking</div>
+                <div class="upcoming-hero-badge">.../#/upcoming</div>
                 <h1>Upcoming Levels</h1>
                 <p>Levels on the Upcoming Levels List closest to verification — ranked by highest recorded progress toward completing the level.</p>
             </div>
