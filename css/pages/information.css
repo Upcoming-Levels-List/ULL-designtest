@@ -66,9 +66,12 @@
     border: 1px solid rgba(128,128,128,0.15);
     border-radius: 0.75rem;
     padding: 1.75rem;
-    transition: border-color 150ms ease;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
 }
-.info-card:hover { border-color: rgba(128,128,128,0.3); }
+.info-card:hover {
+    border-color: rgba(128,128,128,0.45);
+    box-shadow: 0 0 0 1px rgba(128,128,128,0.15), 0 4px 16px rgba(0,0,0,0.08);
+}
 .info-card__title {
     font-size: 0.7rem;
     font-weight: 700;

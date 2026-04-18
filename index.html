@@ -78,6 +78,13 @@
         <div class="settings-popup">
             <div class="settings-popup__title">Settings</div>
             <div class="settings-popup__item">
+                <span class="settings-popup__label">Benchmark Mode</span>
+                <div class="settings-popup__toggle">
+                    <button class="settings-popup__toggle-btn" :class="{ active: store.benchmarkMode }" @click="store.benchmarkMode = true; store.saveSetting('benchmarkMode', true)">ON</button>
+                    <button class="settings-popup__toggle-btn" :class="{ active: !store.benchmarkMode }" @click="store.benchmarkMode = false; store.saveSetting('benchmarkMode', false)">OFF</button>
+                </div>
+            </div>
+            <div class="settings-popup__item">
                 <span class="settings-popup__label">Thumbnails</span>
                 <div class="settings-popup__toggle">
                     <button class="settings-popup__toggle-btn" :class="{ active: store.thumbnails }" @click="store.thumbnails = true; store.saveSetting('thumbnails', true)">ON</button>
