@@ -136,6 +136,7 @@
 .home-grid-2col > .home-card {
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 /* ── RECENT CHANGES ── */
@@ -144,9 +145,9 @@
 }
 .home-changes {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
-    padding-right: 0.25rem;
     border: 1px solid rgba(128,128,128,0.1);
     border-radius: 0.5rem;
     padding: 1rem;
@@ -162,7 +163,7 @@
     letter-spacing: 0.08em;
     color: var(--color-on-background);
     opacity: 0.35;
-    margin: 1.1rem 0 0.4rem;
+    margin: 1.25rem 0 0.85rem;
 }
 .home-changes-date:first-child { margin-top: 0; }
 .home-changes-date::before,
@@ -249,6 +250,15 @@
 .root.dark .home-level-id { color: color-mix(in srgb, var(--color-primary) 65%, black); }
 
 /* ── RECORD ROWS ── */
+.home-record-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    border: 1px solid rgba(128,128,128,0.1);
+    border-radius: 0.5rem;
+    padding: 0.35rem;
+    background: rgba(128,128,128,0.03);
+}
 .home-record-section {
     display: flex;
     flex-direction: column;

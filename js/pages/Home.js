@@ -38,7 +38,7 @@ export default {
             </div>
             <div class="home-hero-social">
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="home-social-btn">
-                    <img src="/assets/discord.svg" :style="store.dark ? '' : 'filter:invert(1)'" alt="Discord" />
+                    <img src="/assets/discord.svg" :style="store.dark ? 'filter:invert(1)' : ''" alt="Discord" />
                     Discord
                 </a>
                 <a href="#" class="home-social-btn">
@@ -109,7 +109,6 @@ export default {
             <!-- Level of the Month -->
             <div class="home-card" v-if="levelMonth">
                 <div class="home-card__title">Level of the Month</div>
-                <div class="home-level-period">{{ lotmPeriod }}</div>
                 <div class="home-level-name">{{ levelMonth.name }}</div>
                 <div class="home-level-info">
                     <span class="home-level-rank">#{{ levelMonth.rank }}</span>
@@ -118,7 +117,7 @@ export default {
                     <span class="home-level-sep">·</span>
                     <span class="home-level-id">{{ levelMonth.id }}</span>
                 </div>
-                <div class="home-record-section">
+                <div class="home-record-box">
                     <a :href="levelMonth.record.link || '#'" class="home-record-row">
                         <span class="home-record-pct">{{ levelMonth.record.percent }}</span>
                         <span class="home-record-player">{{ levelMonth.record.player }}</span>
@@ -137,11 +136,13 @@ export default {
                 <div class="home-card__title">Closest to Verification</div>
                 <div class="home-level-name">{{ levelVerif.name }}</div>
                 <div class="home-level-info">
+                    <span class="home-level-rank">#{{ levelVerif.rank }}</span>
+                    <span class="home-level-sep">·</span>
                     <span class="home-level-author">by {{ levelVerif.author }}</span>
                     <span class="home-level-sep">·</span>
                     <span class="home-level-author">Verifier: {{ levelVerif.verifier }}</span>
                 </div>
-                <div class="home-record-section">
+                <div class="home-record-box">
                     <a :href="levelVerif.record.link || '#'" class="home-record-row">
                         <span class="home-record-pct">{{ levelVerif.record.percent }}</span>
                         <span class="home-record-player">{{ levelVerif.record.player }}</span>
