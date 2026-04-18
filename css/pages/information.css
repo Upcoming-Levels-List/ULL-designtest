@@ -71,7 +71,7 @@
 .info-card:hover {
     border-color: rgba(128,128,128,0.55);
     box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
-    transform: scale(1.012);
+    transform: scale(1.006);
 }
 .info-card__title {
     font-size: 0.7rem;
@@ -195,7 +195,7 @@
 .info-guidelines:hover {
     border-color: rgba(128,128,128,0.55);
     box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
-    transform: scale(1.012);
+    transform: scale(1.006);
 }
 .info-guidelines-header {
     display: flex;
