@@ -168,7 +168,6 @@ export default {
                     </div>
                 </div>
                 <div class="filters-popup__actions">
-                    <button class="filters-popup__btn filters-popup__btn--benchmark" :class="{ active: benchmarkMode }" @click="benchmarkMode = !benchmarkMode; applyFilters()">Benchmark Mode</button>
                     <button class="filters-popup__btn filters-popup__btn--reset" @click="resetFilters()">Reset Filters</button>
                     <button class="filters-popup__btn filters-popup__btn--apply" @click="applyFilters(); showFilters = false">Apply Filters</button>
                 </div>
@@ -214,7 +213,6 @@ export default {
         search: "",
         minDecoration: 0,
         minVerification: 0,
-        benchmarkMode: false,
     }),
     watch: {
         search() {
@@ -355,7 +353,7 @@ export default {
                 const verificationProgress = Math.max(recordPercent, runPercent);
                 const matchesVerification = level.isVerified || verificationProgress >= minVer;
                 const matchesDecorationFinal = level.isVerified || matchesDecoration;
-                const matchesBenchmark = !this.benchmarkMode || !level.isVerified || level.benchmark === true;
+                const matchesBenchmark = !store.benchmarkMode || !level.isVerified || level.benchmark === true;
                 level.isHidden = !(matchesSearch && matchesTags && matchesDecorationFinal && matchesVerification && matchesBenchmark);
             });
         },
@@ -365,7 +363,8 @@ export default {
             this.otherFilters.forEach(f => f.active = false);
             this.minDecoration = 0;
             this.minVerification = 0;
-            this.benchmarkMode = false;
+            store.benchmarkMode = false;
+            store.saveSetting('benchmarkMode', false);
             this.applyFilters();
         },
     },
