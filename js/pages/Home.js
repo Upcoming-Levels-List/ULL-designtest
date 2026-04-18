@@ -1,5 +1,5 @@
 import { store } from '../main.js';
-import { fetchEditors, fetchLevelMonth, fetchLevelVerif } from '../content.js';
+import { fetchEditors, fetchLevelMonth, fetchLevelVerif, fetchRecentChanges } from '../content.js';
 import Footer from '../components/Footer.js';
 
 function ytThumb(url) {
@@ -67,29 +67,10 @@ export default {
             <div class="home-card home-card--scroll">
                 <div class="home-card__title">Recent Changes</div>
                 <div class="home-changes">
-                    <div class="home-changes-date">April 18, 2026</div>
-                    <div class="home-change"><span class="dim">— </span><strong>Furioso</strong><span class="dim"> has been moved down from #43 to #86, above </span><strong>Graveyard</strong><span class="dim"> and below </span><strong>Redemption</strong></div>
-                    <div class="home-change"><span class="dim">— </span><strong>Abyss of Darkness</strong><span class="dim"> has been moved up from #112 to #78, above </span><strong>Bloodlust</strong></div>
-
-                    <div class="home-changes-date">April 15, 2026</div>
-                    <div class="home-change"><span class="dim">— </span><strong>Silent Circles</strong><span class="dim"> has been added to the list at #55, above </span><strong>Athanatos</strong></div>
-                    <div class="home-change"><span class="dim">— </span><strong>Tartarus Redux</strong><span class="dim"> has been moved down from #28 to #41, below </span><strong>Cataclysm</strong><span class="dim"> and above </span><strong>Plasma Pulse</strong></div>
-
-                    <div class="home-changes-date">April 11, 2026</div>
-                    <div class="home-change"><span class="dim">— </span><strong>Fearless</strong><span class="dim"> has been added to the list at #8, above </span><strong>Sonic Wave Infinity</strong></div>
-                    <div class="home-change"><span class="dim">— </span><strong>The Hell Zone</strong><span class="dim"> has been removed from the list (rated)</span></div>
-
-                    <div class="home-changes-date">April 7, 2026</div>
-                    <div class="home-change"><span class="dim">— </span><strong>Halo</strong><span class="dim"> has been moved up from #31 to #19, above </span><strong>The Eschaton</strong></div>
-                    <div class="home-change"><span class="dim">— </span><strong>Zodiac II</strong><span class="dim"> has been added to the list at #67</span></div>
-
-                    <div class="home-changes-date">April 3, 2026</div>
-                    <div class="home-change"><span class="dim">— </span><strong>Avernus</strong><span class="dim"> has been moved down from #14 to #22, below </span><strong>Digital Descent</strong></div>
-                    <div class="home-change"><span class="dim">— </span><strong>Pixel Heaven 2.0</strong><span class="dim"> has been added to the list at #103</span></div>
-
-                    <div class="home-changes-date">March 29, 2026</div>
-                    <div class="home-change"><span class="dim">— </span><strong>Acheron</strong><span class="dim"> has been designated Level of the Month</span></div>
-                    <div class="home-change"><span class="dim">— </span><strong>Slaughterhouse</strong><span class="dim"> has been moved down from #5 to #11, below </span><strong>Plasma Pulse Finale</strong></div>
+                    <template v-for="group in recentChanges" :key="group.date">
+                        <div class="home-changes-date">{{ group.date }}</div>
+                        <div v-for="entry in group.entries" :key="entry" class="home-change" v-html="formatChange(entry)"></div>
+                    </template>
                 </div>
             </div>
 
@@ -219,6 +200,7 @@ export default {
     data: () => ({
         store,
         editors: [],
+        recentChanges: [],
         roleIconMap,
         levelMonth: null,
         levelVerif: null,
@@ -228,8 +210,9 @@ export default {
         ctvThumb()  { return ytThumb(this.levelVerif?.thumbnail); },
     },
     async mounted() {
-        [this.editors, this.levelMonth, this.levelVerif] = await Promise.all([
+        [this.editors, this.recentChanges, this.levelMonth, this.levelVerif] = await Promise.all([
             fetchEditors(),
+            fetchRecentChanges(),
             fetchLevelMonth(),
             fetchLevelVerif(),
         ]);
@@ -237,5 +220,14 @@ export default {
     },
     methods: {
         roleLabel(role) { return roleLabelMap[role] || role; },
+        formatChange(text) {
+            const html = text
+                .split(/(\*\*[^*]+\*\*)/)
+                .map(part => part.startsWith('**') && part.endsWith('**')
+                    ? `<strong>${part.slice(2, -2)}</strong>`
+                    : part ? `<span class="dim">${part}</span>` : '')
+                .join('');
+            return `<span class="dim">— </span>${html}`;
+        },
     },
 };

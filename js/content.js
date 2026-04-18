@@ -82,6 +82,15 @@ export async function fetchPending() {
     }
 }
 
+export async function fetchRecentChanges() {
+    try {
+        const res = await fetch(`${dir}/_recentChanges.json`);
+        return await res.json();
+    } catch {
+        return [];
+    }
+}
+
 export async function fetchLevelMonth() {
     try {
         const res = await fetch(`${dir}/_levelMonth.json`);
