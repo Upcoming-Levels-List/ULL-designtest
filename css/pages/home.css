@@ -144,8 +144,7 @@
     min-height: 0; /* ensure flex works correctly */
 }
 .home-changes {
-    flex: 1;
-    min-height: 0;
+    height: 260px;
     overflow-y: auto;
     scrollbar-width: thin;
     border: 1px solid rgba(128,128,128,0.1);
