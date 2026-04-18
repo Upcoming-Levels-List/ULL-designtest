@@ -4,7 +4,7 @@ export const store = Vue.reactive({
     dark: localStorage.getItem('dark') === null ? false : JSON.parse(localStorage.getItem('dark')),
     thumbnails: localStorage.getItem('thumbnails') === null ? true : JSON.parse(localStorage.getItem('thumbnails')),
     levelColoring: localStorage.getItem('levelColoring') === null ? true : JSON.parse(localStorage.getItem('levelColoring')),
-    benchmarkMode: localStorage.getItem('benchmarkMode') === null ? false : JSON.parse(localStorage.getItem('benchmarkMode')),
+    benchmarkMode: false,
     sidebarOpen: false,
     showSettings: false,
     showColoringHint: false,

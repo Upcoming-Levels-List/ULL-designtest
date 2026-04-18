@@ -16,7 +16,7 @@
 
 /* ── HERO ── */
 .home-hero {
-    height: 75px;
+    height: 75vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -120,7 +120,7 @@
 .home-card:hover {
     border-color: rgba(128,128,128,0.55);
     box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
-    transform: scale(1.012);
+    transform: scale(1.006);
 }
 .home-card__title {
     font-size: 0.95rem;
@@ -147,7 +147,8 @@
 
 /* ── RECENT CHANGES ── */
 .home-card--scroll {
-    min-height: 0; /* ensure flex works correctly */
+    min-height: 0;
+    overflow: hidden;
 }
 .home-changes {
     flex: 1;
