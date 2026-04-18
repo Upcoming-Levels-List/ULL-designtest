@@ -217,7 +217,10 @@ export default {
     watch: {
         search() {
             this.applyFilters();
-        }
+        },
+        'store.benchmarkMode'() {
+            this.applyFilters();
+        },
     },
     computed: {
         noResults() {

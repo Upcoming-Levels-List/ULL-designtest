@@ -16,7 +16,7 @@
 
 /* ── HERO ── */
 .home-hero {
-    height: 70vh;
+    height: 75px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -115,11 +115,12 @@
     border: 1px solid rgba(128,128,128,0.15);
     border-radius: 0.75rem;
     padding: 1.75rem;
-    transition: border-color 150ms ease, box-shadow 150ms ease;
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 .home-card:hover {
-    border-color: rgba(128,128,128,0.4);
-    box-shadow: 0 0 0 1px rgba(128,128,128,0.15);
+    border-color: rgba(128,128,128,0.55);
+    box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
+    transform: scale(1.012);
 }
 .home-card__title {
     font-size: 0.95rem;
@@ -149,8 +150,8 @@
     min-height: 0; /* ensure flex works correctly */
 }
 .home-changes {
-    height: 260px;
-    margin-top: auto;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
     border: 1px solid rgba(128,128,128,0.1);
@@ -217,7 +218,7 @@
     color: var(--color-on-background);
     line-height: 1.1;
     letter-spacing: -0.02em;
-    margin-bottom: 0.6px;
+    margin-bottom: 5px;
 }
 .home-level-header {
     display: flex;
@@ -227,8 +228,8 @@
 }
 .home-level-thumb {
     flex-shrink: 0;
-    width: 90px;
-    height: 65px;
+    width: 120px;
+    aspect-ratio: 16/9;
     border-radius: 0.4rem;
     background: rgba(128,128,128,0.08);
     border: 1px solid rgba(128,128,128,0.12);
@@ -351,7 +352,7 @@
 .home-ctv-btn:hover,
 .home-discord-btn:hover { opacity: 1; }
 .home-ctv-btn::after { content: ' →'; }
-.home-discord-btn img { width: 0.9rem; height: 0.9rem; }
+.home-discord-btn img { width: 0.9rem; height: 0.9rem; margin-right: 3px; }
 
 /* ── PARTNERS ── */
 .home-partners-grid {

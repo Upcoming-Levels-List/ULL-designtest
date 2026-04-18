@@ -68,9 +68,13 @@
     border: 1px solid rgba(128,128,128,0.15);
     border-radius: 0.75rem;
     padding: 1.75rem;
-    transition: border-color 150ms ease;
+    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
-.pending-card:hover { border-color: rgba(128,128,128,0.3); }
+.pending-card:hover {
+    border-color: rgba(128,128,128,0.55);
+    box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
+    transform: scale(1.012);
+}
 .pending-card__title {
     font-size: 0.7rem;
     font-weight: 700;
