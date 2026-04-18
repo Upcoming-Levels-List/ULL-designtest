@@ -2,6 +2,12 @@ import { store } from '../main.js';
 import { fetchEditors, fetchLevelMonth, fetchLevelVerif } from '../content.js';
 import Footer from '../components/Footer.js';
 
+function ytThumb(url) {
+    if (!url) return '';
+    const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : url;
+}
+
 const roleIconMap = {
     owner: 'crown',
     admin: 'user-gear',
@@ -111,7 +117,7 @@ export default {
                 <div class="home-card__title">Level of the Month</div>
                 <div class="home-level-header">
                     <div class="home-level-thumb">
-                        <img v-if="levelMonth.thumbnail" :src="levelMonth.thumbnail" alt="" />
+                        <img v-if="lotmThumb" :src="lotmThumb" alt="" />
                     </div>
                     <div class="home-level-meta">
                         <div class="home-level-name">{{ levelMonth.name }}</div>
@@ -147,7 +153,7 @@ export default {
                 <div class="home-card__title">Closest to Verification</div>
                 <div class="home-level-header">
                     <div class="home-level-thumb">
-                        <img v-if="levelVerif.thumbnail" :src="levelVerif.thumbnail" alt="" />
+                        <img v-if="ctvThumb" :src="ctvThumb" alt="" />
                     </div>
                     <div class="home-level-meta">
                         <div class="home-level-name">{{ levelVerif.name }}</div>
@@ -218,14 +224,8 @@ export default {
         levelVerif: null,
     }),
     computed: {
-        lotmPeriod() {
-            if (!this.levelMonth?.periodStart) return '';
-            const [y, m, d] = this.levelMonth.periodStart.split('-').map(Number);
-            const start = new Date(y, m - 1, d);
-            const end = new Date(y, m, d);
-            const fmt = date => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-            return `${fmt(start)} – ${fmt(end)}`;
-        },
+        lotmThumb() { return ytThumb(this.levelMonth?.thumbnail); },
+        ctvThumb()  { return ytThumb(this.levelVerif?.thumbnail); },
     },
     async mounted() {
         [this.editors, this.levelMonth, this.levelVerif] = await Promise.all([
