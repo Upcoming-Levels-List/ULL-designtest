@@ -30,7 +30,7 @@
 .page-hero h1::before, .page-hero h1::after { display: none; }
 .page-hero p {
     font-family: "Lexend Deca", sans-serif; font-size: 0.78rem; letter-spacing: normal;
-    color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 500px;
+    color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 700px;
 }
 .page-hero p::before, .page-hero p::after { display: none !important; }
 .page-hero-stat {

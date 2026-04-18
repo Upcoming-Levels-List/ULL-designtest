@@ -82,6 +82,24 @@ export async function fetchPending() {
     }
 }
 
+export async function fetchLevelMonth() {
+    try {
+        const res = await fetch(`${dir}/_levelMonth.json`);
+        return await res.json();
+    } catch {
+        return null;
+    }
+}
+
+export async function fetchLevelVerif() {
+    try {
+        const res = await fetch(`${dir}/_levelVerif.json`);
+        return await res.json();
+    } catch {
+        return null;
+    }
+}
+
 export async function fetchUnlistedPairs() {
     const unlisted = await fetchUnlisted();
     if (unlisted === null){

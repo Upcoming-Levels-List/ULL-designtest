@@ -1,5 +1,5 @@
 import { store } from '../main.js';
-import { fetchEditors } from '../content.js';
+import { fetchEditors, fetchLevelMonth, fetchLevelVerif } from '../content.js';
 import Footer from '../components/Footer.js';
 
 const roleIconMap = {
@@ -33,16 +33,18 @@ export default {
             </p>
             <div class="home-hero-actions">
                 <router-link to="/list" class="home-btn home-btn--primary">View All Levels</router-link>
-                <router-link to="/listfuture" class="home-btn home-btn--secondary">Explore Future List</router-link>
-                <router-link to="/information" class="home-btn home-btn--ghost">Learn More</router-link>
+                <router-link to="/listfuture" class="home-btn home-btn--primary">Explore Future List</router-link>
+                <router-link to="/information" class="home-btn home-btn--primary">Learn More</router-link>
             </div>
             <div class="home-hero-social">
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="home-social-btn">
-                    <img src="/assets/discord.svg" :style="!store.dark ? 'filter:invert(1)' : ''" alt="Discord" />
+                    <img src="/assets/discord.svg" :style="store.dark ? '' : 'filter:invert(1)'" alt="Discord" />
                     Discord
                 </a>
                 <a href="#" class="home-social-btn">
-                    <span class="home-social-icon">✈</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+                        <path d="M22.26 2.01L1.27 10.25c-1.42.57-1.4 1.37-.26 1.73l5.35 1.67 12.38-7.82c.58-.36 1.12-.16.68.23L8.83 16.95l-.4 5.63c.58 0 .84-.27 1.16-.58l2.79-2.71 5.8 4.28c1.07.59 1.84.29 2.1-.99l3.8-17.89c.4-1.58-.6-2.3-1.82-1.68z"/>
+                    </svg>
                     Telegram
                 </a>
             </div>
@@ -56,7 +58,7 @@ export default {
         <div class="home-grid-2col">
 
             <!-- Recent Changes -->
-            <div class="home-card">
+            <div class="home-card home-card--scroll">
                 <div class="home-card__title">Recent Changes</div>
                 <div class="home-changes">
                     <div class="home-changes-date">April 18, 2026</div>
@@ -105,46 +107,49 @@ export default {
         <div class="home-grid-2col">
 
             <!-- Level of the Month -->
-            <div class="home-card">
+            <div class="home-card" v-if="levelMonth">
                 <div class="home-card__title">Level of the Month</div>
-                <div class="home-lotm-period">29 Apr 2026 – present</div>
-                <div class="home-lotm-rank-name">
-                    <span class="home-lotm-rank">#12</span>
-                    <span class="home-lotm-name">Acheron</span>
+                <div class="home-level-period">{{ lotmPeriod }}</div>
+                <div class="home-level-name">{{ levelMonth.name }}</div>
+                <div class="home-level-info">
+                    <span class="home-level-rank">#{{ levelMonth.rank }}</span>
+                    <span class="home-level-sep">·</span>
+                    <span class="home-level-author">by {{ levelMonth.author }}</span>
+                    <span class="home-level-sep">·</span>
+                    <span class="home-level-id">{{ levelMonth.id }}</span>
                 </div>
-                <div class="home-lotm-meta">by Xaro &bull; ID: 93843822</div>
                 <div class="home-record-section">
-                    <a href="#" class="home-record-row">
-                        <span class="home-record-pct">62%</span>
-                        <span class="home-record-sep">—</span>
-                        <span class="home-record-player">Exyl</span>
+                    <a :href="levelMonth.record.link || '#'" class="home-record-row">
+                        <span class="home-record-pct">{{ levelMonth.record.percent }}</span>
+                        <span class="home-record-player">{{ levelMonth.record.player }}</span>
                         <span class="home-record-label">Best from zero</span>
                     </a>
-                    <a href="#" class="home-record-row">
-                        <span class="home-record-pct">45–92%</span>
-                        <span class="home-record-sep">—</span>
-                        <span class="home-record-player">Mindcap</span>
+                    <a :href="levelMonth.run.link || '#'" class="home-record-row">
+                        <span class="home-record-pct">{{ levelMonth.run.percent }}</span>
+                        <span class="home-record-player">{{ levelMonth.run.player }}</span>
                         <span class="home-record-label">Best run</span>
                     </a>
                 </div>
             </div>
 
             <!-- Closest to Verification -->
-            <div class="home-card">
+            <div class="home-card home-ctv-card" v-if="levelVerif">
                 <div class="home-card__title">Closest to Verification</div>
-                <div class="home-ctv-name">Fearless</div>
-                <div class="home-ctv-meta">by Xaro &bull; Verifier: ViRaL</div>
+                <div class="home-level-name">{{ levelVerif.name }}</div>
+                <div class="home-level-info">
+                    <span class="home-level-author">by {{ levelVerif.author }}</span>
+                    <span class="home-level-sep">·</span>
+                    <span class="home-level-author">Verifier: {{ levelVerif.verifier }}</span>
+                </div>
                 <div class="home-record-section">
-                    <a href="#" class="home-record-row">
-                        <span class="home-record-pct">89%</span>
-                        <span class="home-record-sep">—</span>
-                        <span class="home-record-player">Tidal Wave</span>
+                    <a :href="levelVerif.record.link || '#'" class="home-record-row">
+                        <span class="home-record-pct">{{ levelVerif.record.percent }}</span>
+                        <span class="home-record-player">{{ levelVerif.record.player }}</span>
                         <span class="home-record-label">Best from zero</span>
                     </a>
-                    <a href="#" class="home-record-row">
-                        <span class="home-record-pct">52–97%</span>
-                        <span class="home-record-sep">—</span>
-                        <span class="home-record-player">Mindcap</span>
+                    <a :href="levelVerif.run.link || '#'" class="home-record-row">
+                        <span class="home-record-pct">{{ levelVerif.run.percent }}</span>
+                        <span class="home-record-player">{{ levelVerif.run.player }}</span>
                         <span class="home-record-label">Best run</span>
                     </a>
                 </div>
@@ -158,30 +163,22 @@ export default {
             <div class="home-card__title">Partner Lists</div>
             <div class="home-partners-grid">
                 <a href="#" target="_blank" class="home-partner">
-                    <div class="home-partner-logo">
-                        <div class="home-partner-logo-placeholder"></div>
-                    </div>
+                    <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
                     <div class="home-partner-name">Demonlist</div>
                     <div class="home-partner-desc">The official ranking of the hardest Geometry Dash demons, maintained by Pointercrate.</div>
                 </a>
                 <a href="#" target="_blank" class="home-partner">
-                    <div class="home-partner-logo">
-                        <div class="home-partner-logo-placeholder"></div>
-                    </div>
+                    <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
                     <div class="home-partner-name">Challenge List</div>
                     <div class="home-partner-desc">A community-run list tracking the hardest GD challenges and challenge levels.</div>
                 </a>
                 <a href="#" target="_blank" class="home-partner">
-                    <div class="home-partner-logo">
-                        <div class="home-partner-logo-placeholder"></div>
-                    </div>
+                    <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
                     <div class="home-partner-name">Platformer List</div>
                     <div class="home-partner-desc">Ranking the most difficult platformer levels in Geometry Dash 2.2.</div>
                 </a>
                 <a href="#" target="_blank" class="home-partner">
-                    <div class="home-partner-logo">
-                        <div class="home-partner-logo-placeholder"></div>
-                    </div>
+                    <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
                     <div class="home-partner-name">Upcoming List</div>
                     <div class="home-partner-desc">A sister list tracking upcoming levels from other regions and categories.</div>
                 </a>
@@ -198,9 +195,26 @@ export default {
         store,
         editors: [],
         roleIconMap,
+        levelMonth: null,
+        levelVerif: null,
     }),
+    computed: {
+        lotmPeriod() {
+            if (!this.levelMonth?.periodStart) return '';
+            const [y, m, d] = this.levelMonth.periodStart.split('-').map(Number);
+            const start = new Date(y, m - 1, d);
+            const end = new Date(y, m, d);
+            const fmt = date => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            return `${fmt(start)} – ${fmt(end)}`;
+        },
+    },
     async mounted() {
-        this.editors = await fetchEditors() || [];
+        [this.editors, this.levelMonth, this.levelVerif] = await Promise.all([
+            fetchEditors(),
+            fetchLevelMonth(),
+            fetchLevelVerif(),
+        ]);
+        if (!this.editors) this.editors = [];
     },
     methods: {
         roleLabel(role) { return roleLabelMap[role] || role; },
