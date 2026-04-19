@@ -15,6 +15,7 @@ import MobileUpcoming from './pages/mobile/MobileUpcoming.js';
 import MobilePending from './pages/mobile/MobilePending.js';
 import MobileInfo from './pages/mobile/MobileInfo.js';
 import MobileHome from './pages/mobile/MobileHome.js';
+import MobileEvents from './pages/mobile/MobileEvents.js';
 
 export default [
     { path: '/', redirect: '/home' },
@@ -40,6 +41,7 @@ export default [
             { path: 'upcoming', component: MobileUpcoming },
             { path: 'pending', component: MobilePending },
             { path: 'info', component: MobileInfo },
+            { path: 'events', component: MobileEvents },
         ],
     },
 ];

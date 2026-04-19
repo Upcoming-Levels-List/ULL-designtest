@@ -19,7 +19,7 @@ export default {
 <div class="mob" :class="{ dark: store.dark }">
 
     <!-- Header 1 -->
-    <header class="mob-header1">
+    <header v-if="$route.path !== '/mobile/home'" class="mob-header1">
         <router-link to="/mobile/home" class="logo">
             <h2>ULL</h2>
             <p>v1.2.0</p>
@@ -27,10 +27,10 @@ export default {
     </header>
 
     <!-- Header 2 -->
-    <div class="mob-header2">
+    <div v-if="$route.path !== '/mobile/home'" class="mob-header2">
         <div class="mob-header2-left">
             <button class="mob-tab-btn" :class="{ active: openMenu === 'pages' }" @click="toggleMenu('pages')">Pages</button>
-            <button v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/home' && $route.path !== '/mobile/info'" class="mob-tab-btn" :class="{ active: openMenu === 'filters' }" @click="toggleMenu('filters')">Filters</button>
+            <button v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/home' && $route.path !== '/mobile/info' && $route.path !== '/mobile/events'" class="mob-tab-btn" :class="{ active: openMenu === 'filters' }" @click="toggleMenu('filters')">Filters</button>
             <button class="mob-tab-btn" :class="{ active: openMenu === 'settings' }" @click="toggleMenu('settings')">Settings</button>
         </div>
         <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-discord-btn">
@@ -56,6 +56,7 @@ export default {
                     <button class="mob-page-link" :class="{ active: $route.path === '/mobile/upcoming' }" @click="goPage('upcoming')">Upcoming Levels</button>
                     <button class="mob-page-link" :class="{ active: $route.path === '/mobile/pending' }" @click="goPage('pending')">Pending List</button>
                     <button class="mob-page-link" :class="{ active: $route.path === '/mobile/info' }" @click="goPage('info')">Information</button>
+                    <button class="mob-page-link" :class="{ active: $route.path === '/mobile/events' }" @click="goPage('events')">Events</button>
                 </div>
             </div>
 
@@ -103,8 +104,8 @@ export default {
                 <div class="mob-setting-row">
                     <span class="mob-setting-label">Benchmark Mode</span>
                     <div class="mob-toggle">
-                        <button :class="{ active: !store.benchmarkMode }" @click="store.benchmarkMode = false">OFF</button>
-                        <button :class="{ active: store.benchmarkMode }" @click="store.benchmarkMode = true">ON</button>
+                        <button :class="{ active: !mobileStore.benchmarkMode }" @click="setBenchmarkMode(false)">OFF</button>
+                        <button :class="{ active: mobileStore.benchmarkMode }" @click="setBenchmarkMode(true)">ON</button>
                     </div>
                 </div>
                 <div class="mob-setting-row">
@@ -264,5 +265,10 @@ export default {
             mobileStore.filtersList[index].active = !mobileStore.filtersList[index].active;
         },
         doResetFilters() { resetFilters(); this.openMenu = null; },
+        setBenchmarkMode(value) {
+            store.benchmarkMode = value;
+            mobileStore.benchmarkMode = value;
+            applyFilters();
+        },
     },
 };

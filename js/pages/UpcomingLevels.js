@@ -1,13 +1,10 @@
 ﻿import { store } from '../main.js';
 import { embed } from '../util.js';
 import { fetchList } from '../content.js';
+import { upcomingScore } from '../formulas.js';
 
 import Spinner from '../components/Spinner.js';
 import LevelAuthors from '../components/List/LevelAuthors.js';
-
-function upcomingScore(maxPercent, maxRunDiff, rank) {
-    return (Math.max(maxPercent, maxRunDiff) ** 2 + Math.min(maxPercent, maxRunDiff) ** 1.8) * ((0.01 * (rank+100)) ** 0.5);
-}
 
 export default {
     components: { Spinner, LevelAuthors },
