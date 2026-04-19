@@ -129,7 +129,7 @@ export default {
     </div>
 
     <!-- Page content via router-view -->
-    <div v-else class="mob-content">
+    <div v-else class="mob-content" ref="mobContent">
         <router-view></router-view>
         <div class="mob-footer">
             <h3>Upcoming Levels List</h3>
@@ -255,6 +255,13 @@ export default {
         } finally {
             mobileStore.loading = false;
         }
+    },
+    watch: {
+        '$route'() {
+            this.$nextTick(() => {
+                if (this.$refs.mobContent) this.$refs.mobContent.scrollTop = 0;
+            });
+        },
     },
     methods: {
         applyFilters,
