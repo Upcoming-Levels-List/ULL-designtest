@@ -28,7 +28,7 @@ export default {
                     <router-link to="/mobile/all" class="mob-home-btn">View All Levels</router-link>
                     <router-link to="/mobile/future" class="mob-home-btn">Explore Future List</router-link>
                 </div>
-                <div class="mob-home-btn-row">
+                <div class="mob-home-btn-row mob-home-social-row">
                     <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-home-social-btn">
                         <img src="/assets/discord.svg" :style="store.dark ? 'filter:invert(1)' : ''" alt="Discord" />
                         Discord

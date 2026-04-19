@@ -21,3 +21,14 @@ export function recordScore(rank, percent) {
 
     return Math.round(s * 1000) / 1000;
 }
+
+/**
+ * Calculate a ranking score for upcoming levels.
+ * @param {Number} maxPercent - Highest "from zero" record percent
+ * @param {Number} maxRunDiff - Highest run range (b - a from "a-b" format)
+ * @param {Number} rank - Position in All Levels list (1-indexed)
+ * @returns {Number}
+ */
+export function upcomingScore(maxPercent, maxRunDiff, rank) {
+    return (Math.max(maxPercent, maxRunDiff) ** 2 + Math.min(maxPercent, maxRunDiff) ** 1.8) * ((0.01 * (rank + 100)) ** 0.5);
+}

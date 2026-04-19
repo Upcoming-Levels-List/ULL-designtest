@@ -9,6 +9,7 @@ export const mobileStore = Vue.reactive({
     players: [],
     showThumbnails: true,
     showColors: true,
+    benchmarkMode: false,
     filtersList: [
         ...baseFiltersList.map(f => ({ ...f })),
         { active: false, name: "Pending Removal", key: "Pending Removal" },
@@ -39,7 +40,8 @@ export function applyFilters() {
         const vP = Math.max(rP, runP);
         const matchesDec = l.isVerified || (l.percentFinished ?? 0) >= minD;
         const matchesVer = l.isVerified || vP >= minV;
-        l.isHidden = !(matchesSearch && matchesTags && matchesDec && matchesVer);
+        const matchesBenchmark = !mobileStore.benchmarkMode || !l.isVerified || l.benchmark === true;
+        l.isHidden = !(matchesSearch && matchesTags && matchesDec && matchesVer && matchesBenchmark);
     });
 }
 

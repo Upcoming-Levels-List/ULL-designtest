@@ -1,4 +1,5 @@
 import { embed } from '../../util.js';
+import { upcomingScore } from '../../formulas.js';
 import { mobileStore } from './mobileStore.js';
 
 export default {
@@ -23,14 +24,14 @@ export default {
                     </div>
                 </button>
                 <div v-if="lbSelected === i && level" class="mob-level-detail">
-                    <div class="mob-author-block">
-                        <div class="mob-author-row"><span class="mob-author-label">Level Author</span><span class="mob-author-value">{{ level.author }}</span></div>
-                        <div class="mob-author-row" v-if="level.creators && level.creators.length"><span class="mob-author-label">Creators</span><span class="mob-author-value">{{ level.creators.join(', ') }}</span></div>
-                    </div>
-                    <div v-if="level.allLevelsRank || level.mainRank || level.futureRank" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-size:0.72rem;opacity:0.45;margin-bottom:0.6rem;">
+                    <div v-if="level.allLevelsRank || level.mainRank || level.futureRank" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-size:0.72rem;opacity:0.45;margin-bottom:0.75rem;">
                         <span v-if="level.allLevelsRank">#{{ level.allLevelsRank }} in All Levels</span>
                         <span v-if="level.mainRank">· #{{ level.mainRank }} in Main List</span>
                         <span v-if="level.futureRank">· #{{ level.futureRank }} in Future List</span>
+                    </div>
+                    <div class="mob-author-block">
+                        <div class="mob-author-row"><span class="mob-author-label">Level Author</span><span class="mob-author-value">{{ level.author }}</span></div>
+                        <div class="mob-author-row" v-if="level.creators && level.creators.length"><span class="mob-author-label">Creators</span><span class="mob-author-value">{{ level.creators.join(', ') }}</span></div>
                     </div>
                     <div v-if="getLbBestRecord(level)" class="mob-wr">
                         Best from 0: <a v-if="getLbBestRecord(level).link && getLbBestRecord(level).link != '#'" :href="getLbBestRecord(level).link" target="_blank" style="color:#00b825;text-decoration:underline;">{{ getLbBestRecord(level).percent }}%</a><template v-else><span style="color:#00b825;">{{ getLbBestRecord(level).percent }}%</span></template> by {{ getLbBestRecord(level).user }}
@@ -64,7 +65,8 @@ export default {
                         const p = String(r.percent).split('-').map(Number);
                         return p.length === 2 ? Math.abs(p[1] - p[0]) : 0;
                     })));
-                    l.rankingScore = Math.max(maxP, maxR) ** 2 + Math.min(maxP, maxR) ** 1.8;
+                    const rank = l.allLevelsRank || 1;
+                    l.rankingScore = upcomingScore(maxP, maxR, rank);
                     return [l, e];
                 })
                 .filter(([l]) => l.rankingScore > 0)
