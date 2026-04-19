@@ -128,7 +128,7 @@ export default {
                 </ul>
             </div>
             <div v-else class="level" style="height: 100%; justify-content: center; align-items: center;">
-                <p>(\\u30CE\\u0CA0\\u76CA\\u0CA0)\\u30CE\\u5F61\\u253B\\u2501\\u253B</p>
+                <p>Select a level</p>
             </div>
         </div>
 

@@ -5,6 +5,10 @@ import { fetchList } from '../content.js';
 import Spinner from '../components/Spinner.js';
 import LevelAuthors from '../components/List/LevelAuthors.js';
 
+function upcomingScore(maxPercent, maxRunDiff, rank) {
+    return Math.max(maxPercent, maxRunDiff) ** 2 + Math.min(maxPercent, maxRunDiff) ** 1.8;
+}
+
 export default {
     components: { Spinner, LevelAuthors },
     template: `
@@ -53,6 +57,11 @@ export default {
         <div class="level-container-new surface">
             <div class="level" v-if="selectedLevel">
                 <h1>{{ selectedLevel.name }}</h1>
+                <div v-if="selectedLevel.allLevelsRank || selectedLevel.mainRank || selectedLevel.futureRank" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.72rem;opacity:0.45;margin-top:0.25rem;margin-bottom:0.5rem;">
+                    <span v-if="selectedLevel.allLevelsRank">#{{ selectedLevel.allLevelsRank }} in All Levels</span>
+                    <span v-if="selectedLevel.mainRank">· #{{ selectedLevel.mainRank }} in Main List</span>
+                    <span v-if="selectedLevel.futureRank">· #{{ selectedLevel.futureRank }} in Future List</span>
+                </div>
                 <LevelAuthors :author="selectedLevel.author" :creators="selectedLevel.creators" :verifier="selectedLevel.verifier"></LevelAuthors>
                 <div>
                     <div v-if="bestRecord" class="best-record">
@@ -198,6 +207,19 @@ export default {
         let list = await fetchList();
         if (!list) { this.loading = false; return; }
 
+        // Compute ranks across all three lists before any filtering
+        let allRank = 0, mainRank = 0, futureRank = 0;
+        list.forEach(([level, err], i) => {
+            if (err || !level) return;
+            level.allLevelsRank = i + 1;
+            if (!level.isVerified) {
+                allRank++;
+                level.allLevelsNonVerifiedRank = allRank;
+            }
+            if (level.isMain) { mainRank++; level.mainRank = mainRank; }
+            if (level.isFuture) { futureRank++; level.futureRank = futureRank; }
+        });
+
         list.forEach(([level, err]) => {
             if (err || !level) return;
             let maxPercent = Math.max(0, ...(level.records || []).map(r => r.percent));
@@ -211,7 +233,8 @@ export default {
             }
             level.maxPercent = maxPercent;
             level.maxRunDifference = maxRunDiff;
-            level.rankingScore = Math.max(maxPercent, maxRunDiff) ** 2 + Math.min(maxPercent, maxRunDiff) ** 1.8;
+            const rank = level.allLevelsRank;
+            level.rankingScore = upcomingScore(maxPercent, maxRunDiff, rank);
             if (this.isOldLevel(level)) {
                 if (!level.tags) level.tags = [];
                 if (!level.tags.includes('Pending Removal')) level.tags.push('Pending Removal');

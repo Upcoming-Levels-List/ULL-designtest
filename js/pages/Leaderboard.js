@@ -26,7 +26,7 @@ export default {
             <div class="search-row search-row--leaderboard">
                 <input v-model="search" class="search-new" type="text" placeholder="Search players..." />
             </div>
-            <table class="list" v-if="players.length">
+            <table class="list" v-if="players.length && filteredPlayers.length">
                 <tr v-for="(player, i) in filteredPlayers" :key="player.name" :class="{ 'level-hidden': false }">
                     <td class="rank">
                         <p class="type-label-lg">#{{ player.globalRank }}</p>
@@ -39,6 +39,10 @@ export default {
                     </td>
                 </tr>
             </table>
+            <div v-else-if="players.length && !filteredPlayers.length" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
+                <span style="font-size:2rem;">🔍</span>
+                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No players match your search.</p>
+            </div>
             <p v-else style="padding:1rem; opacity:0.5;">No players found</p>
         </div>
         <div class="level-container-new surface">
