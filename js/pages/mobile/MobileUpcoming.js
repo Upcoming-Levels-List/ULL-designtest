@@ -8,7 +8,8 @@ export default {
                 <h1>Upcoming Levels</h1>
                 <p>Levels closest to verification — ranked by highest recorded progress.</p>
             </div>
-            <div v-for="([level, err], i) in lbList" :key="i" class="mob-level-row">
+            <input class="mob-search" type="text" placeholder="Search upcoming levels..." v-model="search" />
+            <div v-for="([level, err], i) in filteredList" :key="i" class="mob-level-row">
                 <button class="mob-level-btn" :class="{ active: lbSelected === i }" @click="lbSelected = lbSelected === i ? -1 : i">
                     <span class="mob-rank">#{{ i + 1 }}</span>
                     <img v-if="mobileStore.showThumbnails && level" class="mob-thumb" :src="getThumbnail(level)" alt="" />
@@ -26,6 +27,11 @@ export default {
                         <div class="mob-author-row"><span class="mob-author-label">Level Author</span><span class="mob-author-value">{{ level.author }}</span></div>
                         <div class="mob-author-row" v-if="level.creators && level.creators.length"><span class="mob-author-label">Creators</span><span class="mob-author-value">{{ level.creators.join(', ') }}</span></div>
                     </div>
+                    <div v-if="level.allLevelsRank || level.mainRank || level.futureRank" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-size:0.72rem;opacity:0.45;margin-bottom:0.6rem;">
+                        <span v-if="level.allLevelsRank">#{{ level.allLevelsRank }} in All Levels</span>
+                        <span v-if="level.mainRank">· #{{ level.mainRank }} in Main List</span>
+                        <span v-if="level.futureRank">· #{{ level.futureRank }} in Future List</span>
+                    </div>
                     <div v-if="getLbBestRecord(level)" class="mob-wr">
                         Best from 0: <a v-if="getLbBestRecord(level).link && getLbBestRecord(level).link != '#'" :href="getLbBestRecord(level).link" target="_blank" style="color:#00b825;text-decoration:underline;">{{ getLbBestRecord(level).percent }}%</a><template v-else><span style="color:#00b825;">{{ getLbBestRecord(level).percent }}%</span></template> by {{ getLbBestRecord(level).user }}
                     </div>
@@ -35,11 +41,16 @@ export default {
                     <iframe class="mob-video" :src="getVideo(level)" frameborder="0" allowfullscreen></iframe>
                 </div>
             </div>
+            <div v-if="!filteredList.length && search" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;">
+                <span style="font-size:2rem;">🔍</span>
+                <p style="font-size:0.85rem;">No levels match your search.</p>
+            </div>
         </div>
     `,
     data: () => ({
         mobileStore,
         lbSelected: -1,
+        search: '',
     }),
     computed: {
         lbList() {
@@ -58,6 +69,11 @@ export default {
                 })
                 .filter(([l]) => l.rankingScore > 0)
                 .sort((a, b) => b[0].rankingScore - a[0].rankingScore);
+        },
+        filteredList() {
+            const q = this.search.trim().toLowerCase();
+            if (!q) return this.lbList;
+            return this.lbList.filter(([l]) => l && l.name.toLowerCase().includes(q));
         },
     },
     methods: {
