@@ -49,7 +49,7 @@ export default {
                 </tr>
             </table>
             <div v-else-if="list.length && !filteredList.length" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
-                <span style="font-size:2rem;">\\u{1F50D}</span>
+                <span style="font-size:2rem;">🔍</span>
                 <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
             </div>
             <p v-else style="padding:1rem; opacity:0.5;">No upcoming levels found</p>
