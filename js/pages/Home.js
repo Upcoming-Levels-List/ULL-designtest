@@ -34,8 +34,8 @@ export default {
         <div class="home-hero-content">
             <h1 class="home-hero-title">Upcoming Levels List</h1>
             <p class="home-hero-desc">
-                A community-maintained catalogue forecasting the future of the Geometry Dash Demonlist.
-                Tracking upcoming Top 1–100 Extreme Demons before they reach Pointercrate.
+                Upcoming Levels List (ULL) is a community-mantained collection of all upcoming TOP-1 - TOP-100
+                extreme demons that might get verified and placed in the demonlist one day.
             </p>
             <div class="home-hero-actions">
                 <router-link to="/list" class="home-btn home-btn--primary">View All Levels</router-link>
@@ -170,23 +170,23 @@ export default {
             <div class="home-partners-grid">
                 <a href="#" target="_blank" class="home-partner">
                     <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
-                    <div class="home-partner-name">Demonlist</div>
-                    <div class="home-partner-desc">The official ranking of the hardest Geometry Dash demons, maintained by Pointercrate.</div>
+                    <div class="home-partner-name">Global Demonlist</div>
+                    <div class="home-partner-desc">The best ranking of the hardest Geometry Dash extreme demons.</div>
                 </a>
                 <a href="#" target="_blank" class="home-partner">
                     <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
-                    <div class="home-partner-name">Challenge List</div>
-                    <div class="home-partner-desc">A community-run list tracking the hardest GD challenges and challenge levels.</div>
+                    <div class="home-partner-name">The Shitty List</div>
+                    <div class="home-partner-desc">A community-run list tracking all Shitty-styled levels.</div>
                 </a>
                 <a href="#" target="_blank" class="home-partner">
                     <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
-                    <div class="home-partner-name">Platformer List</div>
-                    <div class="home-partner-desc">Ranking the most difficult platformer levels in Geometry Dash 2.2.</div>
+                    <div class="home-partner-name">Hardest Achievements List</div>
+                    <div class="home-partner-desc">Ranking the hardest achievements ever done in Geometry Dash.</div>
                 </a>
                 <a href="#" target="_blank" class="home-partner">
                     <div class="home-partner-logo"><div class="home-partner-logo-placeholder"></div></div>
-                    <div class="home-partner-name">Upcoming List</div>
-                    <div class="home-partner-desc">A sister list tracking upcoming levels from other regions and categories.</div>
+                    <div class="home-partner-name">Pemonlist</div>
+                    <div class="home-partner-desc">The list ranking the hardest platformer extreme demons.</div>
                 </a>
             </div>
         </div>

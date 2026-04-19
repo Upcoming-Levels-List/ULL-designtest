@@ -46,7 +46,7 @@ export default {
                 </tr>
             </table>
             <div v-else-if="list.length && !filteredList.length" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
-                <span style="font-size:2rem;">\\u{1F50D}</span>
+                <span style="font-size:2rem;">🔍</span>
                 <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
             </div>
             <p v-else style="padding:1rem; opacity:0.5;">No upcoming levels found</p>
@@ -54,7 +54,7 @@ export default {
         <div class="level-container-new surface">
             <div class="level" v-if="selectedLevel">
                 <h1>{{ selectedLevel.name }}</h1>
-                <div v-if="selectedLevel.allLevelsRank || selectedLevel.mainRank || selectedLevel.futureRank" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.72rem;opacity:0.45;margin-top:0.25rem;margin-bottom:0.5rem;">
+                <div v-if="selectedLevel.allLevelsRank || selectedLevel.mainRank || selectedLevel.futureRank" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.92rem;opacity:0.45;margin-top:-1rem;margin-bottom:0.5rem;">
                     <span v-if="selectedLevel.allLevelsRank">#{{ selectedLevel.allLevelsRank }} in All Levels</span>
                     <span v-if="selectedLevel.mainRank">· #{{ selectedLevel.mainRank }} in Main List</span>
                     <span v-if="selectedLevel.futureRank">· #{{ selectedLevel.futureRank }} in Future List</span>
