@@ -30,7 +30,7 @@ export default {
     <div class="mob-header2">
         <div class="mob-header2-left">
             <button class="mob-tab-btn" :class="{ active: openMenu === 'pages' }" @click="toggleMenu('pages')">Pages</button>
-            <button v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/home'" class="mob-tab-btn" :class="{ active: openMenu === 'filters' }" @click="toggleMenu('filters')">Filters</button>
+            <button v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/home' && $route.path !== '/mobile/info'" class="mob-tab-btn" :class="{ active: openMenu === 'filters' }" @click="toggleMenu('filters')">Filters</button>
             <button class="mob-tab-btn" :class="{ active: openMenu === 'settings' }" @click="toggleMenu('settings')">Settings</button>
         </div>
         <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-discord-btn">
@@ -101,6 +101,13 @@ export default {
                     </div>
                 </div>
                 <div class="mob-setting-row">
+                    <span class="mob-setting-label">Benchmark Mode</span>
+                    <div class="mob-toggle">
+                        <button :class="{ active: !store.benchmarkMode }" @click="store.benchmarkMode = false">OFF</button>
+                        <button :class="{ active: store.benchmarkMode }" @click="store.benchmarkMode = true">ON</button>
+                    </div>
+                </div>
+                <div class="mob-setting-row">
                     <span class="mob-setting-label">Theme</span>
                     <div class="mob-toggle">
                         <button :class="{ active: !store.dark }" @click="store.dark && store.toggleDark()">Dark</button>
@@ -157,6 +164,15 @@ export default {
     async mounted() {
         try {
             mobileStore.rawList = await fetchList() || [];
+            // Compute per-list ranks for Upcoming Levels position display
+            let allRank = 0, mainRank = 0, futureRank = 0;
+            mobileStore.rawList.forEach(([level, err], i) => {
+                if (err || !level) return;
+                level.allLevelsRank = i + 1;
+                if (!level.isVerified) { allRank++; level.allLevelsNonVerifiedRank = allRank; }
+                if (level.isMain) { mainRank++; level.mainRank = mainRank; }
+                if (level.isFuture) { futureRank++; level.futureRank = futureRank; }
+            });
             mobileStore.editors = await fetchEditors() || [];
             const pending = await fetchPending();
             if (pending) {
