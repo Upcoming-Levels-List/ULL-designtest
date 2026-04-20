@@ -247,7 +247,7 @@
 }
 .mob-home-btn:hover { opacity: 0.85; }
 .mob-home-social-btn {
-    flex: 0; display: inline-flex; align-items: center; gap: 0.35rem;
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem;
     padding: 0.38rem 0.85rem; border-radius: 0.4rem; text-decoration: none;
     font-family: "Lexend Deca", sans-serif; font-size: 0.72rem; font-weight: 500;
     color: var(--color-on-background); background: rgba(128,128,128,0.07);
