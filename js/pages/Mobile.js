@@ -18,25 +18,30 @@ export default {
     template: `
 <div class="mob" :class="{ dark: store.dark }">
 
-    <!-- Header 1 -->
-    <header v-if="$route.path !== '/mobile/home'" class="mob-header1">
-        <router-link to="/mobile/home" class="logo">
-            <h2>ULL</h2>
-            <p>v1.2.0</p>
+    <!-- New top bar -->
+    <header v-if="$route.path !== '/mobile/home'" class="mob-topbar">
+        <router-link to="/mobile/home" class="mob-topbar-logo">
+            <span class="mob-topbar-logo-mark">ULL</span>
+            <span class="mob-topbar-logo-ver">v1.2.0</span>
         </router-link>
+        <nav class="mob-topbar-nav">
+            <button
+                v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/info' && $route.path !== '/mobile/events'"
+                class="mob-topbar-btn" :class="{ active: openMenu === 'filters' }"
+                @click="toggleMenu('filters')" title="Filters">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
+            <button class="mob-topbar-btn" :class="{ active: openMenu === 'pages' }" @click="toggleMenu('pages')" title="Pages">
+                <i class="fa-solid fa-grip"></i>
+            </button>
+            <button class="mob-topbar-btn" :class="{ active: openMenu === 'settings' }" @click="toggleMenu('settings')" title="Settings">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+            <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-topbar-btn" title="Discord">
+                <img src="/assets/discord.svg" :style="!store.dark ? 'filter:invert(1)' : ''" class="mob-topbar-discord-icon" />
+            </a>
+        </nav>
     </header>
-
-    <!-- Header 2 -->
-    <div v-if="$route.path !== '/mobile/home'" class="mob-header2">
-        <div class="mob-header2-left">
-            <button class="mob-tab-btn" :class="{ active: openMenu === 'pages' }" @click="toggleMenu('pages')">Pages</button>
-            <button v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/home' && $route.path !== '/mobile/info' && $route.path !== '/mobile/events'" class="mob-tab-btn" :class="{ active: openMenu === 'filters' }" @click="toggleMenu('filters')">Filters</button>
-            <button class="mob-tab-btn" :class="{ active: openMenu === 'settings' }" @click="toggleMenu('settings')">Settings</button>
-        </div>
-        <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-discord-btn">
-            <img src="/assets/discord.svg" alt="Discord" :style="!store.dark ? 'filter:invert(1)' : ''" />
-        </a>
-    </div>
 
     <!-- Popup overlay -->
     <div v-if="openMenu" class="mob-popup-overlay" @click="openMenu = null">
