@@ -37,6 +37,7 @@ export default {
                         <router-link to="/mobile/pending" class="mob-home-other-btn">Pending List</router-link>
                         <router-link to="/mobile/info" class="mob-home-other-btn">Information</router-link>
                         <router-link to="/mobile/events" class="mob-home-other-btn">Events</router-link>
+                        <button class="mob-home-other-btn" @click="mobileStore.openMenu = 'settings'">Settings</button>
                     </div>
                 </div>
                 <div class="mob-home-social-row">
