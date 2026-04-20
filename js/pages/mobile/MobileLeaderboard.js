@@ -9,7 +9,7 @@ export default {
             </div>
             <input v-model="playerSearch" class="mob-search" type="text" placeholder="Search players..." />
             <div v-if="filteredPlayers.length === 0 && playerSearch.trim()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
-                <i class="fa-solid fa-magnifying-glass" style="font-size:1.5rem;"></i>
+                <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
                 <p style="font-size:0.8rem;font-family:'Lexend Deca',sans-serif;">No players match your search.</p>
             </div>
             <div v-for="(player, i) in filteredPlayers" :key="player.name" class="mob-level-row">
