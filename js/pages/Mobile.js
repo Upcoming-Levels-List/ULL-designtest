@@ -129,7 +129,7 @@ export default {
     </div>
 
     <!-- Page content via router-view -->
-    <div v-else class="mob-content" ref="mobContent">
+    <div v-else class="mob-content" :class="{ 'mob-content-home': $route.path === '/mobile/home' }" ref="mobContent">
         <router-view></router-view>
         <div class="mob-footer">
             <h3>Upcoming Levels List</h3>
