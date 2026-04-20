@@ -8,7 +8,10 @@ export default {
                 <p>Top players ranked by their records on upcoming and unverified Demonlist levels.</p>
             </div>
             <input v-model="playerSearch" class="mob-search" type="text" placeholder="Search players..." />
-            <div v-if="filteredPlayers.length === 0 && playerSearch.trim()" style="padding:2.5rem 1rem;text-align:center;opacity:0.35;font-size:0.85rem;">No players match your search.</div>
+            <div v-if="filteredPlayers.length === 0 && playerSearch.trim()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
+                <i class="fa-solid fa-magnifying-glass" style="font-size:1.5rem;"></i>
+                <p style="font-size:0.8rem;font-family:'Lexend Deca',sans-serif;">No players match your search.</p>
+            </div>
             <div v-for="(player, i) in filteredPlayers" :key="player.name" class="mob-level-row">
                 <button class="mob-level-btn" :class="{ active: playerSelected === i }" @click="playerSelected = playerSelected === i ? -1 : i">
                     <span class="mob-rank">#{{ player.globalRank }}</span>
