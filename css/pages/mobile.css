@@ -183,8 +183,8 @@
 .mob-lb-sub { font-size: 13px; opacity: 0.65; }
 
 /* Page Hero (shared) */
-.mob-page-hero { padding: 1.25rem 1.25rem 1rem 1.5rem; border-bottom: 1px solid rgba(128,128,128,0.15); background: linear-gradient(180deg, rgba(102,10,239,0.12) 0%, transparent 100%); position: relative; }
-.mob-page-hero::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 20%, transparent) 100%); }
+.mob-page-hero { padding: 1.25rem 1.25rem 1rem 1.5rem; border-bottom: 1px solid rgba(128,128,128,0.15); background: linear-gradient(180deg, rgba(102,10,239,0.26) 0%, transparent 100%); position: relative; }
+.mob-page-hero::before { display: none; }
 .mob-page-hero h1, .mob-page-hero p { margin: 0; padding: 0; }
 .mob-page-hero h1::before, .mob-page-hero h1::after { display: none; }
 .mob-page-hero p::before, .mob-page-hero p::after { display: none !important; }
