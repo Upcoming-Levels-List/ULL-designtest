@@ -12,7 +12,7 @@ export default {
             <div class="mob-search-row">
                 <input class="mob-search" type="text" placeholder="Search upcoming levels..." v-model="search" />
                 <button class="mob-search-filter-btn" :class="{ active: mobileStore.openMenu === 'filters' }" @click="mobileStore.openMenu = mobileStore.openMenu === 'filters' ? null : 'filters'" title="Filters">
-                    <i class="fa-solid fa-sliders"></i>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/></svg>
                 </button>
             </div>
             <div v-for="([level, err], i) in filteredList" :key="i" class="mob-level-row">
