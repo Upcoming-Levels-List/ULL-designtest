@@ -8,6 +8,7 @@ import Mobile from './pages/Mobile.js';
 import Home from './pages/Home.js';
 import UpcomingLevels from './pages/UpcomingLevels.js';
 import Information from './pages/Information.js';
+import Events from './pages/Events.js';
 
 import MobileList from './pages/mobile/MobileList.js';
 import MobileLeaderboard from './pages/mobile/MobileLeaderboard.js';
@@ -27,6 +28,7 @@ export default [
     { path: '/listfuture', component: ListFuture },
     { path: '/upcoming', component: UpcomingLevels },
     { path: '/information', component: Information },
+    { path: '/events', component: Events },
     { path: '/generator', component: LevelGenerator },
     {
         path: '/mobile',
