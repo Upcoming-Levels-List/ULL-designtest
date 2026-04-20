@@ -9,7 +9,12 @@ export default {
                 <h1>Upcoming Levels</h1>
                 <p>Levels closest to verification — ranked by highest recorded progress.</p>
             </div>
-            <input class="mob-search" type="text" placeholder="Search upcoming levels..." v-model="search" />
+            <div class="mob-search-row">
+                <input class="mob-search" type="text" placeholder="Search upcoming levels..." v-model="search" />
+                <button class="mob-search-filter-btn" :class="{ active: mobileStore.openMenu === 'filters' }" @click="mobileStore.openMenu = mobileStore.openMenu === 'filters' ? null : 'filters'" title="Filters">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
             <div v-for="([level, err], i) in filteredList" :key="i" class="mob-level-row">
                 <button class="mob-level-btn" :class="{ active: lbSelected === i }" @click="lbSelected = lbSelected === i ? -1 : i">
                     <span class="mob-rank">#{{ i + 1 }}</span>

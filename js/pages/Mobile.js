@@ -18,37 +18,31 @@ export default {
     template: `
 <div class="mob" :class="{ dark: store.dark }">
 
-    <!-- New top bar -->
+    <!-- Top bar -->
     <header v-if="$route.path !== '/mobile/home'" class="mob-topbar">
         <router-link to="/mobile/home" class="mob-topbar-logo">
             <span class="mob-topbar-logo-mark">ULL</span>
             <span class="mob-topbar-logo-ver">v1.2.0</span>
         </router-link>
         <nav class="mob-topbar-nav">
-            <button
-                v-if="$route.path !== '/mobile/pending' && $route.path !== '/mobile/info' && $route.path !== '/mobile/events'"
-                class="mob-topbar-btn" :class="{ active: openMenu === 'filters' }"
-                @click="toggleMenu('filters')" title="Filters">
-                <i class="fa-solid fa-sliders"></i>
-            </button>
-            <button class="mob-topbar-btn" :class="{ active: openMenu === 'pages' }" @click="toggleMenu('pages')" title="Pages">
+            <button class="mob-topbar-btn" :class="{ active: mobileStore.mobileStore.openMenu === 'pages' }" @click="toggleMenu('pages')" title="Pages">
                 <i class="fa-solid fa-grip"></i>
             </button>
-            <button class="mob-topbar-btn" :class="{ active: openMenu === 'settings' }" @click="toggleMenu('settings')" title="Settings">
+            <button class="mob-topbar-btn" :class="{ active: mobileStore.mobileStore.openMenu === 'settings' }" @click="toggleMenu('settings')" title="Settings">
                 <i class="fa-solid fa-gear"></i>
             </button>
             <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-topbar-btn" title="Discord">
-                <img src="/assets/discord.svg" :style="!store.dark ? 'filter:invert(1)' : ''" class="mob-topbar-discord-icon" />
+                <img src="/assets/discord.svg" class="mob-topbar-discord-icon" />
             </a>
         </nav>
     </header>
 
     <!-- Popup overlay -->
-    <div v-if="openMenu" class="mob-popup-overlay" @click="openMenu = null">
+    <div v-if="mobileStore.openMenu" class="mob-popup-overlay" @click="mobileStore.openMenu = null">
         <div class="mob-popup" @click.stop>
 
             <!-- Pages -->
-            <div v-if="openMenu === 'pages'" class="mob-pages-grid">
+            <div v-if="mobileStore.openMenu === 'pages'" class="mob-pages-grid">
                 <div class="mob-pages-col">
                     <h4>Lists</h4>
                     <button class="mob-page-link" :class="{ active: $route.path === '/mobile/all' }" @click="goPage('all')">All Levels</button>
@@ -66,7 +60,7 @@ export default {
             </div>
 
             <!-- Filters -->
-            <div v-if="openMenu === 'filters'" class="mob-filters-popup">
+            <div v-if="mobileStore.openMenu === 'filters'" class="mob-filters-popup">
                 <div class="mob-filters-nums">
                     <div class="mob-filter-num-group">
                         <label>Min Decoration %</label>
@@ -85,13 +79,13 @@ export default {
                     </div>
                 </template>
                 <div class="mob-filter-actions">
-                    <button class="mob-filter-apply" @click="applyFilters(); openMenu = null">Apply Filters</button>
+                    <button class="mob-filter-apply" @click="applyFilters(); mobileStore.openMenu = null">Apply Filters</button>
                     <button class="mob-filter-reset" @click="doResetFilters()">Reset Filters</button>
                 </div>
             </div>
 
             <!-- Settings -->
-            <div v-if="openMenu === 'settings'" class="mob-settings-list">
+            <div v-if="mobileStore.openMenu === 'settings'" class="mob-settings-list">
                 <div class="mob-setting-row">
                     <span class="mob-setting-label">Thumbnails</span>
                     <div class="mob-toggle">
@@ -165,7 +159,6 @@ export default {
     data: () => ({
         store,
         mobileStore,
-        openMenu: null,
     }),
     async mounted() {
         try {
@@ -271,13 +264,13 @@ export default {
     },
     methods: {
         applyFilters,
-        toggleMenu(name) { this.openMenu = this.openMenu === name ? null : name; },
-        goPage(page) { this.$router.push('/mobile/' + page); this.openMenu = null; },
+        toggleMenu(name) { mobileStore.openMenu = mobileStore.openMenu === name ? null : name; },
+        goPage(page) { this.$router.push('/mobile/' + page); mobileStore.openMenu = null; },
         toggleFilter(index) {
             if (mobileStore.filtersList[index].separator) return;
             mobileStore.filtersList[index].active = !mobileStore.filtersList[index].active;
         },
-        doResetFilters() { resetFilters(); this.openMenu = null; },
+        doResetFilters() { resetFilters(); mobileStore.openMenu = null; },
         setBenchmarkMode(value) {
             store.benchmarkMode = value;
             mobileStore.benchmarkMode = value;

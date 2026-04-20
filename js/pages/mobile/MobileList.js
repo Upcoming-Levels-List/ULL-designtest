@@ -16,7 +16,12 @@ export default {
                 <p v-else-if="pageType === 'future'">Levels expected to place beyond the top 150 — the next wave of Extreme Demons.</p>
                 <p v-else>Every level tracked for future placement on the Geometry Dash Demonlist.</p>
             </div>
-            <input v-model="mobileStore.search" @input="applyFilters()" class="mob-search" type="text" placeholder="Search levels..." />
+            <div class="mob-search-row">
+                <input v-model="mobileStore.search" @input="applyFilters()" class="mob-search" type="text" placeholder="Search levels..." />
+                <button class="mob-search-filter-btn" :class="{ active: mobileStore.openMenu === 'filters' }" @click="mobileStore.openMenu = mobileStore.openMenu === 'filters' ? null : 'filters'" title="Filters">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
             <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
                 <span style="font-size:1.5rem;">🔍</span>
                 <p style="font-size:0.8rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
