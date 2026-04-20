@@ -100,6 +100,12 @@ router.afterEach((to) => {
             store.dismissColoringHint();
         }
     }
+    if (to.path.startsWith('/mobile')) {
+        requestAnimationFrame(() => {
+            const el = document.querySelector('.mob-content');
+            if (el) el.scrollTop = 0;
+        });
+    }
 });
 
 // Shift+P+O+U to force-show coloring hint popup

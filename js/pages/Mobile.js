@@ -1,5 +1,5 @@
 import { store } from "../main.js";
-import { fetchEditors, fetchList, fetchPending } from "../content.js";
+import { fetchEditors, fetchList, fetchPending, fetchLevelMonth, fetchLevelVerif } from "../content.js";
 import { recordScore } from "../formulas.js";
 import { mobileStore, applyFilters, resetFilters } from "./mobile/mobileStore.js";
 
@@ -164,6 +164,7 @@ export default {
     }),
     async mounted() {
         try {
+            [mobileStore.levelMonth, mobileStore.levelVerif] = await Promise.all([fetchLevelMonth(), fetchLevelVerif()]);
             mobileStore.rawList = await fetchList() || [];
             // Compute per-list ranks for Upcoming Levels position display
             let allRank = 0, mainRank = 0, futureRank = 0;
