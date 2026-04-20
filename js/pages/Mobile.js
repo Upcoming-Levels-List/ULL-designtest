@@ -25,10 +25,10 @@ export default {
             <span class="mob-topbar-logo-ver">v1.2.0</span>
         </router-link>
         <nav class="mob-topbar-nav">
-            <button class="mob-topbar-btn" :class="{ active: mobileStore.mobileStore.openMenu === 'pages' }" @click="toggleMenu('pages')" title="Pages">
+            <button class="mob-topbar-btn" :class="{ active: mobileStore.openMenu === 'pages' }" @click="toggleMenu('pages')" title="Pages">
                 <i class="fa-solid fa-grip"></i>
             </button>
-            <button class="mob-topbar-btn" :class="{ active: mobileStore.mobileStore.openMenu === 'settings' }" @click="toggleMenu('settings')" title="Settings">
+            <button class="mob-topbar-btn" :class="{ active: mobileStore.openMenu === 'settings' }" @click="toggleMenu('settings')" title="Settings">
                 <i class="fa-solid fa-gear"></i>
             </button>
             <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-topbar-btn" title="Discord">
