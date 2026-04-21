@@ -28,7 +28,7 @@ export default {
         <h1>Upcoming Levels List</h1>
         <p>
             The Upcoming Levels List (ULL) is a comprehensive catalogue of upcoming Top 1\u2013100 Extreme Demons
-            projected to be verified and placed on Pointercrate. The list aims to forecast the future of
+            in Geometry Dash projected to be verified and placed on the Demonlist. The list aims to forecast the future of
             the Demonlist, and also features unrated Extreme Demons that may have qualified for a rating
             at the time of their creation.
         </p>

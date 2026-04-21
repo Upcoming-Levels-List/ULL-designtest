@@ -4,7 +4,7 @@
     <div class="site-footer-inner">
         <div class="site-footer-brand">
             <h3>Upcoming Levels List</h3>
-            <p>A community-maintained catalogue forecasting the future of the Geometry Dash Extreme Demon Demonlist.</p>
+            <p>A community-maintained catalogue of the hardest upcoming levels in Geometry Dash..</p>
         </div>
         <div class="site-footer-links">
             <div class="site-footer-col">

@@ -132,7 +132,7 @@ export default {
         <router-view></router-view>
         <div class="mob-footer">
             <h3>Upcoming Levels List</h3>
-            <p>A community-maintained catalogue forecasting the future of the Geometry Dash Demonlist.</p>
+            <p>A community-maintained catalogue of the hardest upcoming levels in Geometry Dash.</p>
             <div class="mob-footer-links">
                 <div class="mob-footer-col">
                     <h4>Navigate</h4>
@@ -145,11 +145,11 @@ export default {
                     <h4>Community</h4>
                     <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
                     <a href="#" target="_blank">Telegram</a>
-                    <a href="https://docs.google.com/document/d/13dmRfx2OCiLEaM2EcgEd-mKdok11_k8k7HsA5a-K6nY/edit?usp=sharing" target="_blank">Full Guidelines Doc</a>
+                    <a href="/mobile/info" target="_blank">Full Guidelines Doc</a>
                 </div>
             </div>
             <div class="mob-footer-bottom">
-                <p>&copy; 2024\u20132026 Upcoming Levels List. Not affiliated with RobTop Games or Pointercrate.</p>
+                <p>&copy; 2024\u20132026 Upcoming Levels List. Not affiliated with RobTop Games.</p>
             </div>
         </div>
     </div>

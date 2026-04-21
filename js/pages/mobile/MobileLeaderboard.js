@@ -5,7 +5,7 @@ export default {
         <div class="mob-list">
             <div class="mob-page-hero">
                 <h1>Leaderboard</h1>
-                <p>Top players ranked by their records on upcoming and unverified Demonlist levels.</p>
+                <p>Top players ranked according to their records on upcoming levels and their verifications of Demonlist levels.</p>
             </div>
             <input v-model="playerSearch" class="mob-search" type="text" placeholder="Search players..." />
             <div v-if="filteredPlayers.length === 0 && playerSearch.trim()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
