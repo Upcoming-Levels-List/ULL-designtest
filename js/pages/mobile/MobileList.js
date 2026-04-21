@@ -110,7 +110,7 @@ export default {
         const container = this.$el.closest('.mob-content');
         if (container) {
             this._scrollEl = container;
-            this._onScroll = () => { this.showScrollTop = container.scrollTop > 150; };
+            this._onScroll = () => { this.showScrollTop = container.scrollTop > 300; };
             container.addEventListener('scroll', this._onScroll, { passive: true });
         }
     },
