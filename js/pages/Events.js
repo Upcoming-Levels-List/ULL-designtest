@@ -37,8 +37,79 @@ export default {
         <p>Featured level highlights — Level of the Month, the level closest to verification, and today's featured level.</p>
     </section>
 
-    <div class="info-content">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-bottom:2rem;">
+    <div class="info-content events-content">
+        <div class="events-grid">
+
+            <!-- Level of the Day (first, spans 2 rows in left column) -->
+            <div class="home-card home-lotd-card events-lotd-card" v-if="levelDay">
+                <div class="home-card__title">Level of the Day</div>
+                <div class="events-lotd-cols">
+                    <!-- Left: existing content -->
+                    <div class="events-lotd-left">
+                        <div class="home-level-header">
+                            <div class="home-level-thumb">
+                                <img v-if="getThumbnail(levelDay)" :src="getThumbnail(levelDay)" alt="" />
+                            </div>
+                            <div class="home-level-meta">
+                                <div class="home-level-name">{{ levelDay.name }}</div>
+                                <div class="home-level-info">
+                                    <span class="home-level-rank">{{ levelDay.rankNum }}</span>
+                                    <span class="home-level-sep">·</span>
+                                    <span class="home-level-author">by {{ levelDay.author }}</span>
+                                    <span v-if="levelDay.id" class="home-level-sep">·</span>
+                                    <span v-if="levelDay.id" class="home-level-id">{{ levelDay.id }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="home-record-box" v-if="lotdRecord || lotdRun">
+                            <a v-if="lotdRecord" :href="lotdRecord.link || '#'" class="home-record-row">
+                                <span class="home-record-pct">{{ lotdRecord.percent }}%</span>
+                                <span class="home-record-player">{{ lotdRecord.user }}</span>
+                                <span class="home-record-label">Best from zero</span>
+                            </a>
+                            <a v-if="lotdRun" :href="lotdRun.link || '#'" class="home-record-row">
+                                <span class="home-record-pct">{{ lotdRun.percent }}</span>
+                                <span class="home-record-player">{{ lotdRun.user }}</span>
+                                <span class="home-record-label">Best run</span>
+                            </a>
+                        </div>
+                        <div class="home-lotd-date">{{ todayDate }}</div>
+                    </div>
+                    <!-- Right: additional information -->
+                    <div class="events-lotd-right">
+                        <div class="events-info-label">Additional Information</div>
+                        <ul class="events-stat-list">
+                            <li>
+                                <div class="events-stat-key">Status</div>
+                                <div class="events-stat-val">
+                                    <template v-if="levelDay.isVerified">Verified</template>
+                                    <template v-else-if="levelDay.percentFinished == 0">Layout</template>
+                                    <template v-else-if="levelDay.percentFinished == 100">Being Verified</template>
+                                    <template v-else>Decoration {{ levelDay.percentFinished }}% done</template>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="events-stat-key">Verifier</div>
+                                <div class="events-stat-val">{{ levelDay.verifier }}</div>
+                            </li>
+                            <li>
+                                <div class="events-stat-key">Length</div>
+                                <div class="events-stat-val">{{ Math.floor(levelDay.length / 60) }}m {{ levelDay.length % 60 }}s</div>
+                            </li>
+                            <li>
+                                <div class="events-stat-key">Last Update</div>
+                                <div class="events-stat-val">{{ levelDay.lastUpd }}</div>
+                            </li>
+                        </ul>
+                        <div v-if="levelDay.tags && levelDay.tags.length" class="events-tags">
+                            <div class="events-stat-key">Tags</div>
+                            <div style="display:flex;flex-wrap:wrap;">
+                                <div v-for="tag in levelDay.tags" class="tag">{{ tag }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Level of the Month -->
             <div class="home-card home-lotm-card" v-if="levelMonth">
@@ -107,39 +178,6 @@ export default {
                     </a>
                 </div>
                 <router-link to="/upcoming" class="home-ctv-btn">Go to Upcoming Levels</router-link>
-            </div>
-
-            <!-- Level of the Day -->
-            <div class="home-card home-lotd-card" v-if="levelDay">
-                <div class="home-card__title">Level of the Day</div>
-                <div class="home-level-header">
-                    <div class="home-level-thumb">
-                        <img v-if="getThumbnail(levelDay)" :src="getThumbnail(levelDay)" alt="" />
-                    </div>
-                    <div class="home-level-meta">
-                        <div class="home-level-name">{{ levelDay.name }}</div>
-                        <div class="home-level-info">
-                            <span class="home-level-rank">{{ levelDay.rankNum }}</span>
-                            <span class="home-level-sep">·</span>
-                            <span class="home-level-author">by {{ levelDay.author }}</span>
-                            <span v-if="levelDay.id" class="home-level-sep">·</span>
-                            <span v-if="levelDay.id" class="home-level-id">{{ levelDay.id }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="home-record-box" v-if="lotdRecord || lotdRun">
-                    <a v-if="lotdRecord" :href="lotdRecord.link || '#'" class="home-record-row">
-                        <span class="home-record-pct">{{ lotdRecord.percent }}%</span>
-                        <span class="home-record-player">{{ lotdRecord.user }}</span>
-                        <span class="home-record-label">Best from zero</span>
-                    </a>
-                    <a v-if="lotdRun" :href="lotdRun.link || '#'" class="home-record-row">
-                        <span class="home-record-pct">{{ lotdRun.percent }}</span>
-                        <span class="home-record-player">{{ lotdRun.user }}</span>
-                        <span class="home-record-label">Best run</span>
-                    </a>
-                </div>
-                <div class="home-lotd-date">{{ todayDate }}</div>
             </div>
 
         </div>

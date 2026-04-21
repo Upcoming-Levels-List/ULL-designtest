@@ -28,7 +28,7 @@ export default {
                 <p>This tier functions as a focused preview, listing only levels with a very high likelihood of soon verification and publication. It represents the most immediate and probable future additions to the Demonlist.</p>
             </div>
             <div class="page-hero-stat">
-                <span class="page-hero-stat-value">{{ list.length }}</span>
+                <span class="page-hero-stat-value">{{ visibleCount }}</span>
                 <span class="page-hero-stat-label">levels total</span>
             </div>
         </div>
@@ -228,6 +228,9 @@ export default {
         noResults() {
             if (!this.list || !this.search.trim()) return false;
             return this.list.every(([level]) => !level || level.isHidden);
+        },
+        visibleCount() {
+            return (this.list || []).filter(([level]) => level && !level.isHidden).length;
         },
         level() {
             return this.list[this.selected]?.[0];
