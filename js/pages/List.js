@@ -28,7 +28,7 @@ export default {
                 <p>The most comprehensive tier, offering the largest level count and lowest bar for entry. It catalogues every level with a conceivable shot at verification, mapping the broader upcoming landscape.</p>
             </div>
             <div class="page-hero-stat">
-                <span class="page-hero-stat-value">{{ list.length }}</span>
+                <span class="page-hero-stat-value">{{ visibleCount }}</span>
                 <span class="page-hero-stat-label">levels total</span>
             </div>
         </div>
@@ -228,6 +228,9 @@ export default {
         noResults() {
             if (!this.list || !this.search.trim()) return false;
             return this.list.every(([level]) => !level || level.isHidden);
+        },
+        visibleCount() {
+            return (this.list || []).filter(([level]) => level && !level.isHidden).length;
         },
         level() {
             return this.list[this.selected]?.[0];

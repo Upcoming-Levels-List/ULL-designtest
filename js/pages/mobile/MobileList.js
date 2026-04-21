@@ -107,6 +107,7 @@ export default {
         },
     },
     mounted() {
+        applyFilters();
         const container = this.$el.closest('.mob-content');
         if (container) {
             this._scrollEl = container;

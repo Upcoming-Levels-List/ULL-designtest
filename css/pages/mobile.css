@@ -122,7 +122,7 @@
     box-sizing: border-box; width: calc(100% - 1.5rem);
 }
 .mob-search:focus { outline: 2px solid var(--color-primary); }
-.mob-search-row { display: flex; align-items: center; gap: 0.4rem; margin: 0.75rem; }
+.mob-search-row { display: flex; align-items: center; gap: 0.4rem; margin: 0.75rem; position: sticky; top: 0; z-index: 10; background: var(--color-background); padding: 0.4rem 0; margin-top: 0; margin-bottom: 0; padding-left: 0.75rem; padding-right: 0.75rem; }
 .mob-search-row .mob-search { margin: 0; flex: 1; width: auto; }
 .mob-search-filter-btn {
     flex-shrink: 0; width: 2.6rem; height: 2.6rem;

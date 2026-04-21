@@ -28,7 +28,7 @@ export default {
                 <p>The Main List highlights levels that meet the fundamental standards required to be considered for an official rating by the developer (“Rate”). It acts as a curated filter for higher-potential candidates.</p>
             </div>
             <div class="page-hero-stat">
-                <span class="page-hero-stat-value">{{ list.length }}</span>
+                <span class="page-hero-stat-value">{{ visibleCount }}</span>
                 <span class="page-hero-stat-label">levels total</span>
             </div>
         </div>
@@ -228,6 +228,9 @@ export default {
         noResults() {
             if (!this.list || !this.search.trim()) return false;
             return this.list.every(([level]) => !level || level.isHidden);
+        },
+        visibleCount() {
+            return (this.list || []).filter(([level]) => level && !level.isHidden).length;
         },
         level() {
             return this.list[this.selected]?.[0];
