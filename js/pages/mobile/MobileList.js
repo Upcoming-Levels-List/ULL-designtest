@@ -8,6 +8,10 @@ export default {
     },
     template: `
         <div class="mob-list">
+            <button v-if="showScrollTop" class="mob-scroll-top-btn" @click="scrollToTop">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg>
+                Return to top
+            </button>
             <div class="mob-page-hero">
                 <h1 v-if="pageType === 'main'">Main List</h1>
                 <h1 v-else-if="pageType === 'future'">Future List</h1>
@@ -89,6 +93,7 @@ export default {
         mobileStore,
         selected: -1,
         toggledShowcase: false,
+        showScrollTop: false,
     }),
     computed: {
         displayList() {
@@ -101,8 +106,22 @@ export default {
             return this.displayList.every(([level]) => !level || level.isHidden);
         },
     },
+    mounted() {
+        const container = this.$el.closest('.mob-content');
+        if (container) {
+            this._scrollEl = container;
+            this._onScroll = () => { this.showScrollTop = container.scrollTop > 150; };
+            container.addEventListener('scroll', this._onScroll, { passive: true });
+        }
+    },
+    beforeUnmount() {
+        if (this._scrollEl) this._scrollEl.removeEventListener('scroll', this._onScroll);
+    },
     methods: {
         applyFilters,
+        scrollToTop() {
+            if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+        },
         getThumbnail(level) {
             if (level.thumbnail) return level.thumbnail;
             const yt = url => {

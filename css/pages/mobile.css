@@ -188,7 +188,8 @@
 .mob-page-hero h1, .mob-page-hero p { margin: 0; padding: 0; }
 .mob-page-hero h1::before, .mob-page-hero h1::after { display: none; }
 .mob-page-hero p::before, .mob-page-hero p::after { display: none !important; }
-.mob-page-hero h1 { font-size: 1.15rem; font-weight: 700; color: #c084fc; line-height: 1.2; letter-spacing: normal; margin-bottom: 0.5rem; }
+.mob-page-hero h1 { font-size: 1.15rem; font-weight: 700; color: #7c3aed; line-height: 1.2; letter-spacing: normal; margin-bottom: 0.5rem; }
+.root.dark .mob-page-hero h1 { color: #c084fc; }
 .mob-page-hero p { font-size: 0.75rem; color: var(--color-on-background); opacity: 0.5; line-height: 1.55; letter-spacing: normal; }
 
 /* Pending Page */
@@ -318,4 +319,28 @@
 .mob-events-ctv-btn { display: inline-flex; align-items: center; font-family: "Lexend Deca", sans-serif; font-size: 0.78rem; font-weight: 600; color: color-mix(in srgb, var(--color-primary) 65%, white); text-decoration: none; opacity: 0.8; transition: opacity 100ms; }
 .root.dark .mob-events-ctv-btn { color: color-mix(in srgb, var(--color-primary) 65%, black); }
 .mob-events-ctv-btn:hover { opacity: 1; }
-.mob-events-lotd-date { margin-top: 0.6rem; font-size: 0.72rem; opacity: 0.4; font-family: "Lexend Deca", sans-serif; text-align: center; }
+.mob-events-lotd-date { margin-top: 25px; font-size: 0.72rem; opacity: 0.4; font-family: "Lexend Deca", sans-serif; text-align: center; }
+
+.mob-scroll-top-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 1rem;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 2rem;
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.22);
+    z-index: 200;
+    white-space: nowrap;
+    transition: opacity 120ms;
+}
+.mob-scroll-top-btn:hover { opacity: 0.88; }
