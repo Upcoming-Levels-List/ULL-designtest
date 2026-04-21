@@ -65,7 +65,7 @@ export default {
                             <a v-if="lotdRecord" :href="lotdRecord.link || '#'" class="home-record-row">
                                 <span class="home-record-pct">{{ lotdRecord.percent }}%</span>
                                 <span class="home-record-player">{{ lotdRecord.user }}</span>
-                                <span class="home-record-label">Best from zero</span>
+                                <span class="home-record-label">Best Record</span>
                             </a>
                             <a v-if="lotdRun" :href="lotdRun.link || '#'" class="home-record-row">
                                 <span class="home-record-pct">{{ lotdRun.percent }}</span>
@@ -133,7 +133,7 @@ export default {
                     <a :href="levelMonth.record.link || '#'" class="home-record-row">
                         <span class="home-record-pct">{{ levelMonth.record.percent }}</span>
                         <span class="home-record-player">{{ levelMonth.record.player }}</span>
-                        <span class="home-record-label">Best from zero</span>
+                        <span class="home-record-label">Best Record</span>
                     </a>
                     <a :href="levelMonth.run.link || '#'" class="home-record-row">
                         <span class="home-record-pct">{{ levelMonth.run.percent }}</span>
@@ -169,7 +169,7 @@ export default {
                     <a :href="levelVerif.record.link || '#'" class="home-record-row">
                         <span class="home-record-pct">{{ levelVerif.record.percent }}</span>
                         <span class="home-record-player">{{ levelVerif.record.player }}</span>
-                        <span class="home-record-label">Best from zero</span>
+                        <span class="home-record-label">Best Record</span>
                     </a>
                     <a :href="levelVerif.run.link || '#'" class="home-record-row">
                         <span class="home-record-pct">{{ levelVerif.run.percent }}</span>
