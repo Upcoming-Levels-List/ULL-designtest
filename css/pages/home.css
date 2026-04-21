@@ -358,12 +358,12 @@
 .events-content { max-width: 1400px; }
 .events-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
     margin-bottom: 2rem;
     align-items: start;
 }
-.events-lotd-card { grid-row: 1 / 3; }
+.events-lotd-card { grid-column: 1 / 3; }
 .events-lotd-cols {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -371,12 +371,14 @@
     margin-top: 0.75rem;
 }
 .events-info-label {
-    font-size: 0.6rem;
+    font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    opacity: 0.4;
+    color: color-mix(in srgb, var(--color-primary) 80%, white);
     margin-bottom: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 .events-stat-list {
     list-style: none;
