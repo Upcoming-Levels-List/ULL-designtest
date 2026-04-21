@@ -183,7 +183,8 @@
 .mob-lb-sub { font-size: 13px; opacity: 0.65; }
 
 /* Page Hero (shared) */
-.mob-page-hero { padding: 1.25rem 1.25rem 1rem 1.5rem; border-bottom: 1px solid rgba(128,128,128,0.15); background: linear-gradient(180deg, rgba(102,10,239,0.26) 0%, transparent 100%); position: relative; }
+.mob-page-hero { padding: 1.25rem 1.25rem 1rem 1.5rem; border-bottom: 1px solid rgba(128,128,128,0.15); background: linear-gradient(180deg, rgba(102,10,239,0.13) 0%, transparent 100%); position: relative; }
+.root.dark .mob-page-hero { background: linear-gradient(180deg, rgba(102,10,239,0.26) 0%, transparent 100%); }
 .mob-page-hero::before { display: none; }
 .mob-page-hero h1, .mob-page-hero p { margin: 0; padding: 0; }
 .mob-page-hero h1::before, .mob-page-hero h1::after { display: none; }
@@ -196,7 +197,8 @@
 .mob-pending-page { display: flex; flex-direction: column; }
 .mob-pending-page h1, .mob-pending-page p { margin: 0; padding: 0; }
 .mob-pending-page h1::before, .mob-pending-page h1::after { display: none; }
-.mob-pending-hero { text-align: center; padding: 2.5rem 1.25rem 2rem; background: linear-gradient(180deg, rgba(102,10,239,0.15) 0%, transparent 100%); border-bottom: 1px solid rgba(128,128,128,0.15); }
+.mob-pending-hero { text-align: center; padding: 2.5rem 1.25rem 2rem; background: linear-gradient(180deg, rgba(102,10,239,0.075) 0%, transparent 100%); border-bottom: 1px solid rgba(128,128,128,0.15); }
+.root.dark .mob-pending-hero { background: linear-gradient(180deg, rgba(102,10,239,0.15) 0%, transparent 100%); }
 .mob-pending-hero h1 { font-size: 1.6rem; font-weight: 700; color: #c084fc; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em; }
 .root.dark .mob-pending-hero h1 { color: #7c3aed; }
 .mob-pending-hero p { font-size: 0.82rem; font-weight: 400; color: var(--color-on-background); opacity: 0.5; line-height: 1.7; }

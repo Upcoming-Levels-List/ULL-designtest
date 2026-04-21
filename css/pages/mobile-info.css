@@ -5,7 +5,8 @@
 .mob-info h1::before, .mob-info h1::after, .mob-info h2::before, .mob-info h2::after,
 .mob-info h3::before, .mob-info h3::after, .mob-info h4::before, .mob-info h4::after { display: none; }
 
-.mob-info-hero { text-align: center; padding: 2.5rem 1.25rem 2rem; background: linear-gradient(180deg, rgba(102,10,239,0.15) 0%, transparent 100%); border-bottom: 1px solid rgba(128,128,128,0.15); }
+.mob-info-hero { text-align: center; padding: 2.5rem 1.25rem 2rem; background: linear-gradient(180deg, rgba(102,10,239,0.075) 0%, transparent 100%); border-bottom: 1px solid rgba(128,128,128,0.15); }
+.root.dark .mob-info-hero { background: linear-gradient(180deg, rgba(102,10,239,0.15) 0%, transparent 100%); }
 .mob-info-hero h1 { font-size: 1.6rem; font-weight: 700; color: #c084fc; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em; }
 .root.dark .mob-info-hero h1 { color: #7c3aed; }
 .mob-info-hero p { font-size: 0.82rem; font-weight: 400; color: var(--color-on-background); opacity: 0.5; line-height: 1.7; max-width: 600px; margin: 0 auto; }
