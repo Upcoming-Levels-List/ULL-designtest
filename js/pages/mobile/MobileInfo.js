@@ -13,6 +13,10 @@ const roleIconMap = {
 export default {
     template: `
         <div class="mob-info">
+            <button v-if="showScrollTop" class="mob-scroll-top-btn" @click="scrollToTop">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg>
+                Return to top
+            </button>
             <!-- Hero -->
             <div class="mob-info-hero">
                 <h1>Upcoming Levels List</h1>
@@ -118,6 +122,7 @@ export default {
         roleLabelMap: { owner: 'Owner', admin: 'Admin', seniormod: 'Sr. Mod', mod: 'Mod', dev: 'Dev' },
         mobGlSearch: '',
         mobActiveSection: guidelinesData.length && guidelinesData[0].sections.length ? guidelinesData[0].sections[0].id : '',
+        showScrollTop: false,
     }),
     computed: {
         mobFilteredGuidelines() {
@@ -135,7 +140,21 @@ export default {
                 .filter(Boolean);
         },
     },
+    mounted() {
+        const container = this.$el.closest('.mob-content');
+        if (container) {
+            this._scrollEl = container;
+            this._onScroll = () => { this.showScrollTop = container.scrollTop > 150; };
+            container.addEventListener('scroll', this._onScroll, { passive: true });
+        }
+    },
+    beforeUnmount() {
+        if (this._scrollEl) this._scrollEl.removeEventListener('scroll', this._onScroll);
+    },
     methods: {
+        scrollToTop() {
+            if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+        },
         mobScrollToSection(id) {
             const el = document.getElementById('mob-gl-' + id);
             if (el) {
