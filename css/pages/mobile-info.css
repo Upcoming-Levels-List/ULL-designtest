@@ -107,4 +107,5 @@
 .mob-info-footer-col h4 { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-on-background); opacity: 0.4; margin-bottom: 0.4rem; }
 .mob-info-footer-col a { display: block; font-size: 0.72rem; color: var(--color-on-background); opacity: 0.4; text-decoration: none; padding: 0.15rem 0; }
 .mob-info-footer-bottom { padding-top: 1rem; border-top: 1px solid rgba(128,128,128,0.15); }
-.mob-info-footer-bottom p { font-size: 0.62rem; color: var(--color-on-background); opacity: 0.2; }
+.mob-info-footer-bottom p { font-size: 0.62rem; line-height: 1.4; color: var(--color-on-background); opacity: 0.2; }
+.mob-info-footer-bottom p::before, .mob-info-footer-bottom p::after { display: none; }

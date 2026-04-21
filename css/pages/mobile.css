@@ -198,6 +198,7 @@
 .mob-pending-page h1::before, .mob-pending-page h1::after { display: none; }
 .mob-pending-hero { text-align: center; padding: 2.5rem 1.25rem 2rem; background: linear-gradient(180deg, rgba(102,10,239,0.15) 0%, transparent 100%); border-bottom: 1px solid rgba(128,128,128,0.15); }
 .mob-pending-hero h1 { font-size: 1.6rem; font-weight: 700; color: #c084fc; margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em; }
+.root.dark .mob-pending-hero h1 { color: #7c3aed; }
 .mob-pending-hero p { font-size: 0.82rem; font-weight: 400; color: var(--color-on-background); opacity: 0.5; line-height: 1.7; }
 .mob-pending-cards { padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: 1rem; }
 .mob-pending-card { background: var(--color-background-hover); border: 1px solid rgba(128,128,128,0.15); border-radius: 0.75rem; padding: 1.25rem; }
@@ -224,7 +225,8 @@
 .mob-footer-col a { display: block; font-size: 0.72rem; color: var(--color-on-background); opacity: 0.4; text-decoration: none; padding: 0.15rem 0; transition: opacity 100ms; }
 .mob-footer-col a:hover { opacity: 0.8; }
 .mob-footer-bottom { padding-top: 1rem; border-top: 1px solid rgba(128,128,128,0.15); }
-.mob-footer-bottom p { font-size: 0.62rem; color: var(--color-on-background); opacity: 0.2; }
+.mob-footer-bottom p { font-size: 0.62rem; line-height: 1.4; color: var(--color-on-background); opacity: 0.2; }
+.mob-footer-bottom p::before, .mob-footer-bottom p::after { display: none; }
 
 /* Mobile Home Page */
 .mob-home-page { display: flex; flex-direction: column; }
