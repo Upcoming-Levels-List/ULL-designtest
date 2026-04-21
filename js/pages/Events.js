@@ -8,6 +8,17 @@ function ytThumb(url) {
     return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : url;
 }
 
+function getThumbnail(level) {
+    if (!level) return '';
+    if (level.thumbnail) return level.thumbnail;
+    const extractYT = (url) => {
+        if (!url || typeof url !== 'string') return '';
+        const m = url.match(/.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/);
+        return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : '';
+    };
+    return extractYT(level.verification) || extractYT(level.showcase) || '';
+}
+
 function pickDailyLevel(list) {
     const valid = list.filter(([l, e]) => l && !e);
     if (!valid.length) return null;
@@ -103,7 +114,7 @@ export default {
                 <div class="home-card__title">Level of the Day</div>
                 <div class="home-level-header">
                     <div class="home-level-thumb">
-                        <img v-if="ytThumb(levelDay.thumbnail)" :src="ytThumb(levelDay.thumbnail)" alt="" />
+                        <img v-if="getThumbnail(levelDay)" :src="getThumbnail(levelDay)" alt="" />
                     </div>
                     <div class="home-level-meta">
                         <div class="home-level-name">{{ levelDay.name }}</div>
@@ -128,6 +139,7 @@ export default {
                         <span class="home-record-label">Best run</span>
                     </a>
                 </div>
+                <div class="home-lotd-date">{{ todayDate }}</div>
             </div>
 
         </div>
@@ -151,8 +163,11 @@ export default {
         lotdRun() {
             return this.levelDay?.run?.[0] ?? null;
         },
+        todayDate() {
+            return new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        },
     },
-    methods: { ytThumb },
+    methods: { ytThumb, getThumbnail },
     async mounted() {
         const [lm, lv, list] = await Promise.all([
             fetchLevelMonth(),

@@ -354,6 +354,14 @@
 .home-ctv-btn::after { content: ' →'; }
 .home-discord-btn img { width: 0.9rem; height: 0.9rem; margin-right: 3px; }
 
+.home-lotd-date {
+    margin-top: 0.6rem;
+    font-size: 0.78rem;
+    opacity: 0.45;
+    font-family: "Lexend Deca", sans-serif;
+    text-align: center;
+}
+
 /* ── PARTNERS ── */
 .home-partners-grid {
     display: grid !important;

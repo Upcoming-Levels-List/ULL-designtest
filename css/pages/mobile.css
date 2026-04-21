@@ -318,3 +318,4 @@
 .mob-events-ctv-btn { display: inline-flex; align-items: center; font-family: "Lexend Deca", sans-serif; font-size: 0.78rem; font-weight: 600; color: color-mix(in srgb, var(--color-primary) 65%, white); text-decoration: none; opacity: 0.8; transition: opacity 100ms; }
 .root.dark .mob-events-ctv-btn { color: color-mix(in srgb, var(--color-primary) 65%, black); }
 .mob-events-ctv-btn:hover { opacity: 1; }
+.mob-events-lotd-date { margin-top: 0.6rem; font-size: 0.72rem; opacity: 0.4; font-family: "Lexend Deca", sans-serif; text-align: center; }
