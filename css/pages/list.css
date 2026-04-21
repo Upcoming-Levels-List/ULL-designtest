@@ -221,18 +221,19 @@ main.page-list--pending .list-container {
 }
 
 .filters-btn {
-    font-family: "Lexend Deca", sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 0.6rem 1.25rem;
+    flex-shrink: 0;
+    width: 2.6rem;
+    height: 2.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     border: 1px solid rgba(128, 128, 128, 0.3);
     border-radius: 4px;
     background: rgba(128, 128, 128, 0.1);
     color: var(--color-on-background);
     cursor: pointer;
     transition: background-color 100ms ease;
-    white-space: nowrap;
-    align-self: stretch;
 }
 
 

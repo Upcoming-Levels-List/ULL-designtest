@@ -35,7 +35,9 @@ export default {
         <div class="list-container-new surface">
             <div class="search-row">
                 <input v-model="search" class="search-new" type="text" placeholder="Search levels..." />
-                <button class="filters-btn" @click="showFilters = true">Filters</button>
+                <button class="filters-btn" @click="showFilters = true" title="Filters">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/></svg>
+                </button>
             </div>
             <table class="list" v-if="list && !noResults">
                 <tr v-for="([level, err], i) in list" :class="{ 'level-hidden': level?.isHidden }">

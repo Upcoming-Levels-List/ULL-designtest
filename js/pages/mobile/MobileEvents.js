@@ -7,6 +7,17 @@ function ytThumb(url) {
     return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : url;
 }
 
+function getThumbnail(level) {
+    if (!level) return '';
+    if (level.thumbnail) return level.thumbnail;
+    const extractYT = (url) => {
+        if (!url || typeof url !== 'string') return '';
+        const m = url.match(/.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/);
+        return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : '';
+    };
+    return extractYT(level.verification) || extractYT(level.showcase) || '';
+}
+
 function pickDailyLevel(list) {
     const valid = list.filter(([l, e]) => l && !e);
     if (!valid.length) return null;
@@ -113,6 +124,7 @@ export default {
                             <span class="mob-events-record-label">Best run</span>
                         </a>
                     </div>
+                    <div class="mob-events-lotd-date">{{ todayDate }}</div>
                 </div>
 
                 <div v-if="!mobileStore.levelMonth && !mobileStore.levelVerif && !levelDay && !mobileStore.loading" style="padding:3rem 1rem;text-align:center;opacity:0.3;">
@@ -127,12 +139,15 @@ export default {
         lotmThumb() { return ytThumb(mobileStore.levelMonth?.thumbnail); },
         ctvThumb()  { return ytThumb(mobileStore.levelVerif?.thumbnail); },
         levelDay() { return mobileStore.rawList.length ? pickDailyLevel(mobileStore.rawList) : null; },
-        lotdThumb() { return ytThumb(this.levelDay?.thumbnail); },
+        lotdThumb() { return getThumbnail(this.levelDay); },
         lotdRecord() {
             const recs = this.levelDay?.records;
             if (!recs?.length) return null;
             return recs.reduce((b, r) => Number(r.percent) > Number(b.percent) ? r : b);
         },
         lotdRun() { return this.levelDay?.run?.[0] ?? null; },
+        todayDate() {
+            return new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        },
     },
 };
