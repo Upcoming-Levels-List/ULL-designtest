@@ -20,7 +20,7 @@ export default {
             <!-- Hero -->
             <div class="mob-info-hero">
                 <h1>Upcoming Levels List</h1>
-                <p>The Upcoming Levels List (ULL) is a catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash projected to place on the Demonlist. It aims to forecast future rankings and also features unrated Extreme Demons that would have qualified for a rating at the time of creation.</p>
+                <p>The Upcoming Levels List (ULL) is a community-maintained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash projected to place on the Demonlist. It aims to forecast future rankings with the inclusion of worthy unrates.</p>
             </div>
 
             <!-- Cards -->
