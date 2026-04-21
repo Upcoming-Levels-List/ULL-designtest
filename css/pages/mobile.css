@@ -188,8 +188,8 @@
 .mob-page-hero h1, .mob-page-hero p { margin: 0; padding: 0; }
 .mob-page-hero h1::before, .mob-page-hero h1::after { display: none; }
 .mob-page-hero p::before, .mob-page-hero p::after { display: none !important; }
-.mob-page-hero h1 { font-size: 1.15rem; font-weight: 700; color: #7c3aed; line-height: 1.2; letter-spacing: normal; margin-bottom: 0.5rem; }
-.root.dark .mob-page-hero h1 { color: #c084fc; }
+.mob-page-hero h1 { font-size: 1.15rem; font-weight: 700; color: #c084fc; line-height: 1.2; letter-spacing: normal; margin-bottom: 0.5rem; }
+.root.dark .mob-page-hero h1 { color: #7c3aed; }
 .mob-page-hero p { font-size: 0.75rem; color: var(--color-on-background); opacity: 0.5; line-height: 1.55; letter-spacing: normal; }
 
 /* Pending Page */
