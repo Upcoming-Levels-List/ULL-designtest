@@ -81,7 +81,7 @@
 .upcoming-hero h1::before, .upcoming-hero h1::after { display: none; }
 .upcoming-hero p {
     font-family: "Lexend Deca", sans-serif; font-size: 0.78rem; letter-spacing: normal;
-    color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 500px;
+    color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 700px;
 }
 .upcoming-hero p::before, .upcoming-hero p::after { display: none !important; }
 .upcoming-hero-stat {
