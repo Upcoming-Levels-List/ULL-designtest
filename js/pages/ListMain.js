@@ -265,6 +265,7 @@ export default {
                 }
             });
         }
+        this.applyFilters();
         this.loading = false;
     },
 
