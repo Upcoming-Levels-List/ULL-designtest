@@ -224,7 +224,7 @@ export default {
                 const d = new Date();
                 data.lastUpd = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
             }
-            if (!data.thumbnail) delete data.thumbnail;
+            if (!data.thumbnail) data.thumbnail = null;
             data.length = Number(data.length);
             data.percentToQualify = Number(data.percentToQualify);
             data.percentFinished = Number(data.percentFinished);
