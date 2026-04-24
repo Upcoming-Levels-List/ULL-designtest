@@ -5,6 +5,7 @@ export const store = Vue.reactive({
     thumbnails: localStorage.getItem('thumbnails') === null ? true : JSON.parse(localStorage.getItem('thumbnails')),
     levelColoring: localStorage.getItem('levelColoring') === null ? true : JSON.parse(localStorage.getItem('levelColoring')),
     benchmarkMode: false,
+    authKey: '',
     sidebarOpen: false,
     showSettings: false,
     showColoringHint: false,
@@ -44,7 +45,7 @@ const router = VueRouter.createRouter({
 // Auto-redirect mobile devices
 const isMobile = () => window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 router.beforeEach((to, from, next) => {
-    if (isMobile() && !to.path.startsWith('/mobile') && to.path !== '/generator') {
+    if (isMobile() && !to.path.startsWith('/mobile') && to.path !== '/generator' && to.path !== '/admin') {
         next('/mobile');
     } else if (!isMobile() && to.path.startsWith('/mobile')) {
         next('/');

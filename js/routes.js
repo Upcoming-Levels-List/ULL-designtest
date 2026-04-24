@@ -1,4 +1,5 @@
 import List from './pages/List.js';
+import Admin from './pages/Admin.js';
 import Leaderboard from './pages/Leaderboard.js';
 import ListMain from './pages/ListMain.js';
 import ListFuture from './pages/ListFuture.js';
@@ -30,6 +31,7 @@ export default [
     { path: '/information', component: Information },
     { path: '/events', component: Events },
     { path: '/generator', component: LevelGenerator },
+    { path: '/admin', component: Admin },
     {
         path: '/mobile',
         component: Mobile,
