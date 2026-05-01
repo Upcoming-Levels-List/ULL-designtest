@@ -58,6 +58,12 @@ export default {
                                 <small class="typeBody" style="font-size: 0.8em; opacity: 0.7;">Optional.</small>
                             </div>
 
+                            <div class="form-group">
+                                <label>Frame Windows Counter Link (YouTube)</label>
+                                <input v-model="level.frameCounter" type="url" placeholder="https://youtu.be/..." />
+                                <small class="typeBody" style="font-size: 0.8em; opacity: 0.7;">Optional. Shows a 'Watch Here' link at the bottom of the level card.</small>
+                            </div>
+
                             <!-- Stats -->
                             <div class="form-group row" style="display: flex; gap: 20px;">
                                 <div style="flex: 1;">
@@ -199,6 +205,7 @@ export default {
                 isMain: true,
                 isFuture: true,
                 tags: [],
+                frameCounter: '',
             },
             creatorsStr: '',
             availableTags: [
@@ -285,7 +292,7 @@ export default {
                 id: 'private', name: '', author: '', creators: [], verifier: '',
                 isVerified: false, verification: '', showcase: '', thumbnail: '',
                 lastUpd: '', percentToQualify: 1, records: [], run: [],
-                length: 0, rating: 1, percentFinished: 100, isMain: true, isFuture: true, tags: [],
+                length: 0, rating: 1, percentFinished: 100, isMain: true, isFuture: true, tags: [], frameCounter: '',
             };
             this.creatorsStr = '';
             this.insertAt = 1;

@@ -60,10 +60,13 @@ export default {
             <div class="home-card home-card--scroll">
                 <div class="home-card__title">Recent Changes</div>
                 <div class="home-changes">
-                    <template v-for="group in recentChanges" :key="group.date">
-                        <div class="home-changes-date">{{ group.date }}</div>
-                        <div v-for="entry in group.entries" :key="entry" class="home-change" v-html="formatChange(entry)"></div>
+                    <template v-if="recentChanges.length">
+                        <template v-for="group in recentChanges" :key="group.date">
+                            <div class="home-changes-date">{{ group.date }}</div>
+                            <div v-for="entry in group.entries" :key="entry" class="home-change" v-html="formatChange(entry)"></div>
+                        </template>
                     </template>
+                    <p v-else style="opacity:0.4;font-size:0.85rem;padding:0.5rem 0;">No recent changes recorded.</p>
                 </div>
             </div>
 
@@ -128,6 +131,8 @@ export default {
             fetchRecentChanges(),
         ]);
         if (!this.editors) this.editors = [];
+        if (!this.recentChanges) this.recentChanges = [];
+        this.editors = this.editors.map(e => typeof e === 'string' ? { name: e, role: 'mod', link: '' } : e);
     },
     methods: {
         roleLabel(role) { return roleLabelMap[role] || role; },
