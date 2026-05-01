@@ -52,7 +52,7 @@ export default {
                             <img v-if="level && store.thumbnails" class="level-thumbnail" :src="getThumbnail(level)" alt="" />
                             <div class="level-info">
                                 <span :class="{ 'rank-verified': level?.isVerified }">
-                                    <span class="type-label-lg" :style="store.levelColoring ? getLevelNameStyle(level, selected == i) : {fontWeight: level?.isVerified ? 'bold' : 'normal', color: level?.isVerified ? (selected == i ? (!store.dark ? '#ffffff' : '#000000') : (!store.dark ? '#bbbbbb' : '#bbbbbb')) : ''}">{{ level?.name ? (store.levelColoring && isOldLevel(level) && !level.isVerified ? level.name + ' \\u{1F6AB}' : level.name) : \`Error (\${err}.json)\` }}</span>
+                                    <span class="type-label-lg" :style="store.levelColoring ? getLevelNameStyle(level, selected == i) : {fontWeight: level?.isVerified ? 'bold' : 'normal', color: level?.isVerified ? (selected == i ? (!store.dark ? '#ffffff' : '#000000') : (!store.dark ? '#bbbbbb' : '#bbbbbb')) : ''}">{{ level?.name ? (store.levelColoring && isOldLevel(level) && !level.isVerified ? level.name + (isVeryOldLevel(level) ? ' \\u{1F6AB}\\u{1F6AB}' : ' \\u{1F6AB}') : level.name) : \`Error (\${err}.json)\` }}</span>
                                 </span>
                                 <span v-if="level" class="level-subinfo">by {{ level.author }} | {{ level.verifier }}</span>
                             </div>
@@ -326,6 +326,15 @@ export default {
             const oneYearAgo = new Date();
             oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
             return levelDate < oneYearAgo;
+        },
+        isVeryOldLevel(level) {
+            if (!level.lastUpd) return false;
+            const parts = level.lastUpd.split('.');
+            if (parts.length !== 3) return false;
+            const levelDate = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+            const threshold = new Date();
+            threshold.setMonth(threshold.getMonth() - 18);
+            return levelDate < threshold;
         },
         applyFilters() {
             if (!this.list) return;
