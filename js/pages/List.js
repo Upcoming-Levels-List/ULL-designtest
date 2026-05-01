@@ -128,6 +128,12 @@ export default {
                         <p>{{level.lastUpd}}</p>
                     </li>
                 </ul>
+                <ul class="stats" v-if="level.frameCounter">
+                    <li>
+                        <div class="type-title-sm">Frame Windows Counter</div>
+                        <p><a :href="level.frameCounter" target="_blank" style="text-decoration:underline;cursor:pointer;">Watch Here</a></p>
+                    </li>
+                </ul>
             </div>
             <div v-else class="level" style="height: 100%; justify-content: center; align-items: center;">
                 <p>Select a level</p>

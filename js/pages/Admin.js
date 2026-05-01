@@ -117,6 +117,10 @@ export default {
                     <input v-model="editLevel.thumbnail" type="url" placeholder="https://i.ytimg.com/vi/..." />
                 </div>
                 <div class="admin-edit-group">
+                    <label>Frame Windows Counter Link</label>
+                    <input v-model="editLevel.frameCounter" type="url" placeholder="https://youtu.be/..." />
+                </div>
+                <div class="admin-edit-group">
                     <label>Level ID</label>
                     <input v-model="editLevel.id" type="text" placeholder="private or level ID" />
                 </div>

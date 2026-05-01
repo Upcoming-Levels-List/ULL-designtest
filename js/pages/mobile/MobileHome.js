@@ -57,10 +57,13 @@ export default {
                 <div class="mob-info-card">
                     <div class="mob-info-card__title">Recent Changes</div>
                     <div class="mob-home-changes">
-                        <template v-for="group in recentChanges" :key="group.date">
-                            <div class="mob-home-changes-date">{{ group.date }}</div>
-                            <div v-for="entry in group.entries" :key="entry" class="mob-home-change" v-html="formatChange(entry)"></div>
+                        <template v-if="recentChanges.length">
+                            <template v-for="group in recentChanges" :key="group.date">
+                                <div class="mob-home-changes-date">{{ group.date }}</div>
+                                <div v-for="entry in group.entries" :key="entry" class="mob-home-change" v-html="formatChange(entry)"></div>
+                            </template>
                         </template>
+                        <p v-else style="opacity:0.4;font-size:0.85rem;padding:0.5rem 0;">No recent changes recorded.</p>
                     </div>
                 </div>
 
