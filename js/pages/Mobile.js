@@ -22,7 +22,7 @@ export default {
     <header v-if="$route.path !== '/mobile/home'" class="mob-topbar">
         <router-link to="/mobile/home" class="mob-topbar-logo">
             <span class="mob-topbar-logo-mark">ULL</span>
-            <span class="mob-topbar-logo-ver">v1.2.0</span>
+            <span class="mob-topbar-logo-ver">v2.0.0</span>
         </router-link>
         <nav class="mob-topbar-nav">
             <button class="mob-topbar-btn" :class="{ active: mobileStore.openMenu === 'pages' }" @click="toggleMenu('pages')" title="Pages">
@@ -144,8 +144,8 @@ export default {
                 <div class="mob-footer-col">
                     <h4>Community</h4>
                     <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
-                    <a href="#" target="_blank">Telegram</a>
-                    <a href="/mobile/info" target="_blank">Full Guidelines</a>
+                    <a href="#" @click.prevent="alert('Coming Soon')">Telegram</a>
+                    <a href="https://docs.google.com/document/d/13dmRfx2OCiLEaM2EcgEd-mKdok11_k8k7HsA5a-K6nY/edit?usp=sharing" target="_blank">Full Guidelines Doc</a>
                 </div>
             </div>
             <div class="mob-footer-bottom">

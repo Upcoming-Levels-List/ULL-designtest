@@ -332,8 +332,9 @@ export default {
             const parts = level.lastUpd.split('.');
             if (parts.length !== 3) return false;
             const levelDate = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+            const hasLayoutTag = level.tags && level.tags.includes('Layout');
             const threshold = new Date();
-            threshold.setMonth(threshold.getMonth() - 18);
+            threshold.setMonth(threshold.getMonth() - (hasLayoutTag ? 12 : 15));
             return levelDate < threshold;
         },
         applyFilters() {

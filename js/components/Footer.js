@@ -17,7 +17,7 @@
             <div class="site-footer-col">
                 <h4>Community</h4>
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
-                <a href="#" target="_blank">Telegram</a>
+                <a href="#" @click.prevent="alert('Coming Soon')">Telegram</a>
                 <a href="#/information" target="_blank">Full Guidelines</a>
             </div>
             <div class="site-footer-col">
