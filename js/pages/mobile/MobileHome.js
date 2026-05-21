@@ -19,7 +19,7 @@ export default {
             <!-- Hero -->
             <div class="mob-home-hero">
                 <h1>Upcoming Levels List</h1>
-                <p>A community-maintained catalogue forecasting the future of the Geometry Dash Demonlist. Tracking upcoming Top 1–100 Extreme Demons before they reach Pointercrate.</p>
+                <p>A community-maintained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash.</p>
             </div>
 
             <!-- Actions -->

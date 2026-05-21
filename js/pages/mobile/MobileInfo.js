@@ -20,7 +20,7 @@ export default {
             <!-- Hero -->
             <div class="mob-info-hero">
                 <h1>Upcoming Levels List</h1>
-                <p>The Upcoming Levels List (ULL) is a comprehensive catalogue of upcoming Top 1–100 Extreme Demons projected to be verified and placed on Pointercrate.</p>
+                <p>The Upcoming Levels List (ULL) is a community-maintained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash projected to place on the Demonlist. It aims to forecast future rankings with the inclusion of worthy unrates.</p>
             </div>
 
             <!-- Cards -->
@@ -76,7 +76,7 @@ export default {
                 <div class="mob-info-gl">
                     <div class="mob-info-gl-header">
                         <h2>Guidelines</h2>
-                        <p>How the Upcoming Levels List works — rules, criteria, and procedures</p>
+                        <p class="mob-info-coloring-desc">How the Upcoming Levels List works — rules, criteria, and procedures</p>
                         <input class="mob-info-gl-search" type="text" placeholder="Search guidelines..." v-model="mobGlSearch" />
                     </div>
                     <div class="mob-info-toc">

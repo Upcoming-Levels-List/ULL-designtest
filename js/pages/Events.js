@@ -143,7 +143,7 @@ export default {
                 </div>
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="home-discord-btn">
                     <img src="/assets/discord.svg" :style="store.dark ? 'filter:invert(1)' : ''" alt="Discord" />
-                    Visit our Discord Server
+                    Participate in our Discord Server
                 </a>
             </div>
 

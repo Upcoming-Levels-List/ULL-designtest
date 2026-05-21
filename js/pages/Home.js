@@ -28,8 +28,7 @@ export default {
         <div class="home-hero-content">
             <h1 class="home-hero-title">Upcoming Levels List</h1>
             <p class="home-hero-desc">
-                Upcoming Levels List (ULL) is a community-mantained collection of all upcoming TOP-1 - TOP-100
-                extreme demons that might get verified and placed in the demonlist one day.
+                Upcoming Levels List (ULL) is a community-mantained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash projected to place on the Demonlist. It aims to forecast future rankings with the inclusion of worthy unrates.
             </p>
             <div class="home-hero-actions">
                 <router-link to="/list" class="home-btn home-btn--primary">View All Levels</router-link>
