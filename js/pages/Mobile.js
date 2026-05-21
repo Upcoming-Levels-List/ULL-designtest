@@ -144,7 +144,7 @@ export default {
                 <div class="mob-footer-col">
                     <h4>Community</h4>
                     <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
-                    <a href="#" @click.prevent="alert('Coming Soon')">Telegram</a>
+                    <a href="#" @click.prevent="store.comingSoon = true">Telegram</a>
                     <a href="https://docs.google.com/document/d/13dmRfx2OCiLEaM2EcgEd-mKdok11_k8k7HsA5a-K6nY/edit?usp=sharing" target="_blank">Full Guidelines Doc</a>
                 </div>
             </div>

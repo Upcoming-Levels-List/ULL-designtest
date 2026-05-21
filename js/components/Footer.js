@@ -1,4 +1,7 @@
-﻿export default {
+import { store } from '../main.js';
+
+export default {
+    data: () => ({ store }),
     template: `
 <footer class="site-footer">
     <div class="site-footer-inner">
@@ -17,7 +20,7 @@
             <div class="site-footer-col">
                 <h4>Community</h4>
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
-                <a href="#" @click.prevent="alert('Coming Soon')">Telegram</a>
+                <a href="#" @click.prevent="store.comingSoon = true">Telegram</a>
                 <a href="#/information" target="_blank">Full Guidelines</a>
             </div>
             <div class="site-footer-col">
@@ -28,7 +31,7 @@
         </div>
     </div>
     <div class="site-footer-bottom">
-        <p>&copy; 2024\u20132026 Upcoming Levels List. Not affiliated with RobTop Games.</p>
+        <p>&copy; 2024–2026 Upcoming Levels List. Not affiliated with RobTop Games.</p>
         <p>Built by the ULL Team</p>
     </div>
 </footer>
