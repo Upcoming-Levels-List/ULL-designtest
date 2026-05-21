@@ -118,6 +118,16 @@
         </div>
     </div>
 
+    <!-- Coming Soon popup -->
+    <div v-if="store.comingSoon" class="settings-overlay" @click.self="store.comingSoon = false">
+        <div class="settings-popup" style="max-width:320px;text-align:center;gap:0.75rem;padding:2rem 1.75rem;">
+            <div style="font-size:2.5rem;line-height:1;">🚀</div>
+            <div class="settings-popup__title" style="margin:0;">Coming Soon</div>
+            <p style="font-size:0.82rem;opacity:0.55;margin:0;line-height:1.55;">Our Telegram community is being set up. Check back soon!</p>
+            <button @click="store.comingSoon = false" style="margin-top:0.25rem;padding:0.6rem 1.5rem;border-radius:0.45rem;background:var(--color-primary);color:white;font-family:'Lexend Deca',sans-serif;font-size:0.88rem;font-weight:600;border:none;cursor:pointer;width:100%;">Got it</button>
+        </div>
+    </div>
+
     <!-- Coloring Hint Popup -->
     <div class="coloring-hint" v-if="store.showColoringHint">
         <button class="coloring-hint__close" @click="store.dismissColoringHint()">&times;</button>

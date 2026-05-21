@@ -8,6 +8,7 @@ export const store = Vue.reactive({
     authKey: '',
     sidebarOpen: false,
     showSettings: false,
+    comingSoon: false,
     showColoringHint: false,
     coloringHintDismissed: localStorage.getItem('coloringHintDismissed') === 'true',
     coloringHintCooldown: (() => {
