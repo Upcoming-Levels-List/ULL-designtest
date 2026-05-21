@@ -41,7 +41,7 @@ export default {
                     <img src="/assets/discord.svg" :style="store.dark ? 'filter:invert(1)' : ''" alt="Discord" />
                     Discord
                 </a>
-                <a href="#" class="home-social-btn">
+                <a href="#" class="home-social-btn" @click.prevent="alert('Coming Soon')">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
                         <path d="M22.26 2.01L1.27 10.25c-1.42.57-1.4 1.37-.26 1.73l5.35 1.67 12.38-7.82c.58-.36 1.12-.16.68.23L8.83 16.95l-.4 5.63c.58 0 .84-.27 1.16-.58l2.79-2.71 5.8 4.28c1.07.59 1.84.29 2.1-.99l3.8-17.89c.4-1.58-.6-2.3-1.82-1.68z"/>
                     </svg>
@@ -87,8 +87,8 @@ export default {
 
         </div>
 
-        <!-- Partner Lists -->
-        <div class="home-card">
+        <!-- Partner Lists (hidden for now) -->
+        <div v-if="false" class="home-card">
             <div class="home-card__title">Partner Lists</div>
             <div class="home-partners-grid">
                 <a href="#" target="_blank" class="home-partner">
