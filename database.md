@@ -130,14 +130,27 @@ The `Layout` tag has special meaning in the frontend age-filtering (see section 
 > renaming the DB column — conform the Worker to the DB, not the other way around.
 
 ### `pending`
-Public "suggest a level" submissions.
+Backs the **Pending List** page (`js/pages/ListPending.js`, `MobilePending.js`) and the admin
+**Pending** tab. Also holds public "suggest a level" submissions (legacy; no live submit UI).
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | INTEGER PK AUTOINCREMENT | |
-| `name`, `author`, `link`, `reason` | TEXT | submitted fields |
-| `status` | TEXT | `pending` / editor-set |
-| `notes` | TEXT | editor notes |
+| `name` | TEXT | level name |
+| `placement` | TEXT | drives the row icon. A tier (`1,10,20,30,50,75`), `?` (question.svg), or `up`/`down` (move-*.svg). |
+| `link` | TEXT | optional level/video link |
+| `indefinite` | INTEGER | **added 2026-07-08** — 0/1. `1` = show in the "Pending Indefinitely" section |
+| `author`, `reason` | TEXT | legacy submission fields |
+| `status` | TEXT | legacy: `pending` / editor-set |
+| `notes` | TEXT | legacy editor notes |
 | `created_at` | TEXT/timestamp | |
+
+**Which Pending List section a row shows in** (same logic in frontend + admin):
+- `placement` is `up`/`down` → **Pending Movements**
+- else if `indefinite = 1` → **Pending Indefinitely**
+- else → **Pending Placements**
+
+(Pending **Removals** is a 4th section but is *computed on the frontend* from stale levels —
+`lastUpd` ≥ 1 year old & unverified — it is **not** stored in this table.)
 
 ### `config`
 Key/value store for singletons (Level of the Month, Closest to Verification).
@@ -245,6 +258,10 @@ missing.
 - `PATCH /api/editors` — body `{name, role, link}`; updates role/link.
 - `DELETE /api/editors/:name` — revokes an editor's key.
 - `POST /api/admin/add-key` — body `{name, key, role, link}`; hashes key, inserts editor.
+- `POST /api/admin/pending` — body `{name, placement, link, indefinite}`; inserts a Pending
+  List entry (admin Pending tab).
+- `PUT /api/admin/pending` — body `{id, name, placement, link, indefinite}`; updates one.
+  (Delete reuses `DELETE /api/pending/:id`.)
 - `POST /api/admin/bootstrap` — body `{secret, name, key, role, link}`; one-time first-admin
   creation, gated by the `BOOTSTRAP_SECRET` Worker env var. See section 8.
 
@@ -258,7 +275,7 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
 |------|-------|
 | `js/content.js` | `/api/list`, `/api/editors`, `/api/pending`, `/api/recent-changes`, `/api/level-month`, `/api/level-verif` |
 | `js/components/AdminLogin.js` | `/api/auth/validate` |
-| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/admin/add-key`, `/api/audit-log` |
+| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/admin/add-key`, `/api/pending` (GET), `/api/admin/pending` (POST/PUT), `/api/pending/:id` (DELETE), `/api/audit-log` |
 | `js/pages/LevelGenerator.js` | `/api/levels` (PUT) |
 | `js/pages/Events.js` | via `content.js`: `/api/level-month`, `/api/level-verif`, `/api/list` |
 
@@ -324,6 +341,11 @@ ALTER TABLE editor_keys ADD COLUMN link TEXT DEFAULT '';
 -- levels extras
 ALTER TABLE levels ADD COLUMN frameCounter TEXT;
 ALTER TABLE levels ADD COLUMN benchmark INTEGER DEFAULT 0;
+
+-- pending extras (Pending List entries + the "Pending Indefinitely" section)
+ALTER TABLE pending ADD COLUMN placement  TEXT DEFAULT '?';   -- may already exist
+ALTER TABLE pending ADD COLUMN link       TEXT DEFAULT '';    -- may already exist
+ALTER TABLE pending ADD COLUMN indefinite INTEGER DEFAULT 0;  -- NEW: powers "Pending Indefinitely"
 
 -- singletons + logging
 CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT);

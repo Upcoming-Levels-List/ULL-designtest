@@ -40,6 +40,17 @@ export default {
                     </div>
                     <p v-else class="mob-pending-empty">No pending removals.</p>
                 </div>
+                <div class="mob-pending-card">
+                    <div class="mob-pending-card__title">Pending Indefinitely</div>
+                    <div v-if="mobileStore.pendingIndefinite.length > 0" class="mob-pending-rows">
+                        <div v-for="level in mobileStore.pendingIndefinite" class="mob-pending-row">
+                            <img :src="'/assets/' + (level.placement === '?' ? 'question' : level.placement) + '.svg'" alt="" />
+                            <a v-if="level.link" :href="level.link">{{ level.name }}</a>
+                            <span v-else>{{ level.name }}</span>
+                        </div>
+                    </div>
+                    <p v-else class="mob-pending-empty">No levels pending indefinitely.</p>
+                </div>
             </div>
         </div>
     `,

@@ -11,6 +11,17 @@ const AVAILABLE_TAGS = [
 
 const ROLE_OPTIONS = ['owner', 'admin', 'seniormod', 'mod', 'dev'];
 
+// Placement tiers that have an icon in /assets (plus "?" = question.svg).
+const PLACEMENT_TIERS = ['?', '1', '10', '20', '30', '50', '75'];
+
+const emptyPending = () => ({ id: null, name: '', section: 'placement', tier: '?', direction: 'up', link: '' });
+
+// Which Pending List section an entry belongs to, derived from its data.
+function pendingSectionOf(p) {
+    if (['up', 'down'].includes((p.placement || '').toLowerCase())) return 'movement';
+    return p.indefinite ? 'indefinite' : 'placement';
+}
+
 const emptyLotm = () => ({
     name: '', author: '', rank: '', id: '', thumbnail: '',
     record: { percent: '', player: '', link: '' },
@@ -37,6 +48,7 @@ export default {
             <button class="admin-tab" :class="{ active: activeTab === 'levels' }" @click="activeTab = 'levels'">Levels</button>
             <button class="admin-tab" :class="{ active: activeTab === 'events' }" @click="activeTab = 'events'">Events</button>
             <button class="admin-tab" :class="{ active: activeTab === 'editors' }" @click="activeTab = 'editors'">Editors</button>
+            <button class="admin-tab" :class="{ active: activeTab === 'pending' }" @click="activeTab = 'pending'">Pending</button>
             <button class="admin-tab" :class="{ active: activeTab === 'audit' }" @click="activeTab = 'audit'">Audit Log</button>
         </div>
 
@@ -274,6 +286,84 @@ export default {
             </template>
         </template>
 
+        <!-- ── PENDING ── -->
+        <template v-if="activeTab === 'pending'">
+            <div v-if="pendingLoading" class="admin-loading">Loading pending entries…</div>
+            <template v-else>
+                <div v-if="!pendingEntries.length" class="admin-empty">No pending entries yet. Add one below.</div>
+                <table v-else class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="admin-th" style="width:6rem;">Icon</th>
+                            <th class="admin-th">Name</th>
+                            <th class="admin-th admin-th--type">Section</th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="p in sortedPending" :key="p.id" class="admin-row">
+                            <td class="admin-td">
+                                <img v-if="pendingSectionOf(p) === 'movement'" :src="'/assets/move-' + ((p.placement || '').toLowerCase() === 'up' ? 'up' : 'down') + '.svg'" alt="" style="width:1.3rem;height:1.3rem;" />
+                                <img v-else :src="'/assets/' + (p.placement === '?' ? 'question' : p.placement) + '.svg'" alt="" style="width:1.3rem;height:1.3rem;" />
+                            </td>
+                            <td class="admin-td" style="font-weight:600;">
+                                <a v-if="p.link" :href="p.link" target="_blank" style="text-decoration:underline;">{{ p.name }}</a>
+                                <span v-else>{{ p.name }}</span>
+                            </td>
+                            <td class="admin-td">
+                                <span class="admin-badge admin-badge--main">{{ sectionLabel(pendingSectionOf(p)) }}</span>
+                            </td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--move" @click="openEditPending(p)">Edit</button>
+                            </td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--delete" @click="deletePending(p)">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="admin-card" style="margin-top:1.5rem;">
+                    <div class="admin-card-title">Add Pending Entry</div>
+                    <div class="admin-edit-group">
+                        <label>Level Name</label>
+                        <input v-model="newPending.name" type="text" placeholder="Level name" />
+                    </div>
+                    <div class="admin-edit-row">
+                        <div class="admin-edit-group">
+                            <label>Section</label>
+                            <select v-model="newPending.section" class="admin-select">
+                                <option value="placement">Pending Placement</option>
+                                <option value="movement">Pending Movement</option>
+                                <option value="indefinite">Pending Indefinitely</option>
+                            </select>
+                        </div>
+                        <div v-if="newPending.section === 'movement'" class="admin-edit-group">
+                            <label>Direction</label>
+                            <select v-model="newPending.direction" class="admin-select">
+                                <option value="up">Up</option>
+                                <option value="down">Down</option>
+                            </select>
+                        </div>
+                        <div v-else class="admin-edit-group">
+                            <label>Position Icon</label>
+                            <select v-model="newPending.tier" class="admin-select">
+                                <option v-for="t in placementTiers" :key="t" :value="t">{{ t === '?' ? '? (unknown)' : t }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin-edit-group">
+                        <label>Link (optional)</label>
+                        <input v-model="newPending.link" type="url" placeholder="https://youtu.be/..." />
+                    </div>
+                    <div style="margin-top:0.75rem;">
+                        <button class="admin-btn admin-btn--move" :disabled="pendingSubmitting" @click="addPending()">{{ pendingSubmitting ? 'Adding…' : 'Add Entry' }}</button>
+                    </div>
+                </div>
+            </template>
+        </template>
+
         <!-- ── AUDIT LOG ── -->
         <template v-if="activeTab === 'audit'">
             <div class="admin-toolbar">
@@ -453,6 +543,53 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- ── PENDING EDIT MODAL ── -->
+    <div v-if="editPending" class="admin-edit-overlay" @click.self="editPending = null">
+        <div class="admin-edit-modal">
+            <div class="admin-edit-header">
+                <h2 class="admin-edit-title">Edit Pending Entry</h2>
+                <button class="admin-edit-close" @click="editPending = null">&times;</button>
+            </div>
+            <div class="admin-edit-form">
+                <div class="admin-edit-group">
+                    <label>Level Name</label>
+                    <input v-model="editPending.name" type="text" />
+                </div>
+                <div class="admin-edit-row">
+                    <div class="admin-edit-group">
+                        <label>Section</label>
+                        <select v-model="editPending.section" class="admin-select">
+                            <option value="placement">Pending Placement</option>
+                            <option value="movement">Pending Movement</option>
+                            <option value="indefinite">Pending Indefinitely</option>
+                        </select>
+                    </div>
+                    <div v-if="editPending.section === 'movement'" class="admin-edit-group">
+                        <label>Direction</label>
+                        <select v-model="editPending.direction" class="admin-select">
+                            <option value="up">Up</option>
+                            <option value="down">Down</option>
+                        </select>
+                    </div>
+                    <div v-else class="admin-edit-group">
+                        <label>Position Icon</label>
+                        <select v-model="editPending.tier" class="admin-select">
+                            <option v-for="t in placementTiers" :key="t" :value="t">{{ t === '?' ? '? (unknown)' : t }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="admin-edit-group">
+                    <label>Link (optional)</label>
+                    <input v-model="editPending.link" type="url" placeholder="https://youtu.be/..." />
+                </div>
+            </div>
+            <div class="admin-edit-footer">
+                <button class="admin-btn admin-btn--move" :disabled="pendingSubmitting" @click="saveEditPending()">{{ pendingSubmitting ? 'Saving…' : 'Save' }}</button>
+                <button class="admin-btn" @click="editPending = null">Cancel</button>
+            </div>
+        </div>
+    </div>
 </main>
     `,
     data: () => ({
@@ -480,6 +617,14 @@ export default {
         newEditor: { name: '', key: '', role: 'mod', link: '' },
         editorSubmitting: false,
         roleOptions: ROLE_OPTIONS,
+        // Pending
+        pendingEntries: [],
+        pendingLoaded: false,
+        pendingLoading: false,
+        editPending: null,
+        newPending: emptyPending(),
+        pendingSubmitting: false,
+        placementTiers: PLACEMENT_TIERS,
         // Audit Log
         auditLog: [],
         auditLoading: false,
@@ -493,6 +638,15 @@ export default {
                 l.name?.toLowerCase().includes(q) || l.author?.toLowerCase().includes(q)
             );
         },
+        sortedPending() {
+            const order = { placement: 0, movement: 1, indefinite: 2 };
+            const val = (p) => p === '?' ? 999999 : (parseInt(p) || 999999);
+            return [...this.pendingEntries].sort((a, b) => {
+                const sa = pendingSectionOf(a), sb = pendingSectionOf(b);
+                if (order[sa] !== order[sb]) return order[sa] - order[sb];
+                return val(a.placement) - val(b.placement) || (a.name || '').localeCompare(b.name || '');
+            });
+        },
     },
     watch: {
         'store.authKey'(val) {
@@ -501,6 +655,7 @@ export default {
         activeTab(tab) {
             if (tab === 'events' && !this.eventsLoaded) this.loadEvents();
             if (tab === 'editors' && !this.editorsLoaded) this.loadEditors();
+            if (tab === 'pending' && !this.pendingLoaded) this.loadPending();
             if (tab === 'audit' && !this.auditLoaded) this.loadAuditLog();
         },
     },
@@ -725,6 +880,92 @@ export default {
                 }
             } catch { alert('Network error.'); }
             this.editorSubmitting = false;
+        },
+
+        // ── PENDING ──
+        pendingSectionOf(p) { return pendingSectionOf(p); },
+        sectionLabel(section) {
+            return { placement: 'Placement', movement: 'Movement', indefinite: 'Indefinitely' }[section] || section;
+        },
+        // Turn the form's {section, tier, direction} into the API's {placement, indefinite}
+        pendingBody(f) {
+            const body = { name: (f.name || '').trim(), link: (f.link || '').trim() };
+            if (f.section === 'movement') {
+                body.placement = f.direction;
+                body.indefinite = 0;
+            } else {
+                body.placement = f.tier;
+                body.indefinite = f.section === 'indefinite' ? 1 : 0;
+            }
+            return body;
+        },
+        async loadPending() {
+            this.pendingLoading = true;
+            try {
+                const res = await fetch(`${API}/api/pending`);
+                this.pendingEntries = await res.json();
+            } catch { alert('Failed to load pending entries.'); }
+            this.pendingLoading = false;
+            this.pendingLoaded = true;
+        },
+        openEditPending(p) {
+            const section = pendingSectionOf(p);
+            this.editPending = {
+                id: p.id,
+                name: p.name || '',
+                section,
+                tier: section === 'movement' ? '?' : (p.placement || '?'),
+                direction: section === 'movement' ? ((p.placement || 'up').toLowerCase()) : 'up',
+                link: p.link || '',
+            };
+            this.pendingSubmitting = false;
+        },
+        async addPending() {
+            if (!this.newPending.name.trim()) { alert('Level name is required.'); return; }
+            this.pendingSubmitting = true;
+            try {
+                const res = await fetch(`${API}/api/admin/pending`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
+                    body: JSON.stringify(this.pendingBody(this.newPending)),
+                });
+                if (res.ok) {
+                    await this.loadPending();
+                    this.newPending = emptyPending();
+                } else {
+                    const body = await res.json().catch(() => ({}));
+                    alert(body.error || 'Failed to add entry.');
+                }
+            } catch { alert('Network error.'); }
+            this.pendingSubmitting = false;
+        },
+        async saveEditPending() {
+            if (!this.editPending.name.trim()) { alert('Level name is required.'); return; }
+            this.pendingSubmitting = true;
+            try {
+                const res = await fetch(`${API}/api/admin/pending`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
+                    body: JSON.stringify({ id: this.editPending.id, ...this.pendingBody(this.editPending) }),
+                });
+                if (res.ok) {
+                    await this.loadPending();
+                    this.editPending = null;
+                } else { alert('Failed to save entry.'); }
+            } catch { alert('Network error.'); }
+            this.pendingSubmitting = false;
+        },
+        async deletePending(p) {
+            if (!confirm(`Remove "${p.name}" from the Pending List?`)) return;
+            try {
+                const res = await fetch(`${API}/api/pending/${p.id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${store.authKey}` },
+                });
+                if (res.ok) {
+                    this.pendingEntries = this.pendingEntries.filter(e => e.id !== p.id);
+                } else { alert('Failed to delete entry.'); }
+            } catch { alert('Network error.'); }
         },
 
         // ── AUDIT LOG ──
