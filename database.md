@@ -37,6 +37,15 @@
 
 ## 2. IMPORTANT: the repo does not contain the real Worker
 
+> **Update:** a corrected, known-good copy of the Worker now lives in this repo at
+> **`worker/worker.js`** (kept for reference/version control — the *live* Worker is still
+> edited via the Cloudflare dashboard and is authoritative). This copy fixes the
+> `editor_keys` column bug (`name` → real column `editor_name`), adds the missing
+> `GET /api/auth/validate` login endpoint, and renames `GET /api/changes` →
+> `GET /api/recent-changes` to match the frontend. If you change the live Worker, update
+> this file too so they don't drift.
+
+
 Last session the Worker source was **reconstructed from memory and pasted into chat** for the
 user to deploy. That reconstruction is a best-effort copy, not the canonical file. Two
 endpoints the frontend actually depends on were **missing / renamed** in that reconstruction:
