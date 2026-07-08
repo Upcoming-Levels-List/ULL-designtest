@@ -119,7 +119,10 @@ export default {
     // ── GET /api/pending ───────────────────────────────────────
     if (method === 'GET' && path === '/api/pending') {
       const { results } = await db.prepare(
-        'SELECT * FROM pending ORDER BY created_at DESC'
+        // No ORDER BY created_at — that column may not exist on the real
+        // pending table (it holds name/placement/link rows). The frontend and
+        // admin panel sort the results themselves.
+        'SELECT * FROM pending'
       ).all();
       return json(results);
     }

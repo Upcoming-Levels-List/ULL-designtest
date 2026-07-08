@@ -142,7 +142,7 @@ Backs the **Pending List** page (`js/pages/ListPending.js`, `MobilePending.js`) 
 | `author`, `reason` | TEXT | legacy submission fields |
 | `status` | TEXT | legacy: `pending` / editor-set |
 | `notes` | TEXT | legacy editor notes |
-| `created_at` | TEXT/timestamp | |
+| `created_at` | TEXT/timestamp | legacy; **may not exist** on the real table. ⚠️ `GET /api/pending` must NOT `ORDER BY created_at` — that threw Error 1101 and emptied the Pending List. It now does a plain `SELECT * FROM pending` and the frontend/admin sort client-side. |
 
 **Which Pending List section a row shows in** (same logic in frontend + admin):
 - `placement` is `up`/`down` → **Pending Movements**
