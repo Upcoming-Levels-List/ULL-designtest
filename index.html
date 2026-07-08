@@ -128,7 +128,7 @@
             <div class="settings-popup__item">
                 <span class="settings-popup__label">
                     Level Coloring
-                    <a class="settings-popup__question" href="#/information" target="_blank" title="What is Level Coloring?">?</a>
+                    <a class="settings-popup__question" href="/information" target="_blank" title="What is Level Coloring?">?</a>
                 </span>
                 <div class="settings-popup__toggle">
                     <button class="settings-popup__toggle-btn" :class="{ active: store.levelColoring }" @click="store.levelColoring = true; store.saveSetting('levelColoring', true)">ON</button>
@@ -167,7 +167,7 @@
             <input type="checkbox" v-model="store.coloringHintNeverShow" />
             Don't show again
         </label>
-        <a class="coloring-hint__btn" href="#/information" target="_blank" @click="store.dismissColoringHint()">Go to Information</a>
+        <a class="coloring-hint__btn" href="/information" target="_blank" @click="store.dismissColoringHint()">Go to Information</a>
     </div>
 
     <!-- Page Content (PC) -->

@@ -35,11 +35,19 @@ export const store = Vue.reactive({
     },
 });
 
+// Migrate old hash URLs to clean URLs so existing bookmarks keep working.
+// e.g. ull.pages.dev/#/list  ->  ull.pages.dev/list ,  ull.pages.dev/#/  ->  ull.pages.dev/
+// Must run BEFORE the router is created so it initializes on the correct path.
+if (window.location.hash.startsWith('#/')) {
+    const cleanPath = window.location.hash.slice(1);
+    history.replaceState(null, '', cleanPath || '/');
+}
+
 const app = Vue.createApp({
     data: () => ({ store }),
 });
 const router = VueRouter.createRouter({
-    history: VueRouter.createWebHashHistory(),
+    history: VueRouter.createWebHistory(),
     routes,
 });
 
@@ -108,6 +116,49 @@ router.afterEach((to) => {
             if (el) el.scrollTop = 0;
         });
     }
+});
+
+// ── SEO: keep <title> and canonical URL in sync with the current route ──
+const SITE_ORIGIN = 'https://ull.pages.dev';
+// Mobile routes render the same content as their desktop counterparts; point
+// their canonical URL at the desktop version so Google doesn't see duplicates.
+const MOBILE_TO_DESKTOP = {
+    '/mobile/home': '/home',
+    '/mobile/all': '/list',
+    '/mobile/main': '/listmain',
+    '/mobile/future': '/listfuture',
+    '/mobile/leaderboard': '/leaderboard',
+    '/mobile/upcoming': '/upcoming',
+    '/mobile/pending': '/pending',
+    '/mobile/info': '/information',
+    '/mobile/events': '/events',
+};
+const PAGE_TITLES = {
+    '/home': 'Upcoming Levels List',
+    '/list': 'All Levels — Upcoming Levels List',
+    '/listmain': 'Main List — Upcoming Levels List',
+    '/listfuture': 'Future List — Upcoming Levels List',
+    '/leaderboard': 'Leaderboard — Upcoming Levels List',
+    '/upcoming': 'Upcoming Levels — Upcoming Levels List',
+    '/pending': 'Pending List — Upcoming Levels List',
+    '/information': 'Information — Upcoming Levels List',
+    '/events': 'Events — Upcoming Levels List',
+    '/generator': 'Level Generator — Upcoming Levels List',
+    '/admin': 'Admin — Upcoming Levels List',
+};
+
+router.afterEach((to) => {
+    const desktopPath = MOBILE_TO_DESKTOP[to.path] || to.path;
+    document.title = PAGE_TITLES[desktopPath] || 'Page Not Found — Upcoming Levels List';
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+    }
+    // /home is the same page as the root "/", so canonicalize it to "/"
+    canonical.setAttribute('href', SITE_ORIGIN + (desktopPath === '/home' ? '/' : desktopPath));
 });
 
 // Shift+P+O+U to force-show coloring hint popup

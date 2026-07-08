@@ -10,6 +10,7 @@ import Home from './pages/Home.js';
 import UpcomingLevels from './pages/UpcomingLevels.js';
 import Information from './pages/Information.js';
 import Events from './pages/Events.js';
+import NotFound from './pages/NotFound.js';
 
 import MobileList from './pages/mobile/MobileList.js';
 import MobileLeaderboard from './pages/mobile/MobileLeaderboard.js';
@@ -48,4 +49,6 @@ export default [
             { path: 'events', component: MobileEvents },
         ],
     },
+    // Catch-all: any unknown URL shows the 404 page
+    { path: '/:pathMatch(.*)*', component: NotFound },
 ];
