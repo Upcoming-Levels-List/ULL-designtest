@@ -59,6 +59,19 @@ export default {
                             </div>
                             <p v-else class="pending-empty">No pending removals.</p>
                         </div>
+
+                        <!-- Indefinitely -->
+                        <div class="pending-card">
+                            <div class="pending-card__title">Pending Indefinitely</div>
+                            <div v-if="pendingIndefinite.length > 0" class="pending-rows">
+                                <div v-for="level in pendingIndefinite" class="pending-row">
+                                    <img :src="getIconPath(level.placement === '?' ? 'question' : level.placement)" alt="" />
+                                    <a v-if="level.link" :href="level.link">{{ level.name }}</a>
+                                    <span v-else>{{ level.name }}</span>
+                                </div>
+                            </div>
+                            <p v-else class="pending-empty">No levels pending indefinitely.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -70,6 +83,7 @@ export default {
     data: () => ({
         pendingPlacements: [],
         pendingMovements: [],
+        pendingIndefinite: [],
         removalCandidates: [],
         loading: true,
         store,
@@ -78,15 +92,21 @@ export default {
         const [pending, list] = await Promise.all([fetchPending(), fetchList()]);
 
         if (pending) {
-            this.pendingPlacements = pending
-                .filter(p => !["up", "down"].includes(p.placement.toLowerCase()))
-                .sort((a, b) => {
-                    const getVal = (p) => p === "?" ? 999999 : (parseInt(p) || 999999);
-                    return getVal(a.placement) - getVal(b.placement) || a.name.localeCompare(b.name);
-                });
+            const isMove = (p) => ["up", "down"].includes((p.placement || "").toLowerCase());
+            const byPlacement = (a, b) => {
+                const getVal = (p) => p === "?" ? 999999 : (parseInt(p) || 999999);
+                return getVal(a.placement) - getVal(b.placement) || a.name.localeCompare(b.name);
+            };
 
-            this.pendingMovements = pending
-                .filter(p => ["up", "down"].includes(p.placement.toLowerCase()));
+            this.pendingPlacements = pending
+                .filter(p => !isMove(p) && !p.indefinite)
+                .sort(byPlacement);
+
+            this.pendingMovements = pending.filter(isMove);
+
+            this.pendingIndefinite = pending
+                .filter(p => !isMove(p) && p.indefinite)
+                .sort(byPlacement);
         }
 
         if (list) {

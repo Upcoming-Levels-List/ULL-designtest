@@ -111,22 +111,46 @@ Available **tags** (from `js/pages/Admin.js` `AVAILABLE_TAGS`):
 The `Layout` tag has special meaning in the frontend age-filtering (see section 7).
 
 ### `editor_keys`
-| Column     | Type | Notes |
-|------------|------|-------|
-| `name`     | TEXT | display name, shown in "List Editors" and audit log |
-| `key_hash` | TEXT | SHA-256 hex of the editor's API key |
-| `role`     | TEXT | one of `owner, admin, seniormod, mod, dev` |
-| `link`     | TEXT | **added** — profile URL (YouTube etc.), may be empty |
+**Confirmed live schema** (via `PRAGMA table_info(editor_keys)` on 2026-07-08):
+
+| Column        | Type    | Notes |
+|---------------|---------|-------|
+| `id`          | INTEGER | PRIMARY KEY (autoincrement) |
+| `editor_name` | TEXT    | display name, shown in "List Editors" and audit log. **The column is `editor_name`, NOT `name`.** |
+| `key_hash`    | TEXT    | SHA-256 hex of the editor's API key |
+| `role`        | TEXT    | one of `owner, admin, seniormod, mod, dev` (DEFAULT `'mod'`) |
+| `link`        | TEXT    | profile URL (YouTube etc.), DEFAULT `''` |
+
+> ⚠️ **Critical gotcha (caused the editor-list / login outage):** the real column is
+> **`editor_name`**. An earlier Worker reconstruction queried `name` everywhere, which
+> throws a SQLite error → Cloudflare **Error 1101** on `/api/editors`, and broke `authed()`
+> (so *all* logged-in writes failed). The corrected `worker/worker.js` uses `editor_name`
+> in every query and exposes it to the frontend as `name` via
+> `SELECT editor_name AS name` (the frontend expects a `name` field). Do not "fix" this by
+> renaming the DB column — conform the Worker to the DB, not the other way around.
 
 ### `pending`
-Public "suggest a level" submissions.
+Backs the **Pending List** page (`js/pages/ListPending.js`, `MobilePending.js`) and the admin
+**Pending** tab. Also holds public "suggest a level" submissions (legacy; no live submit UI).
 | Column | Type | Notes |
 |--------|------|-------|
 | `id` | INTEGER PK AUTOINCREMENT | |
-| `name`, `author`, `link`, `reason` | TEXT | submitted fields |
-| `status` | TEXT | `pending` / editor-set |
-| `notes` | TEXT | editor notes |
+| `name` | TEXT | level name |
+| `placement` | TEXT | drives the row icon. A tier (`1,10,20,30,50,75`), `?` (question.svg), or `up`/`down` (move-*.svg). |
+| `link` | TEXT | optional level/video link |
+| `indefinite` | INTEGER | **added 2026-07-08** — 0/1. `1` = show in the "Pending Indefinitely" section |
+| `author`, `reason` | TEXT | legacy submission fields |
+| `status` | TEXT | legacy: `pending` / editor-set |
+| `notes` | TEXT | legacy editor notes |
 | `created_at` | TEXT/timestamp | |
+
+**Which Pending List section a row shows in** (same logic in frontend + admin):
+- `placement` is `up`/`down` → **Pending Movements**
+- else if `indefinite = 1` → **Pending Indefinitely**
+- else → **Pending Placements**
+
+(Pending **Removals** is a 4th section but is *computed on the frontend* from stale levels —
+`lastUpd` ≥ 1 year old & unverified — it is **not** stored in this table.)
 
 ### `config`
 Key/value store for singletons (Level of the Month, Closest to Verification).
@@ -234,6 +258,10 @@ missing.
 - `PATCH /api/editors` — body `{name, role, link}`; updates role/link.
 - `DELETE /api/editors/:name` — revokes an editor's key.
 - `POST /api/admin/add-key` — body `{name, key, role, link}`; hashes key, inserts editor.
+- `POST /api/admin/pending` — body `{name, placement, link, indefinite}`; inserts a Pending
+  List entry (admin Pending tab).
+- `PUT /api/admin/pending` — body `{id, name, placement, link, indefinite}`; updates one.
+  (Delete reuses `DELETE /api/pending/:id`.)
 - `POST /api/admin/bootstrap` — body `{secret, name, key, role, link}`; one-time first-admin
   creation, gated by the `BOOTSTRAP_SECRET` Worker env var. See section 8.
 
@@ -247,7 +275,7 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
 |------|-------|
 | `js/content.js` | `/api/list`, `/api/editors`, `/api/pending`, `/api/recent-changes`, `/api/level-month`, `/api/level-verif` |
 | `js/components/AdminLogin.js` | `/api/auth/validate` |
-| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/admin/add-key`, `/api/audit-log` |
+| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/admin/add-key`, `/api/pending` (GET), `/api/admin/pending` (POST/PUT), `/api/pending/:id` (DELETE), `/api/audit-log` |
 | `js/pages/LevelGenerator.js` | `/api/levels` (PUT) |
 | `js/pages/Events.js` | via `content.js`: `/api/level-month`, `/api/level-verif`, `/api/list` |
 
@@ -270,6 +298,35 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
 - **Version**: currently **v2.0.0** (shown in `index.html` sidebar and `js/pages/Mobile.js`).
 - **Partners section**: hidden with `v-if="false"` (kept in source) on Home and MobileHome.
 
+### Routing & SEO (added 2026-07-08)
+- **History-mode routing**: the router uses `VueRouter.createWebHistory()` (in `js/main.js`),
+  so URLs are clean (`/list`, `/events`) with **no `#`**. It used to be
+  `createWebHashHistory()` (`/#/list`). This is what makes individual pages indexable by
+  Google.
+- **`_redirects`** (repo root): Cloudflare Pages SPA fallback — `/*  /index.html  200`.
+  **Required.** Without it, refreshing or deep-linking any route (e.g. `/events`) returns a
+  server 404. Real files (`/css`, `/js`, `/assets`, `robots.txt`, `sitemap.xml`, images) are
+  served before this rule. This only takes effect on a Cloudflare Pages deploy, not locally.
+- **Old-hash migration**: on load, `js/main.js` rewrites any `#/…` URL to its clean path via
+  `history.replaceState`, so old bookmarks (`/#/list`) still work.
+- **404 page**: `js/pages/NotFound.js`, wired as the catch-all route
+  `{ path: '/:pathMatch(.*)*', component: NotFound }` (last entry in `js/routes.js`). Note:
+  the mobile auto-redirect in `main.js` `beforeEach` sends mobile users hitting unknown URLs
+  to `/mobile/home` instead of the 404 page (desktop users see the 404). NotFound uses inline
+  styles and must NOT put bare text in a direct child `<div>` of `<main>` — the global rule
+  `main > div { overflow-y: auto }` (`css/main.css`) would add a stray scrollbar; content is
+  wrapped in a container with `overflow:visible`.
+- **Per-route `<title>` + canonical**: an `afterEach` hook in `js/main.js` sets a unique
+  `document.title` and updates `<link rel="canonical">` per route (mobile routes canonicalize
+  to their desktop equivalent). Needed because all routes serve the same `index.html`; a
+  static canonical would otherwise mark every page a duplicate of home.
+- **SEO tags / files**: `index.html` `<head>` has `<meta name="description">` (was missing —
+  its absence let search engines auto-generate junk snippets from level records), Open
+  Graph + Twitter card tags, and a `WebSite` JSON-LD block. `robots.txt` + `sitemap.xml` list
+  the indexable pages. All these hard-code the domain **`https://ull.pages.dev`** — if the
+  site moves to a custom domain, update: the `<head>` canonical/OG/Twitter URLs, `SITE_ORIGIN`
+  in `js/main.js`, `robots.txt`, and `sitemap.xml`.
+
 ---
 
 ## 8. Operational runbook (things done "behind the scenes", not in the repo)
@@ -284,6 +341,11 @@ ALTER TABLE editor_keys ADD COLUMN link TEXT DEFAULT '';
 -- levels extras
 ALTER TABLE levels ADD COLUMN frameCounter TEXT;
 ALTER TABLE levels ADD COLUMN benchmark INTEGER DEFAULT 0;
+
+-- pending extras (Pending List entries + the "Pending Indefinitely" section)
+ALTER TABLE pending ADD COLUMN placement  TEXT DEFAULT '?';   -- may already exist
+ALTER TABLE pending ADD COLUMN link       TEXT DEFAULT '';    -- may already exist
+ALTER TABLE pending ADD COLUMN indefinite INTEGER DEFAULT 0;  -- NEW: powers "Pending Indefinitely"
 
 -- singletons + logging
 CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT);

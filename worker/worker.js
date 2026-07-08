@@ -341,6 +341,35 @@ export default {
       return json({ ok: true });
     }
 
+    // ── POST /api/admin/pending (create a Pending List entry) ──
+    // placement drives the icon (a tier number, "?", or "up"/"down").
+    // indefinite = 1 puts the entry in the "Pending Indefinitely" section.
+    if (method === 'POST' && path === '/api/admin/pending') {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const { name, placement, link, indefinite } = await req.json();
+      if (!name) return err('name required');
+      await db.prepare(
+        'INSERT INTO pending (name, placement, link, indefinite) VALUES (?, ?, ?, ?)'
+      ).bind(name, placement || '?', link || '', indefinite ? 1 : 0).run();
+      await log(db, editor, 'PENDING_ADD', name, `placement=${placement || '?'} indefinite=${indefinite ? 1 : 0}`);
+      return json({ ok: true });
+    }
+
+    // ── PUT /api/admin/pending (update a Pending List entry) ──
+    if (method === 'PUT' && path === '/api/admin/pending') {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const { id, name, placement, link, indefinite } = await req.json();
+      if (!id) return err('id required');
+      if (!name) return err('name required');
+      await db.prepare(
+        'UPDATE pending SET name = ?, placement = ?, link = ?, indefinite = ? WHERE id = ?'
+      ).bind(name, placement || '?', link || '', indefinite ? 1 : 0, id).run();
+      await log(db, editor, 'PENDING_EDIT', String(id), `${name} placement=${placement || '?'} indefinite=${indefinite ? 1 : 0}`);
+      return json({ ok: true });
+    }
+
     // ── PUT /api/config ────────────────────────────────────────
     if (method === 'PUT' && path === '/api/config') {
       const editor = await authed(req, db);

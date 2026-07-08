@@ -176,13 +176,14 @@ export default {
             mobileStore.editors = await fetchEditors() || [];
             const pending = await fetchPending();
             if (pending) {
-                mobileStore.pendingPlacements = pending
-                    .filter(p => !['up', 'down'].includes(p.placement.toLowerCase()))
-                    .sort((a, b) => {
-                        const v = p => p === '?' ? 999999 : (parseInt(p) || 999999);
-                        return v(a.placement) - v(b.placement) || a.name.localeCompare(b.name);
-                    });
-                mobileStore.pendingMovements = pending.filter(p => ['up', 'down'].includes(p.placement.toLowerCase()));
+                const isMove = p => ['up', 'down'].includes((p.placement || '').toLowerCase());
+                const byPlacement = (a, b) => {
+                    const v = p => p === '?' ? 999999 : (parseInt(p) || 999999);
+                    return v(a.placement) - v(b.placement) || a.name.localeCompare(b.name);
+                };
+                mobileStore.pendingPlacements = pending.filter(p => !isMove(p) && !p.indefinite).sort(byPlacement);
+                mobileStore.pendingMovements = pending.filter(isMove);
+                mobileStore.pendingIndefinite = pending.filter(p => !isMove(p) && p.indefinite).sort(byPlacement);
             }
             // Auto-assign Open Verification tag
             mobileStore.rawList.forEach(item => {
