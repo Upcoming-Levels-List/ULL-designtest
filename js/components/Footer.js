@@ -12,16 +12,16 @@ export default {
         <div class="site-footer-links">
             <div class="site-footer-col">
                 <h4>Navigate</h4>
-                <a href="#/list">All Levels</a>
-                <a href="#/leaderboard">Leaderboard</a>
-                <a href="#/pending">Pending List</a>
-                <a href="#/upcoming">Upcoming Levels</a>
+                <router-link to="/list">All Levels</router-link>
+                <router-link to="/leaderboard">Leaderboard</router-link>
+                <router-link to="/pending">Pending List</router-link>
+                <router-link to="/upcoming">Upcoming Levels</router-link>
             </div>
             <div class="site-footer-col">
                 <h4>Community</h4>
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
                 <a href="#" @click.prevent="store.comingSoon = true">Telegram</a>
-                <a href="#/information" target="_blank">Full Guidelines</a>
+                <a href="/information" target="_blank">Full Guidelines</a>
             </div>
             <div class="site-footer-col">
                 <h4>Contact</h4>
