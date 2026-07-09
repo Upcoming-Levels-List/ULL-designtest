@@ -19,14 +19,8 @@ export default {
             </div>
             <div class="site-footer-col">
                 <h4>Community</h4>
-                <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
+                <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord</a>
                 <a href="#" @click.prevent="store.comingSoon = true">Telegram</a>
-                <a href="/information" target="_blank">Full Guidelines</a>
-            </div>
-            <div class="site-footer-col">
-                <h4>Contact</h4>
-                <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Support</a>
-                <a href="https://www.youtube.com/channel/UC72Ceml55mVisJNEByLBHPA" target="_blank">YouTube</a>
             </div>
         </div>
     </div>
