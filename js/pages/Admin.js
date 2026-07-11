@@ -5,7 +5,7 @@ import Footer from '../components/Footer.js';
 const API = 'https://d1-wrkr.ullteam.workers.dev';
 
 const AVAILABLE_TAGS = [
-    'Public', 'Finished', 'Verifying', 'Layout', 'Unrated', 'Rated',
+    'Public', 'Finished', 'Layout', 'Unrated', 'Rated',
     'Medium', 'Long', 'XL', 'XXL', 'NC', 'Remake', 'NONG', 'Quality',
 ];
 

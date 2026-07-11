@@ -68,6 +68,10 @@ export default {
         <div class="level-container-new surface">
             <div class="level" v-if="level">
                 <h1>{{ level.name }}</h1>
+                <div v-if="level.allLevelsRank || level.futureRank" class="cross-list-ranks" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.9rem;opacity:0.45;margin:0.1rem 0 0.5rem;">
+                    <span v-if="level.allLevelsRank">#{{ level.allLevelsRank }} in All Levels</span>
+                    <span v-if="level.futureRank">{{ level.allLevelsRank ? '· ' : '' }}#{{ level.futureRank }} in Future List</span>
+                </div>
                 <LevelAuthors :author="level.author" :creators="level.creators" :verifier="level.verifier" :isVerified="level.isVerified"></LevelAuthors>
                 <div style="display:flex; flex-wrap:wrap;">
                     <div v-for="tag in level.tags" class="tag">{{tag}}</div>
@@ -249,9 +253,19 @@ export default {
     },
     async mounted() {
         const list1 = await fetchList();
+        if (list1) {
+            let mainRank = 0, futureRank = 0;
+            list1.forEach(([lvl, e], i) => {
+                if (e || !lvl) return;
+                lvl.allLevelsRank = i + 1;
+                if (lvl.isMain || lvl.isVerified) { mainRank++; lvl.mainRank = mainRank; }
+                if (lvl.isFuture || lvl.isVerified) { futureRank++; lvl.futureRank = futureRank; }
+            });
+        }
         this.list = [];
         for (const key in list1) {
-            if (list1[key][0]?.isMain) this.list.push(list1[key]);
+            // Verified levels always appear on the Main List, even if isMain is false.
+            if (list1[key][0]?.isMain || list1[key][0]?.isVerified) this.list.push(list1[key]);
         }
         this.editors = await fetchEditors();
         if (!this.list.length) {
@@ -269,6 +283,12 @@ export default {
                     if (!level.tags) level.tags = [];
                     if (!level.tags.includes('Pending Removal')) level.tags.push('Pending Removal');
                 }
+                // Auto "Verifying" tag — same trigger as the orange/red name coloring
+                // (decoration finished + meaningful verification progress).
+                if (!level.tags) level.tags = [];
+                const beingVerified = !level.isVerified && (level.percentFinished ?? 0) === 100 && this.verifyProgress(level) >= 30;
+                if (beingVerified && !level.tags.includes('Verifying')) level.tags.push('Verifying');
+                if (!beingVerified && level.tags.includes('Verifying')) level.tags = level.tags.filter(t => t !== 'Verifying');
             });
         }
         this.applyFilters();
@@ -337,6 +357,14 @@ export default {
             threshold.setMonth(threshold.getMonth() - (hasLayoutTag ? 12 : 15));
             return levelDate < threshold;
         },
+        verifyProgress(level) {
+            const recordPercent = Math.max(0, ...((level.records || []).map(r => Number(r.percent) || 0)));
+            const runPercent = Math.max(0, ...((level.run || []).map(r => {
+                const parts = String(r.percent).split('-').map(Number);
+                return (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? Math.abs(parts[1] - parts[0]) : 0;
+            })));
+            return Math.max(recordPercent, runPercent);
+        },
         applyFilters() {
             if (!this.list) return;
             this.list.forEach(item => {
@@ -350,6 +378,12 @@ export default {
                     if (!level.tags) level.tags = [];
                     if (!level.tags.includes('Pending Removal')) level.tags.push('Pending Removal');
                 }
+                // Auto "Verifying" tag — same trigger as the orange/red name coloring
+                // (decoration finished + meaningful verification progress).
+                if (!level.tags) level.tags = [];
+                const beingVerified = !level.isVerified && (level.percentFinished ?? 0) === 100 && this.verifyProgress(level) >= 30;
+                if (beingVerified && !level.tags.includes('Verifying')) level.tags.push('Verifying');
+                if (!beingVerified && level.tags.includes('Verifying')) level.tags = level.tags.filter(t => t !== 'Verifying');
             });
 
             const activeFilters = [...this.statusFilters, ...this.lengthFilters, ...this.otherFilters].filter(f => f.active);

@@ -209,7 +209,7 @@ export default {
             },
             creatorsStr: '',
             availableTags: [
-                'Public', 'Finished', 'Verifying', 'Layout', 'Unrated', 'Rated',
+                'Public', 'Finished', 'Layout', 'Unrated', 'Rated',
                 'Medium', 'Long', 'XL', 'XXL', 'NC', 'Remake', 'NONG', 'Quality',
             ],
         };

@@ -97,8 +97,8 @@ export default {
     }),
     computed: {
         displayList() {
-            if (this.pageType === 'main') return mobileStore.rawList.filter(([l]) => l?.isMain);
-            if (this.pageType === 'future') return mobileStore.rawList.filter(([l]) => l?.isFuture);
+            if (this.pageType === 'main') return mobileStore.rawList.filter(([l]) => l?.isMain || l?.isVerified);
+            if (this.pageType === 'future') return mobileStore.rawList.filter(([l]) => l?.isFuture || l?.isVerified);
             return mobileStore.rawList;
         },
         noResults() {

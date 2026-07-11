@@ -106,9 +106,12 @@ Empty `records`/`run` are stored as a single sentinel row `{user:'none',...}` so
 can distinguish "no records" from "not loaded". The admin panel filters `user === 'none'` out
 on edit and re-adds the sentinel on save.
 
-Available **tags** (from `js/pages/Admin.js` `AVAILABLE_TAGS`):
-`Public, Finished, Verifying, Layout, Unrated, Rated, Medium, Long, XL, XXL, NC, Remake, NONG, Quality`.
+Available **manual tags** (from `js/pages/Admin.js` `AVAILABLE_TAGS`):
+`Public, Finished, Layout, Unrated, Rated, Medium, Long, XL, XXL, NC, Remake, NONG, Quality`.
 The `Layout` tag has special meaning in the frontend age-filtering (see section 7).
+Some tags are **auto-assigned by the frontend** and are NOT manually editable: `Open Verification`
+(verifier == "open verification"), `Pending Removal` (stale & unverified), and `Verifying`
+(see section 7). Auto tags are computed on load and override any stored value.
 
 ### `editor_keys`
 **Confirmed live schema** (via `PRAGMA table_info(editor_keys)` on 2026-07-08):
@@ -290,6 +293,18 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
   - On Main/Future lists, old unverified levels (`isOldLevel && !isVerified`) are **hidden**.
   - Level names show `🚫` at 1y and `🚫🚫` at the "very old" threshold (gated by
     `store.levelColoring`).
+- **Verified levels join Main & Future** (`List.js`/`ListMain.js`/`ListFuture.js`,
+  `MobileList.js`): any level with `isVerified == true` is shown on the Main List and Future
+  List regardless of its stored `isMain`/`isFuture` flags (membership filter is
+  `isMain || isVerified` / `isFuture || isVerified`).
+- **Automatic `Verifying` tag** (`List.js`/`ListMain.js`/`ListFuture.js` auto-tag loops,
+  `Mobile.js`): applied when `!isVerified && percentFinished === 100 && verifyProgress >= 30`
+  — the exact condition that colors a level's name orange (≥30) or red (≥60).
+  `verifyProgress` = max of best record % and best run span. Fully automatic (removed from the
+  admin/generator tag pickers); the frontend adds/removes it on load.
+- **Cross-list position** (`List.js`/`ListMain.js`/`ListFuture.js`): each level page shows the
+  level's rank in the other two lists (e.g. "#12 in All Levels · #3 in Future List"), computed
+  as `allLevelsRank` / `mainRank` / `futureRank` on mount, mirroring Upcoming Levels.
 - **Frame Windows Counter**: if `level.frameCounter` is set, the level card shows a
   "Frame Windows Counter" row with a "Watch Here" link (List/ListMain/ListFuture pages).
 - **Coming Soon popup**: Vue 3 templates can't call `window.alert()`. A shared reactive flag
