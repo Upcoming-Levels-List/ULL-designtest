@@ -61,23 +61,28 @@ export default {
 
             <!-- Filters -->
             <div v-if="mobileStore.openMenu === 'filters'" class="mob-filters-popup">
-                <div class="mob-filters-nums">
-                    <div class="mob-filter-num-group">
-                        <label>Min Decoration %</label>
-                        <input type="number" min="0" max="100" v-model.number="mobileStore.minDecoration" placeholder="0" />
+                <div class="mob-filters-scroll" ref="filtersScroll" @scroll="onFiltersScroll">
+                    <div class="mob-filters-nums">
+                        <div class="mob-filter-num-group">
+                            <label>Min Decoration %</label>
+                            <input type="number" min="0" max="100" v-model.number="mobileStore.minDecoration" placeholder="0" />
+                        </div>
+                        <div class="mob-filter-num-group">
+                            <label>Min Verification %</label>
+                            <input type="number" min="0" max="100" v-model.number="mobileStore.minVerification" placeholder="0" />
+                        </div>
                     </div>
-                    <div class="mob-filter-num-group">
-                        <label>Min Verification %</label>
-                        <input type="number" min="0" max="100" v-model.number="mobileStore.minVerification" placeholder="0" />
-                    </div>
+                    <template v-for="(item, index) in mobileStore.filtersList" :key="index">
+                        <div v-if="item.separator" class="mob-filter-separator"></div>
+                        <div v-else class="mob-filter-tag" :class="{ active: item.active }" @click="toggleFilter(index)">
+                            <div class="mob-check"></div>
+                            {{ item.name }}
+                        </div>
+                    </template>
                 </div>
-                <template v-for="(item, index) in mobileStore.filtersList" :key="index">
-                    <div v-if="item.separator" class="mob-filter-separator"></div>
-                    <div v-else class="mob-filter-tag" :class="{ active: item.active }" @click="toggleFilter(index)">
-                        <div class="mob-check"></div>
-                        {{ item.name }}
-                    </div>
-                </template>
+                <div class="mob-filters-scroll-hint" :class="{ 'is-hidden': filtersAtEnd }" aria-hidden="true">
+                    <span class="mob-filters-scroll-chevron">⌄</span>
+                </div>
                 <div class="mob-filter-actions">
                     <button class="mob-filter-apply" @click="applyFilters(); mobileStore.openMenu = null">Apply Filters</button>
                     <button class="mob-filter-reset" @click="doResetFilters()">Reset Filters</button>
@@ -143,9 +148,8 @@ export default {
                 </div>
                 <div class="mob-footer-col">
                     <h4>Community</h4>
-                    <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord Server</a>
+                    <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord</a>
                     <a href="#" @click.prevent="store.comingSoon = true">Telegram</a>
-                    <a href="https://docs.google.com/document/d/13dmRfx2OCiLEaM2EcgEd-mKdok11_k8k7HsA5a-K6nY/edit?usp=sharing" target="_blank">Full Guidelines Doc</a>
                 </div>
             </div>
             <div class="mob-footer-bottom">
@@ -159,6 +163,7 @@ export default {
     data: () => ({
         store,
         mobileStore,
+        filtersAtEnd: false,
     }),
     async mounted() {
         try {
@@ -279,6 +284,15 @@ export default {
                 if (this.$refs.mobContent) this.$refs.mobContent.scrollTop = 0;
             });
         },
+        'mobileStore.openMenu'(val) {
+            if (val === 'filters') {
+                this.filtersAtEnd = false;
+                this.$nextTick(() => {
+                    const el = this.$refs.filtersScroll;
+                    if (el) this.filtersAtEnd = el.scrollHeight - el.clientHeight <= 4;
+                });
+            }
+        },
     },
     methods: {
         applyFilters,
@@ -289,6 +303,10 @@ export default {
             mobileStore.filtersList[index].active = !mobileStore.filtersList[index].active;
         },
         doResetFilters() { resetFilters(); mobileStore.openMenu = null; },
+        onFiltersScroll(e) {
+            const el = e.target;
+            this.filtersAtEnd = el.scrollTop + el.clientHeight >= el.scrollHeight - 4;
+        },
         setBenchmarkMode(value) {
             store.benchmarkMode = value;
             mobileStore.benchmarkMode = value;

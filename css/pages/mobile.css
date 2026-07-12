@@ -53,6 +53,29 @@
 
 /* Filters popup */
 .mob-filters-popup { display: flex; flex-direction: column; gap: 0.5rem; }
+.mob-filters-scroll {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    max-height: 46vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+/* Scroll indicator: fade + bouncing chevron, hidden once the list bottom is reached.
+   The bounded scroll area above keeps the Apply/Reset buttons always visible. */
+.mob-filters-scroll-hint {
+    position: relative; height: 1.5rem; margin-top: -1.7rem;
+    display: flex; align-items: flex-end; justify-content: center;
+    pointer-events: none; flex-shrink: 0;
+    background: linear-gradient(to bottom, transparent, var(--color-background) 75%);
+    transition: opacity 0.2s ease;
+}
+.mob-filters-scroll-hint.is-hidden { opacity: 0; }
+.mob-filters-scroll-chevron {
+    font-size: 1.2rem; line-height: 1; font-weight: 700; opacity: 0.55;
+    color: var(--color-primary);
+    animation: mobFiltersBounce 1.4s ease-in-out infinite;
+}
+@keyframes mobFiltersBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
+}
 .mob-filters-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
 .mob-filter-num-group { display: flex; flex-direction: column; gap: 0.35rem; }
 .mob-filter-num-group label { font-size: 12px; font-weight: 500; opacity: 0.7; }

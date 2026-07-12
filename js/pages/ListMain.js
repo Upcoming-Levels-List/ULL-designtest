@@ -60,29 +60,29 @@ export default {
                     </td>
                 </tr>
             </table>
-            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;gap:1.25rem;text-align:center;color:var(--color-on-background);">
-                <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0.25;">
-                    <span style="font-size:2rem;">🔍</span>
-                    <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem 0;gap:0.5rem;opacity:0.25;text-align:center;color:var(--color-on-background);">
+                <span style="font-size:2rem;">🔍</span>
+                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+            </div>
+            <div v-if="pendingSuggestion && (noResults || visibleCount <= 3)" style="display:flex;flex-direction:column;align-items:center;gap:0.55rem;margin:1.5rem auto 1rem;max-width:26rem;padding:1.25rem 1.5rem;border:1px solid rgba(128,128,128,0.25);border-radius:0.6rem;font-family:'Lexend Deca',sans-serif;text-align:center;color:var(--color-on-background);">
+                <p style="font-size:0.82rem;opacity:0.55;margin:0;">Maybe you were searching for this:</p>
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <img :src="pendingIcon(pendingSuggestion)" alt="" style="width:1.5rem;height:1.5rem;flex-shrink:0;" />
+                    <a v-if="pendingSuggestion.link" :href="pendingSuggestion.link" target="_blank" style="font-size:1.1rem;font-weight:700;text-decoration:underline;">{{ pendingSuggestion.name }}?</a>
+                    <span v-else style="font-size:1.1rem;font-weight:700;">{{ pendingSuggestion.name }}?</span>
                 </div>
-                <div v-if="pendingSuggestion" style="display:flex;flex-direction:column;align-items:center;gap:0.55rem;max-width:26rem;padding:1.25rem 1.5rem;border:1px solid rgba(128,128,128,0.25);border-radius:0.6rem;font-family:'Lexend Deca',sans-serif;">
-                    <p style="font-size:0.82rem;opacity:0.55;margin:0;">Maybe you were searching for this:</p>
-                    <div style="display:flex;align-items:center;gap:0.5rem;">
-                        <img :src="pendingIcon(pendingSuggestion)" alt="" style="width:1.5rem;height:1.5rem;flex-shrink:0;" />
-                        <a v-if="pendingSuggestion.link" :href="pendingSuggestion.link" target="_blank" style="font-size:1.1rem;font-weight:700;text-decoration:underline;">{{ pendingSuggestion.name }}?</a>
-                        <span v-else style="font-size:1.1rem;font-weight:700;">{{ pendingSuggestion.name }}?</span>
-                    </div>
-                    <p style="font-size:0.8rem;opacity:0.6;margin:0;">{{ pendingDesc(pendingSuggestion) }}</p>
-                    <p style="font-size:0.85rem;opacity:0.8;margin:0;">The level is currently in <router-link to="/pending" style="text-decoration:underline;">Pending List</router-link>.</p>
-                </div>
+                <p style="font-size:0.8rem;opacity:0.6;margin:0;">{{ pendingDesc(pendingSuggestion) }}</p>
+                <p style="font-size:0.85rem;opacity:0.8;margin:0;">The level is currently in <router-link to="/pending" style="text-decoration:underline;">Pending List</router-link>.</p>
             </div>
         </div>
         <div class="level-container-new surface">
             <div class="level" v-if="level">
-                <h1>{{ level.name }}</h1>
-                <div v-if="level.allLevelsRank || level.futureRank" class="cross-list-ranks" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.9rem;opacity:0.45;margin:0.1rem 0 0.5rem;">
-                    <span v-if="level.allLevelsRank">#{{ level.allLevelsRank }} in All Levels</span>
-                    <span v-if="level.futureRank">{{ level.allLevelsRank ? '· ' : '' }}#{{ level.futureRank }} in Future List</span>
+                <div>
+                    <h1>{{ level.name }}</h1>
+                    <div v-if="level.allLevelsRank || level.futureRank" class="cross-list-ranks" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.9rem;opacity:0.45;margin-top:0.35rem;">
+                        <span v-if="level.allLevelsRank">#{{ level.allLevelsRank }} in All Levels</span>
+                        <span v-if="level.futureRank">{{ level.allLevelsRank ? '· ' : '' }}#{{ level.futureRank }} in Future List</span>
+                    </div>
                 </div>
                 <LevelAuthors :author="level.author" :creators="level.creators" :verifier="level.verifier" :isVerified="level.isVerified"></LevelAuthors>
                 <div style="display:flex; flex-wrap:wrap;">
@@ -253,7 +253,6 @@ export default {
             return this.list.every(([level]) => !level || level.isHidden);
         },
         pendingSuggestion() {
-            if (!this.noResults) return null;
             const q = this.search.toLowerCase().trim();
             if (!q) return null;
             return (this.pending || []).find(p => p && p.name && p.name.toLowerCase().includes(q)) || null;
