@@ -26,9 +26,21 @@ export default {
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/></svg>
                 </button>
             </div>
-            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
-                <span style="font-size:1.5rem;">🔍</span>
-                <p style="font-size:0.8rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;gap:1.25rem;text-align:center;color:var(--color-on-background);">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0.25;">
+                    <span style="font-size:1.5rem;">🔍</span>
+                    <p style="font-size:0.8rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+                </div>
+                <div v-if="pendingSuggestion" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;max-width:22rem;padding:1rem 1.25rem;border:1px solid rgba(128,128,128,0.25);border-radius:0.6rem;font-family:'Lexend Deca',sans-serif;">
+                    <p style="font-size:0.75rem;opacity:0.55;margin:0;">Maybe you were searching for this:</p>
+                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                        <img :src="pendingIcon(pendingSuggestion)" alt="" style="width:1.3rem;height:1.3rem;flex-shrink:0;" />
+                        <a v-if="pendingSuggestion.link" :href="pendingSuggestion.link" target="_blank" style="font-size:1rem;font-weight:700;text-decoration:underline;">{{ pendingSuggestion.name }}?</a>
+                        <span v-else style="font-size:1rem;font-weight:700;">{{ pendingSuggestion.name }}?</span>
+                    </div>
+                    <p style="font-size:0.72rem;opacity:0.6;margin:0;">{{ pendingDesc(pendingSuggestion) }}</p>
+                    <p style="font-size:0.78rem;opacity:0.8;margin:0;">The level is currently in <router-link to="/mobile/pending" style="text-decoration:underline;">Pending List</router-link>.</p>
+                </div>
             </div>
             <div v-for="([level, err], i) in displayList" :key="i" class="mob-level-row" v-show="!level?.isHidden">
                 <button class="mob-level-btn" :class="{ active: selected === i }" @click="selected = selected === i ? -1 : i">
@@ -47,6 +59,9 @@ export default {
                     </div>
                 </button>
                 <div v-if="selected === i && level" class="mob-level-detail">
+                    <div v-if="otherListRanks(level).length" style="font-family:'Lexend Deca',sans-serif;font-size:0.75rem;opacity:0.5;margin-bottom:0.5rem;">
+                        {{ otherListRanks(level).join(' · ') }}
+                    </div>
                     <div class="mob-author-block">
                         <div class="mob-author-row"><span class="mob-author-label">Level Author</span><span class="mob-author-value">{{ level.author }}</span></div>
                         <div class="mob-author-row" v-if="level.creators && level.creators.length"><span class="mob-author-label">Creators</span><span class="mob-author-value">{{ level.creators.join(', ') }}</span></div>
@@ -105,6 +120,12 @@ export default {
             if (!mobileStore.search.trim()) return false;
             return this.displayList.every(([level]) => !level || level.isHidden);
         },
+        pendingSuggestion() {
+            if (!this.noResults) return null;
+            const q = mobileStore.search.toLowerCase().trim();
+            if (!q) return null;
+            return (mobileStore.pending || []).find(p => p && p.name && p.name.toLowerCase().includes(q)) || null;
+        },
     },
     mounted() {
         applyFilters();
@@ -122,6 +143,26 @@ export default {
         applyFilters,
         scrollToTop() {
             if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+        otherListRanks(level) {
+            if (!level) return [];
+            const out = [];
+            if (this.pageType !== 'all' && level.allLevelsRank) out.push('#' + level.allLevelsRank + ' in All Levels');
+            if (this.pageType !== 'main' && level.mainRank) out.push('#' + level.mainRank + ' in Main List');
+            if (this.pageType !== 'future' && level.futureRank) out.push('#' + level.futureRank + ' in Future List');
+            return out;
+        },
+        pendingIcon(p) {
+            const pl = (p.placement || '?').toString().toLowerCase();
+            if (pl === 'up' || pl === 'down') return '/assets/move-' + pl + '.svg';
+            return '/assets/' + (p.placement === '?' ? 'question' : p.placement) + '.svg';
+        },
+        pendingDesc(p) {
+            const pl = (p.placement || '').toString().toLowerCase();
+            if (pl === 'up' || pl === 'down') return 'Pending movement';
+            if (p.indefinite) return 'Pending indefinitely';
+            if (!p.placement || p.placement === '?') return 'Estimated position: to be determined';
+            return 'Estimated position: around #' + p.placement;
         },
         getThumbnail(level) {
             if (level.thumbnail) return level.thumbnail;

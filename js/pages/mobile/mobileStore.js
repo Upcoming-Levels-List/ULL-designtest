@@ -7,6 +7,7 @@ export const mobileStore = Vue.reactive({
     pendingPlacements: [],
     pendingMovements: [],
     pendingIndefinite: [],
+    pending: [],
     players: [],
     openMenu: null,
     levelMonth: null,

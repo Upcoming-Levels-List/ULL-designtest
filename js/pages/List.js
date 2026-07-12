@@ -1,7 +1,7 @@
 import { store } from "../main.js";
 import { embed, filtersList } from "../util.js";
 import { score } from "../score.js";
-import { fetchEditors, fetchList } from "../content.js";
+import { fetchEditors, fetchList, fetchPending } from "../content.js";
 
 import Spinner from "../components/Spinner.js";
 import LevelAuthors from "../components/List/LevelAuthors.js";
@@ -60,9 +60,21 @@ export default {
                     </td>
                 </tr>
             </table>
-            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
-                <span style="font-size:2rem;">🔍</span>
-                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;gap:1.25rem;text-align:center;color:var(--color-on-background);">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0.25;">
+                    <span style="font-size:2rem;">🔍</span>
+                    <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+                </div>
+                <div v-if="pendingSuggestion" style="display:flex;flex-direction:column;align-items:center;gap:0.55rem;max-width:26rem;padding:1.25rem 1.5rem;border:1px solid rgba(128,128,128,0.25);border-radius:0.6rem;font-family:'Lexend Deca',sans-serif;">
+                    <p style="font-size:0.82rem;opacity:0.55;margin:0;">Maybe you were searching for this:</p>
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                        <img :src="pendingIcon(pendingSuggestion)" alt="" style="width:1.5rem;height:1.5rem;flex-shrink:0;" />
+                        <a v-if="pendingSuggestion.link" :href="pendingSuggestion.link" target="_blank" style="font-size:1.1rem;font-weight:700;text-decoration:underline;">{{ pendingSuggestion.name }}?</a>
+                        <span v-else style="font-size:1.1rem;font-weight:700;">{{ pendingSuggestion.name }}?</span>
+                    </div>
+                    <p style="font-size:0.8rem;opacity:0.6;margin:0;">{{ pendingDesc(pendingSuggestion) }}</p>
+                    <p style="font-size:0.85rem;opacity:0.8;margin:0;">The level is currently in <router-link to="/pending" style="text-decoration:underline;">Pending List</router-link>.</p>
+                </div>
             </div>
         </div>
         <div class="level-container-new surface">
@@ -190,6 +202,7 @@ export default {
     data: () => ({
         list: [],
         editors: [],
+        pending: [],
         loading: true,
         selected: 0,
         errors: [],
@@ -239,6 +252,12 @@ export default {
             if (!this.list || !this.search.trim()) return false;
             return this.list.every(([level]) => !level || level.isHidden);
         },
+        pendingSuggestion() {
+            if (!this.noResults) return null;
+            const q = this.search.toLowerCase().trim();
+            if (!q) return null;
+            return (this.pending || []).find(p => p && p.name && p.name.toLowerCase().includes(q)) || null;
+        },
         visibleCount() {
             return (this.list || []).filter(([level]) => level && !level.isHidden).length;
         },
@@ -254,6 +273,7 @@ export default {
     async mounted() {
         this.list = await fetchList();
         this.editors = await fetchEditors();
+        this.pending = await fetchPending() || [];
 
         if (this.list) {
             let mainRank = 0, futureRank = 0;
@@ -364,6 +384,18 @@ export default {
                 return (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? Math.abs(parts[1] - parts[0]) : 0;
             })));
             return Math.max(recordPercent, runPercent);
+        },
+        pendingIcon(p) {
+            const pl = (p.placement || '?').toString().toLowerCase();
+            if (pl === 'up' || pl === 'down') return '/assets/move-' + pl + '.svg';
+            return '/assets/' + (p.placement === '?' ? 'question' : p.placement) + '.svg';
+        },
+        pendingDesc(p) {
+            const pl = (p.placement || '').toString().toLowerCase();
+            if (pl === 'up' || pl === 'down') return 'Pending movement';
+            if (p.indefinite) return 'Pending indefinitely';
+            if (!p.placement || p.placement === '?') return 'Estimated position: to be determined';
+            return 'Estimated position: around #' + p.placement;
         },
         applyFilters() {
             if (!this.list) return;

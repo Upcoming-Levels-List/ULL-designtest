@@ -170,11 +170,12 @@ export default {
                 if (err || !level) return;
                 level.allLevelsRank = i + 1;
                 if (!level.isVerified) { allRank++; level.allLevelsNonVerifiedRank = allRank; }
-                if (level.isMain) { mainRank++; level.mainRank = mainRank; }
-                if (level.isFuture) { futureRank++; level.futureRank = futureRank; }
+                if (level.isMain || level.isVerified) { mainRank++; level.mainRank = mainRank; }
+                if (level.isFuture || level.isVerified) { futureRank++; level.futureRank = futureRank; }
             });
             mobileStore.editors = await fetchEditors() || [];
             const pending = await fetchPending();
+            mobileStore.pending = pending || [];
             if (pending) {
                 const isMove = p => ['up', 'down'].includes((p.placement || '').toLowerCase());
                 const byPlacement = (a, b) => {

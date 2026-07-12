@@ -302,9 +302,15 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
   — the exact condition that colors a level's name orange (≥30) or red (≥60).
   `verifyProgress` = max of best record % and best run span. Fully automatic (removed from the
   admin/generator tag pickers); the frontend adds/removes it on load.
-- **Cross-list position** (`List.js`/`ListMain.js`/`ListFuture.js`): each level page shows the
-  level's rank in the other two lists (e.g. "#12 in All Levels · #3 in Future List"), computed
-  as `allLevelsRank` / `mainRank` / `futureRank` on mount, mirroring Upcoming Levels.
+- **Cross-list position** (`List.js`/`ListMain.js`/`ListFuture.js`, and mobile
+  `MobileList.js`): each level page shows the level's rank in the *other* two lists (e.g.
+  "#12 in All Levels · #3 in Future List"), computed as `allLevelsRank` / `mainRank` /
+  `futureRank` on mount (desktop pages) or in `Mobile.js` (mobile), mirroring Upcoming Levels.
+- **Pending search fallback** (`List.js`/`ListMain.js`/`ListFuture.js`, `MobileList.js`): when a
+  search returns no matching levels, the page checks the pending list (`fetchPending`, kept in
+  `this.pending` / `mobileStore.pending`) for an entry whose name contains the query and, if
+  found, shows a "Maybe you were searching for this: …?" card with the level's placement icon,
+  an estimated-position line, and a link to the Pending List.
 - **Frame Windows Counter**: if `level.frameCounter` is set, the level card shows a
   "Frame Windows Counter" row with a "Watch Here" link (List/ListMain/ListFuture pages).
 - **Coming Soon popup**: Vue 3 templates can't call `window.alert()`. A shared reactive flag
