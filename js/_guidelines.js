@@ -234,15 +234,16 @@
 <ul>
 <li>The level must be based on the Classic game type. There is currently no platformer list.</li>
 <li>Levels are selected from those that are going to be published on the game\u2019s official servers. If a level is expected to be published on a private server, it will not be considered at all.</li>
-<li>The level must have a public video recording available.</li>
+<li>The level must have a public recording available.</li>
 <li>The level must demonstrate a credible potential to receive an official in-game rating. This is assessed through general criteria:
 <ol>
-<li>The level\u2019s duration is Medium or longer (\u226530 seconds);</li>
+<li>The level\u2019s gameplay must last at least 30 seconds;</li>
 <li>The proposed version of the level is official (recognized by its original creator);</li>
 <li>The level is in a valid state for consideration: it does not feature an open secret path to 100% and has not been officially released in another form;</li>
 <li>The level is original \u2014 it does not contain stolen elements of decoration, gameplay, etc;</li>
 <li>The level does not contain NSFW, NSFL, or similar elements, as well as profanity, racist remarks, insults, threats, which applies to both the content of the level and its name (in general, this corresponds to the age restriction of the game itself);</li>
 <li>The level must be a deco project, with decoration either already in progress or definitively planned for its final state.</li>
+<li>The level must demonstrate active development. If the level has decoration progress (1 or more finished parts), the host may be contacted regarding its viability after 12 months without progress; the level will be removed after 15 months of inactivity regardless. If the level is in a layout state, it will be removed after 12 months without any progress.</li>
 </ol>
 </li>
 </ul>
@@ -262,12 +263,12 @@
 <p><strong>Future List Tier</strong></p>
 <ul>
 <li>The level must represent the highest echelon of quality or have substantial records set on it, indicating a very high and imminent likelihood of verification.</li>
-<li>Levels on layout stage and levels with just-begun decoration are not eligible for this tier.</li>
+<li>Levels on layout stage and levels with just-begun decoration are not eligible for this tier, but rare exceptions can be made.</li>
 </ul>
 
 <h4>3. Standards for Verified Levels</h4>
 <p>All officially rated levels are deemed to have met all criteria and are automatically included in all list tiers.</p>
-<p>Among unrated but verified levels, only those that comply with the <a href="https://demonlist.org/guidelines" target="_blank">Global Demonlist Guidelines</a> are considered. Such levels are also added to all tiers of the list.</p>
+<p>Among unrated but verified levels, only those that comply with the <a href="https://demonlist.org/guidelines" target="_blank">Global Demonlist Guidelines</a> are considered. Such levels are also added to all tiers of the list. In addition to levels present on the Global Demonlist, unrated levels that have accumulated 5 or more sends are also eligible for consideration.</p>
                 `
             },
             {

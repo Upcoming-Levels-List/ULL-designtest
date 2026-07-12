@@ -1,7 +1,7 @@
 import { store } from "../main.js";
 import { embed } from "../util.js";
 import { score } from "../score.js";
-import { fetchEditors, fetchList } from "../content.js";
+import { fetchEditors, fetchList, fetchPending } from "../content.js";
 
 import Spinner from "../components/Spinner.js";
 import LevelAuthors from "../components/List/LevelAuthors.js";
@@ -60,14 +60,30 @@ export default {
                     </td>
                 </tr>
             </table>
-            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
-                <span style="font-size:2rem;">🔍</span>
-                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+            <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;gap:1.25rem;text-align:center;color:var(--color-on-background);">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0.25;">
+                    <span style="font-size:2rem;">🔍</span>
+                    <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+                </div>
+                <div v-if="pendingSuggestion" style="display:flex;flex-direction:column;align-items:center;gap:0.55rem;max-width:26rem;padding:1.25rem 1.5rem;border:1px solid rgba(128,128,128,0.25);border-radius:0.6rem;font-family:'Lexend Deca',sans-serif;">
+                    <p style="font-size:0.82rem;opacity:0.55;margin:0;">Maybe you were searching for this:</p>
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                        <img :src="pendingIcon(pendingSuggestion)" alt="" style="width:1.5rem;height:1.5rem;flex-shrink:0;" />
+                        <a v-if="pendingSuggestion.link" :href="pendingSuggestion.link" target="_blank" style="font-size:1.1rem;font-weight:700;text-decoration:underline;">{{ pendingSuggestion.name }}?</a>
+                        <span v-else style="font-size:1.1rem;font-weight:700;">{{ pendingSuggestion.name }}?</span>
+                    </div>
+                    <p style="font-size:0.8rem;opacity:0.6;margin:0;">{{ pendingDesc(pendingSuggestion) }}</p>
+                    <p style="font-size:0.85rem;opacity:0.8;margin:0;">The level is currently in <router-link to="/pending" style="text-decoration:underline;">Pending List</router-link>.</p>
+                </div>
             </div>
         </div>
         <div class="level-container-new surface">
             <div class="level" v-if="level">
                 <h1>{{ level.name }}</h1>
+                <div v-if="level.allLevelsRank || level.mainRank" class="cross-list-ranks" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.9rem;opacity:0.45;margin:0.1rem 0 0.5rem;">
+                    <span v-if="level.allLevelsRank">#{{ level.allLevelsRank }} in All Levels</span>
+                    <span v-if="level.mainRank">{{ level.allLevelsRank ? '· ' : '' }}#{{ level.mainRank }} in Main List</span>
+                </div>
                 <LevelAuthors :author="level.author" :creators="level.creators" :verifier="level.verifier" :isVerified="level.isVerified"></LevelAuthors>
                 <div style="display:flex; flex-wrap:wrap;">
                     <div v-for="tag in level.tags" class="tag">{{tag}}</div>
@@ -186,6 +202,7 @@ export default {
     data: () => ({
         list: [],
         editors: [],
+        pending: [],
         loading: true,
         selected: 0,
         errors: [],
@@ -235,6 +252,12 @@ export default {
             if (!this.list || !this.search.trim()) return false;
             return this.list.every(([level]) => !level || level.isHidden);
         },
+        pendingSuggestion() {
+            if (!this.noResults) return null;
+            const q = this.search.toLowerCase().trim();
+            if (!q) return null;
+            return (this.pending || []).find(p => p && p.name && p.name.toLowerCase().includes(q)) || null;
+        },
         visibleCount() {
             return (this.list || []).filter(([level]) => level && !level.isHidden).length;
         },
@@ -249,11 +272,22 @@ export default {
     },
     async mounted() {
         const list1 = await fetchList();
+        if (list1) {
+            let mainRank = 0, futureRank = 0;
+            list1.forEach(([lvl, e], i) => {
+                if (e || !lvl) return;
+                lvl.allLevelsRank = i + 1;
+                if (lvl.isMain || lvl.isVerified) { mainRank++; lvl.mainRank = mainRank; }
+                if (lvl.isFuture || lvl.isVerified) { futureRank++; lvl.futureRank = futureRank; }
+            });
+        }
         this.list = [];
         for (const key in list1) {
-            if (list1[key][0]?.isFuture) this.list.push(list1[key]);
+            // Verified levels always appear on the Future List, even if isFuture is false.
+            if (list1[key][0]?.isFuture || list1[key][0]?.isVerified) this.list.push(list1[key]);
         }
         this.editors = await fetchEditors();
+        this.pending = await fetchPending() || [];
         if (!this.list.length) {
             this.errors = ["Failed to load list. Retry in a few minutes or notify list staff."];
         }
@@ -269,6 +303,12 @@ export default {
                     if (!level.tags) level.tags = [];
                     if (!level.tags.includes('Pending Removal')) level.tags.push('Pending Removal');
                 }
+                // Auto "Verifying" tag — same trigger as the orange/red name coloring
+                // (decoration finished + meaningful verification progress).
+                if (!level.tags) level.tags = [];
+                const beingVerified = !level.isVerified && (level.percentFinished ?? 0) === 100 && this.verifyProgress(level) >= 30;
+                if (beingVerified && !level.tags.includes('Verifying')) level.tags.push('Verifying');
+                if (!beingVerified && level.tags.includes('Verifying')) level.tags = level.tags.filter(t => t !== 'Verifying');
             });
         }
         this.applyFilters();
@@ -337,6 +377,26 @@ export default {
             threshold.setMonth(threshold.getMonth() - (hasLayoutTag ? 12 : 15));
             return levelDate < threshold;
         },
+        verifyProgress(level) {
+            const recordPercent = Math.max(0, ...((level.records || []).map(r => Number(r.percent) || 0)));
+            const runPercent = Math.max(0, ...((level.run || []).map(r => {
+                const parts = String(r.percent).split('-').map(Number);
+                return (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? Math.abs(parts[1] - parts[0]) : 0;
+            })));
+            return Math.max(recordPercent, runPercent);
+        },
+        pendingIcon(p) {
+            const pl = (p.placement || '?').toString().toLowerCase();
+            if (pl === 'up' || pl === 'down') return '/assets/move-' + pl + '.svg';
+            return '/assets/' + (p.placement === '?' ? 'question' : p.placement) + '.svg';
+        },
+        pendingDesc(p) {
+            const pl = (p.placement || '').toString().toLowerCase();
+            if (pl === 'up' || pl === 'down') return 'Pending movement';
+            if (p.indefinite) return 'Pending indefinitely';
+            if (!p.placement || p.placement === '?') return 'Estimated position: to be determined';
+            return 'Estimated position: around #' + p.placement;
+        },
         applyFilters() {
             if (!this.list) return;
             this.list.forEach(item => {
@@ -350,6 +410,12 @@ export default {
                     if (!level.tags) level.tags = [];
                     if (!level.tags.includes('Pending Removal')) level.tags.push('Pending Removal');
                 }
+                // Auto "Verifying" tag — same trigger as the orange/red name coloring
+                // (decoration finished + meaningful verification progress).
+                if (!level.tags) level.tags = [];
+                const beingVerified = !level.isVerified && (level.percentFinished ?? 0) === 100 && this.verifyProgress(level) >= 30;
+                if (beingVerified && !level.tags.includes('Verifying')) level.tags.push('Verifying');
+                if (!beingVerified && level.tags.includes('Verifying')) level.tags = level.tags.filter(t => t !== 'Verifying');
             });
 
             const activeFilters = [...this.statusFilters, ...this.lengthFilters, ...this.otherFilters].filter(f => f.active);

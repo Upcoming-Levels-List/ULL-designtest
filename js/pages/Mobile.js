@@ -170,11 +170,12 @@ export default {
                 if (err || !level) return;
                 level.allLevelsRank = i + 1;
                 if (!level.isVerified) { allRank++; level.allLevelsNonVerifiedRank = allRank; }
-                if (level.isMain) { mainRank++; level.mainRank = mainRank; }
-                if (level.isFuture) { futureRank++; level.futureRank = futureRank; }
+                if (level.isMain || level.isVerified) { mainRank++; level.mainRank = mainRank; }
+                if (level.isFuture || level.isVerified) { futureRank++; level.futureRank = futureRank; }
             });
             mobileStore.editors = await fetchEditors() || [];
             const pending = await fetchPending();
+            mobileStore.pending = pending || [];
             if (pending) {
                 const isMove = p => ['up', 'down'].includes((p.placement || '').toLowerCase());
                 const byPlacement = (a, b) => {
@@ -208,6 +209,22 @@ export default {
                     if (!l.tags) l.tags = [];
                     if (!l.tags.includes('Pending Removal')) l.tags.push('Pending Removal');
                 }
+            });
+            // Auto-assign Verifying tag — same trigger as the orange/red name coloring.
+            const verifyProgress = (l) => Math.max(
+                0,
+                ...((l.records || []).map(r => Number(r.percent) || 0)),
+                ...((l.run || []).map(r => {
+                    const parts = String(r.percent).split('-').map(Number);
+                    return (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? Math.abs(parts[1] - parts[0]) : 0;
+                }))
+            );
+            mobileStore.rawList.forEach(item => {
+                const l = item[0]; if (!l) return;
+                if (!l.tags) l.tags = [];
+                const beingVerified = !l.isVerified && (l.percentFinished ?? 0) === 100 && verifyProgress(l) >= 30;
+                if (beingVerified && !l.tags.includes('Verifying')) l.tags.push('Verifying');
+                if (!beingVerified && l.tags.includes('Verifying')) l.tags = l.tags.filter(t => t !== 'Verifying');
             });
             // Build player leaderboard
             const playerMap = {};
