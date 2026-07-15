@@ -307,10 +307,15 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
   "#12 in All Levels · #3 in Future List"), computed as `allLevelsRank` / `mainRank` /
   `futureRank` on mount (desktop pages) or in `Mobile.js` (mobile), mirroring Upcoming Levels.
 - **Pending search fallback** (`List.js`/`ListMain.js`/`ListFuture.js`, `MobileList.js`): when a
-  search returns no matching levels, the page checks the pending list (`fetchPending`, kept in
-  `this.pending` / `mobileStore.pending`) for an entry whose name contains the query and, if
-  found, shows a "Maybe you were searching for this: …?" card with the level's placement icon,
-  an estimated-position line, and a link to the Pending List.
+  search returns **no matches, or 3 or fewer**, the page checks the pending list (`fetchPending`,
+  kept in `this.pending` / `mobileStore.pending`) for an entry whose name contains the query and,
+  if found, shows a "Maybe you were searching for this: …?" card below the results, with the
+  level's placement icon, an estimated-position line, and a link to the Pending List. Shown when
+  `pendingSuggestion && (noResults || visibleCount <= 3)`.
+- **Mobile filters scroll indicator** (`Mobile.js`, `css/pages/mobile.css`): the filters popup's
+  tag list is a bounded scroll area (`.mob-filters-scroll`, max-height 46vh) so Apply/Reset stay
+  visible; a fade + bouncing chevron (`.mob-filters-scroll-hint`) signals more filters and hides
+  once scrolled to the bottom (`filtersAtEnd`).
 - **Frame Windows Counter**: if `level.frameCounter` is set, the level card shows a
   "Frame Windows Counter" row with a "Watch Here" link (List/ListMain/ListFuture pages).
 - **Coming Soon popup**: Vue 3 templates can't call `window.alert()`. A shared reactive flag
