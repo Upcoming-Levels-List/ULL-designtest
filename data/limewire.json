@@ -7,22 +7,22 @@
     "isVerified": false,
     "verification": "",
     "showcase": "https://www.youtube.com/watch?v=e7Z_-Y07pwo",
-    "lastUpd": "24.09.2025",
+    "lastUpd": "17.07.2026",
 
     "percentToQualify": 1,
     "records": [
         {
-            "user": "none",
-            "link": "",
-            "percent": 0,
+            "user": "finley",
+            "link": "https://x.com/iamfinleyy/status/2065256473664307365?s=20",
+            "percent": 41,
             "hz": 0
         }
     ],
     "run": [
         {
-            "user": "none",
-            "link": "",
-            "percent": "0",
+            "user": "finley",
+            "link": "https://x.com/iamfinleyy/status/2077143799231324309?s=20",
+            "percent": "40-95",
             "hz": 0
         }
     ],
@@ -31,7 +31,7 @@
     "rating": 1,
     "percentFinished": 100,
     "isMain": true,
-    "isFuture": false,
+    "isFuture": true,
 
-    "tags": ["Long", "Finished"]
+    "tags": ["Long", "Finished", "Verifying"]
 }

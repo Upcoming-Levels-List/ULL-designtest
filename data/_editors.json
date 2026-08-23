@@ -6,12 +6,7 @@
     },
     {
         "role": "admin",
-        "name": "VivisectionGD",
-        "link": "https://www.youtube.com/@VivisectionGD"
-    },
-    {
-        "role": "admin",
-        "name": "Exiled_Shade",
+        "name": "exiled_shade",
         "link": "https://www.youtube.com/@exiled_shadegd"
     },
     {
@@ -30,19 +25,19 @@
         "link": "https://www.youtube.com/@LukeLGamer34"
     },
     {
+        "role": "seniormod",
+        "name": "ItzDel1ghtfuL",
+        "link": "https://www.youtube.com/@ItzDel1ghtfuLTCD"
+    },
+    {
         "role": "mod",
         "name": "Terralith",
         "link": "https://www.youtube.com/@terragaminggeometrydash"
     },
     {
-        "role": "mod",
-        "name": "Vantevia",
-        "link": "https://www.youtube.com/@vantev1a"
-    },
-    {
-        "role": "mod",
-        "name": "ItzDel1ghtfuL",
-        "link": "https://www.youtube.com/@ItzDel1ghtfuLTCD"
+        "role":"mod",
+        "name": "TheCatAstronaut",
+        "link": "https://www.youtube.com/@thecatastronaut0"
     },
     {
         "role": "dev",

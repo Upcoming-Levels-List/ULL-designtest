@@ -7,22 +7,22 @@
     "isVerified": false,
     "verification": "",
     "showcase": "https://www.youtube.com/watch?v=6RCgII1G4Kw&list=RD6RCgII1G4Kw&start_radio=1&pp=ygUYc2lsZW50IGNpcmNsZXMgc3RhcmNobWFuoAcB",
-    "lastUpd": "04.01.2026",
+    "lastUpd": "20.08.2026",
 
     "percentToQualify": 1,
     "records": [
         {
             "user": "dewbbs",
-            "link": "https://youtu.be/3ANI557EzW8?si=b7rz6hlGq0kgScBZ",
-            "percent": 58,
+            "link": "https://www.youtube.com/watch?v=BH3MJHf4pVs",
+            "percent": 85,
             "hz": 240
         }
     ],
     "run": [
         {
             "user": "dewbbs",
-            "link": "https://youtu.be/llCZap9wVKU?si=QXCGWgSoowwchX14",
-            "percent": "27-85",
+            "link": "https://youtu.be/uAxF8NTg10A?si=n95ahVQeGhOend61",
+            "percent": "26-86",
             "hz": 240
         }
     ],

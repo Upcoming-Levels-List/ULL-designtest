@@ -1,13 +1,14 @@
 {
     "id": "private",
     "name": "Theory of Sevvend",
+    "thumbnail": "https://i.ytimg.com/vi/-JKx1KL53r4/hqdefault.jpg?sqp=-oaymwEnCOADEI4CSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDg7zqkLnjJrmC03OwALAEf1YB-4Q",
     "author": "[cherry] team",
-    "creators": ["Nickname09"],
-    "verifier": "unknown",
+    "creators": ["Nickname09","Sayonar","Ego11","Genoxide","mitonimya"],
+    "verifier": "Vorten",
     "isVerified": false,
     "verification": "",
     "showcase": "https://youtu.be/N1DAFhhUEvE?si=dsZi18HCq6GE3Ugn",
-    "lastUpd": "22.03.2026",
+    "lastUpd": "06.07.2026",
 
     "percentToQualify": 1,
     "records": [
@@ -29,9 +30,9 @@
 
     "length": 64,
     "rating": 1,
-    "percentFinished": 0,
-    "isMain": false,
-    "isFuture": false,
+    "percentFinished": 95,
+    "isMain": true,
+    "isFuture": true,
 
-    "tags": ["Layout", "Long"]
+    "tags": ["Long","Quality", "Remake"]
 }

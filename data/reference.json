@@ -2,26 +2,26 @@
     "id": "private",
     "name": "Reference ",
     "author": "TheWormDo",
-    "creators": [],
+    "creators": ["TheWormDo"],
     "verifier": "TheWormDo",
     "isVerified": false,
     "verification": "",
-    "showcase": "https://youtu.be/r8e9BBqIN2k?si=QwPi0clNVGMsYyP2",
-    "lastUpd": "24.03.2026",
+    "showcase": "https://youtu.be/NSBZTkMIPGQ",
+    "lastUpd": "10.06.2026",
     "percentToQualify": 1,
     "records": [
         {
-            "user": "none",
-            "link": "",
-            "percent": 0,
-            "hz": 0
+            "user": "TheWormDo",
+            "link": "https://youtu.be/yQUNSfYJ3QY",
+            "percent": 25,
+            "hz": 240
         }
     ],
     "run": [
         {
-            "user": "none",
-            "link": "",
-            "percent": "0",
+            "user": "TheWormDo",
+            "link": "https://youtu.be/onw6etIdstU",
+            "percent": "70-100",
             "hz": 0
         }
     ],
@@ -29,7 +29,7 @@
     "rating": 1,
     "percentFinished": 100,
     "isMain": true,
-    "isFuture": true,
+    "isFuture": false,
     "tags": [
         "XXL",
         "Finished",

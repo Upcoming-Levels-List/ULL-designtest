@@ -1,12 +1,12 @@
 {
     "id": "private",
-    "name": "Tunnel of Serpentical",
-    "author": "Demi",
-    "creators": ["Demi","Zanzz","Zars70","BK"],
-    "verifier": "Serpentical",
+    "name": "Neutron Step",
+    "author": "HaloZombies",
+    "creators": ["HaloZombies","FreddyFazGlitch","Ponja","Scane","mariner"],
+    "verifier": "mariner",
     "isVerified": false,
     "verification": "",
-    "showcase": "https://youtu.be/rcHE78QQSp8?si=8ezRZAKLyesoguvR",
+    "showcase": "https://youtu.be/VdA-N0V5PjA?si=dLJeZsB7zZSbpka8",
     "lastUpd": "25.01.2026",
 
     "percentToQualify": 1,
@@ -20,18 +20,18 @@
     ],
     "run": [
         {
-            "user": "Serpentical",
-            "link": "https://youtu.be/BaV2KZO2abM?si=-7QqLc6oxR8YdyJO",
-            "percent": "39-100",
+            "user": "none",
+            "link": "",
+            "percent": "0",
             "hz": 0
         }
     ],
 
-    "length": 83,
+    "length": 82,
     "rating": 1,
     "percentFinished": 100,
     "isMain": true,
     "isFuture": false,
 
-    "tags": ["Long", "Verifying"]
+    "tags": ["Long","Remake","Verifying"]
 }

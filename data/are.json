@@ -6,32 +6,32 @@
     "verifier": "BONN GD",
     "isVerified": false,
     "verification": "",
-    "showcase": "https://www.youtube.com/watch?v=qnKzHnXnQzg",
-    "lastUpd": "24.12.2025",
+    "showcase": "https://youtu.be/LMsjqNrN17Q?si=EJLjklUugu20DSGi",
+    "lastUpd": "21.08.2026",
 
     "percentToQualify": 1,
     "records": [
         {
-            "user": "none",
-            "link": "",
-            "percent": 0,
+            "user": "BONN GD",
+            "link": "#",
+            "percent": 21,
             "hz": 0
         }
     ],
     "run": [
         {
-            "user": "none",
-            "link": "",
-            "percent": "0",
+            "user": "BONN GD",
+            "link": "#",
+            "percent": "58-100",
             "hz": 0
         }
     ],
 
-    "length": 0,
+    "length": 75,
     "rating": 1,
-    "percentFinished": 55,
+    "percentFinished": 100,
     "isMain": true,
     "isFuture": true,
 
-    "tags": ["Long", "Quality", "NONG"]
+    "tags": ["Long", "Quality", "NONG", "Finished", "Verifying"]
 }
