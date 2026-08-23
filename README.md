@@ -1,86 +1,126 @@
-# Welcome to the maintained Geometry Dash Shitty List repo!
+# Upcoming Levels List (ULL)
 
-# FAQ
+**Upcoming Levels List (ULL)** is a community-maintained catalogue of upcoming
+Top 1–100 Extreme Demons in Geometry Dash projected to place on the Demonlist.
+It aims to forecast future rankings, including worthy unrated levels.
 
----
+🌐 **Website:** https://ull.pages.dev  ·  💬 **Discord:** https://discord.gg/9wVWSgJSe8
 
-### Website FAQ
-
-Can I use the Shitty List template?
-
-- I mean, sure. just make sure you give credit somewhere and make sure you state
-  that you're not affiliated with the shitty list.
-
-The website isnt loading! What can I do?
-
-- since no webhost is perfect, downtime is expected. you can either wait til the
-  website is back online or you can do some behind the scene stuff and run it
-  locally.
+> Not affiliated with RobTop Games. These guidelines are adapted from, and heavily
+> rely on, the structure and principles of the Global Demonlist Guidelines — full
+> credit to the original authors.
 
 ---
 
-### List FAQ
+## The List
 
-How long will my record take to get accepted?
+Levels are organized into three tiers. Positioning is consistent across all of
+them; each tier simply applies a different inclusion threshold, forming a
+hierarchy of probability and quality.
 
-- On a normal day it will take 0-48 hours for the record to be accepted,
-  sometimes up to 72 hours, which may be slightly common, and if it ever is
-  taking more than 72 hours, it will be announced that there is a backup of
-  records or some site issues
+| Tier | What it contains |
+|------|------------------|
+| **All Levels** | The most comprehensive catalogue, with the lowest inclusion threshold — every level with a conceivable chance of being verified and published. |
+| **Main List** | Levels that meet the fundamental standards required to be considered for an official rating ("Rate") by the developer. |
+| **Future List** | The highest standard of the three — levels with a very high likelihood of imminent verification and publication. |
 
-What do New record, update record, and fix record mean?
-
-- new record is when your submitting a record for a level for the first time,
-  update record is when you have a record on a level but you got a new best and
-  it needs to be updated, fix record is when there is an issue with one of your
-  records that needs to be fixed
-
-What's an easy way to prove I don't hack?
-
-- Show 2-5 seconds at the end of the previous attempt and the death of that
-  attempt. This is the easiest way for us to verify you arent hacking/nocliping.
-  However having click, fps counter or hand cam will help out a lot too
-
-It's been like more than a week and my record still hasn't been added, what do i
-do?
-
-- You can ask us in
-  [#list-support](https://discord.com/channels/713151800932433972/744151240765603951)
-  , it was probably an accidentally deleted record(yes it happens), accidentally
-  deleting the form, your name was mispelled or you were rejected for cheating
-
-When will \_\_\_ be added to the list?
-
-- With the way our current system works, the staff and relaibles play the
-  levels, if the level gets enough positive opinions from us, it then goes into
-  voting, where it is voted on if it will be added
-
-Can i submit Multiple levels on 1 video?
-
-- Yes
+The site also features the **Pending List** (levels awaiting placement), **Upcoming
+Levels** (ranked by verification progress), a **Leaderboard**, and **Events**
+(Level of the Month and the level Closest to Verification).
 
 ---
 
-## More Coming Soon!
+## Staff Team
 
-# List Staff Team
+Moderators and Elder Moderators determine level positions, place levels,
+participate in quality control, and keep the site up to date. Admins additionally
+manage a sector of the project's operation; the List Leader oversees the list and
+its staff team.
+
+| Role | Name | Contact |
+|------|------|---------|
+| List Leader | **QwidziT** | Discord `@qwidzit` · Telegram `@qwidzit` |
+| Admin | **Exiled_shade** | Discord `@exiled_shade` |
+| Elder List Moderator | **Niroi** | Discord `@niroi_` |
+| Elder List Moderator | **Keres** | Discord `@keresgmd` |
+| Elder List Moderator | **ItzDel1ghtfuL** | Discord `@itzdel1ghtful` |
+| Elder List Moderator | **LukeLGamer** | Discord `@lukelgamer` |
+| List Moderator | **Terra** | Discord `@.terralith` |
+| List Moderator | **Vantevia** | Discord `@vantev1a` |
+| List Moderator | **TheCatAstronaut** | Discord `@thecatastronaut` |
+| List Moderator | **Qponn** | Discord `@q.ponn` · X `@qponnx` |
+| List Moderator | **Blaster1337** | Discord `@blastuh` · X `@TheFakeBlaster` |
+| Website Coder | **Prometheus** | Discord `@prometheus.dev` |
 
 ---
 
-## Owners:
+## Public API
 
-- Microwaveee
-- Davine_007
+The list data is served by a JSON API. All endpoints below are public and require
+no authentication.
+
+**Base URL:** `https://d1-wrkr.ullteam.workers.dev`
+
+### Endpoints
+
+| Method & path | Returns |
+|---------------|---------|
+| `GET /api/list` | All levels, ordered by rank |
+| `GET /api/list/main` | Levels on the Main List |
+| `GET /api/list/future` | Levels on the Future List |
+| `GET /api/levels/{position}` | The single level at a given 1-based rank |
+| `GET /api/pending` | Pending List entries |
+| `GET /api/editors` | The staff/editor list (`{name, role, link}`) |
+| `GET /api/level-month` | The current Level of the Month (or `null`) |
+| `GET /api/level-verif` | The current Closest to Verification (or `null`) |
+| `GET /api/recent-changes` | Recent changes feed |
+
+> Endpoints that add or modify list data require a staff API key and are not part
+> of the public API.
+
+### Example
+
+```bash
+curl https://d1-wrkr.ullteam.workers.dev/api/list
+```
+
+### Level object
+
+Each level returned by `/api/list` (and related endpoints) has this shape:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `path` | string | Unique slug / identifier for the level |
+| `name` | string | Level name |
+| `author` | string | Host / main author |
+| `creators` | string[] | All credited creators |
+| `verifier` | string | Verifier (or `"Open Verification"`) |
+| `verification` | string | Verification video URL |
+| `showcase` | string | Showcase video URL |
+| `thumbnail` | string | Thumbnail image URL |
+| `frameCounter` | string \| null | Frame Windows Counter video URL, if any |
+| `id` | string | In-game level ID (or `"private"`) |
+| `rating` | number | Difficulty rating |
+| `length` | number | Length in seconds |
+| `percentToQualify` | number | Qualifying percentage |
+| `percentFinished` | number | Decoration progress (0–100) |
+| `lastUpd` | string | Last update date, `DD.MM.YYYY` |
+| `tags` | string[] | Tags (e.g. `Public`, `Finished`, `Layout`, `Rated`) |
+| `records` | object[] | Best records — `{user, link, percent, hz}` |
+| `run` | object[] | Best runs — `{user, link, percent, hz}` |
+| `isVerified` | boolean | Whether the level is verified |
+| `isMain` | boolean | On the Main List |
+| `isFuture` | boolean | On the Future List |
+| `benchmark` | boolean | Marked as a benchmark level |
+| `sort_order` | number | Ranking order |
 
 ---
 
-## List Admins:
+## Security
 
-- TravelChimp
-- Prometheus
-- Ryoui
+Found a vulnerability? Please see [SECURITY.md](./SECURITY.md) for how to report it.
 
-## Repo Maintainers:
+## Using this template
 
-- Prometheus
-- Emonadeo
+You're welcome to build on this project — just credit it somewhere and make clear
+that you are not affiliated with the Upcoming Levels List.
