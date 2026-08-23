@@ -391,20 +391,12 @@
                 content: `
 <div class="gl-contacts-grid">
 <div class="gl-contact-card">
-<div class="gl-contact-role">List Owner</div>
+<div class="gl-contact-role">List Leader</div>
 <div class="gl-contact-name">QwidziT</div>
-<div class="gl-contact-detail">Determining level positions and overall managment</div>
+<div class="gl-contact-detail">Overall managment of the list</div>
 <div class="gl-contact-links">
 <span>Discord — @qwidzit</span>
 <span>Telegram — @qwidzit</span>
-</div>
-</div>
-<div class="gl-contact-card">
-<div class="gl-contact-role">Admin</div>
-<div class="gl-contact-name">VivisectionGD</div>
-<div class="gl-contact-detail">Level placements and quality control</div>
-<div class="gl-contact-links">
-<span>Discord — @vivisectiongd</span>
 </div>
 </div>
 <div class="gl-contact-card">
@@ -431,6 +423,13 @@
 </div>
 <div class="gl-contact-card">
 <div class="gl-contact-role">Elder List Moderator</div>
+<div class="gl-contact-name">ItzDel1ghtfuL</div>
+<div class="gl-contact-links">
+<span>Discord — @itzdel1ghtful</span>
+</div>
+</div>
+<div class="gl-contact-card">
+<div class="gl-contact-role">Elder List Moderator</div>
 <div class="gl-contact-name">LukeLGamer</div>
 <div class="gl-contact-links">
 <span>Discord — @lukelgamer</span>
@@ -445,16 +444,32 @@
 </div>
 <div class="gl-contact-card">
 <div class="gl-contact-role">List Moderator</div>
-<div class="gl-contact-name">ItzDel1ghtfuL</div>
+<div class="gl-contact-name">Vantevia</div>
 <div class="gl-contact-links">
-<span>Discord — @itzdel1ghtful</span>
+<span>Discord — @vantev1a</span>
 </div>
 </div>
 <div class="gl-contact-card">
 <div class="gl-contact-role">List Moderator</div>
-<div class="gl-contact-name">Vantevia</div>
+<div class="gl-contact-name">TheCatAstronaut</div>
 <div class="gl-contact-links">
-<span>Discord — @vantev1a</span>
+<span>Discord — @thecatastronaut</span>
+</div>
+</div>
+<div class="gl-contact-card">
+<div class="gl-contact-role">List Moderator</div>
+<div class="gl-contact-name">Qponn</div>
+<div class="gl-contact-links">
+<span>Discord — @q.ponn</span>
+<span>X — @qponnx</span>
+</div>
+</div>
+<div class="gl-contact-card">
+<div class="gl-contact-role">List Moderator</div>
+<div class="gl-contact-name">Blaster1337</div>
+<div class="gl-contact-links">
+<span>Discord — @blastuh</span>
+<span>X — @TheFakeBlaster</span>
 </div>
 </div>
 <div class="gl-contact-card">
