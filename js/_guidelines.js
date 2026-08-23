@@ -344,6 +344,7 @@
 <li>Determining Level Positions</li>
 <li>Placing Levels</li>
 <li>Participating in quality control</li>
+<li>Keeping the website up to date</li>
 </ul>
 </li>
 <li><strong>Admin</strong>
@@ -351,16 +352,16 @@
 <li>Determining Level Positions</li>
 <li>Placing Levels</li>
 <li>Participating in quality control</li>
+<li>Keeping the website up to date</li>
 <li>Managing one of the list\u2019s sectors of work:
 <ul>
 <li>Server management \u2014 Exiled_shade</li>
-<li>Level placements and quality control \u2014 VivisectionGD</li>
-<li>Determining Level Positions and list tiers \u2014 QwidziT</li>
+<li>List managment \u2014 QwidziT</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><strong>List Owner</strong>
+<li><strong>List Leader</strong>
 <ul>
 <li>Overall management of the list and its staff team</li>
 </ul>
