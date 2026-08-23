@@ -5,26 +5,26 @@
     "creators": ["teraaa","PLoLek","opwerden","_ego11","ItzMiraGD","00Zero","mordroc","Insxne97","deltaaimee","FreddyDash","Syng","Lykozzzz","acg_godrian",
     "dmitrygoose","schramzxc","VexexCA","noctalL","xe_nithhhh","qv6898","xVoidd","lum1noir","dutchiee_","revuegd","TriplashGD","Joswhay","LegC","MadryGD",
     "lGenoxide","ThunderDarkness","diamondskull3270","PlantLifeGD"],
-    "verifier": "Noctal",
+    "verifier": "LordVadercraft",
     "isVerified": false,
     "verification": "",
     "showcase": "https://www.youtube.com/watch?v=2j9nLPyE2Tw",
-    "lastUpd": "24.07.2025",
+    "lastUpd": "17.07.2026",
 
     "percentToQualify": 1,
     "records": [
         {
-            "user": "Noctal",
-            "link": "https://youtu.be/4tyRrH6jb00?si=cZ8z8_OTSgW_ZF3U",
-            "percent": 46,
+            "user": "LordVaderCraft",
+            "link": "https://www.youtube.com/watch?v=4lMO2aFKZnc",
+            "percent": 49,
             "hz": 240
         }
     ],
     "run": [
         {
-            "user": "Noctal",
-            "link": "https://www.youtube.com/watch?v=VQzQ7F-BcJc",
-            "percent": "45-100",
+            "user": "LordVaderCraft",
+            "link": "https://www.youtube.com/watch?v=tP_O6i71274",
+            "percent": "44-100",
             "hz": 240
         }
     ],
@@ -35,5 +35,5 @@
     "isMain": true,
     "isFuture": true,
 
-    "tags": ["XL", "Quality", "Finished", "Verifying"]
+    "tags": ["XL", "Quality", "Finished", "Verifying", "Remake"]
 }

@@ -1,20 +1,20 @@
 {
-    "id": "private",
+    "id": "144988390",
     "name": "Antarctic Lights",
     "author": "declan",
     "creators": ["declan","SkyJax"],
     "verifier": "Axinity",
-    "isVerified": false,
-    "verification": "",
-    "showcase": "https://youtu.be/oZfKkZ36L9Q",
-    "lastUpd": "08.02.2026",
+    "isVerified": true,
+    "verification": "https://youtu.be/Uue4ZRhVf-I",
+    "showcase": "https://youtu.be/oi5o9GTc7Qs",
+    "lastUpd": "17.07.2026",
 
     "percentToQualify": 71,
     "records": [
         {
             "user": "Axinity",
-            "link": "https://youtu.be/YoXSjNnWIlI?si=TC18MUb3fV0BW8nk",
-            "percent": 85,
+            "link": "https://x.com/axinity_/status/2074953787609903351?s=46",
+            "percent": 92,
             "hz": 240
         }
     ],
@@ -33,5 +33,5 @@
     "isMain": true,
     "isFuture": true,
 
-    "tags": ["Medium", "Finished", "Verifying", "NC", "Remake"]
+    "tags": ["Medium", "Finished", "Verified", "NC", "Remake", "Rated","Public"]
 }

@@ -1,0 +1,39 @@
+{
+    "id": "80469799",
+    "name": "SILENT HELHEIM",
+    "author": "Streamy450",
+    "creators": ["Streamy450","CairoX","GDSledge"],
+    "verifier": "Open Verification",
+    "isVerified": false,
+    "verification": "",
+    "showcase": "https://www.youtube.com/watch?v=b-WlUBrqNZ4",
+    "lastUpd": "30.05.2026",
+    "percentToQualify": 1,
+    "records": [
+        {
+            "user": "Kopyedz",
+            "link": "https://youtu.be/060zFAojlT0?si=RS3tHMbLG8aBKiY1",
+            "percent": 78,
+            "hz": 0
+        }
+    ],
+    "run": [
+        {
+            "user": "Kopyedz",
+            "link": "https://www.youtube.com/watch?v=BzajeK2m4BU&t=36",
+            "percent": "45-100",
+            "hz": 0
+        }
+    ],
+    "length": 51,
+    "rating": 1,
+    "percentFinished": 100,
+    "isMain": true,
+    "isFuture": true,
+    "tags": [
+        "Long",
+        "Finished",
+        "Verifying",
+        "Public"
+    ]
+}

@@ -14,16 +14,16 @@
     "records": [
         {
             "user": "Karma",
-            "link": "https://youtu.be/PE5uLyS96D0?si=TqlAjo0-PW1OJ82l",
-            "percent": 37,
+            "link": "https://x.com/1Karmakaze/status/2046645549093269603",
+            "percent": 46,
             "hz": 0
         }
     ],
     "run": [
         {
             "user": "Karma",
-            "link": "https://youtu.be/PE5uLyS96D0?si=AVivxB2M1NsOk9eE&t=59",
-            "percent": "36-67",
+            "link": "https://x.com/1karmakaze/status/2080365837198782855?s=46",
+            "percent": "57-100",
             "hz": 0
         }
     ],
@@ -32,7 +32,7 @@
     "rating": 1,
     "percentFinished": 100,
     "isMain": true,
-    "isFuture": false,
+    "isFuture": true,
 
-    "tags": ["Long","Finished","Being Verified"]
+    "tags": ["Long","Finished","Verifying"]
 }

@@ -1,13 +1,13 @@
 {
     "id": "private",
     "name": "ROCKSTAR LIFE",
-    "author": "[cherry] team",
+    "author": "[cherry] team // midixd",
     "creators": ["midixd","ego11","wiewmane","exxzorr","Zingxd","Hatashi","Etzeran","Liquidox","ssskkk"],
     "verifier": "Unknown",
     "isVerified": false,
     "verification": [],
-    "showcase": "https://youtu.be/_UPAF_lcs_s?si=DEWuoc6xK4G4uq_X",
-    "lastUpd": "13.12.2025",
+    "showcase": "https://youtu.be/PQ3SJBLzrRI?si=oKunqFR7vOmKqUsP",
+    "lastUpd": "03.07.2026",
 
     "percentToQualify": 0,
     "records": [
@@ -31,7 +31,7 @@
     "rating": 1,
     "percentFinished": 100,
     "isMain": true,
-    "isFuture": false,
+    "isFuture": true,
 
     "tags": ["Medium", "Finished", "NoNG"]
 }

@@ -1,0 +1,37 @@
+{
+    "id": "private",
+    "name": "ZANBOT",
+    "author": "Ido26",
+    "creators": ["Ido26"],
+    "verifier": "GMitzy",
+    "isVerified": false,
+    "verification": "",
+    "showcase": "https://youtu.be/75woVCCPYbw",
+    "lastUpd": "13.02.2026",
+
+    "percentToQualify": 1,
+    "records": [
+        {
+            "user": "GMitzy",
+            "link": "https://youtu.be/_PSRYZD1Ass?si=hE-tDYuYdd3ngPVm",
+            "percent": 53,
+            "hz": 0
+        }
+    ],
+    "run": [
+        {
+            "user": "GMitzy",
+            "link": "https://youtu.be/_PSRYZD1Ass?si=q8BTqD7PVxhiyFXd&t=106",
+            "percent": "33-100",
+            "hz": 0
+        }
+    ],
+
+    "length": 95,
+    "rating": 1,
+    "percentFinished": 100,
+    "isMain": true,
+    "isFuture": true,
+
+    "tags": ["Long","Remake","Verifying"]
+}

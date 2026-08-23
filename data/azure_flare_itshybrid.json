@@ -1,0 +1,38 @@
+{
+    "id": "private",
+    "name": "Azure Flare (ItsHybrid)",
+    "thumbnail": "https://i.ytimg.com/vi/nsw1IPm2TVg/hqdefault.jpg?sqp=-oaymwEmCMQBEG5IWvKriqkDGQgBFQAAiEIYAdgBAeIBCggYEAIYBjgBQAE=&rs=AOn4CLBcgvgsjeYS50sbaF4gj15VGUFgnw",
+    "author": "ItsHybrid",
+    "creators": ["ItsHybrid", "EndLevel"],
+    "verifier": "Diamond",
+    "isVerified": false,
+    "verification": "",
+    "showcase": "https://www.youtube.com/watch?v=kWY2ULjXEpo",
+    "lastUpd": "17.07.2026",
+
+    "percentToQualify": 50,
+    "records": [
+        {
+            "user": "Diamond",
+            "link": "https://www.youtube.com/live/PknC5na8x0k?t=18843&si=bPpYwgT8D8YxPzWf",
+            "percent": 69,
+            "hz": 0
+        }
+    ],
+    "run": [
+        {
+            "user": "Diamond",
+            "link": " https://www.youtube.com/watch?v=V9hZ-Po-fYs",
+            "percent": "57-100",
+            "hz": 0
+        }
+    ],
+
+    "length": 68,
+    "rating": 1,
+    "percentFinished": 100,
+    "isMain": true,
+    "isFuture": true,
+
+    "tags": ["Long", "NC", "Remake", "Finished", "Verifying"]
+}

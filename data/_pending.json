@@ -1,68 +1,103 @@
-[
+[  
     {
-        "name": "ZOINK NEVER CLEAR",
+        "name": "Octane",
         "placement": "1",
-        "link": "https://youtu.be/sdwrOXNV6ws?si=J7fZz9axNTpopYzv"
-    },  
+        "link": "https://youtu.be/6fnzx3KUE14?si=fuFHb4qvHg4Hszn7"
+    },
     {
-        "name": "WONDERLAND",
+        "name": "Midnight Moonlight",
         "placement": "1",
-        "link": "https://youtu.be/wyDGBiYtjOQ?si=qGWuFq65DwyDztG"
-    },  
+        "link": "https://www.youtube.com/watch?v=87lya-uNcHg"
+    },
+    {
+        "name": "Dream Dash",
+        "placement": "1",
+        "link": "https://www.youtube.com/watch?v=uYa8JPDVBw0"
+    },
+    {
+        "name": "Necrofantasia",
+        "placement": "1",
+        "link": "https://www.youtube.com/watch?v=Il_N475vqP8"
+    },
+    {
+        "name": "ANNIMA INMORTALIS",
+        "placement": "1",
+        "link": "https://youtu.be/KlZV5RoNG84?is=7bdO3wzhx8H4cl7z"
+    },
+    {
+        "name": "The labyrinth",
+        "placement": "1",
+        "link": "https://youtu.be/rDTtnUrxx58?si=Qhqyi1df5X9IwASo"
+    },
+    {
+        "name": "TIKI TIKI CIRCLES",
+        "placement": "10",
+        "link": "https://youtu.be/D6Xr_NMu7uI"
+    },
     {
         "name": "ByteShift",
         "placement": "10",
         "link": "https://youtu.be/HlLi-WAVeRk?si=gaxEPnZZ3DxorCfh"
     },
     {
-        "name": "Stoicism",
+        "name": "CASCADE (Amicrius)",
         "placement": "10",
-        "link": "https://www.youtube.com/watch?v=DcC8ZZzvH08"
+        "link": "https://youtu.be/IgO5QDztrXE?si=8aYq4jmSJrRFDECK"
     },
     {
-        "name": "Carcion",
+        "name": "belowZERO",
         "placement": "10",
-        "link": "https://youtu.be/hsBltB_8l0M?si=99rOJiaObd6nqITw"
+        "link": "https://youtu.be/8IJxmfvoXOE?si=7m8EWyBdbriRgJaO"
     },
     {
-        "name": "Nihilum",
+        "name": "Noblesse",
         "placement": "10",
-        "link": "https://www.youtube.com/watch?v=I31pahrX6Ic"
+        "link": "https://youtu.be/Oad5Xtq114E?si=gPrW61me4Tj7-uLq"
     },
     {
-        "name": "Silent Circles (Bunny)",
+        "name": "Bonfire",
         "placement": "10",
-        "link": "https://www.youtube.com/watch?v=IHQf0tiKVSI"
-    },
-    {
-        "name": "00 Genesis",
-        "placement": "10",
-        "link": "https://youtu.be/PAvL7kAupDY?si=ezDR9XLfcNw9k-zo"
+        "link": "https://www.youtube.com/watch?v=wq-_SFOT8wg"
     },
     {
         "name": "Constellations Song",
         "placement": "10",
-        "link": "https://youtu.be/wKB7HG3xdGc?si=Mnz8AyJw371Drt6Z"
+        "link": "https://youtu.be/wKB7HG3xdGc?si=xtkB2GWltz2hzUBr"
     },
     {
-        "name": "Outcast",
-        "placement": "20",
-        "link": "https://youtu.be/YLBSCpQuxLo?si=pg2d-MtT_zSCF0Eh"
+        "name": "OMEN",
+        "placement": "10",
+        "link": "https://www.youtube.com/watch?v=cKkYw4dG6NI"
     },
     {
-        "name": "Phantasm IV",
-        "placement": "20",
-        "link": "https://youtu.be/Asl2I4SVCcA?si=rmbjLXx1fzo469gC"
+        "name": "Kijin no Sensou",
+        "placement": "10",
+        "link": "https://youtu.be/HdN5yXyTs7M?si=lWrFDXg2kXnynwWR"
     },
     {
-        "name": "Sky Linuddier",
-        "placement": "20",
-        "link": "https://youtu.be/jIot3KCggmk?si=iAziMKh3p5Z4pvxD"
+        "name": "Chaoz Devotion",
+        "placement": "10",
+        "link": "https://youtu.be/M_uBKUuLbZk?si=3WbUBkyuvahCcfGN"
     },
     {
-        "name": "Losing Your Mind",
-        "placement": "20",
-        "link": "https://m.youtube.com/watch?v=OdNqIMzLRzE"
+        "name": "rYxUE",
+        "placement": "10",
+        "link": "https://youtu.be/ItzQjtwS_BU?is=7zxh7-hibHeM-Sej"
+    },
+    {
+        "name": "Darkmatter",
+        "placement": "10",
+        "link": "https://youtu.be/mNeYzatfvf8?si=Y4wG4z6AA2_bjYFN"
+    },
+    {
+        "name": "Aquamarine (ThePurgatory)",
+        "placement": "10",
+        "link": "https://youtu.be/SBBwiLDuovc?si=FwP9Ctg2J2TtWt8D"
+    },
+    {
+        "name": "Lets go to heaven",
+        "placement": "10",
+        "link": "https://youtu.be/XebMp5lgbiY"
     },
     {
         "name": "SwiftVortex",
@@ -72,12 +107,12 @@
     {
         "name": "The Fire and Flames",
         "placement": "20",
-        "link": "https://youtu.be/nZsVj499xeU?si=5Xbdde12FWxZzHeQ"
+        "link": "https://youtu.be/rEjQ2KE-_FU?si=EOMhOKxCcIDIXjIh"
     },
     {
-        "name": "NUCLEAR STAR",
+        "name": "BAD TO THE BONE",
         "placement": "20",
-        "link": "https://fxtwitter.com/luxurious_nexel/status/2025099832957042876?s=46"
+        "link": "https://www.youtube.com/watch?v=RkCcNOBM584"
     },
     {
         "name": "Narine",
@@ -85,34 +120,64 @@
         "link": "https://youtu.be/9WGGm4_FKt0"
     },
     {
-        "name": "Reference",
+        "name": "Bridge of Destiny",
         "placement": "20",
-        "link:": "https://youtu.be/sy2h5zTKDWU?si=jA7qVRE3l9xV5CD7"
+        "link": "https://youtu.be/HSDeqP5vtLs?si=Kebb8NmtVxsc8CBJ"
     },
     {
-        "name": "Distortion",
+        "name": "Stupid horse",
         "placement": "20",
-        "link": "https://youtu.be/WrKajZgS_tw?si=Ncdgtm6QuTRDX8OP"
+        "link": "https://youtu.be/wwqNmTqQM2A?si=9NqyuNuK1ByHcilv"
     },
     {
-        "name": "ENCELADUS",
+        "name": "PRODUKT",
         "placement": "20",
-        "link": "https://youtu.be/tNQty__fJYg?si=UJu8wjhBNQmfoa34"
+        "link": "https://youtu.be/qDU8uuxir_w"
     },
     {
-        "name": "Neutron Step",
+        "name": "Dreamcore",
+        "placement": "20",
+        "link": "https://www.youtube.com/watch?v=m7F8ERVIK4c"
+    },
+    {
+        "name": "Quantum Dominator",
+        "placement": "20",
+        "link": "https://www.youtube.com/watch?v=XRyYakntepU"
+    },
+    {
+        "name": "I Hate Myself",
+        "placement": "20",
+        "link": "https://youtu.be/R_2HNfGs9d0?si=UnGI65owWIAGSY1L"
+    },
+    {
+        "name": "pickled!",
         "placement": "30",
-        "link": "https://youtu.be/VdA-N0V5PjA"
+        "link": "https://www.youtube.com/watch?v=9OqVQOeIPaE"
     },
     {
-        "name": "ZANBOT",
+        "name": "EXECUTION",
         "placement": "30",
-        "link": "https://www.youtube.com/watch?v=75woVCCPYbw"
+        "link": "https://youtu.be/jbkqxoZbZVQ"
     },
     {
-        "name": "Shattered Kingdom",
+        "name": "E V E Rlasting",
+        "placement": "30",
+        "link":  "https://youtu.be/kBwCbuZniRI?si=eMEuyyZGuf4GQGVZ"
+	},
+    {
+        "name": "Retina",
+        "placement": "30",
+        "link": "https://youtu.be/EHnrbMH-eH4?si=ZTKk0M64p_W4z8Wg"
+    },
+    {
+        "name": "Flux Realms",
         "placement": "50",
-        "link": "https://youtu.be/0S5XYgn4K_0?si=gPvDonBoIeyE6Iu6"
+        "link": "https://www.youtube.com/watch?v=E9e5gXGxopI"
+    },
+    {
+        "name": "SOVEREIGN",
+        "placement": "50",
+        "link": "https://www.youtube.com/watch?v=GHmf4sK3YC8"
     },
     {
         "name": "WAVING",
@@ -130,9 +195,64 @@
         "link": "https://youtu.be/j-hK6bl5pMY?si=r3ITqBl3Jv-WKSIW"
     },
     {
-        "name": "PANIC",
+        "name": "MURASAKI",
         "placement": "50",
-        "link": "https://youtu.be/R_LfhqE7AVY?si=jRP0mRevLH_Djkuq"
+        "link": "https://www.youtube.com/watch?v=svsXsw3dc9k"
+    },
+    {
+        "name": "Goldcrest Calamity",
+        "placement": "50",
+        "link": "https://youtu.be/VJ8B8pKRWjw"
+    },
+    {
+        "name": "SOVEREIGN",
+        "placement": "50",
+        "link": "https://www.youtube.com/watch?v=GHmf4sK3YC8"
+    },
+    {
+        "name": "LEGION",
+        "placement": "50",
+        "link": "https://www.youtube.com/watch?v=bXX2O0hCBcc"
+	},
+    {
+        "name": "Intuition",
+        "placement": "50",
+        "link": "https://youtu.be/hovqVbU9flk?si=JY5IpzdJzYuK9-0B"
+    },
+    {
+        "name": "Zonescapes",
+        "placement": "50",
+        "link": "https://youtu.be/CCuTrDBxIAQ?is=2KaAZ9wNKYHddZgo"
+    },
+    {
+        "name": "Sacrifice",
+        "placement": "50",
+        "link": "https://youtu.be/RPhy6t2bb04?si=UVDeE5wW_dH_5IYC"
+    },
+    {
+        "name": "Cyberwave",
+        "placement": "50",
+        "link": "https://youtu.be/JFYAneB9QQk"
+    },
+    {
+        "name": "Mind Rush",
+        "placement": "50",
+        "link": "https://youtu.be/IYXd7uHOglI?si=jWZxuzQG5G2Xc0Ex&t=8"
+    },
+    {
+        "name": "MODERATE TALKING",
+        "placement": "50",
+        "link": "https://www.youtube.com/watch?v=ibIW3d_XogE"
+    },
+    {
+        "name": "Sylentium Dynamas",
+        "placement": "50",
+        "link": "https://youtu.be/4jFTz9VtS5w?si=WRGcyLZ_C_byKucc"
+    },
+    {
+        "name": "Silly Machine",
+        "placement": "50",
+        "link": "https://youtu.be/jIHdJqsrxe0"
     },
     {
         "name": "Session 1",
@@ -140,99 +260,119 @@
         "link": "https://youtu.be/WOtisHee84k?si=n_Zr4w3QjdI8e22Z"
     },
     {
-        "name": "Final Level",
+        "name": "Predatorcore",
         "placement": "75",
-        "link": "https://youtu.be/X2lFZ1xhqxU?si=5bJOLYSP4kG7XXkL"
+        "link": "https://youtu.be/BnFA1Hy7Tag?si=Z1sug_giiJEXfzhW"
     },
     {
-        "name": "Vindication",
+        "name": "EVERBLOOM",
         "placement": "75",
-        "link": "https://www.youtube.com/watch?v=vq2oEIuyLTo"
+        "link": "https://youtu.be/P4jHbUwkUv8?si=ZEf0QTOBRe0QgdaB"
     },
     {
-        "name": "The French",
+        "name": "LET IT HAPPEN",
         "placement": "75",
-        "link": "https://youtu.be/910sbdTvqsg?si=krPhezFlAY-WjD6z"
+        "link": "https://www.youtube.com/watch?v=gdWVol9b0vs"
     },
     {
-        "name": "Fall In Line",
+        "name": "HYTHER",
         "placement": "75",
-        "link": "https://youtu.be/ALqVF96ARBU?si=qjplhr7GHTfatLiB"
+        "link": "https://fxtwitter.com/zappiks/status/2052006108613517453?s=46"
     },
     {
-        "name": "Despair",
+        "name": "THE GUDHSJ38",
         "placement": "75",
-        "link": "https://youtu.be/6n6uxqWVYhs?si=PUWH04hXyssfp5fD"
+        "link": "https://youtu.be/BaKclZk1FpE?si=v8VFdibji5tFOcgO"
     },
     {
-        "name": "NOTARTARUS",
-        "placement": "75",
-        "link": "https://www.youtube.com/watch?v=nGN-fQ6AnBA"
-    },
-    {
-        "name": "Canyon",
-        "placement": "75",
-        "link": "https://www.youtube.com/watch?v=IYM4Nh17_Ko"
-    },
-    {
-        "name": "CONTRAVENTION",
-        "placement":"75",
-        "link": "https://youtu.be/bo8SClU_kN4?si=srT0DcpaienIbCBD"
-    },
-    {
-        "name": "Enchanting Skylight",
-        "placement": "75",
-        "link": "https://youtu.be/GYKtnUqxG1E?si=dIvDV_b_VxXXVnLk"
-    },
-    {
-        "name": "EF",
-        "placement": "75",
-        "link": "https://youtu.be/Amu_WEcP9u0?si=IRwRPbS28rWzhy3R"
-    },
-    {
-        "name": "BALLISTIC BALLPIT",
-        "placement": "75",
-        "link": "https://youtu.be/6Baug9fL9JA?si=WeZHdDERPU1rWBsv"
-    },
-    {
-        "name": "the last dream",
-        "placement": "75",
-        "link": "https://www.youtube.com/watch?v=8IH56Bog3xs"
-    },
-       {
-        "name": "Operation Zoink",
-        "placement": "75",
-        "link": "https://www.youtube.com/watch?v=NvsLfMfstsg"
-    },
-    {
-        "name": "Fiberglass",
+        "name": "Marks",
         "placement": "?",
-        "link": "https://youtu.be/2L0CNK1xSlo?si=_guQX5Prn4jct0-w"
+        "link": "https://www.youtube.com/watch?v=mhqLyk10BvY"
+	},
+	{
+        "name": "NervHell",
+        "placement": "75",
+        "link": "https://www.youtube.com/watch?v=-yOd5eZKZbg"
     },
     {
-        "name": "Quantong Processing",
-        "placement": "?",
-        "link": "https://www.youtube.com/watch?v=oubFsPJ9yYM&pp=ygULcXVhbnRvbmcgZ2TSBwkJxQoBhyohjO8%3D"
+        "name": "Pinnacle of Life",
+        "placement": "75",
+        "link": "https://youtu.be/xF0gkz-CZOU"
     },
-    {
-        "name": "Vaporeta",
-        "placement": "?",
-        "link": "https://m.youtube.com/watch?v=pNdFGeeStjo"
+        {
+        "name": "The Impaler",
+        "placement": "75",
+        "link": "https://youtu.be/5TnpCHVk-t4?si=F-lYoNpTwHuWquFd"
     },
-    {
-        "name": "Hyoko",
+	{
+		"name": "Reveries End",
         "placement": "?",
-        "link": "https://youtu.be/zTDVM56hr_I?si=fSOfbbK2VVWwtuT3"
-    },
-    {
-        "name": "Deadly Clubstep V2",
-        "placement": "?",
-        "link": "https://youtu.be/KqRa14K1C68?si=jQ1T8N5pSgu-1tP8"
-    },
+        "link": "https://youtu.be/H-wM-Y_esNs?si=Dd2SV_al8To25ZgT"
+	},
+	{
+		"name": "Futuropolis",
+        "placement": "75",
+        "link": "https://youtu.be/omzrn7nxg14?si=gqgIoaECboW2IH9d"
+	},
+	{
+		"name": "Lux",
+        "placement": "75",
+        "link": "https://youtu.be/4RdbUcy2a1I?si=AWMWPuLr3T-Rn2A6"
+	},
+	{
+		"name": "YV Canis Majoris",
+        "placement": "75",
+        "link": "https://youtu.be/eni_QW0Gczs?is=6N6Kk4--15iu4XKK"
+	},
+	{
+		"name": "Dark Matter",
+        "placement": "75",
+        "link": "https://youtu.be/peLd4w3wMA0?is=jTGnJX1FmC_hJSBa"
+	},
+	{
+		"name": "Arctic Lighs bugfi",
+        "placement": "75",
+        "link": "https://youtu.be/lCv9sDWdFcM"
+	},
+	{
+		"name": "Ultra Realistik",
+        "placement": "75",
+        "link": "https://youtu.be/R4AsQtErJS4"
+	},
+	{
+		"name": "Forgotten Power",
+        "placement": "75",
+        "link": "https://youtu.be/6Yq39Hgzazg"
+	},
     {
         "name": "The Final Phase",
         "placement": "?",
         "link": "https://www.youtube.com/watch?v=nBcJivS8X1A"
+    },
+    {
+        "name": "SUPERFEARMEWORLD",
+        "placement": "?",
+        "link": "https://youtu.be/xMXlbfKUKFY?si=yPerkxJo5cLB705l"
+    },
+    {
+        "name": "Duralusgore",
+        "placement": "?",
+        "link": "https://youtu.be/KZeThM51Ybo?si=RaUr6kjl3cTdr19x"
+    },
+	{
+        "name": "Tau",
+        "placement": "?",
+        "link": "https://youtu.be/1yIvplQz6Zk?si=cFTNbfRRQNX9NVns"
+    },
+	{
+        "name": "Castlevania",
+        "placement": "?",
+        "link": "https://www.youtube.com/watch?v=Y8ay8ir7awg"
+    },
+    {
+        "name": "Quantong Processing",
+        "placement": "?",
+        "link": "https://youtu.be/YVlsvg9dmQQ"
     },
     {
         "name": "Korobeiniki",
@@ -240,13 +380,105 @@
         "link": "https://www.youtube.com/watch?v=E5PURBZEKXM"
     },
     {
-        "name": "EVERBLOOM",
+        "name": "METHHEAD",
         "placement": "?",
-        "link": "https://youtu.be/P4jHbUwkUv8?si=ZEf0QTOBRe0QgdaB"
+        "link": "https://youtu.be/kaPjBlbxjZY?si=cbldf71Yf84NTEIh"
+
     },
     {
-        "name": "Belowzero",
+        "name": "Silent Silhouette",
         "placement": "?",
-        "link": "#"
+        "link": "https://www.youtube.com/watch?v=_enNhDjPAbU&feature=youtu.be"
+    },
+    {
+        "name": "In Stasis",
+        "placement": "?",
+        "link": "https://youtu.be/QiMepc8xMnU"
+    },
+    {
+        "name": "TERROR",
+        "placement": "?",
+        "link": "https://youtu.be/wCXCBrCTUKA"
+    },
+    {
+        "name": "BauDakes",
+        "placement": "?",
+        "link": "https://youtu.be/bxzXBr19PC4?si=Vxz-Kn0mBx8uTjmT"
+    },
+    {
+        "name": "Sheol 9",
+        "placement": "?",
+        "link": "https://youtu.be/4SWnWFQG8M0?is=E8j4T7aShpaiJW3o"
+    },
+    {
+        "name": "FUKOUNA GIRL",
+        "placement": "?",
+        "link": "https://youtu.be/86LrgginTDk?is=pir_ZD_OeNkc7zZU"
+    },
+    {
+        "name": "DRY BASS",
+        "placement": "?",
+        "link": "https://youtu.be/Wq789vXPMmA"
+    },
+    {
+        "name": "CHROMEDOLL",
+        "placement": "?",
+        "link": "https://www.youtube.com/watch?v=jSG8SQsCOMQ"
+    },
+    {
+        "name": "MAXIMUM DOSAGE",
+        "placement": "?",
+        "link": "https://youtu.be/dYGgzf7i_Ak"
+    },
+    {
+        "name": "Lunatic Circuit",
+        "placement": "?",
+        "link": "https://youtu.be/qAssa5ZdpA4?si=yDKjjPDfO6U1my4E"
+    },
+    {
+        "name": "LEZIBRUV",
+        "placement": "?",
+        "link": "https://www.youtube.com/watch?v=oBBbPVmSE2U"
+    },
+    {
+        "name": "too Much processing",
+        "placement": "?",
+        "link": "https://www.youtube.com/watch?v=yAIdKH_zsrQ"
+    },
+    {
+        "name": "infernis",
+        "placement": "?",
+        "link": "https://www.youtube.com/watch?v=bk1L0maqd3k"
+    },
+    {
+        "name": "HAIL",
+        "placement": "?",
+        "link": "https://youtu.be/RjCEH6EIILk?si=f3n9zxQJ3ZBing93"
+    },
+    {
+        "name": "PEAK",
+        "placement": "?",
+        "link": "https://www.youtube.com/watch?v=SmodVRct7I8"
+    },
+    {
+        "name": "BLOOD IN THE WATER",
+        "placement": "?",
+        "link": "https://youtu.be/0kkfxPIL1NQ?si=SSSxTxzLOqElDhbC"
+    },
+    {
+        "name": "Cyberpsychosis",
+        "placement": "?",
+        "link": ""
+    },
+    {
+        "name": "Bad Times",
+        "placement": "?",
+        "link": "https://youtu.be/G_J_zrKMnf4?si=kZg_lCQeUgcBuE4L"
+    },
+    {
+        "name": "CHROMAFLUX",
+        "placement": "?",
+        "link": "https://youtu.be/xFUrY48npOg"
     }
 ]
+ 

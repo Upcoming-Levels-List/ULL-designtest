@@ -8,32 +8,32 @@
     "verifier": "Open Verification",
     "isVerified": false,
     "verification": "",
-    "showcase": "https://youtu.be/t2-ktFtTqBM ",
+    "showcase": "https://youtu.be/t2-ktFtTqBM",
     "percentToQualify": 20,
     "records": [
         {
-            "user": "garbag",
-            "link": "https://youtu.be/VphXNq993xM",
-            "percent": 39,
+            "user": "Zoink",
+            "link": "https://youtu.be/Hld_6Bmzu8M?si=1cR4RmCvBPWHSniW",
+            "percent": 51,
             "hz": 240
         }
     ],
     "length": 131,
     "rating": 1,
     "percentFinished": 100,
-    "lastUpd": "25.02.2026",
+    "lastUpd": "16.04.2026",
 
     "isMain": true,
     "isFuture": true,
 
     "run": [
         {
-            "user": "Abdiedevil",
-            "link": "https://youtu.be/nFFZ9rKU0h4?si=M0LA1MG4srD-VGyj",
-            "percent": "38-95",
+            "user": "Zoink",
+            "link": "https://www.youtube.com/watch?v=8U0NPdsK8s4&t=5870s",
+            "percent": "37-100",
             "hz": 670
         }
     ],
 
-    "tags": ["Finished", "Verifying", "XL", "NONG", "Quality"]
+    "tags": ["Finished", "Verifying", "XL", "NONG", "Quality", "Public", "Open Verification"]
 }

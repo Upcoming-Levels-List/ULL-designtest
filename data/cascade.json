@@ -2,13 +2,13 @@
     "id": "private",
     "name": "Cascade",
     "thumbnail": "https://i.ytimg.com/vi/QwEtqJjEg-8/hq720.jpg?sqp=-oaymwEnCOgCEMoBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLAg4TM5gsMUcv7tZLPwFqethevoYQ",
-    "author": "[cherry] team",
-    "creators": [],
+    "author": "[cherry] team | Vernam",
+    "creators": ["Vernam","nickname09"],
     "verifier": "unknown",
     "isVerified": false,
     "verification": "",
     "showcase": "https://www.youtube.com/watch?v=R6f0id50mwg",
-    "lastUpd": "06.07.2025",
+    "lastUpd": "17.05.2026",
 
     "percentToQualify": 1,
     "records": [
@@ -31,7 +31,7 @@
     "length": 150,
     "rating": 1,
     "percentFinished": 0,
-    "isMain": true,
+    "isMain": false,
     "isFuture": false,
 
     "tags": ["Layout", "XL", "NONG", "Quality"]

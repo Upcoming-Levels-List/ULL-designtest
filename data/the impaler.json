@@ -1,0 +1,40 @@
+{
+    "id": "private",
+    "name": "The Impaler",
+    "author": "unknxwnteam // Yxlo",
+    "creators": ["Ky", "ItzFeaver", "duserlane", "Hyuu", "Kremain", "keter", "Hyudesu", "ikanoz", "Tayfrog", "kamarotgd",
+    "artios", "Yxlo", "Animized","TrollyGMD","Akari","EX01C", "Karoc" ,"FinniGD","Scyin", "Allia","Soleyt",
+    "Gabe","Cupidr","Devil","Carnatenarion","Zosmic","Nays4KG","Avocal","RealCookRay","Vexage","SiaGD",
+    "Ilysims","Santtu","Mornig","Goldship","Avocalsib","Yummypoo","Sakio","Kly","qwz","Tr1ppy","bagelz","Alex"],
+    "verifier": "Blyfl",
+    "isVerified": false,
+    "verification": "",
+    "showcase": "https://www.youtube.com/watch?v=1PEgXEgdO2k",
+    "lastUpd": "03.05.2026",
+
+    "percentToQualify": 1,
+    "records": [
+        {
+            "user": "none",
+            "link": "",
+            "percent": 0,
+            "hz": 0
+        }
+    ],
+    "run": [
+        {
+            "user": "none",
+            "link": "",
+            "percent": "0",
+            "hz": 0
+        }        
+    ],
+
+    "length": 0,
+    "rating": 1,
+    "percentFinished": 100,
+    "isMain": true, 
+    "isFuture": false,
+
+    "tags": []
+}

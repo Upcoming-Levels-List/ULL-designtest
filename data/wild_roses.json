@@ -2,36 +2,32 @@
     "id": "private",
     "name": "Wild Roses",
     "author": "[cherry] team",
-    "creators": [],
+    "creators": ["Vernam","Ariller","MinAY","KiraGDMJ","Hashinoby","kissthechrist","Winchester","Iten47","Konsi"],
     "verifier": "Eiriley",
-    "isVerified": false,
-    "verification": "",
-    "showcase": "https://youtu.be/13pj34hEF4w?si=W7Gu1CNmJmRqmhqm",
-    "lastUpd": "07.03.2026",
+    "isVerified": true,
+    "verification": "https://youtu.be/MnOSbQQV_wA?si=XcnwJtY43GVk7aQK",
+    "showcase": "https://youtu.be/ParLtwMIWzI?si=Lz8lBco8dNfFQbgZ",
+    "lastUpd": "01.08.2026",
     "percentToQualify": 1,
     "records": [
         {
-            "user": "Eiriley",
-            "link": "https://www.youtube.com/live/1XOoz0y7tzk?si=eIlrfd9_IUwlr0LD",
-            "percent": 17,
-            "hz": 0
+
         }
     ],
     "run": [
         {
-            "user": "Eiriley",
-            "link": "https://youtube.com/live/bLMh-DFW3ik?feature=share",
-            "percent": "68-90",
-            "hz": 0
+        
         }
     ],
     "length": 70,
     "rating": 1,
-    "percentFinished": 75,
+    "percentFinished": 100,
     "isMain": true,
     "isFuture": true,
     "tags": [
         "Quality",
-        "Long"
+        "Long",
+        "Finished",
+        "Public"
     ]
 }

@@ -1,0 +1,37 @@
+{
+    "id": "private",
+    "name": "Tunnel of Serpent",
+    "author": "Demi",
+    "creators": ["Demi","Zanzz","Zars70","BK"],
+    "verifier": "Serpentical",
+    "isVerified": false,
+    "verification": "",
+    "showcase": "https://youtu.be/rcHE78QQSp8?si=8ezRZAKLyesoguvR",
+    "lastUpd": "14.07.2026",
+
+    "percentToQualify": 1,
+    "records": [
+        {
+            "user": "Tunnel of Serpent",
+            "link": "https://youtu.be/NtMZGXKdHxY?is=DacRU1LP3d20NopV",
+            "percent": 60,
+            "hz": 0
+        }
+    ],
+    "run": [
+        {
+            "user": "Serpentical",
+            "link": "https://www.youtube.com/watch?v=V3T8oUPawwQ",
+            "percent": "21-100",
+            "hz": 0
+        }
+    ],
+
+    "length": 83,
+    "rating": 1,
+    "percentFinished": 100,
+    "isMain": true,
+    "isFuture": true,
+
+    "tags": ["Long", "Verifying", "Remake"]
+}

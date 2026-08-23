@@ -27,23 +27,23 @@
     "verifier": "Zeronium",
     "isVerified": false,
     "verification": "",
-    "showcase": "https://youtu.be/V_QJz6fT-ns?si=PRrgOsYI3_oQ-4OM",
-    "lastUpd": "17.01.2026",
+    "showcase": "https://youtu.be/8xo2A4-wmxU?si=ZXzf56De07EdRzTn",
+    "lastUpd": "17.08.2026",
     "percentToQualify": 1,
     "records": [
         {
-            "user": "none",
-            "link": "",
-            "percent": 0,
-            "hz": 0
+            "user": "Zeronium",
+            "link": "https://youtu.be/iytXr2brrsU?si=VOg_Zv8F-uApVV0q",
+            "percent": 33,
+            "hz": 240
         }
     ],
     "run": [
         {
-            "user": "none",
-            "link": "",
-            "percent": "0",
-            "hz": 0
+            "user": "Zeronium",
+            "link": "https://youtu.be/iytXr2brrsU?si=VOg_Zv8F-uApVV0q",
+            "percent": "32-66",
+            "hz": 240
         }
     ],
     "length": 164,

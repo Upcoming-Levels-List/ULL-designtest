@@ -1,21 +1,21 @@
 {
     "id": "private",
     "name": "Orochi",
-    "thumbnail": "https://i.ytimg.com/vi/8YvcFDPdja4/hq720.jpg?sqp=-oaymwEnCOgCEMoBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBmJcNc_lUxj6aLyJFSOwIUtME9NQ", 
+    "thumbnail": "https://i.ytimg.com/vi/8YvcFDPdja4/hq720.jpg?sqp=-oaymwEnCOgCEMoBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBmJcNc_lUxj6aLyJFSOwIUtME9NQ",
     "author": "KnobbelBoy",
     "creators": [],
     "verifier": "unknown",
     "isVerified": false,
     "verification": "",
     "showcase": "https://www.youtube.com/watch?v=xoLRFHQwExE",
-    "lastUpd": "14.07.2025",
+    "lastUpd": "14.08.2026",
 
     "percentToQualify": 1,
     "records": [
         {
-            "user": "Phobos",
-            "link": "https://youtu.be/wKOedTTMyTs?si=IXDd-dEJNVKTlZh8",
-            "percent": 49,
+            "user": "none",
+            "link": "",
+            "percent": 0,
             "hz": 0
         }
     ],

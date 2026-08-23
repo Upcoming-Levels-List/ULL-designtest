@@ -1,13 +1,13 @@
 {
-    "id": "private",
+    "id": "138510530",
     "name": "diviners sage",
     "author": "kwipkat",
     "creators": [],
-    "verifier": "karmakaze",
-    "isVerified": false,
-    "verification": "",
-    "showcase": "https://youtu.be/8G0F3GDkaKc?si=LeEWE5ifc-_4jN6g",
-    "lastUpd": "30.11.2025",
+    "verifier": "Karma",
+    "isVerified": true,
+    "verification": "https://youtu.be/0_VSfH6Bedg?si=uXBZbu_vAKpRr4mX",
+    "showcase": "https://youtu.be/8G0F3GDkaKc?si=96kVDtxT6tGrbNhm",
+    "lastUpd": "19.04.2026",
 
     "percentToQualify": 1,
     "records": [
@@ -29,9 +29,9 @@
 
     "length": 148,
     "rating": 1,
-    "percentFinished": 0,
+    "percentFinished": 100,
     "isMain": true,
-    "isFuture": false,
+    "isFuture": true,
 
-    "tags": ["XL", "Remake"]
+    "tags": ["XL", "Remake", "Verified", "Unrated", "Public", "Finished"]
 }

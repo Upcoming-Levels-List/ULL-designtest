@@ -7,14 +7,14 @@
     "isVerified": false,
     "verification": "",
     "showcase": "https://www.youtube.com/watch?v=RDPySzeWKPA",
-    "lastUpd": "21.10.2025",
+    "lastUpd": "29.05.2026",
 
     "percentToQualify": 1,
     "records": [
         {
             "user": "Waltty",
-            "link": "https://youtu.be/wtsiiTzQ5jQ?si=F2r9-20FgJc_V-_P",
-            "percent": 61,
+            "link": "https://youtu.be/HUvZzy00Rek",
+            "percent": 74,
             "hz": 0
         }
     ],
@@ -33,5 +33,5 @@
     "isMain": true,
     "isFuture": true,
 
-    "tags": ["Public", "Long", "Verifying"]
+    "tags": ["Public", "Long", "Verifying", "Finished"]
 }

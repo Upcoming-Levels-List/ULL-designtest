@@ -3,12 +3,12 @@
     "name": "Glass Chapel",
     "thumbnail": "https://i.ytimg.com/vi/2Ln2-xW9eS8/hq720.jpg?sqp=-oaymwEnCOgCEMoBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDMN53lshB7FXQXE1AqsBfjosq1jQ",
     "author": "Arraegen",
-    "creators": [],
+    "creators": ["Arraegen"],
     "verifier": "iIiLaseriIi",
     "isVerified": false,
     "verification": "",
-    "showcase": "https://youtu.be/tU2Jx44LOro?si=Jo-bMKsf7p5Yg_4c",
-    "lastUpd": "13.04.2026",
+    "showcase": "https://youtu.be/tU2Jx44LOro?si=KOM7V8e-VC5tHyeC",
+    "lastUpd": "15.04.2026",
 
     "percentToQualify": 1,
     "records": [
@@ -21,8 +21,8 @@
     ],
     "run": [
         {
-            "user": "none",
-            "link": "https://www.youtube.com/watch?v=RFLo0l1HL9w",
+            "user": "iIiLaseriIi",
+            "link": "https://www.youtube.com/watch?v=KjkoO3pS96M",
             "percent": "65-100",
             "hz": 0
         }
@@ -34,5 +34,5 @@
     "isMain": true,
     "isFuture": true,
 
-    "tags": ["XXL", "Quality", "Verifying"]
+    "tags": ["XXL", "Quality", "Verifying", "Finished"]
 }

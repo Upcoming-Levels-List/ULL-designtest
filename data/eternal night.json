@@ -2,7 +2,7 @@
     "id": "private",
     "name": "Eternal Night",
     "author": "Electro",
-    "creators": [],
+    "creators": ["el3ctr0", "swiborg"],
     "verifier": "Swiborg",
     "isVerified": false,
     "verification": "",
@@ -10,17 +10,17 @@
     "percentToQualify": 32,
     "records": [
         {
-            "user": "Trolly1",
-            "link": "https://www.youtube.com/watch?v=f9ewrnsAAvs",
-            "percent": 31,
+            "user": "Al3xTT",
+            "link": "https://youtu.be/wPCb6prtlqM?is=7opdIloNezlJH1Wy",
+            "percent": 37,
             "hz": 0
         }
     ],
     "run": [
         {
-            "user": "Thnnder",
-            "link": "https://www.youtube.com/watch?v=ZDfj5fYkCS0",
-            "percent": "63-100",
+            "user": "Mizukii",
+            "link": "https://youtu.be/cD3o9bOf_0w?si=2LEemy0fj5VpM5UX",
+            "percent": "38-100",
             "hz": 0
         }
     ],
@@ -30,6 +30,6 @@
 
     "isMain": true,
     "isFuture": false,
-    "lastUpd": "17.11.2025",
+    "lastUpd": "21.07.2026",
     "tags": ["Long"]
 }

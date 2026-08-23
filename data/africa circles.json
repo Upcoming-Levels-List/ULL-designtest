@@ -1,28 +1,29 @@
 {
     "id": "private",
     "name": "Africa Circles",
+    "thumbnail": "https://i.ytimg.com/vi/pljyLB5w_nI/hqdefault.jpg?sqp=-oaymwEnCOADEI4CSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDQ7ssmUqKwsqwSdIgD3Xl90kvq3A",
     "author": "LinearGD",
     "creators": ["LinearGD"],
     "verifier": "ChopBlox",
     "isVerified": false,
     "verification": "",
-    "showcase": "https://youtu.be/5aurqFdG-2Q?si=fOlNdOP-uNRSGRAh",
-    "lastUpd": "22.03.2026",
+    "showcase": "https://youtu.be/fd4Yo7UWd3E?si=c669IkMi0h45PaWr",
+    "lastUpd": "30.05.2026",
 
     "percentToQualify": 60,
     "records": [
         {
             "user": "ChopBlox",
-            "link": "https://youtu.be/x2h-o_olar0?si=7PhExf530eurkuT1",
-            "percent": 50,
+            "link": "https://youtu.be/UHVqmFxujbA?si=EQeu401XTclD0KEt",
+            "percent": 61,
             "hz": 0
         }
     ],
     "run": [
         {
             "user": "ChopBlox",
-            "link": "https://youtu.be/qz7SFkiik1Q?si=MrbJl_dDeO1Hy1u_",
-            "percent": "49-100",
+            "link": "https://youtu.be/53ReXptKkjk?si=OiKztE65SAg1fYHi",
+            "percent": "14-100",
             "hz": 0
         }
     ],
@@ -31,7 +32,7 @@
     "rating": 1,
     "percentFinished": 100,
     "isMain": true,
-    "isFuture": false,
+    "isFuture": true,
 
     "tags": ["Long", "Finished", "Verifying"]
 }
