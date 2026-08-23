@@ -22,9 +22,11 @@ const jn = (v) => v === undefined || v === null ? 'NULL' : q(JSON.stringify(v));
 const num = (v) => v === undefined || v === null || v === '' ? 'NULL' : Number(v);
 const bit = (v) => (v ? 1 : 0);
 
+// NOTE: no `password` / `difficulty` — those aren't in the JSON and aren't
+// columns on the real `levels` table (they came from a reconstructed Worker).
 const LEVEL_COLS = [
   'path', 'name', 'author', 'creators', 'verifier', 'verification', 'showcase',
-  'thumbnail', 'frameCounter', 'id', 'password', 'difficulty', 'rating',
+  'thumbnail', 'frameCounter', 'id', 'rating',
   'length', 'percentToQualify', 'percentFinished', 'lastUpd', 'tags',
   'records', 'run', 'isVerified', 'isMain', 'isFuture', 'benchmark', 'sort_order',
 ];
@@ -41,8 +43,6 @@ function levelValues(slug, j, order) {
     s(j.thumbnail),                  // thumbnail
     j.frameCounter ? q(j.frameCounter) : 'NULL', // frameCounter
     s(j.id),                         // id (stored as text)
-    s(j.password),                   // password (not in JSON -> '')
-    s(j.difficulty),                 // difficulty (not in JSON -> '')
     num(j.rating),                   // rating
     num(j.length),                   // length
     num(j.percentToQualify),         // percentToQualify
