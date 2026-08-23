@@ -186,12 +186,17 @@ largely commented out. Treat as low-priority / verify before relying on them.
 
 ---
 
-## 4. Currently broken (as of the user's last report — "a month has passed")
+## 4. Historical outage (RESOLVED — kept for reference)
 
-The user is unsure which of the last setup steps were completed. **These three features are
-broken right now:**
+> ✅ **All three were fixed.** Root cause: the deployed Worker used `name` for the `editor_keys`
+> table whose real column is `editor_name` (→ Error 1101 broke `/api/editors` *and* `authed()`,
+> so no logged-in writes worked), and it was missing `GET /api/auth/validate` (→ login 404'd, so
+> LotM/CTV could never be saved). The corrected `worker/worker.js` fixes both. The diagnosis
+> below is retained as a worked example.
 
-1. **List Editors** (Home page + mobile + admin Editors tab) — shows blank / empty.
+Symptoms at the time:
+
+1. **List Editors** (Home page + mobile + admin Editors tab) — showed blank / empty.
 2. **Level of the Month (LotM)** — not showing on the Events page.
 3. **Closest to Verification (CTV)** — not showing on the Events page.
 
@@ -414,9 +419,31 @@ Cloudflare dashboard → Workers & Pages → the worker → **Quick Edit** → p
 There is no CI; deploys are manual through the dashboard.
 
 ### Deploying the frontend / replacing the old site
-Static site. Intended host is Cloudflare Pages (or GitHub Pages) pointed at this repo's root;
-`index.html` is the entry point and routing is client-side hash routing (`#/list`, etc.).
+Static site. Intended host is Cloudflare Pages pointed at this repo's root; `index.html` is the
+entry point and routing is **history mode** (clean URLs like `/list`) — the repo's `_redirects`
+SPA fallback (`/* /index.html 200`) is required so deep links / refreshes don't 404.
 To fully replace an old site: back it up, then point the host at this repo's root.
+
+### Migrating the JSON data into D1 (`scripts/`)
+The list's canonical data still lives as JSON files in `/data` (per-level `<slug>.json` +
+`_list.json` order, `_pending.json`, `_levelMonth.json`, `_levelVerif.json`). To load it into
+the live D1 database:
+
+1. **Make sure `/data` is current.** The generator only sees the working tree. If `main` has
+   newer data than this checkout, pull it first (`git checkout origin/main -- data/`) — otherwise
+   you migrate a stale snapshot (this bit us once: 447 vs 479 levels).
+2. `node scripts/build-migration.js` → regenerates `scripts/migrate.sql` (a `DELETE`+`INSERT`
+   replace of `levels` and `pending`, plus a `config` upsert for `levelMonth`/`levelVerif`).
+   **Editors are never touched** (key hashes aren't in the JSON).
+3. Import: `wrangler d1 execute d1-template-database --remote --file=scripts/migrate.sql`.
+   `wrangler ... --file` runs the file as one atomic batch, so a failure rolls back.
+
+Gotchas learned the hard way:
+- **No `BEGIN TRANSACTION`/`COMMIT`** in the SQL — D1 rejects SQL transaction statements.
+- **Only insert columns that exist on the real table.** The reconstructed Worker referenced
+  `password`/`difficulty` on `levels`, which don't exist live — the generator omits them.
+- Run the Step-0 `ALTER TABLE` migrations (section 8, D1 setup SQL) first so `frameCounter`,
+  `benchmark`, and `indefinite` exist before importing.
 
 ---
 
