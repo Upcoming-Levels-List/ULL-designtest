@@ -183,10 +183,12 @@ check(`appears past 10 rows (~${Math.round(rowH * 11)}px)`, true);
 const box = await p.$eval('.scroll-top-btn', b => {
   const r = b.getBoundingClientRect();
   const col = document.querySelector('.list-container-new').getBoundingClientRect();
-  return { bottomGap: innerHeight - r.bottom, insideColumn: r.left >= col.left && r.right <= col.right, w: r.width };
+  return { bottomGap: innerHeight - r.bottom, insideColumn: r.left >= col.left && r.right <= col.right, w: r.width, h: r.height };
 });
 check('floats near the bottom of the viewport', box.bottomGap > 0 && box.bottomGap < 80, JSON.stringify(box));
 check('stays inside the list column (not over the level pane)', box.insideColumn, JSON.stringify(box));
+// Regression guard: the 0-height flex wrapper used to squash the button to a sliver.
+check('is a full-height pill, not a sliver (>= 22px tall)', box.h >= 22, JSON.stringify(box));
 await p.click('.scroll-top-btn');
 await p.waitForFunction((sel) => document.querySelector(sel).scrollTop === 0, el, { timeout: 3000 });
 check('clicking it scrolls back to the top', true);

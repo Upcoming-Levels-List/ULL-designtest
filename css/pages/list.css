@@ -580,16 +580,20 @@ main.page-list--pending .list-container {
    width without swallowing clicks on the levels behind it. */
 .scroll-top-wrap {
     position: sticky;
-    bottom: 1.25rem;
+    bottom: 1.5rem;
     height: 0;
     display: flex;
     justify-content: center;
+    /* align-items defaults to `stretch`, which — because the wrapper is 0px tall —
+       squashed the button to a sliver. flex-end lets it keep its natural height and
+       float upward from the sticky line, sitting above the last rows. */
+    align-items: flex-end;
     pointer-events: none;
     z-index: 5;
 }
+/* Same pill as the mobile .mob-scroll-top-btn. */
 .scroll-top-btn {
     pointer-events: auto;
-    transform: translateY(-1.25rem);
     display: flex;
     align-items: center;
     gap: 0.35rem;
@@ -600,9 +604,11 @@ main.page-list--pending .list-container {
     border-radius: 2rem;
     font-family: "Lexend Deca", sans-serif;
     font-size: 0.78rem;
-    font-weight: 500;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
-    transition: opacity 100ms ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+    transition: opacity 120ms;
 }
 .scroll-top-btn:hover { opacity: 0.88; }
