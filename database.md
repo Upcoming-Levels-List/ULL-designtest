@@ -47,10 +47,21 @@
 >
 > **Deploying the 2026-08-24 revision — order matters:**
 > 1. Run `scripts/schema-migrations.sql` (adds `editor_keys.sort_order`, creates
->    `recent_changes`). The Worker's `/api/editors` and `/api/recent-changes` both
->    depend on it.
+>    `recent_changes`).
 > 2. Paste `worker/worker.js` into Quick Edit → **Deploy**.
 > 3. Optionally seed the feed with `scripts/seed-recent-changes.sql`.
+>
+> ⚠️ **Never paste SQL comments into the D1 Console.** It strips `--` comments before
+> parsing, so a paste that contains only comments (a header block, say) fails with
+> **"The request is malformed: Requests without any query are not supported."** and
+> *nothing runs*. `scripts/schema-migrations.sql` and `scripts/seed-recent-changes.sql`
+> are therefore kept **comment-free** so each can be pasted whole — do not add a header
+> comment to either, and `scripts/build-changes-seed.js` must keep emitting bare SQL.
+> Documentation for those files belongs here instead.
+>
+> Getting the order wrong is survivable since 2026-08-24: the Worker degrades when the
+> migration hasn't run (see section 4c) rather than blanking the editors list. Run the
+> migration anyway — ordering and the changes feed stay inert until you do.
 >
 > That revision: removes the phantom `password`/`difficulty` columns that broke every
 > level save (section 4b), wraps the router in a CORS-safe `try/catch`, reads Recent
@@ -328,6 +339,45 @@ phantom column fails immediately.
 
 ---
 
+## 4c. Outage: "editors show up as empty everywhere" (RESOLVED 2026-08-24)
+
+**Symptom.** Right after deploying the 2026-08-24 Worker, the List Editors block was
+empty on Home, Mobile Home and the admin Editors tab.
+
+**Root cause — two failures in a row:**
+
+1. `scripts/schema-migrations.sql` opened with a `--` comment block. The D1 Console
+   strips comments before parsing, so pasting that header returned
+   **"The request is malformed: Requests without any query are not supported."** The
+   operator reasonably read this as "that chunk failed" and moved on — but *no*
+   statement had run, so `editor_keys.sort_order` was never added.
+2. The Worker was then deployed with
+   `SELECT … sort_order FROM editor_keys ORDER BY sort_order ASC` — a column that did
+   not exist. SQLite threw, `/api/editors` 500'd, and every editors list went blank.
+   Exactly the failure class section 4 warns about, re-introduced by a hard dependency
+   on a migration.
+
+**Fix — both halves:**
+
+1. Both pasteable `.sql` files are now **comment-free**, so each can be pasted whole.
+2. The Worker no longer hard-depends on the migration:
+   - `GET /api/editors` falls back to `ORDER BY id ASC` (insertion order) with
+     `sort_order: null` when the column is missing. The list renders either way.
+   - `GET /api/recent-changes` returns `[]` when `recent_changes` doesn't exist, so the
+     home page shows "No recent changes recorded" instead of erroring.
+   - `insertEditor()` retries without `sort_order`, so adding/bootstrapping editors works
+     on an un-migrated DB.
+   - The paths that genuinely need the migration — `POST /api/editors/reorder`, the
+     `/api/admin/changes` writes — return a CORS-enabled message naming
+     `scripts/schema-migrations.sql` instead of a raw SQLite error.
+
+**Lesson.** A Worker revision must not require a migration to serve read traffic. Ordering
+and new features may stay inert until the migration runs; existing pages must not break.
+`worker/worker.unmigrated.test.mjs` pins this — it runs the current Worker against the
+pre-migration schema and asserts the editors list still renders.
+
+---
+
 ## 5. Worker API endpoints (canonical list to maintain)
 
 Every endpoint the system needs. Verify each against the live Worker; add any that are
@@ -339,7 +389,8 @@ missing.
 - `GET /api/list/future` — `isFuture=1 AND isVerified=0`
 - `GET /api/levels/:position` — the Nth level (1-based) by sort order
 - `GET /api/pending`
-- `GET /api/editors` — returns `[{name, role, link}]`
+- `GET /api/editors` — returns `[{name, role, link, sort_order}]` in manual order.
+  Falls back to insertion order (with `sort_order: null`) if the column is missing.
 - `GET /api/level-month` — JSON of `config.levelMonth` or `null`
 - `GET /api/level-verif` — JSON of `config.levelVerif` or `null`
 - `GET /api/recent-changes` — **note the name**; array of `{date, entries[]}`, built by
@@ -540,10 +591,14 @@ the real message reaches the panel. Never remove it.
 
 > **Prefer `scripts/schema-migrations.sql`** — it is the maintained version of the block
 > below and also adds `editor_keys.sort_order` (+ seeds a starting order) and creates
-> `recent_changes`. Run it before deploying a Worker that depends on them:
-> `wrangler d1 execute d1-template-database --remote --file=scripts/schema-migrations.sql`
-> (or paste it into the Console, statement by statement, so one "duplicate column name"
-> doesn't abort the rest).
+> `recent_changes`. Run it before deploying a Worker that uses them:
+> `wrangler d1 execute d1-template-database --remote --file=scripts/schema-migrations.sql`,
+> or paste the whole file into the D1 Console (it is deliberately comment-free — see the
+> warning in section 2).
+>
+> The three `ALTER TABLE`s error with **"duplicate column name"** on a database that
+> already has those columns. That is expected and harmless. If pasting the whole file
+> stops at one, paste the statements after it individually.
 
 Idempotent-ish; check first with `PRAGMA table_info(<table>)` before ALTERs.
 ```sql
@@ -711,10 +766,13 @@ Gotchas learned the hard way:
 - Upcoming Levels order = `(max(P,R)^2 + min(P,R)^1.8) * (0.01*(rank+100))^0.5`, descending
 - `levels` has **no** `password` / `difficulty` column — naming them throws
 - A "Network error" in the admin panel means the Worker threw; check its logs
+- Never paste SQL comments into the D1 Console — it rejects a comment-only paste with
+  "Requests without any query are not supported" and runs nothing
 - `sort_order` = level ranking (contiguous integer, shifted on insert/delete/move)
 - Dates use `DD.MM.YYYY`
 - Current site version: **v2.0.0**
 - Tests: `node worker/worker.test.mjs` (Worker vs. real schema),
+  `node worker/worker.unmigrated.test.mjs` (Worker vs. the PRE-migration schema),
   `node js/leaderboard.test.mjs` (scoring vs. the /data snapshot) and
   `node scripts/e2e-test.mjs` (browser, needs `npm i playwright vue@3.2.31 vue-router@4.0.14`)
 - Working branch: `claude/multiple-features-fixes-slberb`

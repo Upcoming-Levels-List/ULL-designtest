@@ -74,6 +74,31 @@ function tryJSON(val, fallback) {
   try { return val ? JSON.parse(val) : fallback; } catch { return fallback; }
 }
 
+// Inserts an editor, appending them to the end of the manual display order.
+// Falls back to a plain insert when `sort_order` doesn't exist yet, so adding an
+// editor still works on a database that hasn't had schema-migrations.sql run.
+async function insertEditor(db, name, hash, role, link) {
+  try {
+    const next = await db.prepare('SELECT MAX(sort_order) AS hi FROM editor_keys').first();
+    await db.prepare(
+      'INSERT INTO editor_keys (editor_name, key_hash, role, link, sort_order) VALUES (?, ?, ?, ?, ?)'
+    ).bind(name, hash, role, link, next && next.hi !== null ? next.hi + 1 : 0).run();
+  } catch (e) {
+    if (!/sort_order/.test(String(e && e.message))) throw e;
+    await db.prepare(
+      'INSERT INTO editor_keys (editor_name, key_hash, role, link) VALUES (?, ?, ?, ?)'
+    ).bind(name, hash, role, link).run();
+  }
+}
+
+// The Recent Changes table is created by schema-migrations.sql. Turn "no such
+// table" into an instruction rather than a raw SQLite error in the admin panel.
+function changesTableError(e) {
+  return /no such table/i.test(String(e && e.message))
+    ? err('The recent_changes table does not exist yet. Run scripts/schema-migrations.sql on the D1 database first.', 500)
+    : null;
+}
+
 // Recent Changes are stored one row per change line in `recent_changes`
 // (id, date, change, sort_order). The public feed groups them by date, keeping
 // the first appearance of each date as the group's position.
@@ -150,11 +175,23 @@ async function handle(req, env) {
     // FIX: real column is `editor_name`; alias it back to `name`
     // so the frontend still receives objects shaped like {name, role, link}.
     // Order is manual (`sort_order`, arranged in the admin panel), NOT alphabetical.
+    //
+    // The fallback matters: if this Worker is deployed before
+    // scripts/schema-migrations.sql has been run, `sort_order` does not exist yet and
+    // the query throws — which used to blank out the editors list on every page.
+    // Degrade to insertion order instead of taking the whole list down.
     if (method === 'GET' && path === '/api/editors') {
-      const { results } = await db.prepare(
-        'SELECT editor_name AS name, role, link, sort_order FROM editor_keys ORDER BY sort_order ASC, id ASC'
-      ).all();
-      return json(results);
+      try {
+        const { results } = await db.prepare(
+          'SELECT editor_name AS name, role, link, sort_order FROM editor_keys ORDER BY sort_order ASC, id ASC'
+        ).all();
+        return json(results);
+      } catch {
+        const { results } = await db.prepare(
+          'SELECT editor_name AS name, role, link FROM editor_keys ORDER BY id ASC'
+        ).all();
+        return json(results.map(r => ({ ...r, sort_order: null })));
+      }
     }
 
     // ── GET /api/auth/validate ─────────────────────────────────
@@ -194,11 +231,17 @@ async function handle(req, env) {
     // ── GET /api/recent-changes ────────────────────────────────
     // FIX: the frontend calls /api/recent-changes (was named /api/changes here),
     // and the real table is `recent_changes` (one row per change line).
+    // If the table doesn't exist yet (migration not run), serve an empty feed rather
+    // than a 500 — the home page then just shows "No recent changes recorded."
     if (method === 'GET' && path === '/api/recent-changes') {
-      const { results } = await db.prepare(
-        'SELECT date, change FROM recent_changes ORDER BY sort_order ASC, id ASC'
-      ).all();
-      return json(groupChanges(results));
+      try {
+        const { results } = await db.prepare(
+          'SELECT date, change FROM recent_changes ORDER BY sort_order ASC, id ASC'
+        ).all();
+        return json(groupChanges(results));
+      } catch {
+        return json([]);
+      }
     }
 
     // ── GET /api/admin/changes ─────────────────────────────────
@@ -206,10 +249,14 @@ async function handle(req, env) {
     if (method === 'GET' && path === '/api/admin/changes') {
       const editor = await authed(req, db);
       if (!editor) return err('Unauthorized', 401);
-      const { results } = await db.prepare(
-        'SELECT id, date, change, sort_order FROM recent_changes ORDER BY sort_order ASC, id ASC'
-      ).all();
-      return json(results);
+      try {
+        const { results } = await db.prepare(
+          'SELECT id, date, change, sort_order FROM recent_changes ORDER BY sort_order ASC, id ASC'
+        ).all();
+        return json(results);
+      } catch (e) {
+        return changesTableError(e) || err(`Server error: ${e && e.message}`, 500);
+      }
     }
 
     // ── GET /api/leaderboard ───────────────────────────────────
@@ -412,15 +459,20 @@ async function handle(req, env) {
       if (!editor) return err('Unauthorized', 401);
       const { date, change, position } = await req.json();
       if (!date || !change) return err('date and change required');
-      const bounds = await db.prepare(
-        'SELECT MIN(sort_order) AS lo, MAX(sort_order) AS hi FROM recent_changes'
-      ).first();
-      const lo = bounds && bounds.lo !== null ? bounds.lo : 0;
-      const hi = bounds && bounds.hi !== null ? bounds.hi : 0;
-      const order = position === 'bottom' ? hi + 1 : lo - 1;
-      await db.prepare(
-        'INSERT INTO recent_changes (date, change, sort_order) VALUES (?, ?, ?)'
-      ).bind(date, change, order).run();
+      let order;
+      try {
+        const bounds = await db.prepare(
+          'SELECT MIN(sort_order) AS lo, MAX(sort_order) AS hi FROM recent_changes'
+        ).first();
+        const lo = bounds && bounds.lo !== null ? bounds.lo : 0;
+        const hi = bounds && bounds.hi !== null ? bounds.hi : 0;
+        order = position === 'bottom' ? hi + 1 : lo - 1;
+        await db.prepare(
+          'INSERT INTO recent_changes (date, change, sort_order) VALUES (?, ?, ?)'
+        ).bind(date, change, order).run();
+      } catch (e) {
+        return changesTableError(e) || err(`Server error: ${e && e.message}`, 500);
+      }
       await log(db, editor, 'CHANGE_ADD', date, change.slice(0, 120));
       return json({ ok: true });
     }
@@ -517,7 +569,16 @@ async function handle(req, env) {
       const { names } = await req.json();
       if (!Array.isArray(names) || !names.length) return err('names array required');
       const stmt = db.prepare('UPDATE editor_keys SET sort_order = ? WHERE editor_name = ?');
-      await db.batch(names.map((n, i) => stmt.bind(i, n)));
+      try {
+        await db.batch(names.map((n, i) => stmt.bind(i, n)));
+      } catch (e) {
+        // Almost always the migration not having been run — say so plainly instead
+        // of surfacing a raw SQLite message in the admin panel.
+        if (/sort_order/.test(String(e && e.message))) {
+          return err('Editor ordering needs the sort_order column. Run scripts/schema-migrations.sql on the D1 database first.', 500);
+        }
+        throw e;
+      }
       await log(db, editor, 'EDITOR_REORDER', `${names.length} editors`);
       return json({ ok: true });
     }
@@ -541,10 +602,7 @@ async function handle(req, env) {
       const { secret, name, key, role, link } = body;
       if (secret !== env.BOOTSTRAP_SECRET) return err('Forbidden', 403);
       const hash = await sha256(key);
-      const next = await db.prepare('SELECT MAX(sort_order) AS hi FROM editor_keys').first();
-      await db.prepare(
-        'INSERT INTO editor_keys (editor_name, key_hash, role, link, sort_order) VALUES (?, ?, ?, ?, ?)'
-      ).bind(name || 'admin', hash, role || 'admin', link || '', next && next.hi !== null ? next.hi + 1 : 0).run();
+      await insertEditor(db, name || 'admin', hash, role || 'admin', link || '');
       return json({ ok: true });
     }
 
@@ -558,10 +616,7 @@ async function handle(req, env) {
       const hash = await sha256(key);
       const existing = await db.prepare('SELECT editor_name FROM editor_keys WHERE editor_name = ?').bind(name).first();
       if (existing) return err(`Editor "${name}" already exists`);
-      const next = await db.prepare('SELECT MAX(sort_order) AS hi FROM editor_keys').first();
-      await db.prepare(
-        'INSERT INTO editor_keys (editor_name, key_hash, role, link, sort_order) VALUES (?, ?, ?, ?, ?)'
-      ).bind(name, hash, role || 'mod', link || '', next && next.hi !== null ? next.hi + 1 : 0).run();
+      await insertEditor(db, name, hash, role || 'mod', link || '');
       await log(db, editor, 'EDITOR_ADD', name, `role=${role || 'mod'}`);
       return json({ ok: true });
     }

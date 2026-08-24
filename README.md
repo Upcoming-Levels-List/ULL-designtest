@@ -163,6 +163,35 @@ Each level returned by `/api/list` (and related endpoints) has this shape:
 
 ---
 
+## Deploying
+
+The Worker and its D1 database are managed in the Cloudflare dashboard, not from this
+repo. In order:
+
+1. **D1 Console** → paste `scripts/schema-migrations.sql` (whole file).
+   `ALTER TABLE` steps may report "duplicate column name" — that just means the column
+   already exists.
+2. **Workers & Pages → the worker → Edit code** → paste `worker/worker.js` → **Deploy**.
+3. *(optional)* **D1 Console** → paste `scripts/seed-recent-changes.sql` to seed the
+   Recent Changes feed. It replaces every row, so only run it before staff start
+   editing the feed in the admin panel.
+
+> The D1 Console strips SQL comments, so a paste containing only comments fails with
+> "Requests without any query are not supported". Both `.sql` files above are kept
+> comment-free for that reason — don't add header comments to them.
+
+### Tests
+
+```bash
+node worker/worker.test.mjs             # Worker against the live schema
+node worker/worker.unmigrated.test.mjs  # Worker against the pre-migration schema
+node js/leaderboard.test.mjs            # scoring against the /data snapshot
+
+npm i playwright vue@3.2.31 vue-router@4.0.14
+node css/mobile-footer.test.mjs         # mobile footer layout
+node scripts/e2e-test.mjs               # home page + admin panel in Chromium
+```
+
 ## Security
 
 Found a vulnerability? Please see [SECURITY.md](./SECURITY.md) for how to report it.
