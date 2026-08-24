@@ -196,6 +196,7 @@ repo. In order:
 ```bash
 node worker/worker.test.mjs             # Worker against the live schema
 node worker/worker.unmigrated.test.mjs  # Worker against the pre-migration schema
+node worker/worker.throttle.test.mjs    # auth rate limiter
 node js/leaderboard.test.mjs            # leaderboard scoring vs the /data snapshot
 node js/upcoming.test.mjs               # Upcoming Levels ordering
 

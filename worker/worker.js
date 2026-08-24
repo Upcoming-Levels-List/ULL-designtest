@@ -19,14 +19,92 @@ async function sha256(str) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// ── Auth brute-force throttle ─────────────────────────────────────────────────
+// The only way to write to the list is a valid API key. There is no signup and no
+// password reset, so the one attack is guessing a key against /api/auth/validate
+// (or any authed write). This caps wrong-key attempts per IP so an online guesser
+// can't run millions of tries — the keys themselves are strong, this just removes
+// the "unlimited free guesses" affordance.
+//
+// State lives in the `auth_throttle` table (see scripts/schema-migrations.sql).
+// EVERYTHING here FAILS OPEN: if the table is missing (migration not run) or D1
+// errors, auth proceeds unthrottled rather than locking every editor out. Rate
+// limiting is defense in depth, never the thing standing between staff and the
+// panel.
+const THROTTLE_WINDOW_MS = 15 * 60 * 1000;  // count wrong tries over 15 minutes
+const THROTTLE_MAX_FAILS = 10;              // then block further tries from that IP
+const THROTTLE_BLOCK_MS = 15 * 60 * 1000;   // for 15 minutes
+
+function clientIp(req) {
+  return req.headers.get('CF-Connecting-IP')
+    || req.headers.get('X-Forwarded-For')
+    || 'unknown';
+}
+
+// Seconds an IP is blocked for (0 = not blocked). Never throws.
+async function throttleRemaining(db, ip, now) {
+  try {
+    const row = await db.prepare(
+      'SELECT blocked_until FROM auth_throttle WHERE ip = ?'
+    ).bind(ip).first();
+    if (row && row.blocked_until && row.blocked_until > now) {
+      return Math.ceil((row.blocked_until - now) / 1000);
+    }
+  } catch { /* table missing / D1 error → fail open */ }
+  return 0;
+}
+
+// Record whether a key check passed. Success clears the IP's counter; failure
+// increments it within the sliding window and blocks once the cap is hit. Never
+// throws.
+async function recordAuthResult(db, ip, ok, now) {
+  try {
+    if (ok) {
+      await db.prepare('DELETE FROM auth_throttle WHERE ip = ?').bind(ip).run();
+      return;
+    }
+    const row = await db.prepare(
+      'SELECT fails, window_start FROM auth_throttle WHERE ip = ?'
+    ).bind(ip).first();
+    if (!row || now - row.window_start > THROTTLE_WINDOW_MS) {
+      // First failure, or the previous window has expired → start a fresh window.
+      await db.prepare(
+        `INSERT INTO auth_throttle (ip, fails, window_start, blocked_until) VALUES (?, 1, ?, 0)
+         ON CONFLICT(ip) DO UPDATE SET fails = 1, window_start = ?, blocked_until = 0`
+      ).bind(ip, now, now).run();
+    } else {
+      const fails = row.fails + 1;
+      const blockedUntil = fails >= THROTTLE_MAX_FAILS ? now + THROTTLE_BLOCK_MS : 0;
+      await db.prepare(
+        'UPDATE auth_throttle SET fails = ?, blocked_until = ? WHERE ip = ?'
+      ).bind(fails, blockedUntil, ip).run();
+    }
+  } catch { /* table missing / D1 error → fail open */ }
+}
+
+// Thrown by authed() when the caller's IP is currently blocked; the top-level
+// fetch handler turns it into a 429 with a Retry-After header.
+class RateLimited extends Error {
+  constructor(retryAfter) { super('Too many attempts'); this.retryAfter = retryAfter; }
+}
+
 // Returns editor name (string) if authenticated, null if not.
 // NOTE: the real DB column is `editor_name`, not `name`.
+// A request with no Bearer token is not throttled (no credential was presented);
+// only actual wrong-key attempts count toward the limit.
 async function authed(req, db) {
   const auth = req.headers.get('Authorization') || '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
   if (!token) return null;
+
+  const ip = clientIp(req);
+  const now = Date.now();
+  const blocked = await throttleRemaining(db, ip, now);
+  if (blocked > 0) throw new RateLimited(blocked);
+
   const hash = await sha256(token);
   const row = await db.prepare('SELECT editor_name FROM editor_keys WHERE key_hash = ?').bind(hash).first();
+  await recordAuthResult(db, ip, !!row, now);
   return row ? row.editor_name : null;
 }
 
@@ -634,6 +712,12 @@ export default {
     try {
       return await handle(req, env);
     } catch (e) {
+      if (e instanceof RateLimited) {
+        return new Response(
+          JSON.stringify({ error: `Too many attempts. Try again in about ${Math.ceil(e.retryAfter / 60)} minute(s).` }),
+          { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(e.retryAfter), ...CORS } }
+        );
+      }
       return json({ error: `Server error: ${e && e.message ? e.message : String(e)}` }, 500);
     }
   },

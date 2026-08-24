@@ -47,7 +47,7 @@
 >
 > **Deploying the 2026-08-24 revision — order matters:**
 > 1. Run `scripts/schema-migrations.sql` (adds `editor_keys.sort_order`, creates
->    `recent_changes`).
+>    `recent_changes` and `auth_throttle`).
 > 2. Paste `worker/worker.js` into Quick Edit → **Deploy**.
 > 3. Optionally seed the feed with `scripts/seed-recent-changes.sql`.
 >
@@ -219,6 +219,22 @@ CREATE TABLE IF NOT EXISTS audit_log (
     timestamp TEXT DEFAULT CURRENT_TIMESTAMP
 );
 ```
+
+### `auth_throttle`
+Backs the auth brute-force limiter (`authed()` in the Worker). One row per client IP.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `ip` | TEXT PK | `CF-Connecting-IP` (falls back to `X-Forwarded-For`, then `"unknown"`) |
+| `fails` | INTEGER | wrong-key attempts in the current window |
+| `window_start` | INTEGER | epoch ms the window began |
+| `blocked_until` | INTEGER | epoch ms the IP is blocked until (0 = not blocked) |
+
+10 wrong keys in 15 minutes → the IP is blocked for 15 minutes (constants at the top
+of the Worker). A **correct** key clears the row; a request with **no** Bearer token is
+never counted. Everything **fails open**: if this table is missing or D1 errors, auth
+proceeds unthrottled rather than locking staff out — so it is safe to deploy the Worker
+before running the migration, the limiter just does nothing until the table exists.
 
 ### `recent_changes`
 Backs the **Recent Changes** card on the home page (`js/pages/Home.js`,
@@ -397,7 +413,10 @@ missing.
   grouping `recent_changes` rows (see section 3)
 
 **Auth GET:**
-- `GET /api/auth/validate` — 200 if Bearer key valid (used by login), else 401
+- `GET /api/auth/validate` — 200 if Bearer key valid (used by login), 401 if not, **429
+  if the caller's IP is rate-limited** (10 wrong keys in 15 min → 15-min block; see
+  `auth_throttle` in section 3). The 429 carries a `Retry-After` header and applies to
+  every authed endpoint, not just this one.
 - `GET /api/audit-log` — last 100 audit rows, newest first
 - `GET /api/admin/changes` — flat `recent_changes` rows **with ids**, for the admin
   Recent Changes tab: `[{id, date, change, sort_order}]`
@@ -819,6 +838,8 @@ Gotchas learned the hard way:
 - Benchmark mode recounts placements 1..N per page; Reset Filters must never clear it
 - `levels` has **no** `password` / `difficulty` column — naming them throws
 - A "Network error" in the admin panel means the Worker threw; check its logs
+- Auth is rate-limited per IP (10 wrong keys / 15 min → 15-min 429 block); fails open if
+  the `auth_throttle` table is missing
 - Never paste SQL comments into the D1 Console — it rejects a comment-only paste with
   "Requests without any query are not supported" and runs nothing
 - `sort_order` = level ranking (contiguous integer, shifted on insert/delete/move)
@@ -826,6 +847,7 @@ Gotchas learned the hard way:
 - Current site version: **v2.0.0**
 - Tests: `node worker/worker.test.mjs` (Worker vs. real schema),
   `node worker/worker.unmigrated.test.mjs` (Worker vs. the PRE-migration schema),
+  `node worker/worker.throttle.test.mjs` (the auth rate limiter),
   `node js/leaderboard.test.mjs` and `node js/upcoming.test.mjs` (scoring vs. the /data
   snapshot), `node js/list-ui.test.mjs` (benchmark recounting + Return to top in a
   browser), `node css/mobile-footer.test.mjs` and

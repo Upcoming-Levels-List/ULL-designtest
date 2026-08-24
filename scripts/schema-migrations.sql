@@ -25,6 +25,13 @@ ALTER TABLE levels ADD COLUMN benchmark INTEGER DEFAULT 0;
 
 ALTER TABLE pending ADD COLUMN indefinite INTEGER DEFAULT 0;
 
+CREATE TABLE IF NOT EXISTS auth_throttle (
+    ip TEXT PRIMARY KEY,
+    fails INTEGER DEFAULT 0,
+    window_start INTEGER DEFAULT 0,
+    blocked_until INTEGER DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT);
 
 CREATE TABLE IF NOT EXISTS audit_log (
