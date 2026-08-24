@@ -80,18 +80,17 @@ A player's total is the sum of all their entries.
 Upcoming Levels ranks how close a level is to being verified:
 
 ```
-rankingScore = ( max(P, R)² + min(P, R)^1.8 ) × ( 0.01 × (rank + 100) )^0.5
+rankingScore = max(P, R)² + min(P, R)^1.8
 ```
 
 - **P** — the highest record percent on the level (from 0%).
 - **R** — the largest run span (`b − a` from an `a-b` run).
-- **rank** — the level's 1-based position in All Levels.
 
 Levels are sorted by this score, highest first. The better of the two attempts
-dominates (squared) while the weaker one adds a smaller bonus (^1.8), and the rank
-factor grows with rank — the same progress counts for more on an easier level, since
-it puts the verifier closer to the finish. Verified levels, levels with no records or
-runs at all, and levels that already have a 100% record are excluded.
+dominates (squared) while the weaker one adds a smaller bonus (^1.8). The score depends
+only on the progress made — a level's position in All Levels is not part of it, so two
+levels with the same records tie regardless of rank. Verified levels, levels with no
+records or runs at all, and levels that already have a 100% record are excluded.
 
 ---
 
@@ -117,7 +116,8 @@ no authentication.
 | `GET /api/recent-changes` | Recent changes feed, grouped by date |
 
 > Endpoints that add or modify list data require a staff API key and are not part
-> of the public API. Staff-only routes cover levels, pending entries, editors
+> of the public API. Staff add and edit levels from the admin panel's **Levels** tab
+> (**+ New Level**, or click any row). Staff-only routes cover levels, pending entries, editors
 > (including manual ordering and renaming) and the recent-changes feed — see
 > [database.md](./database.md) for the full list.
 
@@ -185,7 +185,8 @@ repo. In order:
 ```bash
 node worker/worker.test.mjs             # Worker against the live schema
 node worker/worker.unmigrated.test.mjs  # Worker against the pre-migration schema
-node js/leaderboard.test.mjs            # scoring against the /data snapshot
+node js/leaderboard.test.mjs            # leaderboard scoring vs the /data snapshot
+node js/upcoming.test.mjs               # Upcoming Levels ordering
 
 npm i playwright vue@3.2.31 vue-router@4.0.14
 node css/mobile-footer.test.mjs         # mobile footer layout

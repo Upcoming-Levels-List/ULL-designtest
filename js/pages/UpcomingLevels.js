@@ -232,8 +232,7 @@ export default {
             }
             level.maxPercent = maxPercent;
             level.maxRunDifference = maxRunDiff;
-            const rank = level.allLevelsRank;
-            level.rankingScore = upcomingScore(maxPercent, maxRunDiff, rank);
+            level.rankingScore = upcomingScore(maxPercent, maxRunDiff);
             if (this.isOldLevel(level)) {
                 if (!level.tags) level.tags = [];
                 if (!level.tags.includes('Pending Removal')) level.tags.push('Pending Removal');

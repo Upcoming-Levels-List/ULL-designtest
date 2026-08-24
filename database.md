@@ -494,6 +494,29 @@ the real message reaches the panel. Never remove it.
   `--mob-level-h: 4.2rem` is one row: a 3rem thumbnail plus `.mob-level-btn`'s 0.6rem
   padding top and bottom. (An earlier version pinned the footer to the bottom of the
   viewport with `margin-top: auto`; that was replaced by this fixed gap on request.)
+- **Adding a level** (admin panel → **Levels** → **+ New Level**): the level edit modal
+  does double duty — `editIsNew` switches the title, adds the *Position in list* and
+  *Path* fields, and turns the footer button into "Create Level". There is no separate
+  add form to keep in sync.
+  - **Everything may be left blank.** `buildLevelPayload()` fills in what a level needs to
+    render: `id` → `private`, `lastUpd` → today (`DD.MM.YYYY`), `length` → 0,
+    `percentToQualify` → 1, `percentFinished` → 0, `rating` → 1, and empty
+    `records`/`run` get the `{user:'none'}` sentinel. Half-filled record rows (no user)
+    are dropped rather than saved.
+  - **`path` is the unique key**, so it cannot be blank — the one thing a new level needs
+    is a name (which auto-fills the path via `slugify()`, lowercase words separated by
+    spaces, matching the existing rows) or a hand-typed path. Typing in the Path field
+    sets `editPathTouched` and stops the auto-fill.
+  - **Duplicate paths are blocked** (`pathTaken`): `PUT /api/levels` *updates* when the
+    path already exists, so without the guard a new level sharing a name would silently
+    overwrite the existing one. Create is disabled and the field turns red.
+  - New levels default to the **bottom** of the list, not the top — saving by accident
+    then doesn't shift all 480 levels down.
+  - The standalone `/generator` page still exists and still works, but it is unlinked and
+    lacks `rating` and `benchmark`. The admin modal is the complete one.
+- **Add forms sit above their lists** on the Pending and Recent Changes tabs (the card
+  comes before the table in the template), so adding an entry doesn't mean scrolling past
+  every existing row.
 - **Leaderboard scoring** (`js/formulas.js`, used by `js/pages/Leaderboard.js` and the
   mobile copy in `js/pages/Mobile.js`): every entry is built from
   `recordScore(rank, percent)`, then
@@ -513,23 +536,26 @@ the real message reaches the panel. Never remove it.
   The multipliers live in `js/formulas.js` as `VERIFICATION_MULTIPLIER` (2) and
   `LAYOUT_COMPLETION_MULTIPLIER` (0.8) so the desktop and mobile copies can't drift.
   `node js/leaderboard.test.mjs` checks them against the `/data` snapshot.
-- **Upcoming Levels order** (`js/pages/UpcomingLevels.js`, `upcomingScore()` in
-  `js/formulas.js`): levels are sorted by `rankingScore` **descending**, where
+- **Upcoming Levels order** (`js/pages/UpcomingLevels.js`,
+  `js/pages/mobile/MobileUpcoming.js`, `upcomingScore()` in `js/formulas.js`): levels are
+  sorted by `rankingScore` **descending**, where
 
   ```
-  rankingScore = ( max(P, R)² + min(P, R)^1.8 ) × ( 0.01 × (rank + 100) )^0.5
+  rankingScore = max(P, R)² + min(P, R)^1.8
   ```
 
   - `P` = the highest **record** percent on the level (a from-0% attempt).
   - `R` = the largest **run** span, `b − a` from a `"a-b"` run.
-  - `rank` = the level's 1-based position in **All Levels** (`allLevelsRank`, counting
-    verified levels).
 
-  So the better of the two attempts dominates (squared) and the weaker one adds a smaller
-  bonus (^1.8). The rank factor **grows** with rank, meaning the same progress is worth more
-  on a lower-ranked (easier) level — 60% on #400 is closer to a verification than 60% on #5.
-  Excluded entirely: verified levels, anything with `rankingScore <= 0` (no records and no
-  runs), and any level that already has a 100% record (a completed layout).
+  The better of the two attempts dominates (squared) and the weaker one adds a smaller
+  bonus (^1.8). Excluded entirely: verified levels, anything with `rankingScore <= 0` (no
+  records and no runs), and any level that already has a 100% record (a completed layout).
+
+  > **The rank factor was removed on 2026-08-24.** The score used to be multiplied by
+  > `(0.01 × (rank + 100)) ** 0.5`, which made identical progress worth more on a
+  > lower-ranked level. `upcomingScore()` lost its third argument (`rank`) with it — both
+  > call sites now pass two. Ordering depends **only** on progress, so two levels with the
+  > same records tie regardless of list position. `node js/upcoming.test.mjs` pins this.
 - **Frame Windows Counter**: if `level.frameCounter` is set, the level card shows a
   "Frame Windows Counter" row with a "Watch Here" link (List/ListMain/ListFuture pages).
 - **Social links**: the community links are **Discord** (`https://discord.gg/9wVWSgJSe8`)
@@ -763,7 +789,7 @@ Gotchas learned the hard way:
 - Recent Changes = `recent_changes`, one row per line, free-text `date`, `sort_order` wins
 - Leaderboard: verification = 2x a 100% record; layout completion (100% on an unverified
   level) = 0.8x a verification = 1.6x a record
-- Upcoming Levels order = `(max(P,R)^2 + min(P,R)^1.8) * (0.01*(rank+100))^0.5`, descending
+- Upcoming Levels order = `max(P,R)^2 + min(P,R)^1.8`, descending — **no rank factor**
 - `levels` has **no** `password` / `difficulty` column — naming them throws
 - A "Network error" in the admin panel means the Worker threw; check its logs
 - Never paste SQL comments into the D1 Console — it rejects a comment-only paste with
@@ -773,6 +799,7 @@ Gotchas learned the hard way:
 - Current site version: **v2.0.0**
 - Tests: `node worker/worker.test.mjs` (Worker vs. real schema),
   `node worker/worker.unmigrated.test.mjs` (Worker vs. the PRE-migration schema),
-  `node js/leaderboard.test.mjs` (scoring vs. the /data snapshot) and
+  `node js/leaderboard.test.mjs` and `node js/upcoming.test.mjs` (scoring vs. the /data
+  snapshot), `node css/mobile-footer.test.mjs` and
   `node scripts/e2e-test.mjs` (browser, needs `npm i playwright vue@3.2.31 vue-router@4.0.14`)
 - Working branch: `claude/multiple-features-fixes-slberb`

@@ -249,6 +249,77 @@ check('level save produced no error dialog', dialogs.length === 0, JSON.stringif
 const saved = db.prepare("SELECT percentToQualify FROM levels WHERE path='aeternus'").get();
 check('level save persisted', saved.percentToQualify === 42, JSON.stringify(saved));
 
+console.log('\n── admin: add a new level ──');
+await p.click('.admin-tab:has-text("Levels")');
+await p.waitForSelector('.admin-btn--new');
+const levelsBefore = (await (await fetch(base + '/api/list')).json()).length;
+await p.click('.admin-btn--new');
+await p.waitForSelector('.admin-edit-modal');
+check('modal opens in create mode', (await p.textContent('.admin-edit-title')).trim() === 'Add Level');
+
+// Everything blank except a name: the form must accept it.
+await p.fill('.admin-edit-modal input[type="text"] >> nth=1', 'Brand New Level');
+await p.waitForFunction(() =>
+  document.querySelector('.admin-edit-modal input[placeholder="auto-filled from the name"]').value === 'brand new level');
+check('path auto-fills from the name (matching the existing slug style)', true);
+// Tags come from the checkbox list, not free text.
+const tagBoxes = await p.$$('.admin-edit-tags input[type="checkbox"]');
+check('tags are selectable from a list', tagBoxes.length === 13, `found ${tagBoxes.length}`);
+await p.check('.admin-edit-tags input[value="Public"]');
+await p.check('.admin-edit-tags input[value="XL"]');
+await p.fill('.admin-edit-modal input[type="number"] >> nth=0', '2');   // position
+await p.click('.admin-edit-footer button:has-text("Create Level")');
+await p.waitForFunction(() => !document.querySelector('.admin-edit-modal'), { timeout: 8000 });
+
+const levelsAfter = await (await fetch(base + '/api/list')).json();
+check('level count went up by one', levelsAfter.length === levelsBefore + 1, `${levelsBefore} -> ${levelsAfter.length}`);
+const made = levelsAfter.find(l => l.path === 'brand new level');
+check('new level exists at the chosen position', !!made && levelsAfter.indexOf(made) === 1,
+  made ? `index ${levelsAfter.indexOf(made)}` : 'not found');
+check('blank fields got usable defaults', made &&
+  made.name === 'Brand New Level' && made.id === 'private' && /^\d{2}\.\d{2}\.\d{4}$/.test(made.lastUpd) &&
+  made.rating === 1 && made.percentToQualify === 1, JSON.stringify(made && {
+    name: made.name, id: made.id, lastUpd: made.lastUpd, rating: made.rating, ptq: made.percentToQualify }));
+check('tags saved from the checkbox list', made && made.tags.join(',') === 'Public,XL', JSON.stringify(made && made.tags));
+check('empty records/runs use the sentinel', made &&
+  made.records.length === 1 && made.records[0].user === 'none' &&
+  made.run.length === 1 && made.run[0].user === 'none');
+check('success notice shown', (await p.textContent('.admin-notice')).includes('Brand New Level'));
+
+console.log('\n── add-level guards ──');
+await p.click('.admin-btn--new');
+await p.waitForSelector('.admin-edit-modal');
+await p.fill('.admin-edit-modal input[type="text"] >> nth=1', 'Brand New Level');
+await p.waitForFunction(() => {
+  const b = [...document.querySelectorAll('.admin-edit-footer button')].find(x => x.textContent.includes('Create Level'));
+  return b && b.disabled;
+});
+check('duplicate path blocks Create (would overwrite otherwise)', true);
+await p.click('.admin-edit-footer button:has-text("Cancel")');
+check('cancel closes the modal', await p.$('.admin-edit-modal') === null);
+// Editing an existing level must still say "Edit Level".
+await p.click('.admin-row--clickable');
+await p.waitForSelector('.admin-edit-modal');
+check('clicking a row still opens edit mode', (await p.textContent('.admin-edit-title')).trim() === 'Edit Level');
+await p.click('.admin-edit-footer button:has-text("Cancel")');
+
+console.log('\n── add forms sit at the top ──');
+for (const [tab, title] of [['Pending', 'Add Pending Entry'], ['Recent Changes', 'Add Change']]) {
+  await p.click(`.admin-tab:has-text("${tab}")`);
+  await p.waitForSelector('.admin-card');
+  // The list renders as a table, or as an empty-state div when there is nothing
+  // in it yet — the Add card must come before whichever one is showing.
+  const order = await p.evaluate(() => {
+    const card = document.querySelector('.admin-card');
+    const list = document.querySelector('.admin-table, .admin-empty');
+    if (!card || !list) return 'missing';
+    return card.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING ? 'card-first' : 'list-first';
+  });
+  check(`${tab}: "${title}" is above the list`, order === 'card-first', String(order));
+  check(`${tab}: the Add card is really "${title}"`,
+    (await p.textContent('.admin-card-title')).trim() === title);
+}
+
 console.log('\n── console health ──');
 const real = errors.filter(e => !/favicon|404 \(Not Found\)/i.test(e));
 check('no page errors', real.length === 0, real.slice(0, 3).join(' | '));

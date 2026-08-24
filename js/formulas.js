@@ -66,12 +66,18 @@ export function isLayoutCompletion(level, percent) {
 }
 
 /**
- * Calculate a ranking score for upcoming levels.
+ * Calculate a ranking score for upcoming levels — how close a level is to being
+ * verified, based purely on the progress made on it.
+ *
+ * The level's position in All Levels is deliberately NOT part of this: the score
+ * used to be multiplied by `(0.01 * (rank + 100)) ** 0.5`, which made the same
+ * progress worth more on a lower-ranked level. That rank factor was removed on
+ * 2026-08-24, so two levels with identical records now tie regardless of rank.
+ *
  * @param {Number} maxPercent - Highest "from zero" record percent
  * @param {Number} maxRunDiff - Highest run range (b - a from "a-b" format)
- * @param {Number} rank - Position in All Levels list (1-indexed)
  * @returns {Number}
  */
-export function upcomingScore(maxPercent, maxRunDiff, rank) {
-    return (Math.max(maxPercent, maxRunDiff) ** 2 + Math.min(maxPercent, maxRunDiff) ** 1.8) * ((0.01 * (rank + 100)) ** 0.5);
+export function upcomingScore(maxPercent, maxRunDiff) {
+    return Math.max(maxPercent, maxRunDiff) ** 2 + Math.min(maxPercent, maxRunDiff) ** 1.8;
 }

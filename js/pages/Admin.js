@@ -76,6 +76,37 @@ function inputToChangeDate(value) {
     return `${MONTHS[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`;
 }
 
+// A blank level. Every field may be left as-is — saveEdit() fills in the defaults a
+// level needs to render (see levelDefaults below), so nothing here is mandatory
+// except a name or a path to key the row on.
+const emptyLevel = () => ({
+    path: '', name: '', author: '', verifier: '',
+    verification: '', showcase: '', thumbnail: '', frameCounter: '',
+    id: 'private', lastUpd: '',
+    length: 0, percentToQualify: 1, percentFinished: 0, rating: 1,
+    tags: [], records: [], run: [],
+    isVerified: false, isMain: true, isFuture: false, benchmark: false,
+});
+
+// The `path` is the row's primary key — it's what PUT /api/levels matches on to
+// decide "update" vs "insert". Existing rows use lowercase words separated by
+// spaces ("kingdom of miracles"), so derive the same shape from the name.
+function slugify(name) {
+    return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+// Blank is allowed everywhere, so a cleared number field falls back to its default
+// rather than being written as NaN or an empty string.
+function numOr(value, fallback) {
+    const n = Number(value);
+    return value === '' || value === null || value === undefined || isNaN(n) ? fallback : n;
+}
+
+function todayStamp() {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+}
+
 const emptyLotm = () => ({
     name: '', author: '', rank: '', id: '', thumbnail: '',
     record: { percent: '', player: '', link: '' },
@@ -110,9 +141,11 @@ export default {
         <!-- ── LEVELS ── -->
         <template v-if="activeTab === 'levels'">
             <div class="admin-toolbar">
+                <button class="admin-btn admin-btn--new" @click="openNewLevel()">+ New Level</button>
                 <input v-model="search" class="admin-search" placeholder="Search by name or author…" />
                 <span class="admin-count">{{ filteredLevels.length }} levels</span>
             </div>
+            <div v-if="levelNotice" class="admin-notice">{{ levelNotice }}</div>
             <div v-if="loading" class="admin-loading">Loading levels…</div>
             <div v-else-if="!filteredLevels.length" class="admin-empty">No levels match your search.</div>
             <table v-else class="admin-table">
@@ -357,41 +390,7 @@ export default {
         <template v-if="activeTab === 'pending'">
             <div v-if="pendingLoading" class="admin-loading">Loading pending entries…</div>
             <template v-else>
-                <div v-if="!pendingEntries.length" class="admin-empty">No pending entries yet. Add one below.</div>
-                <table v-else class="admin-table">
-                    <thead>
-                        <tr>
-                            <th class="admin-th" style="width:6rem;">Icon</th>
-                            <th class="admin-th">Name</th>
-                            <th class="admin-th admin-th--type">Section</th>
-                            <th class="admin-th" style="width:4.5rem;"></th>
-                            <th class="admin-th" style="width:4.5rem;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="p in sortedPending" :key="p.id" class="admin-row">
-                            <td class="admin-td">
-                                <img v-if="pendingSectionOf(p) === 'movement'" :src="'/assets/move-' + ((p.placement || '').toLowerCase() === 'up' ? 'up' : 'down') + '.svg'" alt="" style="width:1.3rem;height:1.3rem;" />
-                                <img v-else :src="'/assets/' + (p.placement === '?' ? 'question' : p.placement) + '.svg'" alt="" style="width:1.3rem;height:1.3rem;" />
-                            </td>
-                            <td class="admin-td" style="font-weight:600;">
-                                <a v-if="p.link" :href="p.link" target="_blank" style="text-decoration:underline;">{{ p.name }}</a>
-                                <span v-else>{{ p.name }}</span>
-                            </td>
-                            <td class="admin-td">
-                                <span class="admin-badge admin-badge--main">{{ sectionLabel(pendingSectionOf(p)) }}</span>
-                            </td>
-                            <td class="admin-td admin-td--action">
-                                <button class="admin-btn admin-btn--move" @click="openEditPending(p)">Edit</button>
-                            </td>
-                            <td class="admin-td admin-td--action">
-                                <button class="admin-btn admin-btn--delete" @click="deletePending(p)">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="admin-card" style="margin-top:1.5rem;">
+                <div class="admin-card" style="margin-bottom:1.5rem;">
                     <div class="admin-card-title">Add Pending Entry</div>
                     <div class="admin-edit-group">
                         <label>Level Name</label>
@@ -428,6 +427,39 @@ export default {
                         <button class="admin-btn admin-btn--move" :disabled="pendingSubmitting" @click="addPending()">{{ pendingSubmitting ? 'Adding…' : 'Add Entry' }}</button>
                     </div>
                 </div>
+                <div v-if="!pendingEntries.length" class="admin-empty">No pending entries yet — add one above.</div>
+                <table v-else class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="admin-th" style="width:6rem;">Icon</th>
+                            <th class="admin-th">Name</th>
+                            <th class="admin-th admin-th--type">Section</th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="p in sortedPending" :key="p.id" class="admin-row">
+                            <td class="admin-td">
+                                <img v-if="pendingSectionOf(p) === 'movement'" :src="'/assets/move-' + ((p.placement || '').toLowerCase() === 'up' ? 'up' : 'down') + '.svg'" alt="" style="width:1.3rem;height:1.3rem;" />
+                                <img v-else :src="'/assets/' + (p.placement === '?' ? 'question' : p.placement) + '.svg'" alt="" style="width:1.3rem;height:1.3rem;" />
+                            </td>
+                            <td class="admin-td" style="font-weight:600;">
+                                <a v-if="p.link" :href="p.link" target="_blank" style="text-decoration:underline;">{{ p.name }}</a>
+                                <span v-else>{{ p.name }}</span>
+                            </td>
+                            <td class="admin-td">
+                                <span class="admin-badge admin-badge--main">{{ sectionLabel(pendingSectionOf(p)) }}</span>
+                            </td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--move" @click="openEditPending(p)">Edit</button>
+                            </td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--delete" @click="deletePending(p)">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </template>
         </template>
 
@@ -444,41 +476,7 @@ export default {
 
             <div v-if="changesLoading" class="admin-loading">Loading recent changes…</div>
             <template v-else>
-                <div v-if="!changes.length" class="admin-empty">
-                    No changes recorded yet. Add the first one below — backdated entries are fine,
-                    just type the date you want.
-                </div>
-                <table v-else class="admin-table">
-                    <thead>
-                        <tr>
-                            <th class="admin-th admin-th--pos">#</th>
-                            <th class="admin-th" style="width:5rem;">Order</th>
-                            <th class="admin-th" style="width:10rem;">Date</th>
-                            <th class="admin-th">Change</th>
-                            <th class="admin-th" style="width:4.5rem;"></th>
-                            <th class="admin-th" style="width:4.5rem;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(c, i) in changes" :key="c.id" class="admin-row">
-                            <td class="admin-td admin-td--pos">{{ i + 1 }}</td>
-                            <td class="admin-td admin-td--action" style="white-space:nowrap;">
-                                <button class="admin-btn admin-btn--move" :disabled="i === 0 || changesOrderSaving" @click="moveChange(i, -1)" title="Move up">▲</button>
-                                <button class="admin-btn admin-btn--move" :disabled="i === changes.length - 1 || changesOrderSaving" @click="moveChange(i, 1)" title="Move down">▼</button>
-                            </td>
-                            <td class="admin-td" style="font-weight:600;white-space:nowrap;">{{ c.date }}</td>
-                            <td class="admin-td" style="font-size:0.8rem;" v-html="formatChange(c.change)"></td>
-                            <td class="admin-td admin-td--action">
-                                <button class="admin-btn admin-btn--move" @click="openEditChange(c)">Edit</button>
-                            </td>
-                            <td class="admin-td admin-td--action">
-                                <button class="admin-btn admin-btn--delete" @click="deleteChange(c)">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="admin-card" style="margin-top:1.5rem;">
+                <div class="admin-card" style="margin-bottom:1.5rem;">
                     <div class="admin-card-title">Add Change</div>
                     <div class="admin-edit-row">
                         <div class="admin-edit-group">
@@ -512,6 +510,40 @@ export default {
                         <button class="admin-btn admin-btn--move" :disabled="changesSubmitting" @click="addChange()">{{ changesSubmitting ? 'Adding…' : 'Add Change' }}</button>
                     </div>
                 </div>
+                <div v-if="!changes.length" class="admin-empty">
+                    No changes recorded yet. Add the first one above — backdated entries are fine,
+                    just type the date you want.
+                </div>
+                <table v-else class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="admin-th admin-th--pos">#</th>
+                            <th class="admin-th" style="width:5rem;">Order</th>
+                            <th class="admin-th" style="width:10rem;">Date</th>
+                            <th class="admin-th">Change</th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(c, i) in changes" :key="c.id" class="admin-row">
+                            <td class="admin-td admin-td--pos">{{ i + 1 }}</td>
+                            <td class="admin-td admin-td--action" style="white-space:nowrap;">
+                                <button class="admin-btn admin-btn--move" :disabled="i === 0 || changesOrderSaving" @click="moveChange(i, -1)" title="Move up">▲</button>
+                                <button class="admin-btn admin-btn--move" :disabled="i === changes.length - 1 || changesOrderSaving" @click="moveChange(i, 1)" title="Move down">▼</button>
+                            </td>
+                            <td class="admin-td" style="font-weight:600;white-space:nowrap;">{{ c.date }}</td>
+                            <td class="admin-td" style="font-size:0.8rem;" v-html="formatChange(c.change)"></td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--move" @click="openEditChange(c)">Edit</button>
+                            </td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--delete" @click="deleteChange(c)">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
             </template>
         </template>
 
@@ -552,13 +584,30 @@ export default {
     <div v-if="editLevel" class="admin-edit-overlay" @click.self="closeEdit()">
         <div class="admin-edit-modal">
             <div class="admin-edit-header">
-                <h2 class="admin-edit-title">Edit Level</h2>
+                <h2 class="admin-edit-title">{{ editIsNew ? 'Add Level' : 'Edit Level' }}</h2>
                 <button class="admin-edit-close" @click="closeEdit()">&times;</button>
             </div>
             <form class="admin-edit-form" @submit.prevent="saveEdit()">
+                <p v-if="editIsNew" style="font-size:0.75rem;opacity:0.45;margin:0 0 0.25rem;">
+                    Every field can be left blank — only a name (or a path) is needed.
+                </p>
+                <div v-if="editIsNew" class="admin-edit-row">
+                    <div class="admin-edit-group">
+                        <label>Position in list (1 = top)</label>
+                        <input v-model.number="editInsertAt" type="number" min="1" :max="levels.length + 1" />
+                        <p style="font-size:0.7rem;opacity:0.4;margin:0.3rem 0 0;">Levels at and below this position shift down.</p>
+                    </div>
+                    <div class="admin-edit-group">
+                        <label>Path (unique key)</label>
+                        <input :value="editPath" @input="editPath = $event.target.value; editPathTouched = true" type="text" placeholder="auto-filled from the name" />
+                        <p style="font-size:0.7rem;margin:0.3rem 0 0;" :style="pathTaken ? 'color:#ef4444;opacity:1;' : 'opacity:0.4;'">
+                            {{ pathTaken ? 'A level with this path already exists — saving would overwrite it.' : 'Fills itself in from the name; only change it if two levels share a name.' }}
+                        </p>
+                    </div>
+                </div>
                 <div class="admin-edit-group">
                     <label>Level Name</label>
-                    <input v-model="editLevel.name" type="text" required />
+                    <input v-model="editLevel.name" type="text" />
                 </div>
                 <div class="admin-edit-group">
                     <label>Author</label>
@@ -659,7 +708,9 @@ export default {
                 </div>
             </form>
             <div class="admin-edit-footer">
-                <button class="admin-btn admin-btn--move" :disabled="editSubmitting" @click="saveEdit()">{{ editSubmitting ? 'Saving…' : 'Save Changes' }}</button>
+                <button class="admin-btn admin-btn--move" :disabled="editSubmitting || (editIsNew && pathTaken)" @click="saveEdit()">
+                    {{ editSubmitting ? 'Saving…' : (editIsNew ? 'Create Level' : 'Save Changes') }}
+                </button>
                 <button type="button" class="admin-btn" @click="closeEdit()">Cancel</button>
             </div>
         </div>
@@ -791,6 +842,12 @@ export default {
         editLevel: null,
         editCreatorsStr: '',
         editSubmitting: false,
+        // Creating and editing share one modal; these only apply when creating.
+        editIsNew: false,
+        editInsertAt: 1,
+        levelNotice: '',
+        editPath: '',
+        editPathTouched: false,
         availableTags: AVAILABLE_TAGS,
         // Events
         eventsLoaded: false,
@@ -838,6 +895,13 @@ export default {
                 l.name?.toLowerCase().includes(q) || l.author?.toLowerCase().includes(q)
             );
         },
+        // Warn before a "new" level silently overwrites an existing one: PUT
+        // /api/levels updates when the path already exists.
+        pathTaken() {
+            if (!this.editIsNew) return false;
+            const path = (this.editPath || '').trim();
+            return !!path && this.levels.some(l => l.path === path);
+        },
         newChangeDatePicker() { return changeDateToInput(this.newChange.date); },
         editChangeDatePicker() { return this.editChange ? changeDateToInput(this.editChange.date) : ''; },
         sortedPending() {
@@ -851,6 +915,9 @@ export default {
         },
     },
     watch: {
+        'editLevel.name'(val) {
+            if (this.editIsNew && !this.editPathTouched) this.editPath = slugify(val);
+        },
         'store.authKey'(val) {
             if (val) this.loadLevels();
         },
@@ -919,44 +986,103 @@ export default {
                 level._deleting = false;
             }
         },
+        openNewLevel() {
+            this.editLevel = emptyLevel();
+            this.editCreatorsStr = '';
+            this.editIsNew = true;
+            // Default to the bottom of the list — safer than the top, which would
+            // shift every level down if someone saves by accident.
+            this.editInsertAt = this.levels.length + 1;
+            this.editPath = '';
+            this.editPathTouched = false;
+            this.editSubmitting = false;
+        },
         openEdit(level) {
             this.editLevel = JSON.parse(JSON.stringify(level));
             this.editLevel.records = (this.editLevel.records || []).filter(r => r.user !== 'none');
             this.editLevel.run = (this.editLevel.run || []).filter(r => r.user !== 'none');
             this.editLevel.tags = this.editLevel.tags || [];
             this.editCreatorsStr = (this.editLevel.creators || []).join(', ');
+            this.editIsNew = false;
+            this.editPath = level.path;
+            this.editPathTouched = false;
             this.editSubmitting = false;
         },
         closeEdit() {
             this.editLevel = null;
             this.editCreatorsStr = '';
+            this.editIsNew = false;
+            this.editPath = '';
+            this.editPathTouched = false;
             this.editSubmitting = false;
         },
         editAddRecord() { this.editLevel.records.push({ user: '', link: '', percent: 0, hz: 0 }); },
         editRemoveRecord(i) { this.editLevel.records.splice(i, 1); },
         editAddRun() { this.editLevel.run.push({ user: '', link: '', percent: '', hz: 240 }); },
         editRemoveRun(i) { this.editLevel.run.splice(i, 1); },
-        async saveEdit() {
-            this.editSubmitting = true;
+        // Turns the modal's working copy into an API payload. Every field may be
+        // blank: blanks fall back to the defaults a level needs to render, rather
+        // than being written as '' or NaN.
+        buildLevelPayload() {
             const { _rank, _newPos, _moving, _deleting, ...data } = this.editLevel;
             data.creators = this.editCreatorsStr.split(',').map(s => s.trim()).filter(s => s);
+            data.name = (data.name || '').trim();
             if (!data.thumbnail) data.thumbnail = null;
             if (!data.frameCounter) data.frameCounter = null;
-            data.length = Number(data.length);
-            data.percentToQualify = Number(data.percentToQualify);
-            data.percentFinished = Number(data.percentFinished);
+            data.length = numOr(data.length, 0);
+            data.percentToQualify = numOr(data.percentToQualify, 1);
+            data.percentFinished = numOr(data.percentFinished, 0);
+            data.rating = numOr(data.rating, 1);
+            if (!data.id) data.id = 'private';
             if (!isNaN(Number(data.id))) data.id = Number(data.id);
-            if (data.records.length === 0) data.records.push({ user: 'none', link: '', percent: 0, hz: 0 });
-            if (data.run.length === 0) data.run.push({ user: 'none', link: '', percent: '0', hz: 0 });
+            if (!data.lastUpd) data.lastUpd = todayStamp();
+            data.tags = data.tags || [];
+            // Drop half-filled rows someone added and left empty, then re-add the
+            // sentinel the frontend uses to mean "no records".
+            data.records = (data.records || []).filter(r => (r.user || '').trim());
+            data.run = (data.run || []).filter(r => (r.user || '').trim());
+            if (!data.records.length) data.records.push({ user: 'none', link: '', percent: 0, hz: 0 });
+            if (!data.run.length) data.run.push({ user: 'none', link: '', percent: '0', hz: 0 });
+            return data;
+        },
+        async saveEdit() {
+            const data = this.buildLevelPayload();
+            let insertAt = this.editLevel._rank;
+
+            if (this.editIsNew) {
+                const path = (this.editPath || '').trim() || slugify(data.name);
+                if (!path) {
+                    alert('Give the level a name, or set the Path field yourself.\n\n' +
+                          'The path is the unique key the list is stored under, so it cannot be empty.');
+                    return;
+                }
+                // PUT /api/levels updates when the path exists — without this guard a
+                // new level with a duplicate name would silently overwrite the old one.
+                if (this.levels.some(l => l.path === path)) {
+                    alert(`A level with the path "${path}" already exists.\n\n` +
+                          'Change the Path field, or edit that level instead.');
+                    return;
+                }
+                data.path = path;
+                insertAt = Math.min(Math.max(1, numOr(this.editInsertAt, 1)), this.levels.length + 1);
+            }
+
+            this.editSubmitting = true;
             try {
                 const res = await fetch(`${API}/api/levels`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
-                    body: JSON.stringify({ ...data, insertAt: _rank }),
+                    body: JSON.stringify({ ...data, insertAt }),
                 });
                 if (res.ok) {
+                    const wasNew = this.editIsNew;
+                    const name = data.name || data.path;
                     this.closeEdit();
                     await this.loadLevels();
+                    if (wasNew) {
+                        this.levelNotice = `Added "${name}" at position ${insertAt}.`;
+                        setTimeout(() => { this.levelNotice = ''; }, 4000);
+                    }
                 } else {
                     alert(await errorText(res, 'Failed to save.'));
                 }

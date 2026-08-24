@@ -70,8 +70,7 @@ export default {
                         const p = String(r.percent).split('-').map(Number);
                         return p.length === 2 ? Math.abs(p[1] - p[0]) : 0;
                     })));
-                    const rank = l.allLevelsRank || 1;
-                    l.rankingScore = upcomingScore(maxP, maxR, rank);
+                    l.rankingScore = upcomingScore(maxP, maxR);
                     return [l, e];
                 })
                 .filter(([l]) => l.rankingScore > 0)
