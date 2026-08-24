@@ -15,3 +15,23 @@ Please report vulnerabilities privately through the
 Please do not open a public issue for security problems. Response times vary with
 the severity and complexity of the report, typically from a few hours to a couple
 of days.
+
+## Official channels
+
+Only these accounts speak for the Upcoming Levels List. Anything else claiming to
+be ULL — including any Telegram group, which the project no longer runs — is not
+us, and staff will never ask you for an API key there.
+
+| Channel | Where |
+|---------|-------|
+| Discord | <https://discord.gg/9wVWSgJSe8> |
+| X | [@ull_gd](https://x.com/ull_gd) |
+| Website | <https://ull.pages.dev> |
+
+## Editor API keys
+
+Staff write access is a per-editor API key; the database stores only its SHA-256
+hash, never the key itself. If a key is exposed, tell an admin — they can revoke it
+from the admin panel's **Editors** tab (Delete, then re-add to issue a new one).
+Renaming an editor deliberately keeps their existing key, so it is not a way to
+rotate one.

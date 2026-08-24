@@ -92,6 +92,17 @@ only on the progress made — a level's position in All Levels is not part of it
 levels with the same records tie regardless of rank. Verified levels, levels with no
 records or runs at all, and levels that already have a 100% record are excluded.
 
+### Benchmark Mode
+
+Benchmark Mode (Settings) hides verified levels except those marked as benchmarks,
+leaving the upcoming levels plus a few finished ones as reference points. The
+placements are **recounted** for that view — the levels you can see are numbered
+`#1, #2, #3 …` with no gaps — and each list (All Levels, Main, Future) numbers its
+own. Searching or filtering within Benchmark Mode does not change those numbers.
+
+It is a display setting, not a filter: **Reset Filters leaves it alone**, and it
+persists across pages and reloads.
+
 ---
 
 ## Public API
@@ -190,6 +201,7 @@ node js/upcoming.test.mjs               # Upcoming Levels ordering
 
 npm i playwright vue@3.2.31 vue-router@4.0.14
 node css/mobile-footer.test.mjs         # mobile footer layout
+node js/list-ui.test.mjs                # benchmark recounting + Return to top
 node scripts/e2e-test.mjs               # home page + admin panel in Chromium
 ```
 

@@ -1,5 +1,5 @@
 import { store } from '../../main.js';
-import { embed } from '../../util.js';
+import { embed, passesBenchmark } from '../../util.js';
 import { mobileStore, applyFilters } from './mobileStore.js';
 
 export default {
@@ -33,7 +33,7 @@ export default {
             <div v-for="([level, err], i) in displayList" :key="i" class="mob-level-row" v-show="!level?.isHidden">
                 <button class="mob-level-btn" :class="{ active: selected === i }" @click="selected = selected === i ? -1 : i">
                     <span class="mob-rank" :style="mobileStore.showColors ? getLevelNameStyle(level, selected === i) : {}">
-                        <span v-if="i + 1 <= 500">#{{ i + 1 }}</span>
+                        <span v-if="rankOf(level, i) <= 500">#{{ rankOf(level, i) }}</span>
                         <span v-else>{{ pageType === 'all' ? 'Londenberg' : pageType === 'main' ? 'Leg' : 'Legacy' }}</span>
                     </span>
                     <img v-if="mobileStore.showThumbnails && level" class="mob-thumb" :src="getThumbnail(level)" alt="" />
@@ -114,6 +114,19 @@ export default {
             if (this.pageType === 'future') return mobileStore.rawList.filter(([l]) => l?.isFuture || l?.isVerified);
             return mobileStore.rawList;
         },
+        // Benchmark mode hides verified non-benchmark levels, so the remaining rows are
+        // renumbered 1..N instead of keeping the gaps their indices would leave. Kept as
+        // a per-page Map rather than stamped onto the level objects: Main and Future are
+        // subsets of the same shared rawList and each needs its own numbering.
+        benchmarkRanks() {
+            const ranks = new Map();
+            if (!mobileStore.benchmarkMode) return ranks;
+            let rank = 0;
+            for (const [level] of this.displayList) {
+                if (level && passesBenchmark(level, true)) ranks.set(level, ++rank);
+            }
+            return ranks;
+        },
         noResults() {
             if (!mobileStore.search.trim()) return false;
             return this.displayList.every(([level]) => !level || level.isHidden);
@@ -140,6 +153,9 @@ export default {
         if (this._scrollEl) this._scrollEl.removeEventListener('scroll', this._onScroll);
     },
     methods: {
+        rankOf(level, index) {
+            return this.benchmarkRanks.get(level) || index + 1;
+        },
         applyFilters,
         scrollToTop() {
             if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });

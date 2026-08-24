@@ -571,3 +571,38 @@ main.page-list--pending .list-container {
     font-family: "Lexend Deca", sans-serif; font-size: 0.58rem; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.4; margin-top: 0.25rem;
 }
+
+/* ── Return to top ──────────────────────────────────────────────────────────
+   Sits inside the scrolling left column as its last child. `position: sticky`
+   with `height: 0` parks it just above the bottom of the scrollport without
+   taking any space in the flow, so it floats over the list rather than pushing
+   the final rows up. The wrapper ignores pointer events so it can span the full
+   width without swallowing clicks on the levels behind it. */
+.scroll-top-wrap {
+    position: sticky;
+    bottom: 1.25rem;
+    height: 0;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 5;
+}
+.scroll-top-btn {
+    pointer-events: auto;
+    transform: translateY(-1.25rem);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 1rem;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 2rem;
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    transition: opacity 100ms ease;
+}
+.scroll-top-btn:hover { opacity: 0.88; }

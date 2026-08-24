@@ -1,5 +1,5 @@
 import { store } from "../main.js";
-import { embed, filtersList } from "../util.js";
+import { embed, filtersList, passesBenchmark, assignBenchmarkRanks, displayRank } from '../util.js';
 import { score } from "../score.js";
 import { fetchEditors, fetchList, fetchPending } from "../content.js";
 
@@ -43,7 +43,7 @@ export default {
                 <tr v-for="([level, err], i) in list" :class="{ 'level-hidden': level?.isHidden }">
                     <td class="rank">
                         <span :class="{ 'rank-verified': level?.isVerified }">
-                            <p v-if="i + 1 <= 500" class="type-label-lg" :style="store.levelColoring ? getLevelNameStyle(level, selected == i) : {fontWeight: level?.isVerified ? 'bold' : 'normal', color: level?.isVerified ? (selected == i ? (!store.dark ? '#ffffff' : '#000000') : (!store.dark ? '#bbbbbb' : '#bbbbbb')) : ''}">#{{ i + 1 }}</p>
+                            <p v-if="displayRank(level, i, store.benchmarkMode) <= 500" class="type-label-lg" :style="store.levelColoring ? getLevelNameStyle(level, selected == i) : {fontWeight: level?.isVerified ? 'bold' : 'normal', color: level?.isVerified ? (selected == i ? (!store.dark ? '#ffffff' : '#000000') : (!store.dark ? '#bbbbbb' : '#bbbbbb')) : ''}">#{{ displayRank(level, i, store.benchmarkMode) }}</p>
                             <p v-else class="type-label-lg" :style="store.levelColoring ? getLevelNameStyle(level, selected == i) : {fontWeight: level?.isVerified ? 'bold' : 'normal', color: level?.isVerified ? (selected == i ? (!store.dark ? '#ffffff' : '#000000') : (!store.dark ? '#bbbbbb' : '#bbbbbb')) : ''}">Londenberg</p>
                         </span>
                     </td>
@@ -73,6 +73,12 @@ export default {
                 </div>
                 <p style="font-size:0.8rem;opacity:0.6;margin:0;">{{ pendingDesc(pendingSuggestion) }}</p>
                 <p style="font-size:0.85rem;opacity:0.8;margin:0;">The level is currently in <router-link to="/pending" style="text-decoration:underline;">Pending List</router-link>.</p>
+            </div>
+            <div class="scroll-top-wrap">
+                <button v-if="showScrollTop" class="scroll-top-btn" @click="scrollToTop">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg>
+                    Return to top
+                </button>
             </div>
         </div>
         <div class="level-container-new surface">
@@ -238,6 +244,7 @@ export default {
         search: "",
         minDecoration: 0,
         minVerification: 0,
+        showScrollTop: false,
     }),
     watch: {
         search() {
@@ -313,8 +320,33 @@ export default {
 
         this.applyFilters();
         this.loading = false;
+        this.$nextTick(() => this.watchScroll());
+    },
+    beforeUnmount() {
+        if (this._scrollEl) this._scrollEl.removeEventListener('scroll', this._onScroll);
     },
     methods: {
+        displayRank,
+        // The left column (.list-container-new) is the scroll container. Show the
+        // button once roughly ten level rows have scrolled past, measuring one real
+        // row instead of hard-coding a pixel height.
+        watchScroll() {
+            const el = this.$el && this.$el.querySelector && this.$el.querySelector('.list-container-new');
+            if (!el || this._scrollEl) return;
+            this._scrollEl = el;
+            this._onScroll = () => {
+                if (!this._rowHeight) {
+                    const row = el.querySelector('.list tr:not(.level-hidden)');
+                    const h = row ? row.getBoundingClientRect().height : 0;
+                    if (h) this._rowHeight = h;
+                }
+                this.showScrollTop = el.scrollTop > (this._rowHeight || 56) * 10;
+            };
+            el.addEventListener('scroll', this._onScroll, { passive: true });
+        },
+        scrollToTop() {
+            if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+        },
         embed,
         score,
         getLevelNameStyle(level, isSelected) {
@@ -422,6 +454,10 @@ export default {
             const minDec = this.minDecoration || 0;
             const minVer = this.minVerification || 0;
 
+            // Renumber first: the rank shown depends on benchmark mode, not on the
+            // search/tag filters applied below.
+            assignBenchmarkRanks(this.list, store.benchmarkMode);
+
             this.list.forEach(item => {
                 const level = item[0];
                 if (!level) return;
@@ -443,7 +479,7 @@ export default {
                 const verificationProgress = Math.max(recordPercent, runPercent);
                 const matchesVerification = level.isVerified || verificationProgress >= minVer;
                 const matchesDecorationFinal = level.isVerified || matchesDecoration;
-                const matchesBenchmark = !store.benchmarkMode || !level.isVerified || level.benchmark === true;
+                const matchesBenchmark = passesBenchmark(level, store.benchmarkMode);
                 level.isHidden = !(matchesSearch && matchesTags && matchesDecorationFinal && matchesVerification && matchesBenchmark);
             });
             this.autoSelectFirst();
@@ -461,8 +497,8 @@ export default {
             this.otherFilters.forEach(f => f.active = false);
             this.minDecoration = 0;
             this.minVerification = 0;
-            store.benchmarkMode = false;
-            store.saveSetting('benchmarkMode', false);
+            // Benchmark mode is a display setting (it lives in the settings popup and
+            // persists across pages), not one of these filters — leave it as the user set it.
             this.applyFilters();
         },
     },

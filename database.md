@@ -517,6 +517,32 @@ the real message reaches the panel. Never remove it.
 - **Add forms sit above their lists** on the Pending and Recent Changes tabs (the card
   comes before the table in the template), so adding an entry doesn't mean scrolling past
   every existing row.
+- **Benchmark mode** (`js/util.js`: `passesBenchmark`, `assignBenchmarkRanks`,
+  `displayRank`): a display setting (settings popup / mobile settings sheet, persisted to
+  `localStorage.benchmarkMode`) that keeps every unverified level plus the verified ones
+  flagged `benchmark = 1`, and hides the rest.
+  - **Placements are recounted, not skipped.** The list pages render every row and hide
+    the filtered ones, so the printed rank is normally the row's index in the page's list.
+    Under benchmark mode that left gaps where hidden levels were (`#1 #2 #4 #5 #6 #7 #8
+    #10 …`); the visible levels are now renumbered `#1 #2 #3 …`. Changed 2026-08-24.
+  - The recount is **per page**: All Levels, Main and Future each number their own list.
+    Desktop pages call `assignBenchmarkRanks(this.list, …)` in `applyFilters()` (each page
+    holds its own array from its own `fetchList()`); mobile can't do that — every page
+    shares `mobileStore.rawList` — so `MobileList.js` keeps a per-page `benchmarkRanks`
+    Map computed from `displayList` instead of stamping the level objects.
+  - The recount deliberately **ignores the search box and tag filters**: those narrow the
+    view without changing a level's placement, whereas benchmark mode is a different view
+    of the list with its own numbering.
+  - **Reset Filters does not touch it.** It used to set `store.benchmarkMode = false` and
+    persist that, silently undoing a setting that lives in the settings popup, not in the
+    filters panel. Fixed 2026-08-24; mobile's `resetFilters()` never did this.
+- **Return to top** (`.scroll-top-wrap` / `.scroll-top-btn` in `css/pages/list.css`):
+  desktop List/Main/Future show a floating "Return to top" pill once roughly **ten level
+  rows** have scrolled past, mirroring mobile's `.mob-scroll-top-btn`. The scroll container
+  is the left column (`.list-container-new`), so the button is its last child and uses
+  `position: sticky; bottom; height: 0` to float above the rows without taking space or
+  drifting over the level detail pane. The threshold measures one real row
+  (`watchScroll()` caches `_rowHeight`) rather than hard-coding pixels.
 - **Leaderboard scoring** (`js/formulas.js`, used by `js/pages/Leaderboard.js` and the
   mobile copy in `js/pages/Mobile.js`): every entry is built from
   `recordScore(rank, percent)`, then
@@ -790,6 +816,7 @@ Gotchas learned the hard way:
 - Leaderboard: verification = 2x a 100% record; layout completion (100% on an unverified
   level) = 0.8x a verification = 1.6x a record
 - Upcoming Levels order = `max(P,R)^2 + min(P,R)^1.8`, descending — **no rank factor**
+- Benchmark mode recounts placements 1..N per page; Reset Filters must never clear it
 - `levels` has **no** `password` / `difficulty` column — naming them throws
 - A "Network error" in the admin panel means the Worker threw; check its logs
 - Never paste SQL comments into the D1 Console — it rejects a comment-only paste with
@@ -800,6 +827,7 @@ Gotchas learned the hard way:
 - Tests: `node worker/worker.test.mjs` (Worker vs. real schema),
   `node worker/worker.unmigrated.test.mjs` (Worker vs. the PRE-migration schema),
   `node js/leaderboard.test.mjs` and `node js/upcoming.test.mjs` (scoring vs. the /data
-  snapshot), `node css/mobile-footer.test.mjs` and
+  snapshot), `node js/list-ui.test.mjs` (benchmark recounting + Return to top in a
+  browser), `node css/mobile-footer.test.mjs` and
   `node scripts/e2e-test.mjs` (browser, needs `npm i playwright vue@3.2.31 vue-router@4.0.14`)
 - Working branch: `claude/multiple-features-fixes-slberb`

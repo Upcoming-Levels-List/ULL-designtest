@@ -1,4 +1,4 @@
-import { filtersList as baseFiltersList } from '../../util.js';
+import { filtersList as baseFiltersList, passesBenchmark } from '../../util.js';
 
 export const mobileStore = Vue.reactive({
     loading: true,
@@ -45,7 +45,7 @@ export function applyFilters() {
         const vP = Math.max(rP, runP);
         const matchesDec = l.isVerified || (l.percentFinished ?? 0) >= minD;
         const matchesVer = l.isVerified || vP >= minV;
-        const matchesBenchmark = !mobileStore.benchmarkMode || !l.isVerified || l.benchmark === true;
+        const matchesBenchmark = passesBenchmark(l, mobileStore.benchmarkMode);
         l.isHidden = !(matchesSearch && matchesTags && matchesDec && matchesVer && matchesBenchmark);
     });
 }
