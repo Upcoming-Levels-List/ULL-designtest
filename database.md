@@ -310,7 +310,7 @@ problem. It was not — it reproduced on every network, for every editor.
 
 **Root cause.** `PUT /api/levels` bound `password` and `difficulty` in both its `UPDATE`
 and its `INSERT`. **Those columns do not exist on the real `levels` table** (confirmed
-against `backup-before-migrate.sql`; `scripts/build-migration.js` had already dropped
+against the pre-migration D1 backup; `scripts/build-migration.js` had already dropped
 them). SQLite therefore threw `no such column: password`, the Worker did not catch it,
 and Cloudflare returned its own 500 page — **with no CORS headers**. A response the
 browser refuses to expose makes `fetch()` **reject**, which landed in the frontend's

@@ -1,12 +1,14 @@
 // Exercises worker/worker.js against a real SQLite DB shaped like the live D1
-// schema (taken from backup-before-migrate.sql), through a minimal D1 shim.
+// schema, through a minimal D1 shim. (The schema below was transcribed from the
+// pre-migration D1 backup, which was removed from the repo: it carried the editor
+// key hashes and Cloudflare Pages was serving it as a static file.)
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import worker from './worker.js';
 
 const db = new DatabaseSync(':memory:');
 
-// Real live schema (backup-before-migrate.sql) — note: levels has NO password/difficulty.
+// Real live schema — note: levels has NO password/difficulty.
 db.exec(`
 CREATE TABLE levels (
     path TEXT PRIMARY KEY, name TEXT NOT NULL, author TEXT, verifier TEXT,

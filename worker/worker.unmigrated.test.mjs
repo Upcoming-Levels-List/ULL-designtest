@@ -8,7 +8,7 @@ import { DatabaseSync } from 'node:sqlite';
 import worker from './worker.js';
 
 const db = new DatabaseSync(':memory:');
-// The PRE-migration schema, exactly as backup-before-migrate.sql has it.
+// The PRE-migration schema, as the live D1 database had it before the 2026-08-24 migration.
 db.exec(`
 CREATE TABLE levels (path TEXT PRIMARY KEY, name TEXT NOT NULL, author TEXT, verifier TEXT,
   verification TEXT, showcase TEXT, thumbnail TEXT, id TEXT, percentToQualify INTEGER,
