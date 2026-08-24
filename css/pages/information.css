@@ -453,11 +453,20 @@
     flex-direction: column;
     gap: 0.1rem;
 }
-.gl-contact-links span {
+.gl-contact-links span,
+.gl-contact-links a {
     font-size: 0.72rem;
     font-weight: 400;
     color: var(--color-on-background);
     opacity: 0.55;
+}
+.gl-contact-links a {
+    text-decoration: none;
+    transition: opacity 100ms ease;
+}
+.gl-contact-links a:hover {
+    opacity: 0.9;
+    text-decoration: underline;
 }
 
 .info-gl-no-results {

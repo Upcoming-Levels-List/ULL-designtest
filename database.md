@@ -39,11 +39,27 @@
 
 > **Update:** a corrected, known-good copy of the Worker now lives in this repo at
 > **`worker/worker.js`** (kept for reference/version control — the *live* Worker is still
-> edited via the Cloudflare dashboard and is authoritative). This copy fixes the
-> `editor_keys` column bug (`name` → real column `editor_name`), adds the missing
+> edited via the Cloudflare dashboard and is authoritative). It fixes the `editor_keys`
+> column bug (`name` → real column `editor_name`), adds the missing
 > `GET /api/auth/validate` login endpoint, and renames `GET /api/changes` →
 > `GET /api/recent-changes` to match the frontend. If you change the live Worker, update
 > this file too so they don't drift.
+>
+> **Deploying the 2026-08-24 revision — order matters:**
+> 1. Run `scripts/schema-migrations.sql` (adds `editor_keys.sort_order`, creates
+>    `recent_changes`). The Worker's `/api/editors` and `/api/recent-changes` both
+>    depend on it.
+> 2. Paste `worker/worker.js` into Quick Edit → **Deploy**.
+> 3. Optionally seed the feed with `scripts/seed-recent-changes.sql`.
+>
+> That revision: removes the phantom `password`/`difficulty` columns that broke every
+> level save (section 4b), wraps the router in a CORS-safe `try/catch`, reads Recent
+> Changes from the real `recent_changes` table, orders editors by `sort_order`, and adds
+> the editor-rename / editor-reorder / recent-changes-CRUD endpoints (section 5).
+>
+> **`worker/worker.js` has tests.** `node worker/worker.test.mjs` runs it against an
+> in-memory SQLite DB built from the live schema (Node 22+, no dependencies). Run it
+> before pasting anything into the Cloudflare dashboard.
 
 
 Last session the Worker source was **reconstructed from memory and pasted into chat** for the
@@ -54,6 +70,8 @@ endpoints the frontend actually depends on were **missing / renamed** in that re
 |----------------------------------|---------------------------------|--------|
 | `GET /api/auth/validate`         | *(absent)*                      | ⚠️ must be present or login breaks |
 | `GET /api/recent-changes`        | `GET /api/changes`              | ⚠️ name mismatch → Recent Changes empty |
+| `recent_changes` table           | a `changes` table with `entries`| ⚠️ that table doesn't exist → feed empty |
+| `levels` without password/difficulty | both columns bound on write | ⚠️ throws → every level save "Network error" |
 
 **Before changing the Worker, always fetch the live endpoints and confirm what actually
 exists** rather than trusting the reconstructed copy. The live deployed Worker is
@@ -86,8 +104,6 @@ integer; the Worker treats position N as the Nth row when ordered `ORDER BY sort
 | `thumbnail`       | TEXT    | image/YouTube URL, nullable |
 | `frameCounter`    | TEXT    | **added** — "Frame Windows Counter" YouTube link, nullable/empty for most levels |
 | `id`             | TEXT    | in-game level ID (or "private") |
-| `password`        | TEXT    | |
-| `difficulty`      | TEXT/INT| |
 | `rating`          | INTEGER | |
 | `length`          | INTEGER | seconds |
 | `percentToQualify`| INTEGER | |
@@ -101,6 +117,10 @@ integer; the Worker treats position N as the Nth row when ordered `ORDER BY sort
 | `isFuture`        | INTEGER | 0/1 (on the Future list) |
 | `benchmark`       | INTEGER | **added** — 0/1 |
 | `sort_order`      | INTEGER | ranking. Contiguous; shifted on insert/delete/move |
+
+> ⚠️ **There is no `password` and no `difficulty` column** — they never existed on the
+> real table (they came from a reconstructed Worker) and this doc used to list them by
+> mistake. Any statement that names them throws; see the outage in section 4b.
 
 Empty `records`/`run` are stored as a single sentinel row `{user:'none',...}` so the frontend
 can distinguish "no records" from "not loaded". The admin panel filters `user === 'none'` out
@@ -123,6 +143,20 @@ Some tags are **auto-assigned by the frontend** and are NOT manually editable: `
 | `key_hash`    | TEXT    | SHA-256 hex of the editor's API key |
 | `role`        | TEXT    | one of `owner, admin, seniormod, mod, dev` (DEFAULT `'mod'`) |
 | `link`        | TEXT    | profile URL (YouTube etc.), DEFAULT `''` |
+| `sort_order`  | INTEGER | **added 2026-08-24** — manual display order, DEFAULT `0`. `GET /api/editors` sorts by `sort_order ASC, id ASC`; the list is **never alphabetical**. |
+
+> **Editors are manually ordered.** The admin panel's Editors tab has ▲ / ▼ buttons
+> that rewrite the whole order via `POST /api/editors/reorder`. Add the column with
+> `scripts/schema-migrations.sql` (it also seeds a starting order of
+> owner → admin → seniormod → mod → dev, then by id) before deploying the Worker,
+> or `/api/editors` will throw.
+
+> **Renaming an editor is non-destructive.** `PATCH /api/editors` takes an optional
+> `newName` and runs `UPDATE editor_keys SET editor_name = ? WHERE id = ?`, so the
+> row — and therefore `key_hash`, `role`, `link` and `sort_order` — survives. The
+> editor's existing API key keeps working and nothing they filled in is reset.
+> Renaming used to require delete + re-add, which issued a **new key**. Old
+> `audit_log` rows keep the old name on purpose (they are a historical record).
 
 > ⚠️ **Critical gotcha (caused the editor-list / login outage):** the real column is
 > **`editor_name`**. An earlier Worker reconstruction queried `name` everywhere, which
@@ -175,10 +209,35 @@ CREATE TABLE IF NOT EXISTS audit_log (
 );
 ```
 
-### `recent-changes` source (uncertain)
-The frontend calls `GET /api/recent-changes` and expects an array of
-`{ date: "...", entries: ["**bold** text", ...] }`. The backing table's exact name/shape is
-uncertain (the reconstructed Worker called it `changes`). **Verify against the live Worker.**
+### `recent_changes`
+Backs the **Recent Changes** card on the home page (`js/pages/Home.js`,
+`js/pages/mobile/MobileHome.js`) and the admin **Recent Changes** tab.
+**One row per change line** — the Worker groups rows into the
+`{ date, entries[] }` shape the frontend expects.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `id` | INTEGER PK AUTOINCREMENT | |
+| `date` | TEXT | **free text**, e.g. `April 18, 2026`. Free text is what makes backdating work: an entry can carry any date, including one long past. |
+| `change` | TEXT | one change line. `**double asterisks**` render bold on the site. |
+| `sort_order` | INTEGER | display order, ascending. The **only** thing that decides position — `date` is never parsed or sorted on. |
+
+**Grouping rule** (`groupChanges()` in the Worker): rows are read
+`ORDER BY sort_order ASC, id ASC`, then rows sharing a `date` are merged into one
+group that sits where that date **first** appears. So several lines for one day
+group together even if they were added at different times.
+
+> ⚠️ The reconstructed Worker read from a table called `changes` with an `entries`
+> JSON column. **That table does not exist** — the real one is `recent_changes` with
+> the shape above. Querying `changes` threw, which is why Recent Changes rendered
+> empty (the frontend's `catch` turns the failure into `[]`).
+
+**Seeding the feed** (a fresh site starts empty):
+`node scripts/build-changes-seed.js` regenerates `scripts/seed-recent-changes.sql`
+from `data/_recentChanges.json`, then
+`wrangler d1 execute d1-template-database --remote --file=scripts/seed-recent-changes.sql`.
+It is a `DELETE` + `INSERT` replace, so run it **before** staff start editing the feed
+in the admin panel, not after.
 
 ### `leaderboard` / `upcoming`
 Referenced by the reconstructed Worker; the live leaderboard computation in `content.js` is
@@ -232,6 +291,43 @@ Symptoms at the time:
 
 ---
 
+## 4b. Outage: "saving changes on the list doesn't work at all" (RESOLVED 2026-08-24)
+
+**Symptom.** Editing any level in the admin panel popped **"Network error."** every time.
+Saving in **Events** and **Pending** worked fine, which made it look like a connectivity
+problem. It was not — it reproduced on every network, for every editor.
+
+**Root cause.** `PUT /api/levels` bound `password` and `difficulty` in both its `UPDATE`
+and its `INSERT`. **Those columns do not exist on the real `levels` table** (confirmed
+against `backup-before-migrate.sql`; `scripts/build-migration.js` had already dropped
+them). SQLite therefore threw `no such column: password`, the Worker did not catch it,
+and Cloudflare returned its own 500 page — **with no CORS headers**. A response the
+browser refuses to expose makes `fetch()` **reject**, which landed in the frontend's
+`catch { alert('Network error.') }`. Events and Pending were unaffected because they
+write to `config` / `pending`, whose columns all exist.
+
+**Two-part fix:**
+
+1. **The bug** — `worker/worker.js` no longer references `password`/`difficulty`
+   anywhere (`parseLevel`, the `UPDATE`, and the `INSERT` column list + placeholders,
+   which went from 25 to 23 columns).
+2. **The disguise** — the Worker's router is wrapped in a top-level `try/catch` that
+   returns a CORS-enabled JSON 500 carrying the real message, and the admin panel now
+   prints the Worker's `error` text (`errorText()`) rather than a generic string. A
+   rejected `fetch()` reports what actually happened via `requestFailed()`. If this
+   class of bug ever recurs, the panel will say `no such column: …` instead of
+   "Network error."
+
+**Lesson.** A "network error" in this admin panel almost always means *the Worker threw*.
+Check the Worker logs in the Cloudflare dashboard before suspecting the connection, and
+never add a column to a Worker query without confirming it via `PRAGMA table_info(levels)`.
+
+**Regression tests** (`worker/worker.test.mjs`, `scripts/e2e-test.mjs`) both cover this:
+they run the Worker against a SQLite DB built from the *real* schema, so a re-introduced
+phantom column fails immediately.
+
+---
+
 ## 5. Worker API endpoints (canonical list to maintain)
 
 Every endpoint the system needs. Verify each against the live Worker; add any that are
@@ -246,11 +342,14 @@ missing.
 - `GET /api/editors` — returns `[{name, role, link}]`
 - `GET /api/level-month` — JSON of `config.levelMonth` or `null`
 - `GET /api/level-verif` — JSON of `config.levelVerif` or `null`
-- `GET /api/recent-changes` — **note the name**; array of `{date, entries[]}`
+- `GET /api/recent-changes` — **note the name**; array of `{date, entries[]}`, built by
+  grouping `recent_changes` rows (see section 3)
 
 **Auth GET:**
 - `GET /api/auth/validate` — 200 if Bearer key valid (used by login), else 401
 - `GET /api/audit-log` — last 100 audit rows, newest first
+- `GET /api/admin/changes` — flat `recent_changes` rows **with ids**, for the admin
+  Recent Changes tab: `[{id, date, change, sort_order}]`
 
 **Auth writes (Bearer key required; each logs to `audit_log`):**
 - `PUT /api/levels` — insert (with `insertAt`) or update (by `path`). 25 columns incl.
@@ -263,8 +362,18 @@ missing.
 - `DELETE /api/pending/:id`
 - `PUT /api/config` — upsert arbitrary `{key: value}` pairs (used for `levelMonth`,
   `levelVerif`).
-- `PATCH /api/editors` — body `{name, role, link}`; updates role/link.
+- `PATCH /api/editors` — body `{name, newName?, role, link}`; updates role/link and,
+  when `newName` is given and differs, **renames in place** (keeps `key_hash`,
+  `sort_order`; returns `{ok, name}`). Rejects a `newName` that already exists.
+- `POST /api/editors/reorder` — body `{names: [...]}` in display order; writes each
+  name's array index to `editor_keys.sort_order`.
 - `DELETE /api/editors/:name` — revokes an editor's key.
+- `POST /api/admin/changes` — body `{date, change, position?}`; adds one Recent
+  Changes line. `position` is `'top'` (default) or `'bottom'`; `date` is free text so
+  backdated entries work.
+- `PUT /api/admin/changes` — body `{id, date, change}`; edits one line.
+- `POST /api/admin/changes/reorder` — body `{ids: [...]}`; array index → `sort_order`.
+- `DELETE /api/admin/changes/:id` — removes one line.
 - `POST /api/admin/add-key` — body `{name, key, role, link}`; hashes key, inserts editor.
 - `POST /api/admin/pending` — body `{name, placement, link, indefinite}`; inserts a Pending
   List entry (admin Pending tab).
@@ -275,6 +384,13 @@ missing.
 
 CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles `OPTIONS`.
 
+**Every response goes through a top-level `try/catch`** (`handle()` wrapped by the
+exported `fetch`). This matters: an uncaught throw returns *Cloudflare's own* 500 page,
+which carries **no CORS headers** — the browser then blocks it and `fetch()` **rejects**,
+so the admin panel reported a bare "Network error" for what was really a SQL bug. The
+wrapper turns any throw into a normal CORS-enabled `{error: "Server error: …"}` 500, so
+the real message reaches the panel. Never remove it.
+
 ---
 
 ## 6. Frontend → endpoint map (do not break these names)
@@ -283,7 +399,7 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
 |------|-------|
 | `js/content.js` | `/api/list`, `/api/editors`, `/api/pending`, `/api/recent-changes`, `/api/level-month`, `/api/level-verif` |
 | `js/components/AdminLogin.js` | `/api/auth/validate` |
-| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/admin/add-key`, `/api/pending` (GET), `/api/admin/pending` (POST/PUT), `/api/pending/:id` (DELETE), `/api/audit-log` |
+| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/editors/reorder` (POST), `/api/admin/add-key`, `/api/pending` (GET), `/api/admin/pending` (POST/PUT), `/api/pending/:id` (DELETE), `/api/admin/changes` (GET/POST/PUT), `/api/admin/changes/reorder` (POST), `/api/admin/changes/:id` (DELETE), `/api/audit-log` |
 | `js/pages/LevelGenerator.js` | `/api/levels` (PUT) |
 | `js/pages/Events.js` | via `content.js`: `/api/level-month`, `/api/level-verif`, `/api/list` |
 
@@ -321,11 +437,31 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
   tag list is a bounded scroll area (`.mob-filters-scroll`, max-height 46vh) so Apply/Reset stay
   visible; a fade + bouncing chevron (`.mob-filters-scroll-hint`) signals more filters and hides
   once scrolled to the bottom (`filtersAtEnd`).
+- **Mobile footer pinning** (`css/pages/mobile.css`): `.mob-content` (and
+  `.mob-home-page`) are flex columns and `.mob-footer` carries `margin-top: auto`, so on a
+  short page — a search matching one level, say — the footer sits at the **bottom of the
+  screen** with blank space above it instead of riding up under the content. Once the page
+  overflows, the auto margin collapses to 0 and the footer follows the content normally.
+  Direct children get `flex-shrink: 0` so nothing gets squashed to make room.
 - **Frame Windows Counter**: if `level.frameCounter` is set, the level card shows a
   "Frame Windows Counter" row with a "Watch Here" link (List/ListMain/ListFuture pages).
-- **Coming Soon popup**: Vue 3 templates can't call `window.alert()`. A shared reactive flag
-  `store.comingSoon` (in `js/main.js`) plus an overlay in `index.html` handle it. Telegram
-  links across the site set `store.comingSoon = true`.
+- **Social links**: the community links are **Discord** (`https://discord.gg/9wVWSgJSe8`)
+  and **X** (`https://x.com/ull_gd`), side by side in the desktop sidebar, the settings
+  popup, both footers, the home hero, the mobile top bar and the mobile settings sheet.
+  The X mark ships as `assets/x.svg` (a white glyph, same convention as `discord.svg`) for
+  `<img>` spots and is inlined with `fill="currentColor"` where the surrounding button
+  already used an inline SVG. **There is no ULL Telegram any more** — it was replaced by
+  the X channel, and with it the `store.comingSoon` flag and the "Coming Soon" overlay in
+  `index.html` are gone. (`js/_guidelines.js` still lists QwidziT's *personal* Telegram
+  handle under Contacts; that is an individual's contact detail, not the ULL channel.)
+- **List Editors order**: rendered exactly in the order `/api/editors` returns
+  (`editor_keys.sort_order`) on Home, Mobile Home and the admin panel. No page sorts
+  editors client-side — don't add one.
+- **Recent Changes rendering**: `formatChange()` (in `js/pages/Home.js`,
+  `js/pages/mobile/MobileHome.js` and `js/pages/Admin.js`) turns `**bold**` into
+  `<strong>` and dims the rest, via `v-html`. Everything outside the asterisks is
+  HTML-escaped first, so stored text can't inject markup. Change lines and dates come
+  straight from `recent_changes`; the admin tab previews with the same function.
 - **Version**: currently **v2.0.0** (shown in `index.html` sidebar and `js/pages/Mobile.js`).
 - **Partners section**: hidden with `v-if="false"` (kept in source) on Home and MobileHome.
 
@@ -363,6 +499,14 @@ CORS: the Worker returns permissive `Access-Control-Allow-*` headers and handles
 ## 8. Operational runbook (things done "behind the scenes", not in the repo)
 
 ### D1 setup SQL (run in the D1 Console tab)
+
+> **Prefer `scripts/schema-migrations.sql`** — it is the maintained version of the block
+> below and also adds `editor_keys.sort_order` (+ seeds a starting order) and creates
+> `recent_changes`. Run it before deploying a Worker that depends on them:
+> `wrangler d1 execute d1-template-database --remote --file=scripts/schema-migrations.sql`
+> (or paste it into the Console, statement by statement, so one "duplicate column name"
+> doesn't abort the rest).
+
 Idempotent-ish; check first with `PRAGMA table_info(<table>)` before ALTERs.
 ```sql
 -- editor_keys extras
@@ -377,6 +521,18 @@ ALTER TABLE levels ADD COLUMN benchmark INTEGER DEFAULT 0;
 ALTER TABLE pending ADD COLUMN placement  TEXT DEFAULT '?';   -- may already exist
 ALTER TABLE pending ADD COLUMN link       TEXT DEFAULT '';    -- may already exist
 ALTER TABLE pending ADD COLUMN indefinite INTEGER DEFAULT 0;  -- NEW: powers "Pending Indefinitely"
+
+-- editors: manual display order (the site never sorts editors alphabetically)
+ALTER TABLE editor_keys ADD COLUMN sort_order INTEGER DEFAULT 0;
+
+-- Recent Changes feed (one row per change line; `date` is free text so entries
+-- can be backdated, `sort_order` alone decides position)
+CREATE TABLE IF NOT EXISTS recent_changes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    change TEXT NOT NULL,
+    sort_order INTEGER
+);
 
 -- singletons + logging
 CREATE TABLE IF NOT EXISTS config (key TEXT PRIMARY KEY, value TEXT);
@@ -412,7 +568,26 @@ fetch('https://d1-wrkr.ullteam.workers.dev/api/admin/bootstrap', {
 ### Adding more moderators (normal flow)
 Once logged into the Admin panel → **Editors** tab → fill name/role → **Generate** an API key
 → copy it and send privately → **Add Editor**. This calls `POST /api/admin/add-key`. Only the
-hash is stored; a lost key means delete + re-add. The **Audit Log** tab shows who changed what.
+hash is stored; a **lost** key means delete + re-add. The **Audit Log** tab shows who changed what.
+
+- **Reordering**: the ▲ / ▼ buttons in the Editors tab persist the whole order immediately
+  (`POST /api/editors/reorder`). The site shows exactly this order.
+- **Renaming**: **Edit** → change the Name field → **Save**. This is *not* a delete + re-add:
+  the editor keeps their API key, role, link and position. Only rename via this button —
+  deleting and re-adding is what forces a new key on them.
+
+### Managing the Recent Changes feed
+Admin panel → **Recent Changes** tab. Each row is one change line.
+- **Add**: type a date (or use the date picker, which formats a picked day — including a past
+  one — into the free-text field), write the line, choose Top or Bottom, **Add Change**. The
+  date field keeps its value after adding so several lines for one day are quick to enter.
+- **Backdating**: nothing parses the date, so any date works. Position is set by ▲ / ▼ (or by
+  choosing Bottom on insert), independent of what the date says.
+- **Grouping**: lines sharing a date render as one dated block on the site, positioned where
+  that date first appears in this list.
+- **Bold**: wrap level names in `**double asterisks**`; the tab previews the result live.
+- **Seeding a fresh site**: see `recent_changes` in section 3 — run
+  `scripts/seed-recent-changes.sql` **before** staff start editing, since it replaces every row.
 
 ### Deploying Worker changes
 Cloudflare dashboard → Workers & Pages → the worker → **Quick Edit** → paste → **Deploy**.
@@ -468,7 +643,14 @@ Gotchas learned the hard way:
 - Worker & DB are edited only in the Cloudflare dashboard; **neither is in this repo**
 - Auth: `Authorization: Bearer <key>`; DB stores `sha256(key)` in `editor_keys.key_hash`
 - Roles: `owner, admin, seniormod, mod, dev`
+- Editors are **manually ordered** (`editor_keys.sort_order`), never alphabetical
+- Renaming an editor keeps their key (`PATCH /api/editors` with `newName`)
+- Recent Changes = `recent_changes`, one row per line, free-text `date`, `sort_order` wins
+- `levels` has **no** `password` / `difficulty` column — naming them throws
+- A "Network error" in the admin panel means the Worker threw; check its logs
 - `sort_order` = level ranking (contiguous integer, shifted on insert/delete/move)
 - Dates use `DD.MM.YYYY`
 - Current site version: **v2.0.0**
-- Working branch: `claude/pending-removal-filter-jy7hO`
+- Tests: `node worker/worker.test.mjs` (Worker vs. real schema) and
+  `node scripts/e2e-test.mjs` (browser, needs `npm i playwright vue@3.2.31 vue-router@4.0.14`)
+- Working branch: `claude/multiple-features-fixes-slberb`

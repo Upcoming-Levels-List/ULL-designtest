@@ -267,8 +267,15 @@ export default {
                     const body = await res.json().catch(() => ({}));
                     this.errors.push(body.error || 'Failed to submit. Check your connection.');
                 }
-            } catch {
-                this.errors.push('Network error. Try again.');
+            } catch (e) {
+                // fetch() rejects only when no readable response came back — most often
+                // the Worker throwing before it can attach CORS headers, not the user's
+                // connection. Say which so the next person doesn't debug their Wi-Fi.
+                this.errors.push(
+                    'Could not reach the API — the request never completed. This is usually ' +
+                    'the Worker erroring out (check its logs in the Cloudflare dashboard) ' +
+                    `or a lost connection. Details: ${e && e.message ? e.message : e}`
+                );
             }
             this.submitting = false;
         },

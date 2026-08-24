@@ -34,6 +34,9 @@ export default {
             <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-topbar-btn" title="Discord">
                 <img src="/assets/discord.svg" class="mob-topbar-discord-icon" />
             </a>
+            <a href="https://x.com/ull_gd" target="_blank" rel="noopener" class="mob-topbar-btn" title="X (@ull_gd)">
+                <img src="/assets/x.svg" class="mob-topbar-discord-icon" />
+            </a>
         </nav>
     </header>
 
@@ -122,6 +125,9 @@ export default {
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-contact-btn">
                     <img src="/assets/discord.svg" /> Contact Support
                 </a>
+                <a href="https://x.com/ull_gd" target="_blank" rel="noopener" class="mob-contact-btn mob-contact-btn--x">
+                    <img src="/assets/x.svg" /> Follow @ull_gd on X
+                </a>
             </div>
 
         </div>
@@ -149,7 +155,7 @@ export default {
                 <div class="mob-footer-col">
                     <h4>Community</h4>
                     <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord</a>
-                    <a href="#" @click.prevent="store.comingSoon = true">Telegram</a>
+                    <a href="https://x.com/ull_gd" target="_blank" rel="noopener">X (@ull_gd)</a>
                 </div>
             </div>
             <div class="mob-footer-bottom">

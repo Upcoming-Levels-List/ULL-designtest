@@ -40,11 +40,11 @@ export default {
                     <img src="/assets/discord.svg" :style="store.dark ? 'filter:invert(1)' : ''" alt="Discord" />
                     Discord
                 </a>
-                <a href="#" class="home-social-btn" @click.prevent="store.comingSoon = true">
+                <a href="https://x.com/ull_gd" target="_blank" rel="noopener" class="home-social-btn">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
-                        <path d="M22.26 2.01L1.27 10.25c-1.42.57-1.4 1.37-.26 1.73l5.35 1.67 12.38-7.82c.58-.36 1.12-.16.68.23L8.83 16.95l-.4 5.63c.58 0 .84-.27 1.16-.58l2.79-2.71 5.8 4.28c1.07.59 1.84.29 2.1-.99l3.8-17.89c.4-1.58-.6-2.3-1.82-1.68z"/>
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
-                    Telegram
+                    X
                 </a>
             </div>
         </div>
@@ -136,12 +136,17 @@ export default {
     },
     methods: {
         roleLabel(role) { return roleLabelMap[role] || role; },
+        // Rendered with v-html so **bold** works — everything else is escaped so
+        // stored text can never inject markup into the page.
         formatChange(text) {
-            const html = text
+            const esc = (s) => String(s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            const html = (text || '')
                 .split(/(\*\*[^*]+\*\*)/)
                 .map(part => part.startsWith('**') && part.endsWith('**')
-                    ? `<strong>${part.slice(2, -2)}</strong>`
-                    : part ? `<span class="dim">${part}</span>` : '')
+                    ? `<strong>${esc(part.slice(2, -2))}</strong>`
+                    : part ? `<span class="dim">${esc(part)}</span>` : '')
                 .join('');
             return `<span class="dim">— </span>${html}`;
         },

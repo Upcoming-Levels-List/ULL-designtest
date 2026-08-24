@@ -392,6 +392,15 @@
                 content: `
 <div class="gl-contacts-grid">
 <div class="gl-contact-card">
+<div class="gl-contact-role">Official Channels</div>
+<div class="gl-contact-name">Upcoming Levels List</div>
+<div class="gl-contact-detail">Announcements, placements and list updates</div>
+<div class="gl-contact-links">
+<a href="https://discord.gg/9wVWSgJSe8" target="_blank" rel="noopener">Discord — discord.gg/9wVWSgJSe8</a>
+<a href="https://x.com/ull_gd" target="_blank" rel="noopener">X — @ull_gd</a>
+</div>
+</div>
+<div class="gl-contact-card">
 <div class="gl-contact-role">List Leader</div>
 <div class="gl-contact-name">QwidziT</div>
 <div class="gl-contact-detail">Overall managment of the list</div>

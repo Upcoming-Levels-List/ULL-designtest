@@ -11,6 +11,33 @@ const AVAILABLE_TAGS = [
 
 const ROLE_OPTIONS = ['owner', 'admin', 'seniormod', 'mod', 'dev'];
 
+// Change text is rendered with v-html so **bold** works, so escape everything
+// else — an editor typing a "<" shouldn't be able to inject markup.
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Pull the Worker's error message out of a failed response instead of showing a
+// generic "Failed to save" that hides what actually went wrong.
+async function errorText(res, fallback) {
+    const body = await res.json().catch(() => null);
+    if (body && body.error) return body.error;
+    return `${fallback} (HTTP ${res.status})`;
+}
+
+// fetch() only rejects when the request never produced a readable response —
+// no connection, or a response the browser refused to hand over (a 5xx from the
+// Worker that came back without CORS headers looks exactly like this). Saying so
+// beats the old bare "Network error.", which sent people hunting their Wi-Fi.
+function requestFailed(e) {
+    return 'Could not reach the API — the request never completed.\n\n' +
+        'This is usually the Worker erroring out before it can send CORS headers ' +
+        '(check the Worker logs in the Cloudflare dashboard), or a lost connection.\n\n' +
+        `Details: ${e && e.message ? e.message : e}`;
+}
+
 // Placement tiers that have an icon in /assets (plus "?" = question.svg).
 const PLACEMENT_TIERS = ['?', '1', '10', '20', '30', '50', '75'];
 
@@ -20,6 +47,33 @@ const emptyPending = () => ({ id: null, name: '', section: 'placement', tier: '?
 function pendingSectionOf(p) {
     if (['up', 'down'].includes((p.placement || '').toLowerCase())) return 'movement';
     return p.indefinite ? 'indefinite' : 'placement';
+}
+
+// `date` is free text so a change can carry any date, including a past one that
+// is being backfilled long after the fact. MONTHS drives the <input type="date">
+// helper, which just formats a picked day into that same free-text style.
+const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+const emptyChange = () => ({ id: null, date: '', change: '', position: 'top' });
+
+// "April 18, 2026" -> "2026-04-18" (for the date picker). Returns '' if the date
+// is free text the picker can't represent — the text field stays authoritative.
+function changeDateToInput(date) {
+    const m = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/.exec((date || '').trim());
+    if (!m) return '';
+    const month = MONTHS.findIndex(x => x.toLowerCase() === m[1].toLowerCase());
+    if (month === -1) return '';
+    return `${m[3]}-${String(month + 1).padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+}
+
+// "2026-04-18" -> "April 18, 2026"
+function inputToChangeDate(value) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
+    if (!m) return '';
+    return `${MONTHS[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`;
 }
 
 const emptyLotm = () => ({
@@ -49,6 +103,7 @@ export default {
             <button class="admin-tab" :class="{ active: activeTab === 'events' }" @click="activeTab = 'events'">Events</button>
             <button class="admin-tab" :class="{ active: activeTab === 'editors' }" @click="activeTab = 'editors'">Editors</button>
             <button class="admin-tab" :class="{ active: activeTab === 'pending' }" @click="activeTab = 'pending'">Pending</button>
+            <button class="admin-tab" :class="{ active: activeTab === 'changes' }" @click="activeTab = 'changes'">Recent Changes</button>
             <button class="admin-tab" :class="{ active: activeTab === 'audit' }" @click="activeTab = 'audit'">Audit Log</button>
         </div>
 
@@ -225,10 +280,17 @@ export default {
         <template v-if="activeTab === 'editors'">
             <div v-if="editorsLoading" class="admin-loading">Loading editors…</div>
             <template v-else>
+                <div class="admin-toolbar">
+                    <span style="font-size:0.8rem;opacity:0.55;">This order is exactly what visitors see under “List Editors” — use ▲ / ▼ to arrange it.</span>
+                    <span v-if="editorsOrderSaving" style="font-size:0.78rem;opacity:0.55;margin-left:auto;">Saving order…</span>
+                    <span v-else-if="editorsOrderSaved" style="font-size:0.78rem;color:#10b981;margin-left:auto;">Order saved!</span>
+                </div>
                 <div v-if="!editors.length" class="admin-empty">No editors found. Make sure the Worker and DB are updated.</div>
                 <table v-else class="admin-table">
                     <thead>
                         <tr>
+                            <th class="admin-th admin-th--pos">#</th>
+                            <th class="admin-th" style="width:5rem;">Order</th>
                             <th class="admin-th">Name</th>
                             <th class="admin-th admin-th--type">Role</th>
                             <th class="admin-th">Link</th>
@@ -237,7 +299,12 @@ export default {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="ed in editors" :key="ed.name" class="admin-row">
+                        <tr v-for="(ed, i) in editors" :key="ed.name" class="admin-row">
+                            <td class="admin-td admin-td--pos">{{ i + 1 }}</td>
+                            <td class="admin-td admin-td--action" style="white-space:nowrap;">
+                                <button class="admin-btn admin-btn--move" :disabled="i === 0 || editorsOrderSaving" @click="moveEditor(i, -1)" title="Move up">▲</button>
+                                <button class="admin-btn admin-btn--move" :disabled="i === editors.length - 1 || editorsOrderSaving" @click="moveEditor(i, 1)" title="Move down">▼</button>
+                            </td>
                             <td class="admin-td" style="font-weight:600;">{{ ed.name }}</td>
                             <td class="admin-td">
                                 <span class="admin-badge admin-badge--main">{{ ed.role || 'mod' }}</span>
@@ -359,6 +426,90 @@ export default {
                     </div>
                     <div style="margin-top:0.75rem;">
                         <button class="admin-btn admin-btn--move" :disabled="pendingSubmitting" @click="addPending()">{{ pendingSubmitting ? 'Adding…' : 'Add Entry' }}</button>
+                    </div>
+                </div>
+            </template>
+        </template>
+
+        <!-- ── RECENT CHANGES ── -->
+        <template v-if="activeTab === 'changes'">
+            <div class="admin-toolbar">
+                <span style="font-size:0.8rem;opacity:0.55;">
+                    The “Recent Changes” feed on the home page. Lines sharing a date are grouped
+                    together; top to bottom here is top to bottom on the site.
+                </span>
+                <span v-if="changesOrderSaving" style="font-size:0.78rem;opacity:0.55;margin-left:auto;">Saving order…</span>
+                <span v-else-if="changesOrderSaved" style="font-size:0.78rem;color:#10b981;margin-left:auto;">Order saved!</span>
+            </div>
+
+            <div v-if="changesLoading" class="admin-loading">Loading recent changes…</div>
+            <template v-else>
+                <div v-if="!changes.length" class="admin-empty">
+                    No changes recorded yet. Add the first one below — backdated entries are fine,
+                    just type the date you want.
+                </div>
+                <table v-else class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="admin-th admin-th--pos">#</th>
+                            <th class="admin-th" style="width:5rem;">Order</th>
+                            <th class="admin-th" style="width:10rem;">Date</th>
+                            <th class="admin-th">Change</th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                            <th class="admin-th" style="width:4.5rem;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(c, i) in changes" :key="c.id" class="admin-row">
+                            <td class="admin-td admin-td--pos">{{ i + 1 }}</td>
+                            <td class="admin-td admin-td--action" style="white-space:nowrap;">
+                                <button class="admin-btn admin-btn--move" :disabled="i === 0 || changesOrderSaving" @click="moveChange(i, -1)" title="Move up">▲</button>
+                                <button class="admin-btn admin-btn--move" :disabled="i === changes.length - 1 || changesOrderSaving" @click="moveChange(i, 1)" title="Move down">▼</button>
+                            </td>
+                            <td class="admin-td" style="font-weight:600;white-space:nowrap;">{{ c.date }}</td>
+                            <td class="admin-td" style="font-size:0.8rem;" v-html="formatChange(c.change)"></td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--move" @click="openEditChange(c)">Edit</button>
+                            </td>
+                            <td class="admin-td admin-td--action">
+                                <button class="admin-btn admin-btn--delete" @click="deleteChange(c)">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="admin-card" style="margin-top:1.5rem;">
+                    <div class="admin-card-title">Add Change</div>
+                    <div class="admin-edit-row">
+                        <div class="admin-edit-group">
+                            <label>Date</label>
+                            <input v-model="newChange.date" type="text" placeholder="e.g. April 18, 2026" />
+                        </div>
+                        <div class="admin-edit-group">
+                            <label>Pick a date (fills the field, past dates included)</label>
+                            <input :value="newChangeDatePicker" type="date" @input="pickChangeDate($event, newChange)" />
+                        </div>
+                        <div class="admin-edit-group">
+                            <label>Position</label>
+                            <select v-model="newChange.position" class="admin-select">
+                                <option value="top">Top of the feed</option>
+                                <option value="bottom">Bottom of the feed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin-edit-group">
+                        <label>Change</label>
+                        <input v-model="newChange.change" type="text" placeholder="**Level** has been placed at #12, above **A** and below **B**" />
+                        <p style="font-size:0.7rem;opacity:0.4;margin:0.3rem 0 0;">
+                            Wrap level names in **double asterisks** to bold them, exactly like the existing feed.
+                        </p>
+                    </div>
+                    <div v-if="newChange.change" class="admin-edit-group">
+                        <label>Preview</label>
+                        <div style="font-size:0.82rem;" v-html="formatChange(newChange.change)"></div>
+                    </div>
+                    <div style="margin-top:0.75rem;">
+                        <button class="admin-btn admin-btn--move" :disabled="changesSubmitting" @click="addChange()">{{ changesSubmitting ? 'Adding…' : 'Add Change' }}</button>
                     </div>
                 </div>
             </template>
@@ -523,8 +674,12 @@ export default {
             </div>
             <div class="admin-edit-form">
                 <div class="admin-edit-group">
-                    <label>Name (cannot change)</label>
-                    <input :value="editEditor.name" type="text" disabled style="opacity:0.4;" />
+                    <label>Name</label>
+                    <input v-model="editEditor.name" type="text" placeholder="Display name" />
+                    <p style="font-size:0.7rem;opacity:0.4;margin:0.3rem 0 0;">
+                        Renaming is safe: the editor keeps their existing API key, role, link and
+                        position in the list — nothing they have filled in is reset.
+                    </p>
                 </div>
                 <div class="admin-edit-group">
                     <label>Role</label>
@@ -540,6 +695,40 @@ export default {
             <div class="admin-edit-footer">
                 <button class="admin-btn admin-btn--move" :disabled="editorSubmitting" @click="saveEditEditor()">{{ editorSubmitting ? 'Saving…' : 'Save' }}</button>
                 <button class="admin-btn" @click="editEditor = null">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── RECENT CHANGE EDIT MODAL ── -->
+    <div v-if="editChange" class="admin-edit-overlay" @click.self="editChange = null">
+        <div class="admin-edit-modal" style="max-width:560px;">
+            <div class="admin-edit-header">
+                <h2 class="admin-edit-title">Edit Change</h2>
+                <button class="admin-edit-close" @click="editChange = null">&times;</button>
+            </div>
+            <div class="admin-edit-form">
+                <div class="admin-edit-row">
+                    <div class="admin-edit-group">
+                        <label>Date</label>
+                        <input v-model="editChange.date" type="text" placeholder="e.g. April 18, 2026" />
+                    </div>
+                    <div class="admin-edit-group">
+                        <label>Pick a date</label>
+                        <input :value="editChangeDatePicker" type="date" @input="pickChangeDate($event, editChange)" />
+                    </div>
+                </div>
+                <div class="admin-edit-group">
+                    <label>Change</label>
+                    <input v-model="editChange.change" type="text" />
+                </div>
+                <div class="admin-edit-group">
+                    <label>Preview</label>
+                    <div style="font-size:0.82rem;" v-html="formatChange(editChange.change)"></div>
+                </div>
+            </div>
+            <div class="admin-edit-footer">
+                <button class="admin-btn admin-btn--move" :disabled="changesSubmitting" @click="saveEditChange()">{{ changesSubmitting ? 'Saving…' : 'Save' }}</button>
+                <button class="admin-btn" @click="editChange = null">Cancel</button>
             </div>
         </div>
     </div>
@@ -616,7 +805,18 @@ export default {
         editEditor: null,
         newEditor: { name: '', key: '', role: 'mod', link: '' },
         editorSubmitting: false,
+        editorsOrderSaving: false,
+        editorsOrderSaved: false,
         roleOptions: ROLE_OPTIONS,
+        // Recent Changes
+        changes: [],
+        changesLoaded: false,
+        changesLoading: false,
+        editChange: null,
+        newChange: emptyChange(),
+        changesSubmitting: false,
+        changesOrderSaving: false,
+        changesOrderSaved: false,
         // Pending
         pendingEntries: [],
         pendingLoaded: false,
@@ -638,6 +838,8 @@ export default {
                 l.name?.toLowerCase().includes(q) || l.author?.toLowerCase().includes(q)
             );
         },
+        newChangeDatePicker() { return changeDateToInput(this.newChange.date); },
+        editChangeDatePicker() { return this.editChange ? changeDateToInput(this.editChange.date) : ''; },
         sortedPending() {
             const order = { placement: 0, movement: 1, indefinite: 2 };
             const val = (p) => p === '?' ? 999999 : (parseInt(p) || 999999);
@@ -656,6 +858,7 @@ export default {
             if (tab === 'events' && !this.eventsLoaded) this.loadEvents();
             if (tab === 'editors' && !this.editorsLoaded) this.loadEditors();
             if (tab === 'pending' && !this.pendingLoaded) this.loadPending();
+            if (tab === 'changes' && !this.changesLoaded) this.loadChanges();
             if (tab === 'audit' && !this.auditLoaded) this.loadAuditLog();
         },
     },
@@ -670,8 +873,8 @@ export default {
                 const res = await fetch(`${API}/api/list`);
                 const data = await res.json();
                 this.levels = data.map((l, i) => ({ ...l, _rank: i + 1, _newPos: i + 1, _moving: false, _deleting: false }));
-            } catch {
-                alert('Failed to load levels.');
+            } catch (e) {
+                alert(requestFailed(e));
             }
             this.loading = false;
         },
@@ -688,11 +891,11 @@ export default {
                 if (res.ok) {
                     await this.loadLevels();
                 } else {
-                    alert('Failed to move level.');
+                    alert(await errorText(res, 'Failed to move level.'));
                     level._moving = false;
                 }
-            } catch {
-                alert('Network error.');
+            } catch (e) {
+                alert(requestFailed(e));
                 level._moving = false;
             }
         },
@@ -708,11 +911,11 @@ export default {
                     this.levels = this.levels.filter(l => l.path !== level.path);
                     this.levels.forEach((l, i) => { l._rank = i + 1; l._newPos = i + 1; });
                 } else {
-                    alert('Failed to delete level.');
+                    alert(await errorText(res, 'Failed to delete level.'));
                     level._deleting = false;
                 }
-            } catch {
-                alert('Network error.');
+            } catch (e) {
+                alert(requestFailed(e));
                 level._deleting = false;
             }
         },
@@ -755,11 +958,10 @@ export default {
                     this.closeEdit();
                     await this.loadLevels();
                 } else {
-                    const body = await res.json().catch(() => ({}));
-                    alert(body.error || 'Failed to save.');
+                    alert(await errorText(res, 'Failed to save.'));
                 }
-            } catch {
-                alert('Network error.');
+            } catch (e) {
+                alert(requestFailed(e));
             }
             this.editSubmitting = false;
         },
@@ -795,8 +997,8 @@ export default {
                 if (res.ok) {
                     this.eventsSaved = 'lotm';
                     setTimeout(() => { if (this.eventsSaved === 'lotm') this.eventsSaved = null; }, 2500);
-                } else { alert('Failed to save.'); }
-            } catch { alert('Network error.'); }
+                } else { alert(await errorText(res, 'Failed to save.')); }
+            } catch (e) { alert(requestFailed(e)); }
             this.eventsSaving = null;
         },
         async saveCtv() {
@@ -810,8 +1012,8 @@ export default {
                 if (res.ok) {
                     this.eventsSaved = 'ctv';
                     setTimeout(() => { if (this.eventsSaved === 'ctv') this.eventsSaved = null; }, 2500);
-                } else { alert('Failed to save.'); }
-            } catch { alert('Network error.'); }
+                } else { alert(await errorText(res, 'Failed to save.')); }
+            } catch (e) { alert(requestFailed(e)); }
             this.eventsSaving = null;
         },
 
@@ -821,28 +1023,76 @@ export default {
             try {
                 const res = await fetch(`${API}/api/editors`);
                 this.editors = await res.json();
-            } catch { alert('Failed to load editors.'); }
+            } catch (e) { alert(requestFailed(e)); }
             this.editorsLoading = false;
             this.editorsLoaded = true;
         },
+        // Move one editor up (-1) or down (+1) and persist the whole order.
+        // The site renders editors in exactly this order — never alphabetically.
+        async moveEditor(i, delta) {
+            const j = i + delta;
+            if (j < 0 || j >= this.editors.length) return;
+            const next = [...this.editors];
+            [next[i], next[j]] = [next[j], next[i]];
+            const previous = this.editors;
+            this.editors = next;
+            this.editorsOrderSaving = true;
+            this.editorsOrderSaved = false;
+            try {
+                const res = await fetch(`${API}/api/editors/reorder`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
+                    body: JSON.stringify({ names: next.map(e => e.name) }),
+                });
+                if (res.ok) {
+                    this.editorsOrderSaved = true;
+                    setTimeout(() => { this.editorsOrderSaved = false; }, 2000);
+                } else {
+                    this.editors = previous;
+                    alert(await errorText(res, 'Failed to save the editor order.'));
+                }
+            } catch (e) {
+                this.editors = previous;
+                alert(requestFailed(e));
+            }
+            this.editorsOrderSaving = false;
+        },
         openEditEditor(ed) {
-            this.editEditor = { ...ed };
+            // Keep the original name around: it's the key the API matches on, so a
+            // rename has to send both the old and the new one.
+            this.editEditor = { ...ed, originalName: ed.name };
             this.editorSubmitting = false;
         },
         async saveEditEditor() {
+            const newName = (this.editEditor.name || '').trim();
+            if (!newName) { alert('Name is required.'); return; }
+            const oldName = this.editEditor.originalName;
             this.editorSubmitting = true;
             try {
                 const res = await fetch(`${API}/api/editors`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
-                    body: JSON.stringify({ name: this.editEditor.name, role: this.editEditor.role, link: this.editEditor.link }),
+                    body: JSON.stringify({
+                        name: oldName,
+                        newName,
+                        role: this.editEditor.role,
+                        link: this.editEditor.link,
+                    }),
                 });
                 if (res.ok) {
-                    const i = this.editors.findIndex(e => e.name === this.editEditor.name);
-                    if (i !== -1) this.editors[i] = { ...this.editEditor };
+                    const i = this.editors.findIndex(e => e.name === oldName);
+                    if (i !== -1) {
+                        // Update in place so the editor keeps their position in the list.
+                        this.editors[i] = {
+                            ...this.editors[i],
+                            name: newName,
+                            role: this.editEditor.role,
+                            link: this.editEditor.link,
+                        };
+                    }
                     this.editEditor = null;
-                } else { alert('Failed to save editor.'); }
-            } catch { alert('Network error.'); }
+                } else { alert(await errorText(res, 'Failed to save editor.')); }
+            } catch (e) { alert(requestFailed(e)); }
             this.editorSubmitting = false;
         },
         async deleteEditor(ed) {
@@ -854,8 +1104,8 @@ export default {
                 });
                 if (res.ok) {
                     this.editors = this.editors.filter(e => e.name !== ed.name);
-                } else { alert('Failed to delete editor.'); }
-            } catch { alert('Network error.'); }
+                } else { alert(await errorText(res, 'Failed to delete editor.')); }
+            } catch (e) { alert(requestFailed(e)); }
         },
         generateKey() {
             const arr = new Uint8Array(32);
@@ -875,10 +1125,9 @@ export default {
                     await this.loadEditors();
                     this.newEditor = { name: '', key: '', role: 'mod', link: '' };
                 } else {
-                    const body = await res.json().catch(() => ({}));
-                    alert(body.error || 'Failed to add editor.');
+                    alert(await errorText(res, 'Failed to add editor.'));
                 }
-            } catch { alert('Network error.'); }
+            } catch (e) { alert(requestFailed(e)); }
             this.editorSubmitting = false;
         },
 
@@ -904,7 +1153,7 @@ export default {
             try {
                 const res = await fetch(`${API}/api/pending`);
                 this.pendingEntries = await res.json();
-            } catch { alert('Failed to load pending entries.'); }
+            } catch (e) { alert(requestFailed(e)); }
             this.pendingLoading = false;
             this.pendingLoaded = true;
         },
@@ -933,10 +1182,9 @@ export default {
                     await this.loadPending();
                     this.newPending = emptyPending();
                 } else {
-                    const body = await res.json().catch(() => ({}));
-                    alert(body.error || 'Failed to add entry.');
+                    alert(await errorText(res, 'Failed to add entry.'));
                 }
-            } catch { alert('Network error.'); }
+            } catch (e) { alert(requestFailed(e)); }
             this.pendingSubmitting = false;
         },
         async saveEditPending() {
@@ -951,8 +1199,8 @@ export default {
                 if (res.ok) {
                     await this.loadPending();
                     this.editPending = null;
-                } else { alert('Failed to save entry.'); }
-            } catch { alert('Network error.'); }
+                } else { alert(await errorText(res, 'Failed to save entry.')); }
+            } catch (e) { alert(requestFailed(e)); }
             this.pendingSubmitting = false;
         },
         async deletePending(p) {
@@ -964,8 +1212,123 @@ export default {
                 });
                 if (res.ok) {
                     this.pendingEntries = this.pendingEntries.filter(e => e.id !== p.id);
-                } else { alert('Failed to delete entry.'); }
-            } catch { alert('Network error.'); }
+                } else { alert(await errorText(res, 'Failed to delete entry.')); }
+            } catch (e) { alert(requestFailed(e)); }
+        },
+
+        // ── RECENT CHANGES ──
+        // Same **bold** rendering the home page and mobile home use, so the admin
+        // preview matches what visitors will see.
+        formatChange(text) {
+            const html = (text || '')
+                .split(/(\*\*[^*]+\*\*)/)
+                .map(part => part.startsWith('**') && part.endsWith('**')
+                    ? `<strong>${escapeHtml(part.slice(2, -2))}</strong>`
+                    : part ? `<span class="dim">${escapeHtml(part)}</span>` : '')
+                .join('');
+            return `<span class="dim">— </span>${html}`;
+        },
+        // The <input type="date"> is only a helper: it writes a formatted date into
+        // the free-text field, which stays the source of truth.
+        pickChangeDate(event, target) {
+            const formatted = inputToChangeDate(event.target.value);
+            if (formatted) target.date = formatted;
+        },
+        async loadChanges() {
+            this.changesLoading = true;
+            try {
+                const res = await fetch(`${API}/api/admin/changes`, {
+                    headers: { Authorization: `Bearer ${store.authKey}` },
+                });
+                if (res.ok) this.changes = await res.json();
+                else alert(await errorText(res, 'Failed to load recent changes.'));
+            } catch (e) { alert(requestFailed(e)); }
+            this.changesLoading = false;
+            this.changesLoaded = true;
+        },
+        async addChange() {
+            const date = (this.newChange.date || '').trim();
+            const change = (this.newChange.change || '').trim();
+            if (!date || !change) { alert('Date and change text are both required.'); return; }
+            this.changesSubmitting = true;
+            try {
+                const res = await fetch(`${API}/api/admin/changes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
+                    body: JSON.stringify({ date, change, position: this.newChange.position }),
+                });
+                if (res.ok) {
+                    await this.loadChanges();
+                    // Keep the date and position: adding several lines for one day is
+                    // the common case.
+                    this.newChange = { ...emptyChange(), date, position: this.newChange.position };
+                } else { alert(await errorText(res, 'Failed to add change.')); }
+            } catch (e) { alert(requestFailed(e)); }
+            this.changesSubmitting = false;
+        },
+        openEditChange(c) {
+            this.editChange = { id: c.id, date: c.date || '', change: c.change || '' };
+            this.changesSubmitting = false;
+        },
+        async saveEditChange() {
+            const date = (this.editChange.date || '').trim();
+            const change = (this.editChange.change || '').trim();
+            if (!date || !change) { alert('Date and change text are both required.'); return; }
+            this.changesSubmitting = true;
+            try {
+                const res = await fetch(`${API}/api/admin/changes`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
+                    body: JSON.stringify({ id: this.editChange.id, date, change }),
+                });
+                if (res.ok) {
+                    await this.loadChanges();
+                    this.editChange = null;
+                } else { alert(await errorText(res, 'Failed to save change.')); }
+            } catch (e) { alert(requestFailed(e)); }
+            this.changesSubmitting = false;
+        },
+        async deleteChange(c) {
+            if (!confirm(`Remove this change from ${c.date}?\n\n${c.change}`)) return;
+            try {
+                const res = await fetch(`${API}/api/admin/changes/${c.id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${store.authKey}` },
+                });
+                if (res.ok) this.changes = this.changes.filter(x => x.id !== c.id);
+                else alert(await errorText(res, 'Failed to delete change.'));
+            } catch (e) { alert(requestFailed(e)); }
+        },
+        // Move one line up (-1) or down (+1) and persist the whole order. Lines with
+        // the same date group together on the site, so this also moves whole days
+        // around once their lines are adjacent.
+        async moveChange(i, delta) {
+            const j = i + delta;
+            if (j < 0 || j >= this.changes.length) return;
+            const next = [...this.changes];
+            [next[i], next[j]] = [next[j], next[i]];
+            const previous = this.changes;
+            this.changes = next;
+            this.changesOrderSaving = true;
+            this.changesOrderSaved = false;
+            try {
+                const res = await fetch(`${API}/api/admin/changes/reorder`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${store.authKey}` },
+                    body: JSON.stringify({ ids: next.map(c => c.id) }),
+                });
+                if (res.ok) {
+                    this.changesOrderSaved = true;
+                    setTimeout(() => { this.changesOrderSaved = false; }, 2000);
+                } else {
+                    this.changes = previous;
+                    alert(await errorText(res, 'Failed to save the change order.'));
+                }
+            } catch (e) {
+                this.changes = previous;
+                alert(requestFailed(e));
+            }
+            this.changesOrderSaving = false;
         },
 
         // ── AUDIT LOG ──
@@ -976,7 +1339,7 @@ export default {
                     headers: { Authorization: `Bearer ${store.authKey}` },
                 });
                 this.auditLog = await res.json();
-            } catch { alert('Failed to load audit log.'); }
+            } catch (e) { alert(requestFailed(e)); }
             this.auditLoading = false;
             this.auditLoaded = true;
         },

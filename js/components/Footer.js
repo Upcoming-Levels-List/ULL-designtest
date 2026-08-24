@@ -20,7 +20,7 @@ export default {
             <div class="site-footer-col">
                 <h4>Community</h4>
                 <a href="https://discord.gg/9wVWSgJSe8" target="_blank">Discord</a>
-                <a href="#" @click.prevent="store.comingSoon = true">Telegram</a>
+                <a href="https://x.com/ull_gd" target="_blank" rel="noopener">X (@ull_gd)</a>
             </div>
         </div>
     </div>

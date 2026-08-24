@@ -4,7 +4,7 @@
 Top 1–100 Extreme Demons in Geometry Dash projected to place on the Demonlist.
 It aims to forecast future rankings, including worthy unrated levels.
 
-🌐 **Website:** https://ull.pages.dev  ·  💬 **Discord:** https://discord.gg/9wVWSgJSe8
+🌐 **Website:** https://ull.pages.dev  ·  💬 **Discord:** https://discord.gg/9wVWSgJSe8  ·  𝕏 **X:** [@ull_gd](https://x.com/ull_gd)
 
 > Not affiliated with RobTop Games. These guidelines are adapted from, and heavily
 > rely on, the structure and principles of the Global Demonlist Guidelines — full
@@ -52,6 +52,11 @@ its staff team.
 | List Moderator | **Blaster1337** | Discord `@blastuh` · X `@TheFakeBlaster` |
 | Website Coder | **Prometheus** | Discord `@prometheus.dev` |
 
+> The order staff appear in on the site is set by hand in the admin panel
+> (Editors tab → ▲ / ▼) and is stored on `editor_keys.sort_order` — the site never
+> sorts them alphabetically. Renaming an editor there keeps their API key, role,
+> link and position intact.
+
 ---
 
 ## Public API
@@ -73,10 +78,16 @@ no authentication.
 | `GET /api/editors` | The staff/editor list (`{name, role, link}`) |
 | `GET /api/level-month` | The current Level of the Month (or `null`) |
 | `GET /api/level-verif` | The current Closest to Verification (or `null`) |
-| `GET /api/recent-changes` | Recent changes feed |
+| `GET /api/recent-changes` | Recent changes feed, grouped by date |
 
 > Endpoints that add or modify list data require a staff API key and are not part
-> of the public API.
+> of the public API. Staff-only routes cover levels, pending entries, editors
+> (including manual ordering and renaming) and the recent-changes feed — see
+> [database.md](./database.md) for the full list.
+
+The editor list is returned in the order the staff team arranged it in the admin
+panel (`sort_order`), **not** alphabetically. Recent changes come back newest-first
+by the same manual ordering, grouped into `{date, entries[]}`.
 
 ### Example
 

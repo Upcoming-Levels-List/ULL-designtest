@@ -38,6 +38,10 @@ async function log(db, editor, action, target, details = '') {
   } catch { /* never fail the main request */ }
 }
 
+// NOTE: the real `levels` table has NO `password` / `difficulty` columns. Selecting,
+// inserting or updating them throws a SQLite error, which used to surface in the
+// browser as a bare "Network error" (an uncaught throw returns Cloudflare's own 500
+// page, which carries no CORS headers, so fetch() rejects instead of resolving).
 function parseLevel(row) {
   return {
     path: row.path,
@@ -50,8 +54,6 @@ function parseLevel(row) {
     thumbnail: row.thumbnail,
     frameCounter: row.frameCounter || null,
     id: row.id,
-    password: row.password,
-    difficulty: row.difficulty,
     rating: row.rating,
     length: row.length,
     percentToQualify: row.percentToQualify,
@@ -72,8 +74,25 @@ function tryJSON(val, fallback) {
   try { return val ? JSON.parse(val) : fallback; } catch { return fallback; }
 }
 
-export default {
-  async fetch(req, env) {
+// Recent Changes are stored one row per change line in `recent_changes`
+// (id, date, change, sort_order). The public feed groups them by date, keeping
+// the first appearance of each date as the group's position.
+function groupChanges(rows) {
+  const groups = [];
+  const byDate = new Map();
+  for (const r of rows) {
+    let g = byDate.get(r.date);
+    if (!g) {
+      g = { date: r.date, entries: [] };
+      byDate.set(r.date, g);
+      groups.push(g);
+    }
+    g.entries.push(r.change);
+  }
+  return groups;
+}
+
+async function handle(req, env) {
     const db = env.DB;
     const url = new URL(req.url);
     const path = url.pathname;
@@ -130,9 +149,10 @@ export default {
     // ── GET /api/editors ───────────────────────────────────────
     // FIX: real column is `editor_name`; alias it back to `name`
     // so the frontend still receives objects shaped like {name, role, link}.
+    // Order is manual (`sort_order`, arranged in the admin panel), NOT alphabetical.
     if (method === 'GET' && path === '/api/editors') {
       const { results } = await db.prepare(
-        'SELECT editor_name AS name, role, link FROM editor_keys ORDER BY editor_name ASC'
+        'SELECT editor_name AS name, role, link, sort_order FROM editor_keys ORDER BY sort_order ASC, id ASC'
       ).all();
       return json(results);
     }
@@ -172,12 +192,24 @@ export default {
     }
 
     // ── GET /api/recent-changes ────────────────────────────────
-    // FIX: the frontend calls /api/recent-changes (was named /api/changes here).
+    // FIX: the frontend calls /api/recent-changes (was named /api/changes here),
+    // and the real table is `recent_changes` (one row per change line).
     if (method === 'GET' && path === '/api/recent-changes') {
       const { results } = await db.prepare(
-        'SELECT * FROM changes ORDER BY sort_order ASC'
+        'SELECT date, change FROM recent_changes ORDER BY sort_order ASC, id ASC'
       ).all();
-      return json(results.map(r => ({ date: r.date, entries: tryJSON(r.entries, []) })));
+      return json(groupChanges(results));
+    }
+
+    // ── GET /api/admin/changes ─────────────────────────────────
+    // Flat rows (with ids) for the admin panel's Changes tab.
+    if (method === 'GET' && path === '/api/admin/changes') {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const { results } = await db.prepare(
+        'SELECT id, date, change, sort_order FROM recent_changes ORDER BY sort_order ASC, id ASC'
+      ).all();
+      return json(results);
     }
 
     // ── GET /api/leaderboard ───────────────────────────────────
@@ -203,7 +235,7 @@ export default {
       const body = await req.json();
       const {
         path: lpath, name, author, creators, verifier, verification, showcase,
-        thumbnail, frameCounter, id, password, difficulty, rating, length,
+        thumbnail, frameCounter, id, rating, length,
         percentToQualify, percentFinished, lastUpd, tags, records, run,
         isVerified, isMain, isFuture, benchmark, insertAt,
       } = body;
@@ -215,13 +247,13 @@ export default {
         await db.prepare(`
           UPDATE levels SET
             name=?, author=?, creators=?, verifier=?, verification=?, showcase=?,
-            thumbnail=?, frameCounter=?, id=?, password=?, difficulty=?, rating=?,
+            thumbnail=?, frameCounter=?, id=?, rating=?,
             length=?, percentToQualify=?, percentFinished=?, lastUpd=?, tags=?,
             records=?, run=?, isVerified=?, isMain=?, isFuture=?, benchmark=?
           WHERE path=?
         `).bind(
           name, author, JSON.stringify(creators), verifier, verification, showcase,
-          thumbnail, frameCounter || null, String(id), password, difficulty, rating,
+          thumbnail, frameCounter || null, String(id), rating,
           length, percentToQualify, percentFinished, lastUpd, JSON.stringify(tags),
           JSON.stringify(records), JSON.stringify(run),
           isVerified ? 1 : 0, isMain ? 1 : 0, isFuture ? 1 : 0, benchmark ? 1 : 0,
@@ -237,13 +269,13 @@ export default {
         await db.prepare(`
           INSERT INTO levels
             (path, name, author, creators, verifier, verification, showcase,
-             thumbnail, frameCounter, id, password, difficulty, rating,
+             thumbnail, frameCounter, id, rating,
              length, percentToQualify, percentFinished, lastUpd, tags,
              records, run, isVerified, isMain, isFuture, benchmark, sort_order)
-          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         `).bind(
           lpath, name, author, JSON.stringify(creators), verifier, verification, showcase,
-          thumbnail, frameCounter || null, String(id), password, difficulty, rating,
+          thumbnail, frameCounter || null, String(id), rating,
           length, percentToQualify, percentFinished, lastUpd, JSON.stringify(tags),
           JSON.stringify(records), JSON.stringify(run),
           isVerified ? 1 : 0, isMain ? 1 : 0, isFuture ? 1 : 0, benchmark ? 1 : 0,
@@ -311,15 +343,14 @@ export default {
     // ── PUT /api/pending (submit or update) ───────────────────
     if (method === 'PUT' && path === '/api/pending') {
       const body = await req.json();
-      const isEditor = !!(await authed(req, db));
+      const editor = await authed(req, db);
 
-      if (isEditor) {
+      if (editor) {
         // Editor updating status/notes
         const { id, status, notes } = body;
         if (!id) return err('id required');
         await db.prepare('UPDATE pending SET status=?, notes=? WHERE id=?')
           .bind(status || 'pending', notes || '', id).run();
-        const editor = await authed(req, db);
         await log(db, editor, 'PENDING_UPDATE', String(id), `status=${status}`);
         return json({ ok: true });
       } else {
@@ -373,6 +404,64 @@ export default {
       return json({ ok: true });
     }
 
+    // ── POST /api/admin/changes (add a Recent Changes line) ────
+    // `date` is free text (e.g. "April 18, 2026") so entries can be backdated to
+    // any past date; `position` puts the new line at the top (default) or bottom.
+    if (method === 'POST' && path === '/api/admin/changes') {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const { date, change, position } = await req.json();
+      if (!date || !change) return err('date and change required');
+      const bounds = await db.prepare(
+        'SELECT MIN(sort_order) AS lo, MAX(sort_order) AS hi FROM recent_changes'
+      ).first();
+      const lo = bounds && bounds.lo !== null ? bounds.lo : 0;
+      const hi = bounds && bounds.hi !== null ? bounds.hi : 0;
+      const order = position === 'bottom' ? hi + 1 : lo - 1;
+      await db.prepare(
+        'INSERT INTO recent_changes (date, change, sort_order) VALUES (?, ?, ?)'
+      ).bind(date, change, order).run();
+      await log(db, editor, 'CHANGE_ADD', date, change.slice(0, 120));
+      return json({ ok: true });
+    }
+
+    // ── PUT /api/admin/changes (edit a Recent Changes line) ────
+    if (method === 'PUT' && path === '/api/admin/changes') {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const { id, date, change } = await req.json();
+      if (!id) return err('id required');
+      if (!date || !change) return err('date and change required');
+      await db.prepare('UPDATE recent_changes SET date = ?, change = ? WHERE id = ?')
+        .bind(date, change, id).run();
+      await log(db, editor, 'CHANGE_EDIT', String(id), `${date} — ${change.slice(0, 100)}`);
+      return json({ ok: true });
+    }
+
+    // ── POST /api/admin/changes/reorder ────────────────────────
+    // body {ids: [...]} — sort_order becomes the array index.
+    if (method === 'POST' && path === '/api/admin/changes/reorder') {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const { ids } = await req.json();
+      if (!Array.isArray(ids) || !ids.length) return err('ids array required');
+      const stmt = db.prepare('UPDATE recent_changes SET sort_order = ? WHERE id = ?');
+      await db.batch(ids.map((id, i) => stmt.bind(i, id)));
+      await log(db, editor, 'CHANGE_REORDER', `${ids.length} entries`);
+      return json({ ok: true });
+    }
+
+    // ── DELETE /api/admin/changes/:id ──────────────────────────
+    const delChangeMatch = path.match(/^\/api\/admin\/changes\/(\d+)$/);
+    if (method === 'DELETE' && delChangeMatch) {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const id = delChangeMatch[1];
+      await db.prepare('DELETE FROM recent_changes WHERE id = ?').bind(id).run();
+      await log(db, editor, 'CHANGE_DELETE', id);
+      return json({ ok: true });
+    }
+
     // ── PUT /api/config ────────────────────────────────────────
     if (method === 'PUT' && path === '/api/config') {
       const editor = await authed(req, db);
@@ -394,14 +483,42 @@ export default {
 
     // ── PATCH /api/editors ─────────────────────────────────────
     // FIX: match on editor_name, not name.
+    // `newName` renames the editor in place: the row (and therefore key_hash) is
+    // kept, so the editor's existing API key keeps working and nothing they have
+    // filled in is reset. Omit `newName` to only change role/link.
     if (method === 'PATCH' && path === '/api/editors') {
       const editor = await authed(req, db);
       if (!editor) return err('Unauthorized', 401);
-      const { name, role, link } = await req.json();
+      const { name, newName, role, link } = await req.json();
       if (!name) return err('name required');
-      await db.prepare('UPDATE editor_keys SET role = ?, link = ? WHERE editor_name = ?')
-        .bind(role || 'mod', link || '', name).run();
-      await log(db, editor, 'EDITOR_UPDATE', name, `role=${role}`);
+      const current = await db.prepare('SELECT id FROM editor_keys WHERE editor_name = ?').bind(name).first();
+      if (!current) return err(`Editor "${name}" not found`, 404);
+
+      const renamed = typeof newName === 'string' && newName.trim() && newName.trim() !== name;
+      if (renamed) {
+        const clash = await db.prepare('SELECT id FROM editor_keys WHERE editor_name = ?')
+          .bind(newName.trim()).first();
+        if (clash) return err(`Editor "${newName.trim()}" already exists`);
+      }
+      const finalName = renamed ? newName.trim() : name;
+
+      await db.prepare('UPDATE editor_keys SET editor_name = ?, role = ?, link = ? WHERE id = ?')
+        .bind(finalName, role || 'mod', link || '', current.id).run();
+      await log(db, editor, 'EDITOR_UPDATE', name, renamed ? `renamed to ${finalName}, role=${role}` : `role=${role}`);
+      return json({ ok: true, name: finalName });
+    }
+
+    // ── POST /api/editors/reorder ──────────────────────────────
+    // body {names: [...]} in the order they should appear on the site.
+    // The List Editors list is manually ordered, never alphabetical.
+    if (method === 'POST' && path === '/api/editors/reorder') {
+      const editor = await authed(req, db);
+      if (!editor) return err('Unauthorized', 401);
+      const { names } = await req.json();
+      if (!Array.isArray(names) || !names.length) return err('names array required');
+      const stmt = db.prepare('UPDATE editor_keys SET sort_order = ? WHERE editor_name = ?');
+      await db.batch(names.map((n, i) => stmt.bind(i, n)));
+      await log(db, editor, 'EDITOR_REORDER', `${names.length} editors`);
       return json({ ok: true });
     }
 
@@ -424,9 +541,10 @@ export default {
       const { secret, name, key, role, link } = body;
       if (secret !== env.BOOTSTRAP_SECRET) return err('Forbidden', 403);
       const hash = await sha256(key);
+      const next = await db.prepare('SELECT MAX(sort_order) AS hi FROM editor_keys').first();
       await db.prepare(
-        'INSERT INTO editor_keys (editor_name, key_hash, role, link) VALUES (?, ?, ?, ?)'
-      ).bind(name || 'admin', hash, role || 'admin', link || '').run();
+        'INSERT INTO editor_keys (editor_name, key_hash, role, link, sort_order) VALUES (?, ?, ?, ?, ?)'
+      ).bind(name || 'admin', hash, role || 'admin', link || '', next && next.hi !== null ? next.hi + 1 : 0).run();
       return json({ ok: true });
     }
 
@@ -440,13 +558,28 @@ export default {
       const hash = await sha256(key);
       const existing = await db.prepare('SELECT editor_name FROM editor_keys WHERE editor_name = ?').bind(name).first();
       if (existing) return err(`Editor "${name}" already exists`);
+      const next = await db.prepare('SELECT MAX(sort_order) AS hi FROM editor_keys').first();
       await db.prepare(
-        'INSERT INTO editor_keys (editor_name, key_hash, role, link) VALUES (?, ?, ?, ?)'
-      ).bind(name, hash, role || 'mod', link || '').run();
+        'INSERT INTO editor_keys (editor_name, key_hash, role, link, sort_order) VALUES (?, ?, ?, ?, ?)'
+      ).bind(name, hash, role || 'mod', link || '', next && next.hi !== null ? next.hi + 1 : 0).run();
       await log(db, editor, 'EDITOR_ADD', name, `role=${role || 'mod'}`);
       return json({ ok: true });
     }
 
     return err('Not found', 404);
+}
+
+export default {
+  async fetch(req, env) {
+    // Any uncaught throw (a SQLite error, a bad JSON body, …) would otherwise
+    // return Cloudflare's own 500 page, which carries NO CORS headers — the
+    // browser then blocks the response and fetch() rejects, so the admin panel
+    // showed a misleading "Network error" instead of the real cause. Wrapping the
+    // router keeps every failure a proper CORS-enabled JSON error.
+    try {
+      return await handle(req, env);
+    } catch (e) {
+      return json({ error: `Server error: ${e && e.message ? e.message : String(e)}` }, 500);
+    }
   },
 };

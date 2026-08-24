@@ -116,3 +116,9 @@
 .settings-popup__contact img {
     height: 1.25rem;
 }
+
+/* The Discord/X marks ship as white glyphs (see assets/*.svg); on the light
+   theme (.root.dark) flip them to black so they stay visible. */
+.root.dark .settings-popup__contact img {
+    filter: brightness(0);
+}
