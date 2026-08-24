@@ -59,6 +59,42 @@ its staff team.
 
 ---
 
+## Scoring
+
+### Leaderboard
+
+Every entry a player earns is based on `recordScore(rank, percent)`
+(`js/formulas.js`), where `rank` is the level's position in **All Levels**:
+
+| Entry | Worth | When |
+|-------|-------|------|
+| **Verification** | `recordScore(rank, 100) × 2` | The level is verified and you are its verifier. The level's records and runs are then ignored. |
+| **Layout completion** | `recordScore(rank, 100) × 1.6` (0.8 × a verification) | A 100% record on a level that is **not verified yet** — you beat it in its current, undecorated state (e.g. Snowblind, Map of Problematique). |
+| **Record** | `recordScore(rank, percent)` | A from-0% attempt. |
+| **Run** | `recordScore(rank, b − a)` | A `a-b` run span. |
+
+A player's total is the sum of all their entries.
+
+### Upcoming Levels order
+
+Upcoming Levels ranks how close a level is to being verified:
+
+```
+rankingScore = ( max(P, R)² + min(P, R)^1.8 ) × ( 0.01 × (rank + 100) )^0.5
+```
+
+- **P** — the highest record percent on the level (from 0%).
+- **R** — the largest run span (`b − a` from an `a-b` run).
+- **rank** — the level's 1-based position in All Levels.
+
+Levels are sorted by this score, highest first. The better of the two attempts
+dominates (squared) while the weaker one adds a smaller bonus (^1.8), and the rank
+factor grows with rank — the same progress counts for more on an easier level, since
+it puts the verifier closer to the finish. Verified levels, levels with no records or
+runs at all, and levels that already have a 100% record are excluded.
+
+---
+
 ## Public API
 
 The list data is served by a JSON API. All endpoints below are public and require

@@ -147,7 +147,8 @@ console.log('\n── home page ──');
 await p.goto(base + '/', { waitUntil: 'networkidle' });
 await p.waitForSelector('.home-change', { timeout: 5000 });
 const dates = await p.$$eval('.home-changes-date', els => els.map(e => e.textContent.trim()));
-check('recent changes render, newest first', dates[0] === 'April 18, 2026' && dates.length === 4, JSON.stringify(dates));
+check('recent changes render, newest first',
+  dates[0] === 'August 23, 2026' && dates.length === 3, JSON.stringify(dates));
 check('change text is bolded', (await p.$$eval('.home-change strong', e => e.length)) > 0);
 const homeEditors = await p.$$eval('.info-editor', els => els.map(e => e.querySelector('span,a').textContent.trim()));
 check('editors are in DB order, not alphabetical',
@@ -195,8 +196,10 @@ check('renamed editor keeps their position',
 console.log('\n── admin: recent changes tab ──');
 await p.click('.admin-tab:has-text("Recent Changes")');
 await p.waitForSelector('.admin-table tbody tr');
+const SEEDED = JSON.parse(readFileSync(join(ROOT, 'data/_recentChanges.json'), 'utf8'))
+  .reduce((n, g) => n + g.entries.length, 0);
 const rowCount = await p.$$eval('.admin-table tbody tr', e => e.length);
-check('all 13 seeded change lines listed', rowCount === 13, `got ${rowCount}`);
+check(`all ${SEEDED} seeded change lines listed`, rowCount === SEEDED, `got ${rowCount}`);
 
 // Add a backdated entry at the bottom.
 const card = '.admin-card:has-text("Add Change")';
@@ -207,29 +210,30 @@ check('date picker fills the free-text date field as a past date', true);
 await p.fill(`${card} input[placeholder^="**Level**"]`, '**Test Level** has been placed at #1');
 await p.selectOption(`${card} select`, 'bottom');
 await p.click(`${card} button:has-text("Add Change")`);
-await p.waitForFunction(() => document.querySelectorAll('.admin-table tbody tr').length === 14);
+await p.waitForFunction((n) => document.querySelectorAll('.admin-table tbody tr').length === n, SEEDED + 1);
 const lastRow = await p.$$eval('.admin-table tbody tr td:nth-child(3)', e => e.map(x => x.textContent.trim()));
-check('backdated entry added at the bottom', lastRow[13] === 'December 25, 2025', JSON.stringify(lastRow.slice(-2)));
+check('backdated entry added at the bottom', lastRow[SEEDED] === 'December 25, 2025', JSON.stringify(lastRow.slice(-2)));
 
 // Edit it.
-await p.click('.admin-table tbody tr:nth-child(14) button:has-text("Edit")');
+await p.click(`.admin-table tbody tr:nth-child(${SEEDED + 1}) button:has-text("Edit")`);
 await p.waitForSelector('.admin-edit-modal');
 await p.fill('.admin-edit-modal input[type="text"]:not([placeholder^="e.g."])', '**Test Level** has been placed at #7');
 await p.click('.admin-edit-modal .admin-edit-footer button:has-text("Save")');
 await p.waitForFunction(() => !document.querySelector('.admin-edit-modal'));
 const feed = await (await fetch(base + '/api/recent-changes')).json();
 check('edit persisted to the feed', feed[feed.length - 1].entries[0].includes('#7'), JSON.stringify(feed[feed.length - 1]));
-check('feed still groups by date', feed.length === 5 && feed[0].date === 'April 18, 2026');
+check('feed still groups by date', feed.length === 4 && feed[0].date === 'August 23, 2026',
+  JSON.stringify(feed.map(g => g.date)));
 
 // Move it up, then delete it.
-await p.click('.admin-table tbody tr:nth-child(14) button[title="Move up"]');
-await p.waitForFunction(() =>
-  [...document.querySelectorAll('.admin-table tbody tr td:nth-child(3)')][12].textContent.trim() === 'December 25, 2025');
+await p.click(`.admin-table tbody tr:nth-child(${SEEDED + 1}) button[title="Move up"]`);
+await p.waitForFunction((n) =>
+  [...document.querySelectorAll('.admin-table tbody tr td:nth-child(3)')][n - 1].textContent.trim() === 'December 25, 2025', SEEDED);
 check('move up reorders changes', true);
-await p.click('.admin-table tbody tr:nth-child(13) button:has-text("Delete")');
-await p.waitForFunction(() => document.querySelectorAll('.admin-table tbody tr').length === 13);
+await p.click(`.admin-table tbody tr:nth-child(${SEEDED}) button:has-text("Delete")`);
+await p.waitForFunction((n) => document.querySelectorAll('.admin-table tbody tr').length === n, SEEDED);
 check('delete removes the change', (await (await fetch(base + '/api/admin/changes', {
-  headers: { Authorization: `Bearer ${KEY}` } })).json()).length === 13);
+  headers: { Authorization: `Bearer ${KEY}` } })).json()).length === SEEDED);
 
 console.log('\n── admin: saving a level (the reported bug) ──');
 await p.click('.admin-tab:has-text("Levels")');

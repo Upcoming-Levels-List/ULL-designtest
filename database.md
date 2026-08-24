@@ -437,17 +437,55 @@ the real message reaches the panel. Never remove it.
   tag list is a bounded scroll area (`.mob-filters-scroll`, max-height 46vh) so Apply/Reset stay
   visible; a fade + bouncing chevron (`.mob-filters-scroll-hint`) signals more filters and hides
   once scrolled to the bottom (`filtersAtEnd`).
-- **Mobile footer pinning** (`css/pages/mobile.css`): `.mob-content` (and
-  `.mob-home-page`) are flex columns and `.mob-footer` carries `margin-top: auto`, so on a
-  short page — a search matching one level, say — the footer sits at the **bottom of the
-  screen** with blank space above it instead of riding up under the content. Once the page
-  overflows, the auto margin collapses to 0 and the footer follows the content normally.
-  Direct children get `flex-shrink: 0` so nothing gets squashed to make room.
+- **Mobile footer gap** (`css/pages/mobile.css`): `.mob-footer` carries a **fixed**
+  `margin-top: calc(var(--mob-level-h) * 2)` — two level rows' worth of blank space,
+  always present, whether the page is one search result or the whole list.
+  `--mob-level-h: 4.2rem` is one row: a 3rem thumbnail plus `.mob-level-btn`'s 0.6rem
+  padding top and bottom. (An earlier version pinned the footer to the bottom of the
+  viewport with `margin-top: auto`; that was replaced by this fixed gap on request.)
+- **Leaderboard scoring** (`js/formulas.js`, used by `js/pages/Leaderboard.js` and the
+  mobile copy in `js/pages/Mobile.js`): every entry is built from
+  `recordScore(rank, percent)`, then
+  - **Verification** (`level.isVerified` — the verifier) = `recordScore(rank, 100) × 2`.
+    A verified level contributes *only* this; its records and runs are skipped.
+  - **Layout completion** = a 100% record on a level that is **not** verified yet, i.e. the
+    player beat it in its current undecorated state (Snowblind, Map of Problematique). Worth
+    `verificationScore(rank) × 0.8` = `recordScore(rank, 100) × 1.6`. Detected by
+    `isLayoutCompletion(level, percent)`, which mirrors the "Layout verified by …" line on
+    the list pages (`!level.isVerified && records[0].percent == 100`). Shown as
+    "Layout Completion", type `'layout'`.
+    Before 2026-08-24 these fell through to the ordinary record branch and scored a plain
+    `recordScore(rank, 100)` — 1×, not 1.6×.
+  - **Record** (from 0%) = `recordScore(rank, percent)`.
+  - **Run** = `recordScore(rank, b − a)` for a `"a-b"` span.
+
+  The multipliers live in `js/formulas.js` as `VERIFICATION_MULTIPLIER` (2) and
+  `LAYOUT_COMPLETION_MULTIPLIER` (0.8) so the desktop and mobile copies can't drift.
+  `node js/leaderboard.test.mjs` checks them against the `/data` snapshot.
+- **Upcoming Levels order** (`js/pages/UpcomingLevels.js`, `upcomingScore()` in
+  `js/formulas.js`): levels are sorted by `rankingScore` **descending**, where
+
+  ```
+  rankingScore = ( max(P, R)² + min(P, R)^1.8 ) × ( 0.01 × (rank + 100) )^0.5
+  ```
+
+  - `P` = the highest **record** percent on the level (a from-0% attempt).
+  - `R` = the largest **run** span, `b − a` from a `"a-b"` run.
+  - `rank` = the level's 1-based position in **All Levels** (`allLevelsRank`, counting
+    verified levels).
+
+  So the better of the two attempts dominates (squared) and the weaker one adds a smaller
+  bonus (^1.8). The rank factor **grows** with rank, meaning the same progress is worth more
+  on a lower-ranked (easier) level — 60% on #400 is closer to a verification than 60% on #5.
+  Excluded entirely: verified levels, anything with `rankingScore <= 0` (no records and no
+  runs), and any level that already has a 100% record (a completed layout).
 - **Frame Windows Counter**: if `level.frameCounter` is set, the level card shows a
   "Frame Windows Counter" row with a "Watch Here" link (List/ListMain/ListFuture pages).
 - **Social links**: the community links are **Discord** (`https://discord.gg/9wVWSgJSe8`)
-  and **X** (`https://x.com/ull_gd`), side by side in the desktop sidebar, the settings
-  popup, both footers, the home hero, the mobile top bar and the mobile settings sheet.
+  and **X** (`https://x.com/ull_gd`). Discord alone sits in the desktop sidebar and the
+  mobile top bar; **X is deliberately not in either** — it appears in the desktop settings
+  popup, the mobile settings sheet, both footers, the home hero, the mobile home social row
+  and the Contacts section.
   The X mark ships as `assets/x.svg` (a white glyph, same convention as `discord.svg`) for
   `<img>` spots and is inlined with `fill="currentColor"` where the surrounding button
   already used an inline SVG. **There is no ULL Telegram any more** — it was replaced by
@@ -589,6 +627,28 @@ Admin panel → **Recent Changes** tab. Each row is one change line.
 - **Seeding a fresh site**: see `recent_changes` in section 3 — run
   `scripts/seed-recent-changes.sql` **before** staff start editing, since it replaces every row.
 
+### Turning a hand-written changelog into the feed
+The staff team writes changelogs as plain text (`data/changelogs/<YYYY-MM>.txt`) with
+`AUGUST 21` date headers, `# Placements` / `# Movements` section headings and `*` bullets.
+`scripts/parse-changelog.js` converts that into `data/_recentChanges.json`:
+
+```bash
+node scripts/parse-changelog.js data/changelogs/2026-08.txt --year 2026
+node scripts/build-changes-seed.js     # -> scripts/seed-recent-changes.sql
+wrangler d1 execute d1-template-database --remote --file=scripts/seed-recent-changes.sql
+```
+
+- Dates come out **newest-first**; lines keep their written order within a date.
+- **Section headings are dropped** — the feed is a flat list of lines under each date, so
+  `# Placements` has nowhere to go. Lines from one section stay adjacent.
+- The parser applies **punctuation-only** repairs (a bold opener that lost an asterisk, a
+  space swallowed after a closing `**`, a stray space inside the markers, doubled spaces,
+  `, and below` → ` and below`, `#246 above` → `#246, above`, trailing periods). It never
+  touches level names, positions or wording, and warns about unbalanced `**`.
+- `--append` merges into the existing JSON instead of replacing it; the default replaces.
+- ⚠️ `seed-recent-changes.sql` is `DELETE` + `INSERT`. Once staff manage the feed from the
+  admin panel, add new entries **there**, not by re-running the seed.
+
 ### Deploying Worker changes
 Cloudflare dashboard → Workers & Pages → the worker → **Quick Edit** → paste → **Deploy**.
 There is no CI; deploys are manual through the dashboard.
@@ -646,11 +706,15 @@ Gotchas learned the hard way:
 - Editors are **manually ordered** (`editor_keys.sort_order`), never alphabetical
 - Renaming an editor keeps their key (`PATCH /api/editors` with `newName`)
 - Recent Changes = `recent_changes`, one row per line, free-text `date`, `sort_order` wins
+- Leaderboard: verification = 2x a 100% record; layout completion (100% on an unverified
+  level) = 0.8x a verification = 1.6x a record
+- Upcoming Levels order = `(max(P,R)^2 + min(P,R)^1.8) * (0.01*(rank+100))^0.5`, descending
 - `levels` has **no** `password` / `difficulty` column — naming them throws
 - A "Network error" in the admin panel means the Worker threw; check its logs
 - `sort_order` = level ranking (contiguous integer, shifted on insert/delete/move)
 - Dates use `DD.MM.YYYY`
 - Current site version: **v2.0.0**
-- Tests: `node worker/worker.test.mjs` (Worker vs. real schema) and
+- Tests: `node worker/worker.test.mjs` (Worker vs. real schema),
+  `node js/leaderboard.test.mjs` (scoring vs. the /data snapshot) and
   `node scripts/e2e-test.mjs` (browser, needs `npm i playwright vue@3.2.31 vue-router@4.0.14`)
 - Working branch: `claude/multiple-features-fixes-slberb`

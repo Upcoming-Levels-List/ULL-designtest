@@ -23,6 +23,49 @@ export function recordScore(rank, percent) {
 }
 
 /**
+ * A verification is worth double a 100% record on the same level.
+ */
+export const VERIFICATION_MULTIPLIER = 2;
+
+/**
+ * "Layout completed" — a 100% record on a level that is NOT verified yet, i.e. the
+ * player beat the level in its current, still-undecorated state (Snowblind,
+ * Map of Problematique…). The list pages label this "Layout verified by …".
+ * It is worth 0.8 of a full verification on the same level.
+ */
+export const LAYOUT_COMPLETION_MULTIPLIER = 0.8;
+
+/**
+ * Score for verifying the level at a given rank.
+ * @param {Number} rank - Position on the All Levels list (1-indexed)
+ * @returns {Number}
+ */
+export function verificationScore(rank) {
+    return recordScore(rank, 100) * VERIFICATION_MULTIPLIER;
+}
+
+/**
+ * Score for completing the layout of the level at a given rank.
+ * @param {Number} rank - Position on the All Levels list (1-indexed)
+ * @returns {Number}
+ */
+export function layoutCompletionScore(rank) {
+    return verificationScore(rank) * LAYOUT_COMPLETION_MULTIPLIER;
+}
+
+/**
+ * Whether a record counts as a layout completion rather than an ordinary record:
+ * 100% on a level that hasn't been verified yet. Mirrors the "Layout verified by"
+ * condition on the list pages (`!level.isVerified && records[0].percent == 100`).
+ * @param {Object} level
+ * @param {Number} percent
+ * @returns {Boolean}
+ */
+export function isLayoutCompletion(level, percent) {
+    return !level.isVerified && Number(percent) >= 100;
+}
+
+/**
  * Calculate a ranking score for upcoming levels.
  * @param {Number} maxPercent - Highest "from zero" record percent
  * @param {Number} maxRunDiff - Highest run range (b - a from "a-b" format)

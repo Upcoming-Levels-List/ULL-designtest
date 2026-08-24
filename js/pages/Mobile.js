@@ -1,6 +1,6 @@
 import { store } from "../main.js";
 import { fetchEditors, fetchList, fetchPending, fetchLevelMonth, fetchLevelVerif } from "../content.js";
-import { recordScore } from "../formulas.js";
+import { recordScore, verificationScore, layoutCompletionScore, isLayoutCompletion } from "../formulas.js";
 import { mobileStore, applyFilters, resetFilters } from "./mobile/mobileStore.js";
 
 import Spinner from "../components/Spinner.js";
@@ -33,9 +33,6 @@ export default {
             </button>
             <a href="https://discord.gg/9wVWSgJSe8" target="_blank" class="mob-topbar-btn" title="Discord">
                 <img src="/assets/discord.svg" class="mob-topbar-discord-icon" />
-            </a>
-            <a href="https://x.com/ull_gd" target="_blank" rel="noopener" class="mob-topbar-btn" title="X (@ull_gd)">
-                <img src="/assets/x.svg" class="mob-topbar-discord-icon" />
             </a>
         </nav>
     </header>
@@ -246,7 +243,7 @@ export default {
                 if (level.isVerified && level.verifier) {
                     const key = level.verifier.toLowerCase();
                     if (!playerMap[key]) playerMap[key] = { name: level.verifier, records: [] };
-                    const sc = recordScore(levelRank, 100) * 2;
+                    const sc = verificationScore(levelRank);
                     playerMap[key].records.push({ levelName, levelRank, percent: 100, score: sc, type: 'verification' });
                     return;
                 }
@@ -256,7 +253,12 @@ export default {
                         const key = record.user.toLowerCase();
                         if (!playerMap[key]) playerMap[key] = { name: record.user, records: [] };
                         const percent = Number(record.percent);
-                        playerMap[key].records.push({ levelName, levelRank, percent, score: recordScore(levelRank, percent), type: 'record' });
+                        // 100% on a not-yet-verified level is a layout completion (0.8
+                        // of a verification), not an ordinary record. Keep in sync with
+                        // js/pages/Leaderboard.js.
+                        const layout = isLayoutCompletion(level, percent);
+                        const sc = layout ? layoutCompletionScore(levelRank) : recordScore(levelRank, percent);
+                        playerMap[key].records.push({ levelName, levelRank, percent, score: sc, type: layout ? 'layout' : 'record' });
                     });
                 }
                 if (level.run) {

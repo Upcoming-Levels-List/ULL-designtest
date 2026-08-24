@@ -29,6 +29,7 @@ export default {
                             <span style="opacity:0.5;font-size:12px;">#{{ rec.levelRank }}</span>
                         </div>
                         <span v-if="rec.type === 'verification'" style="font-weight:500;">Verification</span>
+                        <span v-else-if="rec.type === 'layout'" style="font-weight:500;">Layout Completion</span>
                         <span v-else-if="rec.type === 'run'" style="font-weight:500;">{{ rec.displayPercent }}%</span>
                         <span v-else style="font-weight:500;">{{ rec.percent }}%</span>
                     </div>

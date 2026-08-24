@@ -131,17 +131,10 @@
 .mob-contact-btn img { height: 1.2rem; filter: brightness(0) invert(1); }
 
 /* ── Page content ── */
-/* The scroll area is a flex column so the footer can be pushed to the bottom of
-   the viewport (see .mob-footer's margin-top:auto) instead of riding up right
-   under a short page — e.g. a search that matches a single level. When the page
-   is taller than the viewport the auto margin collapses to 0 and the footer
-   simply follows the content as usual. */
 .mob-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
-/* Never let a short page get squashed to make room for the footer. */
+/* Never let a short page get squashed by the footer's gap. */
 .mob-content > * { flex-shrink: 0; }
 .mob-content-home { overflow: hidden; }
-/* The home page scrolls itself (it already is a flex column), so its own footer
-   gets the same bottom-pinning treatment. */
 .mob-content-home .mob-home-page { height: 100%; overflow-y: auto; }
 .mob-home-page > * { flex-shrink: 0; }
 
@@ -250,10 +243,16 @@
 .mob-pending-empty { font-size: 0.85rem; font-weight: 400; color: var(--color-on-background); opacity: 0.45; padding: 0.75rem 0.6rem; margin: 0; }
 
 /* Mobile Footer (shared) */
-/* margin-top:auto eats the leftover space in the flex column above it, so the
-   footer sticks to the bottom of the screen (blank space in between) instead of
-   creeping up under a short page. It collapses to 0 once the content overflows. */
-.mob-footer { border-top: 1px solid rgba(128,128,128,0.15); padding: 1.5rem 1.25rem 2rem; margin-top: auto; }
+/* A fixed breathing gap above the footer, always present, whether the page is one
+   search result or the whole list. One level row is a 3rem thumbnail plus the
+   0.6rem padding above and below it (see .mob-level-btn / .mob-thumb) — the gap is
+   two of those. */
+:root { --mob-level-h: 4.2rem; }
+.mob-footer {
+    border-top: 1px solid rgba(128,128,128,0.15);
+    padding: 1.5rem 1.25rem 2rem;
+    margin-top: calc(var(--mob-level-h) * 2);
+}
 .mob-footer h3, .mob-footer h4, .mob-footer p { margin: 0; padding: 0; }
 .mob-footer h3::before, .mob-footer h3::after, .mob-footer h4::before, .mob-footer h4::after { display: none; }
 .mob-footer h3 { font-size: 0.9rem; font-weight: 700; color: var(--color-on-background); margin-bottom: 0.4rem; line-height: 1.3; }

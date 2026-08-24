@@ -131,13 +131,16 @@ const seed = readFileSync(new URL('../scripts/seed-recent-changes.sql', import.m
   .split('\n').filter(l => !l.trim().startsWith('--')).join('\n');
 for (const stmt of seed.split(';').map(s => s.trim()).filter(Boolean)) db.exec(stmt);
 let ch = await call('GET', '/api/recent-changes');
-check('seeded feed groups by date', ch.body.length === 4 && ch.body[0].date === 'April 18, 2026', JSON.stringify(ch.body.map(g => g.date)));
-check('group entry counts', ch.body.map(g => g.entries.length).join(',') === '2,3,4,4');
+check('seeded feed groups by date, newest first',
+  ch.body.length === 3 && ch.body[0].date === 'August 23, 2026', JSON.stringify(ch.body.map(g => g.date)));
+check('group entry counts', ch.body.map(g => g.entries.length).join(',') === '18,5,19',
+  ch.body.map(g => g.entries.length).join(','));
 
 r = await call('POST', '/api/admin/changes', { date: 'August 24, 2026', change: '**Foo** has been placed at #1' }, KEY);
 check('add change (top by default)', r.status === 200);
 ch = await call('GET', '/api/recent-changes');
-check('new entry lands at the top', ch.body[0].date === 'August 24, 2026' && ch.body.length === 5);
+check('new entry lands at the top', ch.body[0].date === 'August 24, 2026' && ch.body.length === 4,
+  JSON.stringify(ch.body.map(g => g.date)));
 
 r = await call('POST', '/api/admin/changes', { date: 'January 2, 2025', change: '**Old** backdated entry', position: 'bottom' }, KEY);
 ch = await call('GET', '/api/recent-changes');

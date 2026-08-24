@@ -1,6 +1,6 @@
 import { store } from '../main.js';
 import { fetchList } from '../content.js';
-import { recordScore } from '../formulas.js';
+import { recordScore, verificationScore, layoutCompletionScore, isLayoutCompletion } from '../formulas.js';
 
 import Spinner from '../components/Spinner.js';
 
@@ -64,6 +64,7 @@ export default {
                             </td>
                             <td style="padding:0.6rem 0; text-align:right; padding-left:1rem; font-family:'Lexend Deca',sans-serif;">
                                 <span v-if="rec.type === 'verification'">Verification</span>
+                                <span v-else-if="rec.type === 'layout'">Layout Completion</span>
                                 <span v-else-if="rec.type === 'run'">{{ rec.displayPercent }}%</span>
                                 <span v-else>{{ rec.percent }}%</span>
                             </td>
@@ -115,7 +116,7 @@ export default {
             if (level.isVerified && level.verifier) {
                 const key = level.verifier.toLowerCase();
                 if (!playerMap[key]) playerMap[key] = { name: level.verifier, records: [] };
-                const sc = recordScore(levelRank, 100) * 2;
+                const sc = verificationScore(levelRank);
                 playerMap[key].records.push({
                     levelName,
                     levelRank,
@@ -133,13 +134,18 @@ export default {
                     const key = record.user.toLowerCase();
                     if (!playerMap[key]) playerMap[key] = { name: record.user, records: [] };
                     const percent = Number(record.percent);
-                    const sc = recordScore(levelRank, percent);
+                    // 100% on a level that isn't verified yet is a layout completion,
+                    // not an ordinary record: the player beat it in its current,
+                    // undecorated state. Worth 0.8 of a verification, rather than the
+                    // 1x it used to get by falling through to recordScore().
+                    const layout = isLayoutCompletion(level, percent);
+                    const sc = layout ? layoutCompletionScore(levelRank) : recordScore(levelRank, percent);
                     playerMap[key].records.push({
                         levelName,
                         levelRank,
                         percent,
                         score: sc,
-                        type: 'record',
+                        type: layout ? 'layout' : 'record',
                     });
                 });
             }
