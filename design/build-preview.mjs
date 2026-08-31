@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Assembles design/preview.html from design/ull-v2.css and the fragments in
-// design/templates/. The fragments are the deliverable; this only stitches them
-// into one page that can be published and reviewed in a browser.
+// Assembles design/preview.html from the shipped component layer (css/ull-v2.css)
+// and the fragments in design/templates/. The deck reads the real stylesheet
+// rather than a copy, so it cannot drift from what the site actually renders.
 //
 //   node design/build-preview.mjs
 
@@ -26,7 +26,7 @@ const pages = ORDER.map((name) => {
     return { name, meta, body: raw.slice(block[0].length).trim() };
 });
 
-const component = fs.readFileSync(path.join(DIR, 'ull-v2.css'), 'utf8');
+const component = fs.readFileSync(path.join(DIR, '..', 'css', 'ull-v2.css'), 'utf8');
 const shell = fs.readFileSync(path.join(DIR, 'preview.shell.html'), 'utf8');
 
 const nav = pages

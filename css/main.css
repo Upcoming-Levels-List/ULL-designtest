@@ -149,15 +149,6 @@ input[type="checkbox"] {
     margin: 0;
 }
 
-.worldrecord {
-    margin-bottom: 1rem;
-}
-
-.best-record .type-body,
-.best-run .type-body {
-    margin-bottom: 1rem;
-}
-
 /* Shitty - is not used */
 
 .shitty .surface {

@@ -1,27 +1,26 @@
 ﻿import { store } from '../main.js';
-import { embed, levelThumbnail } from '../util.js';
+import { levelThumbnail, verificationPercent } from '../util.js';
 import { fetchList } from '../content.js';
 import { upcomingRanking } from '../formulas.js';
 
 import Spinner from '../components/Spinner.js';
-import LevelAuthors from '../components/List/LevelAuthors.js';
+import LevelPanel from '../components/List/LevelPanel.js';
 
 export default {
-    components: { Spinner, LevelAuthors },
+    components: { Spinner, LevelPanel },
     template: `
     <main v-if="loading" class="surface" style="display:flex;align-items:center;justify-content:center;">
         <Spinner></Spinner>
     </main>
-    <main v-else class="page-list-new page-upcoming">
-        <div class="upcoming-hero">
-            <div class="upcoming-hero-content">
-                <div class="upcoming-hero-badge">.../#/upcoming</div>
+    <main v-else class="page-list-new page-upcoming page-with-hero ull2">
+        <div class="u-phero">
+            <div class="u-phero__body">
                 <h1>Upcoming Levels</h1>
                 <p>Catalogue of levels on the Upcoming Levels List closest to verification, ranked by highest progress achieved toward completing the level.</p>
             </div>
-            <div class="upcoming-hero-stat">
-                <span class="upcoming-hero-stat-value">{{ list.length }}</span>
-                <span class="upcoming-hero-stat-label">levels total</span>
+            <div class="u-phero__side">
+                <div class="u-stat"><div class="u-stat__k">Levels</div><span class="u-stat__v">{{ list.length }}</span></div>
+                <div class="u-stat"><div class="u-stat__k">Past 50%</div><span class="u-stat__v">{{ pastHalfway }}</span></div>
             </div>
         </div>
         <div class="list-container-new surface">
@@ -42,7 +41,9 @@ export default {
                             <div class="level-info">
                                 <span class="type-label-lg" :style="store.levelColoring ? getLevelNameStyle(level, selected === i) : {}">{{ level?.name || \`Error (\${err}.json)\` }}</span>
                                 <span v-if="level" class="level-subinfo">WR: {{ getWR(level) }} | Run: {{ getRunString(level) }}</span>
+                                <span v-if="level" class="u-bar u-bar--thin up-row__bar"><i :style="{ width: progress(level) + '%' }"></i></span>
                             </div>
+                            <span v-if="level" class="up-row__pct">{{ progress(level) }}%</span>
                         </button>
                     </td>
                 </tr>
@@ -54,39 +55,7 @@ export default {
             <p v-else style="padding:1rem; opacity:0.5;">No upcoming levels found</p>
         </div>
         <div class="level-container-new surface">
-            <div class="level" v-if="selectedLevel">
-                <h1>{{ selectedLevel.name }}</h1>
-                <div v-if="selectedLevel.allLevelsRank || selectedLevel.mainRank || selectedLevel.futureRank" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;font-family:'Lexend Deca',sans-serif;font-size:0.92rem;opacity:0.45;margin-top:-1rem;margin-bottom:0.5rem;">
-                    <span v-if="selectedLevel.allLevelsRank">#{{ selectedLevel.allLevelsRank }} in All Levels</span>
-                    <span v-if="selectedLevel.mainRank">· #{{ selectedLevel.mainRank }} in Main List</span>
-                    <span v-if="selectedLevel.futureRank">· #{{ selectedLevel.futureRank }} in Future List</span>
-                </div>
-                <LevelAuthors :author="selectedLevel.author" :creators="selectedLevel.creators" :verifier="selectedLevel.verifier"></LevelAuthors>
-                <div>
-                    <div v-if="bestRecord" class="best-record">
-                        <p class="type-body">
-                            Best progress from 0: <a :href="bestRecord.link != '#' ? bestRecord.link : undefined" :target="bestRecord.link != '#' ? '_blank' : undefined" :style="bestRecord.link != '#' ? 'text-decoration: underline; cursor: pointer;' : ''"><span :style="bestRecord.link != '#' ? 'color: #00b825;' : ''">{{ bestRecord.percent }}%</span> by {{ bestRecord.user }}</a>
-                        </p>
-                    </div>
-                    <div v-if="bestRun" class="best-run">
-                        <p class="type-body">
-                            Best run: <a :href="bestRun.link != '#' ? bestRun.link : undefined" :target="bestRun.link != '#' ? '_blank' : undefined" :style="bestRun.link != '#' ? 'text-decoration: underline; cursor: pointer;' : ''"><span :style="bestRun.link != '#' ? 'color: #00b825;' : ''">{{ bestRun.percent }}%</span> by {{ bestRun.user }}</a>
-                        </p>
-                    </div>
-                </div>
-                <div v-if="selectedLevel.isVerified" class="tabs" style="height:45px;">
-                    <button class="tab" :class="{selected: !toggledShowcase}" @click="toggledShowcase = false">
-                        <span class="type-label-lg">Verification</span>
-                    </button>
-                    <button class="tab" :class="{selected: toggledShowcase}" @click="toggledShowcase = true">
-                        <span class="type-label-lg">Showcase</span>
-                    </button>
-                </div>
-                <iframe class="video" id="videoframe" :src="video" frameborder="0"></iframe>
-            </div>
-            <div v-else class="level" style="height: 100%; justify-content: center; align-items: center;">
-                <p>Select a level</p>
-            </div>
+            <LevelPanel :level="selectedLevel" :all-paths="allPaths" current="all" lead-progress></LevelPanel>
         </div>
 
         <!-- Filters Popup -->
@@ -137,7 +106,6 @@ export default {
         loading: true,
         selected: 0,
         store,
-        toggledShowcase: false,
         search: '',
         showFilters: false,
         statusFilters: [
@@ -178,27 +146,11 @@ export default {
             const item = this.filteredList[this.selected];
             return item ? item[0] : null;
         },
-        video() {
-            if (!this.selectedLevel) return '';
-            if (!this.selectedLevel.verification) return embed(this.selectedLevel.showcase);
-            return embed(this.toggledShowcase ? this.selectedLevel.showcase : this.selectedLevel.verification);
+        allPaths() {
+            return (this.list || []).map(([level]) => level?.path).filter(Boolean);
         },
-        bestRecord() {
-            if (!this.selectedLevel || !this.selectedLevel.records || !this.selectedLevel.records.length) return null;
-            const sorted = [...this.selectedLevel.records].sort((a, b) => b.percent - a.percent);
-            return sorted[0].percent > 0 ? sorted[0] : null;
-        },
-        bestRun() {
-            if (!this.selectedLevel || !this.selectedLevel.run || !this.selectedLevel.run.length) return null;
-            const sorted = [...this.selectedLevel.run].sort((a, b) => {
-                const diffA = (parseInt(a.percent.split('-')[1]) || 0) - (parseInt(a.percent.split('-')[0]) || 0);
-                const diffB = (parseInt(b.percent.split('-')[1]) || 0) - (parseInt(b.percent.split('-')[0]) || 0);
-                return diffB - diffA;
-            });
-            const best = sorted[0];
-            const parts = String(best.percent).split('-').map(Number);
-            const diff = (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? parts[1] - parts[0] : 0;
-            return diff > 0 ? { ...best, diff } : null;
+        pastHalfway() {
+            return (this.list || []).filter(([level]) => level && verificationPercent(level) >= 50).length;
         },
     },
     watch: { search() { this.selected = 0; } },
@@ -237,7 +189,6 @@ export default {
         this.loading = false;
     },
     methods: {
-        embed,
         isOldLevel(level) {
             if (!level.lastUpd) return false;
             const parts = level.lastUpd.split('.');
@@ -266,6 +217,11 @@ export default {
             return bestRun ? bestRun.percent : 'None';
         },
         levelThumbnail,
+        // The same reading the ordering is built from (js/formulas.js scores it,
+        // this shows it), so the column can be scanned as a race.
+        progress(level) {
+            return verificationPercent(level);
+        },
         getLevelNameStyle(level, isSelected) {
             if (!level) return {};
             const dark = !this.store.dark;

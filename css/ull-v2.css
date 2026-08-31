@@ -9,6 +9,7 @@
 
    Nothing here invents data. Every value a component displays already exists in
    data/<level>.json or is derived from it the way the list already derives it.
+   The design/ directory holds the static templates these components came from.
 
    Scope: anything inside an element carrying .ull2. Drop the class on <main>.
 

@@ -14,99 +14,145 @@
 .home-page h3::before, .home-page h3::after,
 .home-page h4::before, .home-page h4::after { display: none; }
 
-/* ── HERO ── */
+/* ── HERO ──
+   Was a 75vh centred block, so the first thing below the fold on a level list
+   was still not a level. Left-aligned and cut to the height of its own content;
+   the count strip and the top of the list now sit in the space it gave back. */
 .home-hero {
-    height: 75vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 2rem;
-    background: radial-gradient(ellipse 70% 50% at 50% -5%, rgba(102,10,239,0.14) 0%, transparent 65%);
-    border-bottom: 1px solid rgba(128,128,128,0.1);
-    position: relative;
+    padding: 3.5rem 2.5rem 2.5rem;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 60%);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
 }
 .home-hero-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.5rem;
-    max-width: 640px;
+    align-items: flex-start;
+    gap: 0;
+    max-width: 46rem;
+}
+.home-hero-eyebrow {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    opacity: 0.4;
 }
 .home-hero-title {
-    font-size: 3.5rem;
+    margin-top: 0.7rem !important;
+    font-size: clamp(2rem, 4.2vw, 3.1rem);
     font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
+    line-height: 1;
+    letter-spacing: -0.035em;
     color: var(--color-on-background);
 }
 .home-hero-desc {
-    font-size: 1rem;
-    font-weight: 400;
+    margin-top: 1rem !important;
+    max-width: 40rem;
+    font-size: 0.92rem;
+    font-weight: 500;
     line-height: 1.65;
     color: var(--color-on-background);
-    opacity: 0.5;
-    max-width: 500px;
+    opacity: 0.6;
 }
 .home-hero-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 0.25rem;
+    margin-top: 1.6rem;
 }
-.home-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.65rem 1.4rem;
-    border-radius: 0.5rem;
-    font-family: "Lexend Deca", sans-serif;
-    font-size: 0.88rem;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition: opacity 120ms ease, transform 120ms ease;
-    border: none;
-    line-height: 1;
-}
-.home-btn--primary {
-    background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 70%, #a855f7) 100%);
-    color: white;
-}
-.home-btn--primary:hover { opacity: 0.85; transform: translateY(-1px); }
 
 .home-hero-social {
     display: flex;
-    gap: 0.6rem;
-    justify-content: center;
+    gap: 0.45rem;
+    margin-top: 1.1rem;
 }
 .home-social-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.9rem;
-    border-radius: 0.4rem;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 2rem;
     font-family: "Lexend Deca", sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 500;
     text-decoration: none;
     color: var(--color-on-background);
-    background: rgba(128,128,128,0.07);
-    border: 1px solid rgba(128,128,128,0.15);
+    border: 1px solid rgba(128,128,128,0.22);
     opacity: 0.6;
-    transition: opacity 100ms ease;
+    transition: opacity 100ms ease, border-color 100ms ease;
 }
-.home-social-btn:hover { opacity: 1; }
-.home-social-btn img { width: 1rem; height: 1rem; }
+.home-social-btn:hover { opacity: 1; border-color: rgba(128,128,128,0.38); }
+.home-social-btn img { width: 0.95rem; height: 0.95rem; }
+
+/* ── COUNT STRIP ──
+   Five readings of the list as it stands, each one a length of an array the
+   page already holds. Three of them are the pages they count. */
+.home-pulse {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+}
+.home-pulse__cell {
+    display: block;
+    padding: 1.1rem 1.5rem;
+    color: var(--color-on-background);
+    text-decoration: none;
+    transition: background-color 120ms ease;
+}
+a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
+.home-pulse__cell + .home-pulse__cell { border-left: 1px solid rgba(128,128,128,0.15); }
+.home-pulse__cell b {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+.home-pulse__cell span {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    opacity: 0.4;
+}
+.home-pulse__cell--lead b { color: color-mix(in srgb, var(--color-primary) 45%, white); }
+.root.dark .home-pulse__cell--lead b { color: color-mix(in srgb, var(--color-primary) 75%, black); }
+
+/* ── SECTIONS ── */
+.home-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+.home-section__head .u-eyebrow { margin-bottom: 0; }
+.home-more {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-on-background);
+    opacity: 0.5;
+    white-space: nowrap;
+}
+.home-more:hover { opacity: 1; text-decoration: underline; }
+
+/* ── TOP OF THE LIST ── */
+.home-top { display: flex; flex-direction: column; gap: 0.2rem; }
+.home-top__row { border: 1px solid transparent; }
+.home-top__row:hover { border-color: rgba(128,128,128,0.22); }
 
 /* ── CONTENT ── */
 .home-content {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 3rem 2rem 3rem;
+    padding: 2rem 2rem 2.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 /* ── CARD ── */
@@ -114,23 +160,10 @@
     background: var(--color-background-hover);
     border: 1px solid rgba(128,128,128,0.15);
     border-radius: 0.75rem;
-    padding: 1.75rem;
-    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    padding: 1.5rem 1.6rem;
+    transition: border-color 150ms ease;
 }
-.home-card:hover {
-    border-color: rgba(128,128,128,0.55);
-    box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
-    transform: scale(1.006);
-}
-.home-card__title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    margin-bottom: 1.25rem;
-}
-.root.dark .home-card__title { color: color-mix(in srgb, var(--color-primary) 65%, black); }
+.home-card:hover { border-color: rgba(128,128,128,0.32); }
 
 /* ── 2-COL GRID ── */
 .home-grid-2col {
@@ -151,13 +184,11 @@
     overflow: hidden;
 }
 .home-changes {
-    height: 354px;
+    flex: 1;
+    min-height: 0;
+    max-height: 22rem;
     overflow-y: auto;
     scrollbar-width: thin;
-    border: 1px solid rgba(128,128,128,0.1);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    background: rgba(128,128,128,0.03);
 }
 .home-changes-date {
     display: flex;
@@ -169,10 +200,9 @@
     letter-spacing: 0.08em;
     color: var(--color-on-background);
     opacity: 0.35;
-    margin: 1.25rem 0 0.85rem;
+    margin: 0.9rem 0 0.45rem;
 }
 .home-changes-date:first-child { margin-top: 0; }
-.home-changes-date::before,
 .home-changes-date::after {
     content: '';
     flex: 1;
@@ -180,15 +210,40 @@
     background: rgba(128,128,128,0.18);
 }
 .home-change {
+    display: grid;
+    grid-template-columns: 0.55rem 1fr;
+    gap: 0.7rem;
     font-size: 0.8rem;
-    line-height: 1.65;
-    padding: 0.15rem 0;
+    line-height: 1.55;
+    padding: 0.3rem 0;
     color: var(--color-on-background);
 }
+.home-change__dot {
+    margin-top: 0.5rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.3;
+}
+.home-change__dot.is-up { background: #55ee55; opacity: 0.85; }
+.home-change__dot.is-down { background: #ff6622; opacity: 0.85; }
+.home-change__dot.is-new { background: var(--color-primary); opacity: 1; }
+.root.dark .home-change__dot.is-up { background: #2f9c2f; }
+.root.dark .home-change__dot.is-down { background: #cc511b; }
 .home-change .dim { opacity: 0.45; }
 .home-change strong { font-weight: 600; }
 
 /* ── EDITORS DESC ── */
+.home-editors-group {
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.3;
+    margin: 0.9rem 0 0.3rem;
+}
+.home-editors-group:first-child { margin-top: 0; }
 .home-editors-desc {
     font-size: 0.78rem;
     font-weight: 400;
@@ -198,218 +253,7 @@
     margin-bottom: 1rem !important;
 }
 
-/* ── LEVEL CARD SHARED (LotM + CTV) ── */
-.home-level-period {
-    display: inline-block;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    background: rgba(102,10,239,0.1);
-    padding: 0.15rem 0.55rem;
-    border-radius: 2rem;
-    margin-bottom: 0.85rem;
-}
-.root.dark .home-level-period { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.home-level-name {
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: var(--color-on-background);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 5px;
-}
-.home-level-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-.home-level-thumb {
-    flex-shrink: 0;
-    width: 120px;
-    aspect-ratio: 16/9;
-    border-radius: 0.4rem;
-    background: rgba(128,128,128,0.08);
-    border: 1px solid rgba(128,128,128,0.12);
-    overflow: hidden;
-}
-.home-level-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.home-level-meta { display: flex; flex-direction: column; min-width: 0; }
-.home-level-info {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    font-size: 0.75rem;
-}
-.home-level-rank {
-    font-weight: 700;
-    color: var(--color-on-background);
-    opacity: 0.35;
-}
-.home-level-author {
-    font-weight: 400;
-    color: var(--color-on-background);
-    opacity: 0.5;
-}
-.home-level-sep {
-    color: var(--color-on-background);
-    opacity: 0.2;
-}
-.home-level-id {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    font-variant-numeric: tabular-nums;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    background: rgba(102,10,239,0.12);
-    padding: 0.12rem 0.45rem;
-    border-radius: 0.3rem;
-    border: 1px solid rgba(102,10,239,0.2);
-}
-.root.dark .home-level-id { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-
-/* ── RECORD ROWS ── */
-.home-record-box {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    border: 1px solid rgba(128,128,128,0.1);
-    border-radius: 0.5rem;
-    padding: 0.35rem;
-    background: rgba(128,128,128,0.03);
-}
-.home-record-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-}
-.home-record-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.6rem;
-    border-radius: 0.4rem;
-    text-decoration: none;
-    transition: background 100ms ease;
-    border: 1px solid transparent;
-    cursor: pointer;
-}
-.home-record-row:hover {
-    background: rgba(128,128,128,0.06);
-    border-color: rgba(128,128,128,0.1);
-}
-.home-record-pct {
-    font-size: 1rem;
-    font-weight: 700;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    min-width: 5rem;
-    font-variant-numeric: tabular-nums;
-}
-.root.dark .home-record-pct { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.home-record-player {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-on-background);
-    flex: 1;
-}
-.home-record-label {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-on-background);
-    opacity: 0.25;
-    white-space: nowrap;
-}
-
-/* ── CTV / DISCORD BUTTONS ── */
-.home-ctv-card { display: flex !important; flex-direction: column; }
-.home-lotm-card { display: flex !important; flex-direction: column; }
-.home-ctv-btn,
-.home-discord-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-top: auto;
-    padding-top: 1.5rem;
-    align-self: flex-start;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    text-decoration: none;
-    opacity: 0.8;
-    transition: opacity 100ms ease;
-}
-.root.dark .home-ctv-btn,
-.root.dark .home-discord-btn { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.home-ctv-btn:hover,
-.home-discord-btn:hover { opacity: 1; }
-.home-ctv-btn::after { content: ' →'; }
-.home-discord-btn img { width: 0.9rem; height: 0.9rem; margin-right: 3px; }
-
-/* ── EVENTS PAGE ── */
-.events-content { max-width: 1400px; }
-.events-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-    align-items: start;
-}
-.events-lotd-card { grid-column: 1 / 3; }
-.events-lotd-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-top: 0.75rem;
-}
-.events-info-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: color-mix(in srgb, var(--color-primary) 80%, white);
-    margin-bottom: 0.85rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
-}
-.events-stat-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-}
-.events-stat-key {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.4;
-    margin-bottom: 0.2rem;
-}
-.events-stat-val {
-    font-size: 0.875rem;
-}
-.events-tags { margin-top: 0.85rem; }
-
-.home-lotd-date {
-    margin-top: 25px;
-    font-size: 0.78rem;
-    opacity: 0.45;
-    font-family: "Lexend Deca", sans-serif;
-    text-align: center;
-}
-
-/* ── PARTNERS ── */
+/* ── PARTNERS (hidden for now) ── */
 .home-partners-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
@@ -463,3 +307,15 @@
 
 /* ── FOOTER ── */
 .home-page .site-footer { margin-top: 50px; }
+
+/* ── NARROW ──
+   The desktop pages are only served above 900px (below it the router sends
+   visitors to /mobile), but the window can still be dragged narrower. */
+@media (max-width: 1000px) {
+    .home-hero { padding: 2.5rem 1.5rem 2rem; }
+    .home-pulse { grid-template-columns: repeat(3, 1fr); }
+    .home-pulse__cell + .home-pulse__cell { border-left: 0; }
+    .home-pulse__cell { border-top: 1px solid rgba(128,128,128,0.12); }
+    .home-content { padding-inline: 1.5rem; }
+    .home-grid-2col { grid-template-columns: 1fr; }
+}

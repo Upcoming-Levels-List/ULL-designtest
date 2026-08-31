@@ -1,6 +1,10 @@
 import { store } from '../main.js';
 import { fetchList } from '../content.js';
-import { embed, levelThumbnail, levelForSlug } from '../util.js';
+import {
+    embed, levelThumbnail, levelForSlug,
+    decorationPercent, verificationPercent, levelStatus,
+    bestRecord, bestRun, recordLink, levelLength, levelId, hasVerifier,
+} from '../util.js';
 import Spinner from '../components/Spinner.js';
 import Footer from '../components/Footer.js';
 
@@ -175,55 +179,28 @@ export default {
             return this.level ? levelThumbnail(this.level) : '';
         },
         hasVerifier() {
-            const v = this.level?.verifier;
-            return !!v && v !== 'none' && v.toLowerCase() !== 'unknown';
+            return hasVerifier(this.level);
         },
         decoration() {
-            return Math.max(0, Math.min(100, Number(this.level?.percentFinished) || 0));
+            return decorationPercent(this.level);
         },
-        // How far anyone has got into the level, from either a from-0 record or
-        // the span of a run. The same measure the list colours level names by.
         verification() {
-            const l = this.level;
-            if (!l) return 0;
-            if (l.isVerified) return 100;
-            const records = (l.records || []).map((r) => Number(r.percent) || 0);
-            const runs = (l.run || []).map((r) => {
-                const parts = String(r.percent).split('-').map(Number);
-                return parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) ? Math.abs(parts[1] - parts[0]) : 0;
-            });
-            return Math.max(0, Math.min(100, Math.max(0, ...records, ...runs)));
+            return verificationPercent(this.level);
         },
-        // Wording matches the list panel; the colour follows the same scale the
-        // list uses for level names, so a level reads the same in both places.
         status() {
-            const l = this.level;
-            if (!l) return { label: '', tone: 'cold' };
-            if (l.isVerified) return { label: 'Verified', tone: 'done' };
-            const pf = this.decoration;
-            const vp = this.verification;
-            if (pf === 100) {
-                const tone = vp >= 60 ? 'red' : vp >= 30 ? 'orange' : 'amber';
-                return { label: 'Being verified', tone };
-            }
-            if (!pf) return { label: 'Layout', tone: 'blue' };
-            return { label: `Decoration ${pf}% done`, tone: pf >= 70 ? 'yellow' : pf >= 30 ? 'green' : 'cyan' };
+            return levelStatus(this.level);
         },
         record() {
-            return (this.level?.records || [])
-                .filter((r) => r.user && r.user !== 'none' && Number(r.percent) > 0)
-                .sort((a, b) => Number(b.percent) - Number(a.percent))[0] || null;
+            return bestRecord(this.level);
         },
         run() {
-            return (this.level?.run || []).find((r) => r.user && r.user !== 'none' && String(r.percent) !== '0') || null;
+            return bestRun(this.level);
         },
         recordLink() {
-            const link = this.record?.link;
-            return link && link !== '#' ? link : '';
+            return recordLink(this.record);
         },
         runLink() {
-            const link = this.run?.link;
-            return link && link !== '#' ? link : '';
+            return recordLink(this.run);
         },
         // The status pill already says what these tags say.
         tags() {
@@ -234,13 +211,12 @@ export default {
         facts() {
             const l = this.level;
             if (!l) return [];
-            const id = l.id === 'private' ? (l.leakID != null ? l.leakID : 'Private') : l.id;
             const frames = typeof l.frameCounter === 'string' ? l.frameCounter.trim() : '';
             return [
                 ['Host', l.author],
                 ['Verifier', this.hasVerifier ? l.verifier : 'Unknown'],
-                ['Level ID', id],
-                l.length ? ['Length', `${Math.floor(l.length / 60)}m ${l.length % 60}s`] : null,
+                ['Level ID', levelId(l)],
+                l.length ? ['Length', levelLength(l)] : null,
                 l.lastUpd ? ['Updated', l.lastUpd] : null,
                 frames ? ['Frame Windows Counter', 'Watch here', frames] : null,
             ].filter(Boolean);

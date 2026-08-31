@@ -215,3 +215,78 @@ export function levelForSlug(levels, slug) {
     const paths = levels.map((l) => l.path);
     return levels.find((l) => levelSlug(l.path, paths) === slug) || null;
 }
+
+// ── Level state ───────────────────────────────────────────────────────────
+// Four readings every page needs and each used to derive for itself: how far
+// the decoration has got, how far anyone has got into the level, what to call
+// that state, and the best record and run behind it. LevelPage.js computed all
+// of this inline; the list panel, upcoming, home and events each computed a
+// different subset a different way. One implementation, shared.
+
+export function decorationPercent(level) {
+    return Math.max(0, Math.min(100, Number(level?.percentFinished) || 0));
+}
+
+// The furthest anyone has got: the highest record set from 0%, or the longest
+// span of a run, whichever reaches further. A verified level is 100 by
+// definition. This is the number the Upcoming Levels page orders by.
+export function verificationPercent(level) {
+    if (!level) return 0;
+    if (level.isVerified) return 100;
+    const records = (level.records || []).map((r) => Number(r.percent) || 0);
+    const runs = (level.run || []).map((r) => {
+        const parts = String(r.percent).split('-').map(Number);
+        return parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) ? Math.abs(parts[1] - parts[0]) : 0;
+    });
+    return Math.max(0, Math.min(100, Math.max(0, ...records, ...runs)));
+}
+
+// { label, tone } for the status pill. The tones are the same progression the
+// list colours level names by, so a level reads the same in the row, in the
+// panel, on its own page and in an events card.
+export function levelStatus(level) {
+    if (!level) return { label: '', tone: 'done' };
+    if (level.isVerified) return { label: 'Verified', tone: 'done' };
+    const pf = decorationPercent(level);
+    const vp = verificationPercent(level);
+    if (pf === 100) {
+        return { label: 'Being verified', tone: vp >= 60 ? 'red' : vp >= 30 ? 'orange' : 'amber' };
+    }
+    if (!pf) return { label: 'Layout', tone: 'blue' };
+    return { label: `Decoration ${pf}% done`, tone: pf >= 70 ? 'yellow' : pf >= 30 ? 'green' : 'cyan' };
+}
+
+// The list stores a placeholder row rather than an empty array when there is no
+// record yet, so "none" and 0 both mean nothing has been set.
+export function bestRecord(level) {
+    return (level?.records || [])
+        .filter((r) => r.user && r.user !== 'none' && Number(r.percent) > 0)
+        .sort((a, b) => Number(b.percent) - Number(a.percent))[0] || null;
+}
+
+export function bestRun(level) {
+    return (level?.run || []).find((r) => r.user && r.user !== 'none' && String(r.percent) !== '0' && String(r.percent) !== '') || null;
+}
+
+// A record's link is '#' when there is no video for it.
+export function recordLink(record) {
+    const link = record?.link;
+    return link && link !== '#' ? link : '';
+}
+
+export function levelLength(level) {
+    const secs = Number(level?.length) || 0;
+    return `${Math.floor(secs / 60)}m ${secs % 60}s`;
+}
+
+// The list shows a private level's leaked ID when one is known.
+export function levelId(level) {
+    if (!level) return '';
+    return level.id === 'private' ? (level.leakID != null ? level.leakID : 'Private') : level.id;
+}
+
+// "none" and "unknown" both mean the verifier is not decided yet.
+export function hasVerifier(level) {
+    const v = level?.verifier;
+    return !!v && v !== 'none' && String(v).toLowerCase() !== 'unknown';
+}

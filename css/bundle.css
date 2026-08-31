@@ -473,15 +473,6 @@ input[type="checkbox"] {
     margin: 0;
 }
 
-.worldrecord {
-    margin-bottom: 1rem;
-}
-
-.best-record .type-body,
-.best-run .type-body {
-    margin-bottom: 1rem;
-}
-
 /* Shitty - is not used */
 
 .shitty .surface {
@@ -517,6 +508,336 @@ header.new {
     height: 3.5rem;
     background-color: var(--color-on-background);
     color: var(--color-background);
+}
+
+/* ── css/ull-v2.css ── */
+/* ULL v2 — the shared component layer extracted from the level page.
+
+   The /level/<slug> page already solved most of this site's design problems in
+   one file: neutral tokens that survive both themes, uppercase micro-labels,
+   flat cards on a tinted fill, one status scale, meters, and no inline styles.
+   Everything below is that vocabulary lifted out of css/pages/level-page.css so
+   the home, list, leaderboard, upcoming, pending and events pages can speak it
+   too, instead of each re-inventing a card and a heading.
+
+   Nothing here invents data. Every value a component displays already exists in
+   data/<level>.json or is derived from it the way the list already derives it.
+   The design/ directory holds the static templates these components came from.
+
+   Scope: anything inside an element carrying .ull2. Drop the class on <main>.
+
+   Every rule below is written as `.ull2 .u-thing` rather than `.u-thing`, and
+   that is deliberate. The link reset `.ull2 a { color: inherit }` scores 0,1,1;
+   an unscoped `.u-btn { color: var(--color-on-primary) }` scores 0,1,0 and
+   silently loses to it, so a filled button renders with body-text colour on its
+   own primary fill. css/pages/level-page.css has this exact bug today: its
+   `.level-page a { color: inherit }` beats `.lvl-link`, which is why the filled
+   "Showcase video" button on /level/<slug> is not drawing in --color-on-primary.
+   Scoping every component one level deeper puts them all at 0,2,0 and settles
+   the cascade. */
+
+.ull2 {
+    /* Neutral greys — one set of values reads correctly on both grounds, which
+       is why the level page never needed a .root.dark override for its cards. */
+    --u-line: rgba(128, 128, 128, 0.22);
+    --u-line-2: rgba(128, 128, 128, 0.38);
+    --u-fill: rgba(128, 128, 128, 0.09);
+    --u-fill-2: rgba(128, 128, 128, 0.13);
+    --u-accent: color-mix(in srgb, var(--color-primary) 45%, white);
+
+    --u-r: 0.75rem;
+    --u-r-sm: 0.5rem;
+    --u-gap: 0.85rem;
+
+    font-family: 'Lexend Deca', sans-serif;
+}
+.root.dark .ull2 { --u-accent: color-mix(in srgb, var(--color-primary) 75%, black); }
+.ull2, .ull2 * { box-sizing: border-box; }
+.ull2 a { color: inherit; text-decoration: none; }
+/* css/typography.css hangs ::before/::after spacers off every heading and
+   paragraph to trim leading. These components set their own line-heights, so
+   the spacers only add stray gaps. */
+.ull2 h1::before, .ull2 h1::after, .ull2 h2::before, .ull2 h2::after,
+.ull2 h3::before, .ull2 h3::after, .ull2 h4::before, .ull2 h4::after,
+.ull2 p::before, .ull2 p::after, .ull2 dt::before, .ull2 dt::after { display: none; }
+
+/* ── Eyebrow ──────────────────────────────────────────────────────────────
+   The single section heading on the site. Replaces .home-card__title,
+   .pending-card__title, .events-info-label and four <h3> treatments, all of
+   which said the same thing in four sizes and two colours. */
+.ull2 .u-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.9rem;
+    font-family: inherit;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    opacity: 0.45;
+}
+.ull2 .u-eyebrow--lg { font-size: 0.7rem; }
+.ull2 .u-count {
+    padding: 0.12rem 0.42rem;
+    border-radius: 1rem;
+    background: var(--u-fill-2);
+    font-size: 0.62rem;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────
+   Flat fill + hairline. No shadow, no hover-scale: the pending page's
+   transform: scale(1.006) on hover nudges its neighbours and reads as a bug. */
+.ull2 .u-card {
+    padding: 1.15rem 1.25rem;
+    border-radius: var(--u-r);
+    background: var(--u-fill);
+    border: 1px solid var(--u-line);
+}
+.ull2 .u-card--pad { padding: 1.5rem 1.6rem; }
+.ull2 a.u-card, .ull2 button.u-card { display: block; width: 100%; text-align: left; cursor: pointer; transition: border-color 120ms ease; }
+.ull2 a.u-card:hover, .ull2 button.u-card:hover { border-color: var(--u-line-2); }
+
+/* ── Status pill ──────────────────────────────────────────────────────────
+   One scale, shared with the list's level-name colouring, so a level reads the
+   same in the row, in the panel, on its own page and in an events card.
+   Replaces "Status: Decoration being made - 80% done" set as body copy. */
+.ull2 .u-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.28rem 0.72rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    border: 1px solid currentColor;
+}
+.ull2 .u-pill i { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.ull2 .u-pill--done { color: #9d9d9d; }
+.ull2 .u-pill--red { color: #ff5555; }
+.ull2 .u-pill--orange { color: #ff6622; }
+.ull2 .u-pill--amber { color: #ffaa44; }
+.ull2 .u-pill--yellow { color: #ffee55; }
+.ull2 .u-pill--green { color: #55ee55; }
+.ull2 .u-pill--cyan { color: #33dddd; }
+.ull2 .u-pill--blue { color: #5599ff; }
+.root.dark .ull2 .u-pill--done { color: #6f6f6f; }
+.root.dark .ull2 .u-pill--red { color: #cc4444; }
+.root.dark .ull2 .u-pill--orange { color: #cc511b; }
+.root.dark .ull2 .u-pill--amber { color: #b87a24; }
+.root.dark .ull2 .u-pill--yellow { color: #9a9022; }
+.root.dark .ull2 .u-pill--green { color: #2f9c2f; }
+.root.dark .ull2 .u-pill--cyan { color: #1d8f8f; }
+.root.dark .ull2 .u-pill--blue { color: #3a6cb8; }
+
+/* ── Chip ─────────────────────────────────────────────────────────────────
+   Tags, creators, filter values. Replaces .tag and .lvl-creator. */
+.ull2 .u-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.4rem;
+    font-size: 0.74rem;
+    font-weight: 500;
+    line-height: 1.3;
+    background: var(--u-fill);
+    border: 1px solid var(--u-line);
+}
+.ull2 .u-chip--round { border-radius: 2rem; }
+.ull2 .u-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+/* ── Rank chip ────────────────────────────────────────────────────────────
+   Cross-list placement. Currently rendered as dimmed body text
+   ("#12 in Main List · #7 in Future List") in three different components. */
+.ull2 .u-rank {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--u-r-sm);
+    background: color-mix(in srgb, var(--color-background) 65%, transparent);
+    border: 1px solid var(--u-line);
+    transition: border-color 120ms ease, transform 120ms ease;
+}
+.ull2 .u-rank:hover { border-color: var(--u-line-2); transform: translateY(-1px); }
+.ull2 .u-rank--lead {
+    background: linear-gradient(150deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 55%, white) 130%);
+    border-color: transparent;
+    color: var(--color-on-primary);
+}
+.ull2 .u-rank--lead:hover { border-color: transparent; }
+.ull2 .u-rank__n { font-size: 1.35rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.ull2 .u-rank__l { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; white-space: nowrap; }
+.ull2 .u-rank--lead .u-rank__l { opacity: 0.85; }
+.ull2 .u-ranks { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+/* ── Meter ────────────────────────────────────────────────────────────────
+   Decoration and verification progress. Both numbers already drive sorting and
+   colouring; this is the first place either is drawn rather than written out. */
+.ull2 .u-meter + .u-meter { margin-top: 0.9rem; }
+.ull2 .u-meter__top { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.74rem; margin-bottom: 0.4rem; }
+.ull2 .u-meter__top span { opacity: 0.55; }
+.ull2 .u-meter__top b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ull2 .u-bar { display: block; height: 0.35rem; border-radius: 1rem; background: var(--u-fill-2); overflow: hidden; }
+.ull2 .u-bar i { display: block; height: 100%; border-radius: 1rem; background: linear-gradient(90deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 45%, white)); }
+.ull2 .u-bar--alt i { background: linear-gradient(90deg, #e0762c, #ffc46b); }
+/* Inline in a list row: no labels, just the reading. */
+.ull2 .u-bar--thin { height: 0.22rem; }
+
+/* ── Stat ─────────────────────────────────────────────────────────────────
+   A single figure with a label under it. Replaces .page-hero-stat,
+   .upcoming-hero-stat (an exact duplicate of it), and the world-record boxes. */
+.ull2 .u-stat {
+    padding: 0.75rem 0.9rem;
+    border-radius: var(--u-r-sm);
+    background: var(--u-fill);
+    border: 1px solid var(--u-line);
+    min-width: 0;
+}
+.ull2 .u-stat__k { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.45; }
+.ull2 .u-stat__v {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--u-accent);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+.ull2 a.u-stat__v:hover { text-decoration: underline; }
+.ull2 .u-stat__v--none { color: inherit; opacity: 0.28; font-size: 1.05rem; }
+.ull2 .u-stat__u { margin-top: 0.15rem; font-size: 0.7rem; opacity: 0.5; overflow-wrap: anywhere; }
+.ull2 .u-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.6rem; }
+
+/* ── Definition list ──────────────────────────────────────────────────────
+   Level facts. Replaces the .stats <ul> with justify-content: space-evenly,
+   which drifts apart on a wide panel and collides on a narrow one. */
+.ull2 .u-dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: 0.55rem 1rem;
+    font-size: 0.78rem;
+}
+.ull2 .u-dl dt { font-family: inherit; font-size: 0.78rem; font-weight: 500; line-height: inherit; text-transform: none; opacity: 0.45; }
+.ull2 .u-dl dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.ull2 .u-dl a { color: var(--u-accent); text-decoration: underline; text-underline-offset: 0.15em; }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────
+   Home currently gives three side-by-side links .home-btn--primary, so none of
+   them is primary. One filled, the rest ghost. */
+.ull2 .u-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.1rem;
+    border-radius: var(--u-r-sm);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+.ull2 .u-btn:hover { opacity: 0.88; }
+.ull2 .u-btn--ghost { background: transparent; color: var(--color-on-background); border-color: var(--u-line-2); font-weight: 500; }
+.ull2 .u-btn--ghost:hover { background: var(--u-fill-2); opacity: 1; }
+.ull2 .u-btn--block { display: flex; width: 100%; }
+.ull2 .u-btn--ok { color: #3fbf7f; border-color: #3fbf7f; background: rgba(63, 191, 127, 0.1); }
+.ull2 .u-btn:focus-visible { outline: 2px solid var(--u-accent); outline-offset: 2px; }
+
+/* ── Page hero ────────────────────────────────────────────────────────────
+   css/pages/list-hero.css defines .page-hero and .upcoming-hero as two
+   byte-for-byte identical blocks. One component, one rule set. */
+.ull2 .u-phero {
+    grid-column: 1 / -1;
+    overflow-y: unset !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.1rem 1.75rem;
+    border-bottom: 1px solid var(--u-line);
+    background: linear-gradient(105deg, color-mix(in srgb, var(--color-primary) 8%, transparent) 0%, transparent 55%);
+    position: relative;
+}
+.ull2 .u-phero::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 30%, transparent) 100%);
+}
+.ull2 .u-phero__body { flex: 1; min-width: 0; }
+.ull2 .u-phero h1 { margin: 0 0 0.4rem; font-family: inherit; font-size: 1.15rem; font-weight: 700; letter-spacing: normal; line-height: 1.2; }
+.ull2 .u-phero p { margin: 0; max-width: 44rem; font-size: 0.78rem; line-height: 1.55; opacity: 0.5; letter-spacing: normal; }
+.ull2 .u-phero__side { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+/* ── Thumbnail hero ───────────────────────────────────────────────────────
+   The level page's blurred-thumbnail header, reusable: the level detail panel,
+   the events feature cards and the home spotlight all introduce a level and
+   should introduce it the same way. */
+.ull2 .u-hero { position: relative; overflow: hidden; border-radius: var(--u-r); border: 1px solid var(--u-line); }
+.ull2 .u-hero--flush { border-radius: 0; border: 0; border-bottom: 1px solid var(--u-line); }
+.ull2 .u-hero__bg { position: absolute; inset: -3rem; background-size: cover; background-position: center; filter: blur(2.25rem) saturate(1.35); opacity: 0.5; transform: scale(1.1); }
+.root.dark .ull2 .u-hero__bg { opacity: 0.35; }
+.ull2 .u-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--color-background) 50%, transparent) 0%, var(--color-background) 94%),
+        linear-gradient(100deg, color-mix(in srgb, var(--color-primary) 40%, transparent) 0%, transparent 62%);
+}
+.ull2 .u-hero__inner { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; padding: 1.6rem 1.5rem 1.35rem; }
+.ull2 .u-hero__body { flex: 1; min-width: 0; }
+.ull2 .u-hero__title { margin: 0; font-family: inherit; font-size: clamp(1.5rem, 3.2vw, 2.2rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance; }
+.ull2 .u-hero__by { margin: 0.55rem 0 0; font-size: 0.85rem; font-weight: 500; line-height: 1.4; opacity: 0.65; }
+.ull2 .u-hero__by b { font-weight: 600; }
+
+/* ── Row ──────────────────────────────────────────────────────────────────
+   A level or player line: thumbnail, name, secondary line, trailing figure.
+   Pending, upcoming, leaderboard and home all draw a version of this today. */
+.ull2 .u-rows { display: flex; flex-direction: column; }
+.ull2 .u-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--u-r-sm);
+    transition: background-color 100ms ease;
+    min-width: 0;
+}
+.ull2 .u-row:hover { background: var(--u-fill); }
+.ull2 .u-row__lead { flex-shrink: 0; width: 2.1rem; text-align: right; font-size: 0.78rem; font-weight: 700; opacity: 0.4; font-variant-numeric: tabular-nums; }
+.ull2 .u-row__thumb { flex-shrink: 0; width: 4.4rem; height: 2.5rem; border-radius: 0.3rem; object-fit: cover; background: var(--u-fill-2); display: block; }
+.ull2 .u-row__body { flex: 1; min-width: 0; }
+.ull2 .u-row__name { display: block; font-size: 0.85rem; font-weight: 600; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ull2 .u-row__sub { display: block; margin-top: 0.15rem; font-size: 0.72rem; font-weight: 500; opacity: 0.45; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ull2 .u-row__end { flex-shrink: 0; margin-left: auto; font-size: 0.74rem; opacity: 0.5; font-variant-numeric: tabular-nums; }
+
+/* ── Empty state ──────────────────────────────────────────────────────────
+   Currently an emoji and a sentence, written inline at four call sites. */
+.ull2 .u-empty { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 2.5rem 1rem; text-align: center; opacity: 0.35; }
+.ull2 .u-empty__t { font-size: 0.85rem; font-weight: 600; }
+.ull2 .u-empty__d { font-size: 0.78rem; opacity: 0.8; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ull2 .u-rank, .ull2 .u-btn, .ull2 .u-row, .ull2 .u-card { transition: none; }
+    .ull2 .u-rank:hover { transform: none; }
 }
 
 /* ── css/pages/list.css ── */
@@ -693,6 +1014,10 @@ main.page-list--pending .list-container {
     grid-template-columns: 40% 60%;
     height: 100%;
     overflow: hidden;
+    /* main in css/main.css sets column-gap: 2rem. The columns here already add
+       up to 100% and are separated by a border, so the gap pushed the right
+       column 32px past the edge, where overflow: hidden clipped it. */
+    column-gap: 0;
 }
 
 .page-list-new > div {
@@ -705,8 +1030,10 @@ main.page-list--pending .list-container {
 }
 
 
+/* The panel (js/components/List/LevelPanel.js) carries its own padding so its
+   hero can run to the edge of the column, the way it does on /level/<slug>. */
 .page-list-new .level-container-new {
-    padding: 2rem 4rem 2rem 1rem;
+    padding: 0;
 }
 
 
@@ -765,6 +1092,8 @@ main.page-list--pending .list-container {
 
 /* Level sub-info (author | verifier) */
 .level-info {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
@@ -777,6 +1106,23 @@ main.page-list--pending .list-container {
     font-weight: 500;
 }
 
+
+/* Upcoming Levels: the column is ordered by furthest progress, so each row
+   carries the bar that ordering is built from, and the reading itself sits at
+   the end of the row where the eye can run down it. */
+.up-row__bar { margin-top: 0.2rem; width: 12rem; max-width: 100%; }
+.up-row__pct {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 0.75rem;
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+}
+.page-list-new .list .level.active .up-row__bar { background: rgba(255, 255, 255, 0.28); }
+.page-list-new .list .level.active .up-row__bar i { background: #fff; }
 
 /* Reuse list styles within new layout */
 .page-list-new .list {
@@ -831,71 +1177,18 @@ main.page-list--pending .list-container {
     opacity: 0.7;
 }
 
-.page-list-new .level-container-new .level {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    width: 100%;
-    max-width: none;
-}
-
-.page-list-new .level-container-new .level .level-authors {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    grid-auto-rows: max-content;
-    gap: 1rem;
-}
-.page-list-new .level-container-new .level .video {
-    aspect-ratio: 16/9;
-}
-.page-list-new .level-container-new .level .stats {
-    display: flex;
-    justify-content: space-evenly;
-    text-align: center;
-    gap: 2rem;
-}
-.page-list-new .level-container-new .level .stats li {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* Leaderboard overrides */
-.page-list-new.page-leaderboard {
-    grid-template-columns: 1fr 1.5fr;
-    max-width: none;
-    margin: 0;
-    column-gap: 0;
-    grid-template-rows: 1fr;
-}
+/* Leaderboard: same two-column shell as the lists, but with a header row for
+   the shared hero. Its own look lives in css/pages/leaderboard.css. */
 .page-list-new.page-leaderboard .list-container-new {
-    padding: 1.5rem 0 1.5rem 1rem;
+    padding: 1.5rem 0 0 1rem;
     border-right: 1px solid rgba(128, 128, 128, 0.15);
     overflow-y: auto;
     scrollbar-width: thin;
 }
 .page-list-new.page-leaderboard .level-container-new {
-    padding: 2rem;
+    padding: 0;
     overflow-y: auto;
     scrollbar-width: thin;
-}
-.page-leaderboard .search-row--leaderboard {
-    margin-left: 20px;
-    margin-right: 20px;
-}
-.page-leaderboard .search-row--leaderboard .search-new {
-    max-width: 100%;
-}
-.page-leaderboard .list .level button {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: calc(100% - 20px);
-}
-.page-list-new.page-leaderboard .level-container-new .level {
-    max-width: none;
-    width: 100%;
 }
 
 /* Shitty (legacy) */
@@ -1152,99 +1445,145 @@ main.page-list--pending .list-container {
 .home-page h3::before, .home-page h3::after,
 .home-page h4::before, .home-page h4::after { display: none; }
 
-/* ── HERO ── */
+/* ── HERO ──
+   Was a 75vh centred block, so the first thing below the fold on a level list
+   was still not a level. Left-aligned and cut to the height of its own content;
+   the count strip and the top of the list now sit in the space it gave back. */
 .home-hero {
-    height: 75vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 2rem;
-    background: radial-gradient(ellipse 70% 50% at 50% -5%, rgba(102,10,239,0.14) 0%, transparent 65%);
-    border-bottom: 1px solid rgba(128,128,128,0.1);
-    position: relative;
+    padding: 3.5rem 2.5rem 2.5rem;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 60%);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
 }
 .home-hero-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.5rem;
-    max-width: 640px;
+    align-items: flex-start;
+    gap: 0;
+    max-width: 46rem;
+}
+.home-hero-eyebrow {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    opacity: 0.4;
 }
 .home-hero-title {
-    font-size: 3.5rem;
+    margin-top: 0.7rem !important;
+    font-size: clamp(2rem, 4.2vw, 3.1rem);
     font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
+    line-height: 1;
+    letter-spacing: -0.035em;
     color: var(--color-on-background);
 }
 .home-hero-desc {
-    font-size: 1rem;
-    font-weight: 400;
+    margin-top: 1rem !important;
+    max-width: 40rem;
+    font-size: 0.92rem;
+    font-weight: 500;
     line-height: 1.65;
     color: var(--color-on-background);
-    opacity: 0.5;
-    max-width: 500px;
+    opacity: 0.6;
 }
 .home-hero-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 0.25rem;
+    margin-top: 1.6rem;
 }
-.home-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.65rem 1.4rem;
-    border-radius: 0.5rem;
-    font-family: "Lexend Deca", sans-serif;
-    font-size: 0.88rem;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition: opacity 120ms ease, transform 120ms ease;
-    border: none;
-    line-height: 1;
-}
-.home-btn--primary {
-    background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 70%, #a855f7) 100%);
-    color: white;
-}
-.home-btn--primary:hover { opacity: 0.85; transform: translateY(-1px); }
 
 .home-hero-social {
     display: flex;
-    gap: 0.6rem;
-    justify-content: center;
+    gap: 0.45rem;
+    margin-top: 1.1rem;
 }
 .home-social-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.45rem 0.9rem;
-    border-radius: 0.4rem;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 2rem;
     font-family: "Lexend Deca", sans-serif;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 500;
     text-decoration: none;
     color: var(--color-on-background);
-    background: rgba(128,128,128,0.07);
-    border: 1px solid rgba(128,128,128,0.15);
+    border: 1px solid rgba(128,128,128,0.22);
     opacity: 0.6;
-    transition: opacity 100ms ease;
+    transition: opacity 100ms ease, border-color 100ms ease;
 }
-.home-social-btn:hover { opacity: 1; }
-.home-social-btn img { width: 1rem; height: 1rem; }
+.home-social-btn:hover { opacity: 1; border-color: rgba(128,128,128,0.38); }
+.home-social-btn img { width: 0.95rem; height: 0.95rem; }
+
+/* ── COUNT STRIP ──
+   Five readings of the list as it stands, each one a length of an array the
+   page already holds. Three of them are the pages they count. */
+.home-pulse {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid rgba(128,128,128,0.15);
+}
+.home-pulse__cell {
+    display: block;
+    padding: 1.1rem 1.5rem;
+    color: var(--color-on-background);
+    text-decoration: none;
+    transition: background-color 120ms ease;
+}
+a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
+.home-pulse__cell + .home-pulse__cell { border-left: 1px solid rgba(128,128,128,0.15); }
+.home-pulse__cell b {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+.home-pulse__cell span {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    opacity: 0.4;
+}
+.home-pulse__cell--lead b { color: color-mix(in srgb, var(--color-primary) 45%, white); }
+.root.dark .home-pulse__cell--lead b { color: color-mix(in srgb, var(--color-primary) 75%, black); }
+
+/* ── SECTIONS ── */
+.home-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+.home-section__head .u-eyebrow { margin-bottom: 0; }
+.home-more {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-on-background);
+    opacity: 0.5;
+    white-space: nowrap;
+}
+.home-more:hover { opacity: 1; text-decoration: underline; }
+
+/* ── TOP OF THE LIST ── */
+.home-top { display: flex; flex-direction: column; gap: 0.2rem; }
+.home-top__row { border: 1px solid transparent; }
+.home-top__row:hover { border-color: rgba(128,128,128,0.22); }
 
 /* ── CONTENT ── */
 .home-content {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 3rem 2rem 3rem;
+    padding: 2rem 2rem 2.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 /* ── CARD ── */
@@ -1252,23 +1591,10 @@ main.page-list--pending .list-container {
     background: var(--color-background-hover);
     border: 1px solid rgba(128,128,128,0.15);
     border-radius: 0.75rem;
-    padding: 1.75rem;
-    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    padding: 1.5rem 1.6rem;
+    transition: border-color 150ms ease;
 }
-.home-card:hover {
-    border-color: rgba(128,128,128,0.55);
-    box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
-    transform: scale(1.006);
-}
-.home-card__title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    margin-bottom: 1.25rem;
-}
-.root.dark .home-card__title { color: color-mix(in srgb, var(--color-primary) 65%, black); }
+.home-card:hover { border-color: rgba(128,128,128,0.32); }
 
 /* ── 2-COL GRID ── */
 .home-grid-2col {
@@ -1289,13 +1615,11 @@ main.page-list--pending .list-container {
     overflow: hidden;
 }
 .home-changes {
-    height: 354px;
+    flex: 1;
+    min-height: 0;
+    max-height: 22rem;
     overflow-y: auto;
     scrollbar-width: thin;
-    border: 1px solid rgba(128,128,128,0.1);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    background: rgba(128,128,128,0.03);
 }
 .home-changes-date {
     display: flex;
@@ -1307,10 +1631,9 @@ main.page-list--pending .list-container {
     letter-spacing: 0.08em;
     color: var(--color-on-background);
     opacity: 0.35;
-    margin: 1.25rem 0 0.85rem;
+    margin: 0.9rem 0 0.45rem;
 }
 .home-changes-date:first-child { margin-top: 0; }
-.home-changes-date::before,
 .home-changes-date::after {
     content: '';
     flex: 1;
@@ -1318,15 +1641,40 @@ main.page-list--pending .list-container {
     background: rgba(128,128,128,0.18);
 }
 .home-change {
+    display: grid;
+    grid-template-columns: 0.55rem 1fr;
+    gap: 0.7rem;
     font-size: 0.8rem;
-    line-height: 1.65;
-    padding: 0.15rem 0;
+    line-height: 1.55;
+    padding: 0.3rem 0;
     color: var(--color-on-background);
 }
+.home-change__dot {
+    margin-top: 0.5rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.3;
+}
+.home-change__dot.is-up { background: #55ee55; opacity: 0.85; }
+.home-change__dot.is-down { background: #ff6622; opacity: 0.85; }
+.home-change__dot.is-new { background: var(--color-primary); opacity: 1; }
+.root.dark .home-change__dot.is-up { background: #2f9c2f; }
+.root.dark .home-change__dot.is-down { background: #cc511b; }
 .home-change .dim { opacity: 0.45; }
 .home-change strong { font-weight: 600; }
 
 /* ── EDITORS DESC ── */
+.home-editors-group {
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.3;
+    margin: 0.9rem 0 0.3rem;
+}
+.home-editors-group:first-child { margin-top: 0; }
 .home-editors-desc {
     font-size: 0.78rem;
     font-weight: 400;
@@ -1336,218 +1684,7 @@ main.page-list--pending .list-container {
     margin-bottom: 1rem !important;
 }
 
-/* ── LEVEL CARD SHARED (LotM + CTV) ── */
-.home-level-period {
-    display: inline-block;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    background: rgba(102,10,239,0.1);
-    padding: 0.15rem 0.55rem;
-    border-radius: 2rem;
-    margin-bottom: 0.85rem;
-}
-.root.dark .home-level-period { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.home-level-name {
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: var(--color-on-background);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 5px;
-}
-.home-level-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-.home-level-thumb {
-    flex-shrink: 0;
-    width: 120px;
-    aspect-ratio: 16/9;
-    border-radius: 0.4rem;
-    background: rgba(128,128,128,0.08);
-    border: 1px solid rgba(128,128,128,0.12);
-    overflow: hidden;
-}
-.home-level-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.home-level-meta { display: flex; flex-direction: column; min-width: 0; }
-.home-level-info {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    font-size: 0.75rem;
-}
-.home-level-rank {
-    font-weight: 700;
-    color: var(--color-on-background);
-    opacity: 0.35;
-}
-.home-level-author {
-    font-weight: 400;
-    color: var(--color-on-background);
-    opacity: 0.5;
-}
-.home-level-sep {
-    color: var(--color-on-background);
-    opacity: 0.2;
-}
-.home-level-id {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    font-variant-numeric: tabular-nums;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    background: rgba(102,10,239,0.12);
-    padding: 0.12rem 0.45rem;
-    border-radius: 0.3rem;
-    border: 1px solid rgba(102,10,239,0.2);
-}
-.root.dark .home-level-id { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-
-/* ── RECORD ROWS ── */
-.home-record-box {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    border: 1px solid rgba(128,128,128,0.1);
-    border-radius: 0.5rem;
-    padding: 0.35rem;
-    background: rgba(128,128,128,0.03);
-}
-.home-record-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-}
-.home-record-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.6rem;
-    border-radius: 0.4rem;
-    text-decoration: none;
-    transition: background 100ms ease;
-    border: 1px solid transparent;
-    cursor: pointer;
-}
-.home-record-row:hover {
-    background: rgba(128,128,128,0.06);
-    border-color: rgba(128,128,128,0.1);
-}
-.home-record-pct {
-    font-size: 1rem;
-    font-weight: 700;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    min-width: 5rem;
-    font-variant-numeric: tabular-nums;
-}
-.root.dark .home-record-pct { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.home-record-player {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--color-on-background);
-    flex: 1;
-}
-.home-record-label {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-on-background);
-    opacity: 0.25;
-    white-space: nowrap;
-}
-
-/* ── CTV / DISCORD BUTTONS ── */
-.home-ctv-card { display: flex !important; flex-direction: column; }
-.home-lotm-card { display: flex !important; flex-direction: column; }
-.home-ctv-btn,
-.home-discord-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-top: auto;
-    padding-top: 1.5rem;
-    align-self: flex-start;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    text-decoration: none;
-    opacity: 0.8;
-    transition: opacity 100ms ease;
-}
-.root.dark .home-ctv-btn,
-.root.dark .home-discord-btn { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.home-ctv-btn:hover,
-.home-discord-btn:hover { opacity: 1; }
-.home-ctv-btn::after { content: ' →'; }
-.home-discord-btn img { width: 0.9rem; height: 0.9rem; margin-right: 3px; }
-
-/* ── EVENTS PAGE ── */
-.events-content { max-width: 1400px; }
-.events-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-    align-items: start;
-}
-.events-lotd-card { grid-column: 1 / 3; }
-.events-lotd-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-top: 0.75rem;
-}
-.events-info-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: color-mix(in srgb, var(--color-primary) 80%, white);
-    margin-bottom: 0.85rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent);
-}
-.events-stat-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-}
-.events-stat-key {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.4;
-    margin-bottom: 0.2rem;
-}
-.events-stat-val {
-    font-size: 0.875rem;
-}
-.events-tags { margin-top: 0.85rem; }
-
-.home-lotd-date {
-    margin-top: 25px;
-    font-size: 0.78rem;
-    opacity: 0.45;
-    font-family: "Lexend Deca", sans-serif;
-    text-align: center;
-}
-
-/* ── PARTNERS ── */
+/* ── PARTNERS (hidden for now) ── */
 .home-partners-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
@@ -1602,111 +1739,157 @@ main.page-list--pending .list-container {
 /* ── FOOTER ── */
 .home-page .site-footer { margin-top: 50px; }
 
-/* ── css/pages/list-hero.css ── */
-/* Shared list page hero */
-.page-list-new.page-with-hero { grid-template-rows: auto 1fr; }
-.page-hero {
-    grid-column: 1 / -1;
-    overflow-y: unset !important;
-    display: flex; align-items: center; justify-content: space-between; gap: 2rem;
-    padding: 1rem 1.25rem 1rem 1.75rem;
-    border-bottom: 1px solid rgba(128,128,128,0.15);
-    background: linear-gradient(105deg, rgba(102,10,239,0.07) 0%, transparent 55%);
-    position: relative;
-}
-.page-hero::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-    background: linear-gradient(180deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 30%, transparent) 100%);
-}
-.page-hero-content { flex: 1; min-width: 0; }
-.page-hero-badge {
-    display: inline-block;
-    font-family: "Lexend Deca", sans-serif; font-size: 0.6rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    background: rgba(102,10,239,0.1); padding: 0.15rem 0.6rem; border-radius: 2rem; margin-bottom: 0.5rem;
-}
-.root.dark .page-hero-badge { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.page-hero h1 {
-    font-family: "Lexend Deca", sans-serif; font-size: 1.15rem; font-weight: 700;
-    letter-spacing: normal;
-    color: var(--color-on-background); line-height: 1.2; margin: 0 0 0.45rem;
-}
-.page-hero h1::before, .page-hero h1::after { display: none; }
-.page-hero p {
-    font-family: "Lexend Deca", sans-serif; font-size: 0.78rem; letter-spacing: normal;
-    color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 700px;
-}
-.page-hero p::before, .page-hero p::after { display: none !important; }
-.page-hero-stat {
-    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; text-align: center;
-    padding: 0.6rem 1.2rem; border-radius: 0.65rem;
-    background: rgba(128,128,128,0.06); border: 1px solid rgba(128,128,128,0.12);
-    margin-right: 45px;
-}
-.page-hero-stat-value {
-    font-family: "Lexend Deca", sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-}
-.root.dark .page-hero-stat-value { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.page-hero-stat-label {
-    font-family: "Lexend Deca", sans-serif; font-size: 0.58rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.4; margin-top: 0.25rem;
+/* ── NARROW ──
+   The desktop pages are only served above 900px (below it the router sends
+   visitors to /mobile), but the window can still be dragged narrower. */
+@media (max-width: 1000px) {
+    .home-hero { padding: 2.5rem 1.5rem 2rem; }
+    .home-pulse { grid-template-columns: repeat(3, 1fr); }
+    .home-pulse__cell + .home-pulse__cell { border-left: 0; }
+    .home-pulse__cell { border-top: 1px solid rgba(128,128,128,0.12); }
+    .home-content { padding-inline: 1.5rem; }
+    .home-grid-2col { grid-template-columns: 1fr; }
 }
 
-/* Upcoming Levels Hero */
+/* ── css/pages/events.css ── */
+/* Events — js/pages/Events.js.
+
+   The page used to borrow .info-hero, .info-content and .home-card from two
+   other pages, so editing the home page edited this one. It now owns its
+   layout, and its three features share one block rather than three: Level of
+   the Day at full width, the other two side by side beneath it. */
+
+.events-page {
+    display: block;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    font-family: "Lexend Deca", sans-serif;
+}
+.events-page, .events-page * { box-sizing: border-box; }
+.events-page h1, .events-page h2, .events-page h3, .events-page p { margin: 0; padding: 0; }
+.events-page h1::before, .events-page h1::after,
+.events-page h2::before, .events-page h2::after,
+.events-page h3::before, .events-page h3::after,
+.events-page p::before, .events-page p::after { display: none; }
+
+/* ── Hero ── */
+.events-hero {
+    padding: 2.25rem 2.5rem 1.75rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 62%);
+}
+.events-hero h1 {
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+.events-hero p {
+    max-width: 38rem;
+    margin-top: 0.7rem !important;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    opacity: 0.5;
+}
+
+/* ── Features ── */
+.events-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.75rem 2.5rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.events-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.events-feature {
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: rgba(128, 128, 128, 0.09);
+}
+.events-feature .u-hero {
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+}
+.events-feature .u-hero__inner { padding: 1.4rem 1.5rem 1.2rem; }
+.events-feature--sm .u-hero__title { font-size: clamp(1.2rem, 2.4vw, 1.5rem); }
+
+/* What differs between the three features is the label and the date, which is
+   exactly what differs about them. */
+.events-tag {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+}
+.events-tag b {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: color-mix(in srgb, var(--color-primary) 45%, white);
+}
+.root.dark .events-tag b { color: color-mix(in srgb, var(--color-primary) 75%, black); }
+.events-tag span { font-size: 0.68rem; opacity: 0.45; font-variant-numeric: tabular-nums; }
+
+.events-cols {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.25rem;
+    padding: 1.15rem 1.5rem 1.35rem;
+}
+.events-single {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.15rem 1.5rem 1.35rem;
+}
+.events-chips { margin-top: 1rem; }
+.events-btn-icon { width: 0.9rem; height: 0.9rem; }
+
+@media (max-width: 1100px) {
+    .events-hero { padding: 2rem 1.5rem 1.5rem; }
+    .events-body { padding: 1.5rem 1.5rem 2rem; }
+    .events-pair, .events-cols { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── css/pages/list-hero.css ── */
+/* Page-hero placement.
+
+   This file used to define the hero twice: .page-hero for the list pages and
+   .upcoming-hero for Upcoming Levels, identical rule for rule apart from the
+   class prefix. The hero itself is now one component, .u-phero in
+   css/ull-v2.css; all that belongs here is where the pages put it.
+
+   Both grids need a header row above the two scrolling columns. */
+.page-list-new.page-with-hero { grid-template-rows: auto 1fr; }
 .page-upcoming { grid-template-rows: auto 1fr; }
-.upcoming-hero {
-    grid-column: 1 / -1;
-    overflow-y: unset !important;
-    display: flex; align-items: center; justify-content: space-between; gap: 2rem;
-    padding: 1rem 1.25rem 1rem 1.75rem;
-    border-bottom: 1px solid rgba(128,128,128,0.15);
-    background: linear-gradient(105deg, rgba(102,10,239,0.07) 0%, transparent 55%);
-    position: relative;
-}
-.upcoming-hero::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-    background: linear-gradient(180deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 30%, transparent) 100%);
-}
-.upcoming-hero-content { flex: 1; min-width: 0; }
-.upcoming-hero-badge {
-    display: inline-block;
-    font-family: "Lexend Deca", sans-serif; font-size: 0.6rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    background: rgba(102,10,239,0.1); padding: 0.15rem 0.6rem; border-radius: 2rem; margin-bottom: 0.5rem;
-}
-.root.dark .upcoming-hero-badge { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.upcoming-hero h1 {
-    font-family: "Lexend Deca", sans-serif; font-size: 1.15rem; font-weight: 700;
-    letter-spacing: normal;
-    color: var(--color-on-background); line-height: 1.2; margin: 0 0 0.45rem;
-}
-.upcoming-hero h1::before, .upcoming-hero h1::after { display: none; }
-.upcoming-hero p {
-    font-family: "Lexend Deca", sans-serif; font-size: 0.78rem; letter-spacing: normal;
-    color: var(--color-on-background); opacity: 0.5; line-height: 1.55; margin: 0; max-width: 700px;
-}
-.upcoming-hero p::before, .upcoming-hero p::after { display: none !important; }
-.upcoming-hero-stat {
-    flex-shrink: 0; display: flex; flex-direction: column; align-items: center; text-align: center;
-    padding: 0.6rem 1.2rem; border-radius: 0.65rem;
-    background: rgba(128,128,128,0.06); border: 1px solid rgba(128,128,128,0.12);
-    margin-right: 45px;
-}
-.upcoming-hero-stat-value {
-    font-family: "Lexend Deca", sans-serif; font-size: 1.5rem; font-weight: 700; line-height: 1;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-}
-.root.dark .upcoming-hero-stat-value { color: color-mix(in srgb, var(--color-primary) 65%, black); }
-.upcoming-hero-stat-label {
-    font-family: "Lexend Deca", sans-serif; font-size: 0.58rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.4; margin-top: 0.25rem;
-}
+
+/* The sidebar toggle floats over the top-right of the content on narrower
+   windows; keep the hero's stats clear of it. */
+.page-list-new .u-phero { padding-right: 4rem; }
 
 /* ── css/pages/list-pending.css ── */
-/* ── PENDING PAGE ── */
+/* Pending List — js/pages/ListPending.js.
+
+   Was a lilac #c084fc headline that matched nothing else on the site, one tall
+   card beside a stack of three (which made placements look more important by
+   accident of column width), and rows that lifted their neighbours on hover.
+   Now: theme-derived colour, four equal lanes tinted by what they mean, and
+   the pending placement spelled out beside each name. */
+
 .page-pending {
     display: block;
     flex: 1;
@@ -1721,106 +1904,138 @@ main.page-list--pending .list-container {
 .page-pending h3::before, .page-pending h3::after,
 .page-pending h4::before, .page-pending h4::after { display: none; }
 
-/* Hero */
+/* ── Hero ── */
 .pending-hero {
-    text-align: center;
-    padding: 3rem 2rem 2.5rem;
-    background: linear-gradient(180deg, rgba(102,10,239,0.15) 0%, transparent 100%);
-    border-bottom: 1px solid rgba(128,128,128,0.15);
-}
-.root.dark .pending-hero {
-    background: linear-gradient(180deg, rgba(62,0,249,0.08) 0%, transparent 100%);
+    padding: 2.25rem 2.5rem 1.75rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 62%);
 }
 .page-pending .pending-hero h1 {
-    font-size: 2rem;
+    font-size: 1.9rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    color: #c084fc;
-    margin-bottom: 0.75rem !important;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--color-on-background);
 }
 .pending-hero p {
-    max-width: 500px;
-    margin: 0 auto;
+    max-width: 38rem;
+    margin-top: 0.7rem !important;
     font-size: 0.85rem;
     font-weight: 400;
     color: var(--color-on-background);
     opacity: 0.5;
-    line-height: 1.7;
+    line-height: 1.65;
 }
+.pending-counts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.35rem; }
+.pending-count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    background: rgba(128, 128, 128, 0.09);
+    font-size: 0.72rem;
+}
+.pending-count b { font-size: 0.95rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pending-count span { opacity: 0.5; }
 
-/* Content */
+/* ── Content ── */
 .pending-content {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 2.5rem 2rem;
+    padding: 2rem 2.5rem 2.5rem;
 }
 .pending-cards {
     display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
     width: 100%;
     align-items: start;
 }
 
-/* Right column stack */
-.pending-right-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* Card */
+/* ── Lane ──
+   The stripe is the only place a lane's meaning is coloured; the heading takes
+   the same colour and everything else stays neutral. */
 .pending-card {
-    background: var(--color-background-hover);
-    border: 1px solid rgba(128,128,128,0.15);
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem 1.6rem;
     border-radius: 0.75rem;
-    padding: 1.75rem;
-    transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    background: rgba(128, 128, 128, 0.09);
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    transition: border-color 150ms ease;
 }
-.pending-card:hover {
-    border-color: rgba(128,128,128,0.55);
-    box-shadow: 0 0 0 2px rgba(128,128,128,0.18), 0 6px 24px rgba(0,0,0,0.1);
-    transform: scale(1.006);
+.pending-card:hover { border-color: rgba(128, 128, 128, 0.38); }
+.pending-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--pending-tone, transparent);
 }
-.pending-card__title {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: color-mix(in srgb, var(--color-primary) 65%, white);
-    margin-bottom: 1rem;
-}
-.root.dark .pending-card__title {
-    color: color-mix(in srgb, var(--color-primary) 65%, black);
-}
+.pending-card--place  { --pending-tone: #5599ff; }
+.pending-card--move   { --pending-tone: #55ee55; }
+.pending-card--remove { --pending-tone: #ff6622; }
+.pending-card--hold   { --pending-tone: #9d9d9d; }
+.root.dark .pending-card--place  { --pending-tone: #3a6cb8; }
+.root.dark .pending-card--move   { --pending-tone: #2f9c2f; }
+.root.dark .pending-card--remove { --pending-tone: #cc511b; }
+.root.dark .pending-card--hold   { --pending-tone: #6f6f6f; }
+.page-pending .pending-card__title { color: var(--pending-tone); opacity: 1; }
+.page-pending .pending-card__title .u-count { color: var(--color-on-background); opacity: 0.45; }
 
-/* Pending rows */
-.pending-rows { display: flex; flex-direction: column; gap: 0.15rem; }
+/* ── Rows ── */
+.pending-rows { display: flex; flex-direction: column; }
 .pending-row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.6rem;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem;
     border-radius: 0.4rem;
     transition: background-color 100ms ease;
 }
-.pending-row:hover { background: rgba(128,128,128,0.06); }
-.pending-row img { width: 1.3rem; height: 1.3rem; flex-shrink: 0; }
-.pending-row a, .pending-row span {
+.pending-row:hover { background: rgba(128, 128, 128, 0.08); }
+.pending-row__icon {
+    flex-shrink: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+}
+.pending-row__icon--mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    background: rgba(128, 128, 128, 0.13);
+    font-size: 0.8rem;
+    line-height: 1;
+    opacity: 0.6;
+}
+.pending-row__name {
+    flex: 1;
+    min-width: 0;
     font-size: 0.85rem;
     font-weight: 500;
+    line-height: 1.4;
     color: var(--color-on-background);
     text-decoration: none;
-    line-height: 1.4;
-}
-.pending-row a:hover { text-decoration: underline; }
-.pending-row .pending-row__rank {
-    font-size: 0.7rem;
-    font-weight: 500;
-    opacity: 0.4;
-    margin-left: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
+}
+a.pending-row__name:hover { text-decoration: underline; }
+.pending-row__target {
+    flex-shrink: 0;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    font-size: 0.66rem;
+    font-weight: 600;
+    opacity: 0.7;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 .pending-empty {
     font-size: 0.85rem;
@@ -1830,8 +2045,17 @@ main.page-list--pending .list-container {
     padding: 0.75rem 0.6rem;
 }
 
-/* Footer spacing */
 .page-pending .site-footer { margin-top: 3rem; }
+
+@media (max-width: 1000px) {
+    .pending-hero { padding: 2rem 1.5rem 1.5rem; }
+    .pending-content { padding: 1.5rem 1.5rem 2rem; }
+    .pending-cards { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pending-card, .pending-row { transition: none; }
+}
 
 /* ── css/pages/information.css ── */
 /* ── INFO PAGE ── */
@@ -2659,7 +2883,10 @@ a.lvl-wr__v:hover { text-decoration: underline; }
 .lvl-dl__link:hover { text-decoration-thickness: 2px; }
 
 .lvl-links { display: flex; flex-direction: column; gap: 0.45rem; }
-.lvl-link {
+/* Scoped: `.level-page a { color: inherit }` above scores 0,1,1 and would
+   otherwise beat a bare `.lvl-link` at 0,1,0, leaving the filled button with
+   body-text colour on its primary fill — black on #3e00f9 in the light theme. */
+.level-page .lvl-link {
     display: block;
     width: 100%;
     padding: 0.7rem 1rem;
@@ -2674,15 +2901,15 @@ a.lvl-wr__v:hover { text-decoration: underline; }
     cursor: pointer;
     transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
 }
-.lvl-link:hover { opacity: 0.88; }
-.lvl-link--ghost {
+.level-page .lvl-link:hover { opacity: 0.88; }
+.level-page .lvl-link--ghost {
     background: transparent;
     color: var(--color-on-background);
     border-color: var(--lvl-line-strong);
     font-weight: 500;
 }
-.lvl-link--ghost:hover { background: var(--lvl-fill-2); opacity: 1; }
-.lvl-link--copied {
+.level-page .lvl-link--ghost:hover { background: var(--lvl-fill-2); opacity: 1; }
+.level-page .lvl-link--copied {
     color: #3fbf7f;
     border-color: #3fbf7f;
     background: rgba(63, 191, 127, 0.1);
@@ -2695,7 +2922,7 @@ a.lvl-wr__v:hover { text-decoration: underline; }
 }
 .lvl-missing h1 { margin: 0 0 1rem; font-size: 2rem; line-height: 1.15; letter-spacing: -0.02em; }
 .lvl-missing p { margin: 0 0 1.75rem; font-size: 0.9rem; font-weight: 500; line-height: 1.7; opacity: 0.6; }
-.lvl-missing .lvl-link { display: inline-block; width: auto; }
+.level-page .lvl-missing .lvl-link { display: inline-block; width: auto; }
 
 /* ── Narrow ───────────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
@@ -2731,121 +2958,344 @@ a.lvl-wr__v:hover { text-decoration: underline; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .lvl-rank, .lvl-tab, .lvl-link { transition: none; }
+    .lvl-rank, .lvl-tab, .level-page .lvl-link { transition: none; }
     .lvl-rank:hover { transform: none; }
 }
 
-/* ── css/pages/leaderboard.css ── */
-.page-leaderboard-container {
+/* ── css/pages/level-panel.css ── */
+/* The level detail panel — js/components/List/LevelPanel.js.
+
+   /level/<slug> at panel size. The rules here are only the things that differ
+   from the standalone page: the hero is flush with the column rather than a
+   full-bleed banner, the cards sit in a two-up grid instead of a sticky rail,
+   and the video is capped by the column rather than the viewport. Everything
+   else comes from css/ull-v2.css. */
+
+.level-panel {
     display: block;
+    min-width: 0;
 }
-.page-leaderboard {
+.level-panel--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100%;
-    display: grid;
-    grid-template-columns: minmax(24rem, 2fr) 3fr;
-    grid-template-rows: max-content 1fr;
-    column-gap: 2rem;
-    max-width: 80rem;
-    margin: 0 auto;
 }
-.page-leaderboard > div {
-    overflow-y: auto;
-}
-.page-leaderboard .error-container {
-    grid-row: 1;
-    grid-column: 1 / span 2;
-}
-.page-leaderboard .error-container .error {
-    padding: 1rem;
-    background-color: var(--color-error);
-    color: var(--color-on-error);
-}
-.page-leaderboard .board-container,
-.page-leaderboard .player-container {
-    grid-row: 2;
-    padding-block: 2rem;
-}
-.page-leaderboard .board-container {
-    padding-inline: 1rem;
-}
-.page-leaderboard .board {
-    table-layout: auto;
-    display: block;
-    width: 100%;
-}
-.page-leaderboard .board .rank {
-    padding-block: 1rem;
-    text-align: end;
-}
-.page-leaderboard .board .total {
-    padding: 1rem;
-    text-align: end;
-}
-.page-leaderboard .board .user {
-    width: 100%;
-}
-.page-leaderboard .board .user button {
-    background-color: var(--color-background);
-    color: var(--color-on-background);
-    border: none;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    text-align: start;
-    word-break: normal;
-    overflow-wrap: anywhere;
-}
-.page-leaderboard .board .user button:hover {
-    background-color: var(--color-background-hover);
-    color: var(--color-on-background-hover);
-    cursor: pointer;
-}
-.page-leaderboard .board .user.active button {
-    background-color: var(--color-primary);
-    color: var(--color-on-primary);
-}
-.page-leaderboard .player {
+
+.lp-hero .u-hero__inner { padding: 1.75rem 1.75rem 1.4rem; }
+.lp-hero .u-hero__title { font-size: clamp(1.4rem, 2.5vw, 2rem); }
+.lp-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 1rem; }
+
+.lp-body {
+    padding: 1.35rem 1.75rem 2rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding-right: 2rem;
+    gap: 1.25rem;
 }
-.page-leaderboard .player .table {
-    table-layout: fixed;
+
+/* Upcoming Levels ranks by furthest progress and never used to draw it. */
+.lp-lead__top { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
+.lp-lead__top b {
+    display: block;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--u-accent);
+    font-variant-numeric: tabular-nums;
 }
-.page-leaderboard .player .table tr td:not(:last-child) {
-    padding-right: 2rem;
+.lp-lead__top span {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
 }
-.page-leaderboard .player .table p,
-.page-leaderboard .player .table a {
-    padding-block: 1rem;
+.lp-lead__bar { margin-top: 0.9rem; }
+
+.lp-tabs { display: flex; gap: 0.3rem; }
+.lp-tab {
+    padding: 0.4rem 0.9rem;
+    border-radius: 0.45rem;
+    border: 1px solid var(--u-line);
+    background: transparent;
+    color: var(--color-on-background);
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 600;
+    opacity: 0.5;
+    cursor: pointer;
+    transition: opacity 120ms ease, background-color 120ms ease;
 }
-.page-leaderboard .player .table .rank p,
-.page-leaderboard .player .table .score p {
-    text-align: end;
+.lp-tab:hover { opacity: 0.8; }
+.lp-tab.is-on {
+    opacity: 1;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border-color: transparent;
 }
-.page-leaderboard .player .table .level {
+
+.lp-video {
+    display: block;
     width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--u-r);
+    border: 1px solid var(--u-line);
+    background: rgba(0, 0, 0, 0.4);
 }
-.page-leaderboard .player .table a:hover {
-    text-decoration: underline;
-}
-
-/* Shitty */
-
-.shitty .page-leaderboard .board .user button {
-    background-color: transparent;
-    padding: 1rem 0;
-}
-
-
-.shitty .page-leaderboard .board .user button:hover {
-    background-color: #eee;
-    color: black !important;
+.root.dark .lp-video { background: var(--u-fill); }
+.lp-video--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    opacity: 0.35;
 }
 
-.shitty .page-leaderboard .board .user.active button {
-    background-color: transparent;
-    color: orange;
+.lp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.85rem;
+    align-items: start;
+}
+/* The share control keeps its own pill shape (css/components/level-share.css);
+   align it to the filled button beside it. */
+.lp-actions { display: flex; align-items: stretch; gap: 0.5rem; flex-wrap: wrap; }
+.lp-actions .level-share { align-self: auto; padding-inline: 1rem; border-radius: var(--u-r-sm); }
+
+@media (max-width: 1100px) {
+    .lp-hero .u-hero__inner { padding: 1.35rem 1.25rem 1.1rem; }
+    .lp-body { padding: 1.1rem 1.25rem 1.75rem; }
+    .lp-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lp-tab { transition: none; }
+}
+
+/* ── css/pages/leaderboard.css ── */
+/* Leaderboard — js/pages/Leaderboard.js.
+
+   The board and the player profile. Everything generic (cards, pills, stats,
+   the empty state) comes from css/ull-v2.css; only the two columns' own
+   rhythm lives here.
+
+   The rules that used to be in this file styled a .board / .player markup the
+   page stopped rendering some redesigns ago, and were dead. */
+
+.page-list-new.page-leaderboard {
+    grid-template-columns: 40% 60%;
+    max-width: none;
+    margin: 0;
+    column-gap: 0;
+}
+.page-leaderboard .search-row--leaderboard { margin-bottom: 0.85rem; }
+
+/* ── Podium ──
+   The top three, with first place in the middle. Metal tones rather than the
+   list's status scale: this is standing, not progress. */
+.page-leaderboard .lb-podium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    padding: 0 1.25rem 1rem;
+    align-items: end;
+}
+.page-leaderboard .lb-pod {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.9rem 0.5rem;
+    border-radius: 0.75rem;
+    background: rgba(128, 128, 128, 0.09);
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    color: var(--color-on-background);
+    font-family: "Lexend Deca", sans-serif;
+    text-align: center;
+    min-width: 0;
+    cursor: pointer;
+    transition: border-color 120ms ease;
+}
+.page-leaderboard .lb-pod:hover { border-color: rgba(128, 128, 128, 0.45); }
+.page-leaderboard .lb-pod__p {
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
+}
+.page-leaderboard .lb-pod__n {
+    max-width: 100%;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.page-leaderboard .lb-pod__s {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+}
+.page-leaderboard .lb-pod--1 {
+    padding-block: 1.15rem;
+    border-color: color-mix(in srgb, #e0b44a 55%, transparent);
+    background: linear-gradient(180deg, rgba(224, 180, 74, 0.14), transparent 75%);
+}
+.page-leaderboard .lb-pod--1 .lb-pod__s { color: #e0b44a; }
+.page-leaderboard .lb-pod--2 { border-color: color-mix(in srgb, #b9bcc4 45%, transparent); }
+.page-leaderboard .lb-pod--2 .lb-pod__s { color: #b9bcc4; }
+.page-leaderboard .lb-pod--3 { border-color: color-mix(in srgb, #c08457 45%, transparent); }
+.page-leaderboard .lb-pod--3 .lb-pod__s { color: #c08457; }
+.root.dark .page-leaderboard .lb-pod--2 .lb-pod__s { color: #8b8f98; }
+
+/* ── Board ── */
+.page-leaderboard .lb-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    padding: 0 0.9rem 1.5rem;
+}
+.page-leaderboard .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--color-on-background);
+    font-family: "Lexend Deca", sans-serif;
+    text-align: start;
+    cursor: pointer;
+}
+.page-leaderboard .lb-row:hover { background: var(--color-background-hover); }
+.page-leaderboard .lb-row.is-on {
+    background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 62%, white) 100%);
+    color: var(--color-on-primary);
+}
+.page-leaderboard .lb-row__r {
+    flex-shrink: 0;
+    width: 2.4rem;
+    text-align: right;
+    font-size: 0.78rem;
+    font-weight: 700;
+    opacity: 0.4;
+    font-variant-numeric: tabular-nums;
+}
+.page-leaderboard .lb-row.is-on .lb-row__r { opacity: 0.7; }
+.page-leaderboard .lb-row__n {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.page-leaderboard .lb-row__s {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Player ── */
+.page-leaderboard .lb-player {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+    padding: 1.75rem 2rem 2.5rem;
+}
+.page-leaderboard .lb-player--empty { height: 100%; justify-content: center; padding-bottom: 1.75rem; }
+.page-leaderboard .lb-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+}
+.page-leaderboard .lb-head__who { min-width: 0; }
+.page-leaderboard .lb-head__name {
+    margin: 0;
+    font-family: "Lexend Deca", sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+}
+.page-leaderboard .lb-head__name::before,
+.page-leaderboard .lb-head__name::after { display: none; }
+.page-leaderboard .lb-head__sub { margin: 0.5rem 0 0; font-size: 0.8rem; opacity: 0.5; }
+.page-leaderboard .lb-head__sub::before,
+.page-leaderboard .lb-head__sub::after { display: none; }
+.page-leaderboard .lb-total { flex-shrink: 0; text-align: right; }
+.page-leaderboard .lb-total b {
+    display: block;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: color-mix(in srgb, var(--color-primary) 45%, white);
+    font-variant-numeric: tabular-nums;
+}
+.root.dark .page-leaderboard .lb-total b { color: color-mix(in srgb, var(--color-primary) 75%, black); }
+.page-leaderboard .lb-total span {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
+}
+
+/* ── Records ── */
+.page-leaderboard .lb-rec {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.65rem 0.7rem;
+}
+.page-leaderboard .lb-rec + .lb-rec { border-top: 1px solid rgba(128, 128, 128, 0.15); }
+.page-leaderboard .lb-rec:hover { background: rgba(128, 128, 128, 0.06); }
+.page-leaderboard .lb-rec__score {
+    text-align: right;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in srgb, var(--color-primary) 45%, white);
+}
+.root.dark .page-leaderboard .lb-rec__score { color: color-mix(in srgb, var(--color-primary) 75%, black); }
+.page-leaderboard .lb-rec__lvl {
+    min-width: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.page-leaderboard .lb-rec__rank {
+    margin-left: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    opacity: 0.35;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1100px) {
+    .page-leaderboard .lb-player { padding: 1.35rem 1.25rem 2rem; }
+    .page-leaderboard .lb-rec { grid-template-columns: 3.4rem minmax(0, 1fr) auto; gap: 0.6rem; }
 }
 
 /* ── css/pages/mobile.css ── */
@@ -3606,38 +4056,6 @@ border: none;
     background-color: #ccc;
     border-radius: 0;
     color: black;
-}
-
-/* ── css/components/tabs.css ── */
-.tabs {
-    display: flex;
-}
-
-.tabs .tab{
-    border: none;
-    cursor: pointer;
-    font: inherit;
-    padding: 1rem;
-    margin: 0;
-    background-color: transparent;
-    color: var(--color-on-background);
-    border-bottom: 3px solid transparent;
-}
-
-.tabs .tab:first-child {
-    border-top-left-radius: 0.5rem;
-}
-
-.tabs .tab:last-child {
-    border-top-right-radius: 0.5rem;
-}
-
-.tabs .tab.selected{
-    border-bottom: 3px solid var(--color-on-background);
-}
-
-.tabs .tab:hover{
-    background-color: var(--color-background-hover);
 }
 
 /* ── css/components/sidebar.css ── */
