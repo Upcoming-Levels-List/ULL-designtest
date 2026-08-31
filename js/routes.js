@@ -9,6 +9,7 @@ import Mobile from './pages/Mobile.js';
 import Home from './pages/Home.js';
 import UpcomingLevels from './pages/UpcomingLevels.js';
 import Information from './pages/Information.js';
+import LevelPage from './pages/LevelPage.js';
 import Events from './pages/Events.js';
 import NotFound from './pages/NotFound.js';
 
@@ -21,8 +22,10 @@ import MobileHome from './pages/mobile/MobileHome.js';
 import MobileEvents from './pages/mobile/MobileEvents.js';
 
 export default [
-    { path: '/', redirect: '/home' },
-    { path: '/home', component: Home },
+    // "/" is the canonical home URL and renders Home directly — redirecting it
+    // to /home would move every visitor (and Googlebot) off the canonical URL.
+    { path: '/', component: Home },
+    { path: '/home', redirect: '/' },
     { path: '/list', component: List },
     { path: '/leaderboard', component: Leaderboard },
     { path: '/pending', component: ListPending },
@@ -30,6 +33,8 @@ export default [
     { path: '/listfuture', component: ListFuture },
     { path: '/upcoming', component: UpcomingLevels },
     { path: '/information', component: Information },
+    // One page per level, pre-rendered by scripts/build-seo.mjs.
+    { path: '/level/:slug', component: LevelPage },
     { path: '/events', component: Events },
     { path: '/generator', component: LevelGenerator },
     { path: '/admin', component: Admin },

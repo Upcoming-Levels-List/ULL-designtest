@@ -4,7 +4,7 @@
 Top 1–100 Extreme Demons in Geometry Dash projected to place on the Demonlist.
 It aims to forecast future rankings, including worthy unrated levels.
 
-🌐 **Website:** https://ull.pages.dev  ·  💬 **Discord:** https://discord.gg/9wVWSgJSe8  ·  𝕏 **X:** [@ull_gd](https://x.com/ull_gd)
+🌐 **Website:** https://ull.pages.dev  ·  💬 **Discord:** https://discord.gg/QRX47v2qyC  ·  𝕏 **X:** [@ull_gd](https://x.com/ull_gd)
 
 > Not affiliated with RobTop Games. These guidelines are adapted from, and heavily
 > rely on, the structure and principles of the Global Demonlist Guidelines — full
@@ -174,6 +174,138 @@ Each level returned by `/api/list` (and related endpoints) has this shape:
 
 ---
 
+## Search & AI visibility
+
+The site is a Vue SPA, so a crawler that does not run JavaScript would otherwise
+see an empty page. `scripts/build-seo.mjs` closes that gap: it writes a real
+static HTML file for every public URL, each with its own `<title>`, meta
+description, canonical link, Open Graph tags, JSON-LD graph and a readable
+no-JavaScript version of the page. Cloudflare Pages serves those files ahead of
+the `/* -> /index.html` fallback in `_redirects`, and `js/main.js` removes the
+static block the moment Vue mounts.
+
+```bash
+node scripts/build-seo.mjs
+```
+
+Generated — **do not edit by hand**:
+
+| Output | What it is |
+|--------|------------|
+| `index.html` (marker regions only) | Home page head + static content |
+| `list/`, `listmain/`, `listfuture/`, `upcoming/`, `pending/`, `leaderboard/`, `events/`, `information/` | One `index.html` per public route |
+| `sitemap.xml` | All public URLs with `lastmod` |
+| `llms.txt` | Plain-text brief for AI crawlers and answer engines |
+| `js/seo-meta.js` | Titles/descriptions for client-side navigations |
+
+### The hourly refresh
+
+`.github/workflows/refresh-content.yml` keeps the pre-rendered HTML in step with
+the live list:
+
+```bash
+node scripts/fetch-data.mjs     # API -> data/_seo-snapshot.json
+node scripts/build-css.mjs      # css/*.css -> css/bundle.css
+node scripts/build-seo.mjs      # snapshot -> static pages
+```
+
+Fetching and generating are **separate steps on purpose**. `fetch-data.mjs`
+writes nothing unless every required endpoint answered and the result passed its
+checks — a minimum level count, no missing paths or names, no duplicate paths,
+and no sudden collapse in list size. `build-seo.mjs` always generates from
+whatever snapshot is committed. So a failed fetch leaves the site exactly as it
+was instead of publishing an empty list, and the build runs offline.
+
+Visitors are never affected by the delay: the Vue app fetches the API on every
+page load. Only the copy that crawlers read is up to an hour behind.
+
+Run `node scripts/fetch-data.mjs --fixture` to build a snapshot from the legacy
+`data/` directory when you have no network.
+
+### Level pages
+
+Every level gets its own URL at `/level/<slug>`, pre-rendered with its
+position, creators, verifier, records, progress and video links, and live in the
+SPA through the `/level/:slug` route.
+
+It is the page strangers arrive on from a search result or a shared link, so it
+carries its own hero rather than the list's chrome (`js/pages/LevelPage.js`,
+`css/pages/level-page.css`):
+
+- a **hero** with the level's own thumbnail blurred behind the title, the byline
+  ("by *host* · verified by *verifier*", or **to be verified by** while the level
+  is unverified), the status pill and the tags;
+- its **placements** in All Levels / Main List / Future List as three cards, each
+  linking to that list;
+- the **video** (Showcase / Verification tabs when both exist) with the creators
+  underneath;
+- a sticky rail of **Progress**, **World records**, **Details** and the actions.
+
+**No fields exist only for this page.** Both progress bars are derived from what
+the API already returns — decoration from `percentFinished`, verification from
+the better of the best from-0 record and the widest run span, which is the same
+`verifyProgress` measure the lists colour level names by. The status pill uses
+that same colour scale, so a level reads the same here as in the list. `Verified`,
+`Verifying`, `Being Verified` and `Layout` are dropped from the tag row because
+the status pill already says them.
+
+`frameCounter` shows up as a **Frame Windows Counter → Watch here** row in
+Details, and the row is omitted entirely when the field is null or blank.
+
+The list panels on All Levels, Main List and Future List each carry an **Open
+Level Page** button on the title row (`.level-open`, in
+`css/components/level-share.css`) — a real `router-link` to `/level/<slug>`, so it
+can also be middle-clicked or copied. The "Share level" control lower down is
+unchanged and still copies the URL rather than navigating.
+
+The slug comes from the level's API `path`, not its name, because **staff rename
+levels regularly and a URL that 404s throws away whatever ranking and inbound
+links it had earned**. `data/_level-registry.json` remembers every slug the site
+has ever published, and `scripts/seo/registry.mjs` decides what each one serves:
+
+| What happened | What the URL does |
+|---------------|-------------------|
+| Level renamed | Nothing — the `path` is unchanged, so the URL is too; only the content updates |
+| The `path` itself edited | The old URL 301s to the new one, matched by name |
+| Level removed | Keeps its page for `GRACE_DAYS` (180) marked `noindex` and saying it is no longer listed, then 301s to `/list` |
+| Level comes back | The retirement is cleared and the page returns |
+
+Nothing is ever deleted from the registry, so a slug can never be silently
+reused for a different level. Redirects are written into the marked block in
+`_redirects`. Run `node js/registry.test.mjs` after touching any of this.
+
+### Stylesheets
+
+`css/bundle.css` is generated by `scripts/build-css.mjs` from the list of
+stylesheets in `index.html`, in that exact order — the cascade depends on it.
+Keep editing the files under `css/`; only the bundle is served. Add or reorder a
+stylesheet in the commented `css:start` block in `index.html`, then re-run the
+script.
+
+### The static block is for crawlers only
+
+A visitor must never see it. The boot shield at the top of `index.html` runs
+before `<body>` is parsed: it marks `<html class="js">`, which an inline rule
+uses to hide `#seo-fallback` outright, and paints the visitor's own theme
+colour so the screen holds that instead of a white or half-styled page while Vue
+loads. `main.js` then removes the block before mounting.
+
+Readers with JavaScript off — which is every AI crawler that matters here — still
+get the full block. `node js/seo.test.mjs` holds Vue back deliberately and
+samples the page throughout the load to prove nothing flashes.
+
+Page copy lives in `scripts/seo/content.mjs` — edit it there and re-run the
+script. Everything in `index.html` **outside** the `seo:head` and `seo:content`
+markers (stylesheets, the Vue template, shared meta) is hand-maintained and
+copied verbatim into every generated page, so re-run the build after touching it.
+
+> The `google-site-verification` meta tag in `index.html` is what keeps the
+> Google Search Console property verified. Do not remove it.
+
+Run `node js/seo.test.mjs` after any change here.
+
+---
+
 ## Deploying
 
 The Worker and its D1 database are managed in the Cloudflare dashboard, not from this
@@ -203,11 +335,15 @@ node worker/worker.unmigrated.test.mjs  # Worker against the pre-migration schem
 node worker/worker.throttle.test.mjs    # auth rate limiter
 node js/leaderboard.test.mjs            # leaderboard scoring vs the /data snapshot
 node js/upcoming.test.mjs               # Upcoming Levels ordering
+node js/util.test.mjs                   # thumbnail URL resolution
+node js/registry.test.mjs               # level-slug guards: renames, removals, redirects
 
 npm i playwright vue@3.2.31 vue-router@4.0.14
 node css/mobile-footer.test.mjs         # mobile footer layout
 node js/list-ui.test.mjs                # benchmark recounting + Return to top
 node scripts/e2e-test.mjs               # home page + admin panel in Chromium
+node js/seo.test.mjs                    # per-URL metadata, crawler + no-JS behaviour
+node js/pending-ui.test.mjs             # Pending List links (desktop + mobile)
 ```
 
 ## Security

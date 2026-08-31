@@ -2,7 +2,7 @@
 export function getYoutubeIdFromUrl(url) {
     if (!url || typeof url !== 'string') return '';
     return url.match(
-        /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/,
+        /.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|live\/|watch\?v=)([^#\&\?]*).*/,
     )?.[1] ?? '';
 }
 
@@ -17,6 +17,31 @@ export function localize(num) {
 
 export function getThumbnailFromId(id) {
     return `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+}
+
+// The image for a video URL, or '' if it is not a YouTube link.
+export function youtubeThumbnail(url) {
+    const id = getYoutubeIdFromUrl(url);
+    return id ? getThumbnailFromId(id) : '';
+}
+
+// Whatever an editor pasted into a thumbnail field. A YouTube link of any shape
+// becomes that video's thumbnail image — the page URL itself is not an image, so
+// using it verbatim renders a broken picture. Anything else (i.ytimg.com,
+// Imgur, …) is already a direct image URL and is passed through untouched.
+export function thumbnailUrl(value) {
+    if (!value || typeof value !== 'string') return '';
+    const url = value.trim();
+    return youtubeThumbnail(url) || url;
+}
+
+// The image to show for a level: its own thumbnail if one is set, otherwise
+// derived from the verification video, then the showcase.
+export function levelThumbnail(level) {
+    if (!level) return '';
+    return thumbnailUrl(level.thumbnail)
+        || youtubeThumbnail(level.verification)
+        || youtubeThumbnail(level.showcase);
 }
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
@@ -146,4 +171,47 @@ export function assignBenchmarkRanks(list, benchmarkMode) {
 // is on, otherwise its position in the full list.
 export function displayRank(level, index, benchmarkMode) {
     return benchmarkMode && level && level.benchmarkRank ? level.benchmarkRank : index + 1;
+}
+
+// ── Level page URLs ─────────────────────────────────────────────────────────
+// A level's API `path` is its stable identity: staff rename levels often, and a
+// rename must not change the URL the level already ranks for. Paths are not
+// URL-safe though ("top 0 (neiro)"), so they are slugified for the address bar.
+
+export function slugify(path) {
+    return String(path ?? '')
+        .toLowerCase()
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 80) || 'level';
+}
+
+// FNV-1a, so the build and the browser derive the same suffix.
+export function shortHash(value) {
+    let h = 0x811c9dc5;
+    const s = String(value);
+    for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return h.toString(36).slice(0, 6);
+}
+
+// Two different paths can slugify to the same string. The one that sorts first
+// keeps the clean slug; the rest get a hash suffix. Sorting rather than list
+// order keeps the assignment stable when ranks move around.
+export function levelSlug(path, allPaths) {
+    const base = slugify(path);
+    if (!allPaths) return base;
+    const clashing = allPaths.filter((p) => slugify(p) === base).sort();
+    return clashing.length > 1 && clashing[0] !== path ? `${base}-${shortHash(path)}` : base;
+}
+
+// The reverse: which level a /level/<slug> URL refers to.
+export function levelForSlug(levels, slug) {
+    if (!slug) return null;
+    const paths = levels.map((l) => l.path);
+    return levels.find((l) => levelSlug(l.path, paths) === slug) || null;
 }

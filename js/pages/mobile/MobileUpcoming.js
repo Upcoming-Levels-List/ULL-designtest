@@ -1,5 +1,5 @@
-import { embed } from '../../util.js';
-import { upcomingScore } from '../../formulas.js';
+import { embed, levelThumbnail } from '../../util.js';
+import { upcomingRanking } from '../../formulas.js';
 import { mobileStore } from './mobileStore.js';
 
 export default {
@@ -18,7 +18,7 @@ export default {
             <div v-for="([level, err], i) in filteredList" :key="i" class="mob-level-row">
                 <button class="mob-level-btn" :class="{ active: lbSelected === i }" @click="lbSelected = lbSelected === i ? -1 : i">
                     <span class="mob-rank">#{{ i + 1 }}</span>
-                    <img v-if="mobileStore.showThumbnails && level" class="mob-thumb" :src="getThumbnail(level)" alt="" />
+                    <img v-if="mobileStore.showThumbnails && level" class="mob-thumb" :src="levelThumbnail(level)" alt="" />
                     <div class="mob-level-info">
                         <div class="mob-level-name">{{ level?.name || \`Error (\${err}.json)\` }}</div>
                         <div class="mob-level-sub" v-if="level">
@@ -61,19 +61,10 @@ export default {
     computed: {
         lbList() {
             if (!mobileStore.rawList.length) return [];
+            // Shared with the desktop page and the baked static content.
+            const ranked = new Set(upcomingRanking(mobileStore.rawList.map(([l]) => l).filter(Boolean)));
             return mobileStore.rawList
-                .filter(([l]) => l && !l.isVerified)
-                .filter(([l]) => !((l.records || []).some(r => Number(r.percent) >= 100)))
-                .map(([l, e]) => {
-                    const maxP = Math.max(0, ...((l.records || []).map(r => Number(r.percent) || 0)));
-                    const maxR = Math.max(0, ...((l.run || []).map(r => {
-                        const p = String(r.percent).split('-').map(Number);
-                        return p.length === 2 ? Math.abs(p[1] - p[0]) : 0;
-                    })));
-                    l.rankingScore = upcomingScore(maxP, maxR);
-                    return [l, e];
-                })
-                .filter(([l]) => l.rankingScore > 0)
+                .filter(([l]) => ranked.has(l))
                 .sort((a, b) => b[0].rankingScore - a[0].rankingScore);
         },
         filteredList() {
@@ -83,15 +74,7 @@ export default {
         },
     },
     methods: {
-        getThumbnail(level) {
-            if (level.thumbnail) return level.thumbnail;
-            const yt = url => {
-                if (!url || typeof url !== 'string') return '';
-                const m = url.match(/.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/);
-                return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : '';
-            };
-            return yt(level.verification) || yt(level.showcase) || '';
-        },
+        levelThumbnail,
         getVideo(level) {
             const toStr = v => (v && typeof v === 'string') ? v : '';
             if (!level.showcase) return embed(toStr(level.verification));

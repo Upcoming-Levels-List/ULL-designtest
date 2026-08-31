@@ -1,7 +1,7 @@
 ﻿import { store } from '../main.js';
-import { embed } from '../util.js';
+import { embed, levelThumbnail } from '../util.js';
 import { fetchList } from '../content.js';
-import { upcomingScore } from '../formulas.js';
+import { upcomingRanking } from '../formulas.js';
 
 import Spinner from '../components/Spinner.js';
 import LevelAuthors from '../components/List/LevelAuthors.js';
@@ -38,7 +38,7 @@ export default {
                     </td>
                     <td class="level" :class="{ 'active': selected === i, 'error': !level }">
                         <button @click="selected = i">
-                            <img v-if="store.thumbnails && level" :src="getThumbnail(level)" class="level-thumbnail" alt="" />
+                            <img v-if="store.thumbnails && level" :src="levelThumbnail(level)" class="level-thumbnail" alt="" />
                             <div class="level-info">
                                 <span class="type-label-lg" :style="store.levelColoring ? getLevelNameStyle(level, selected === i) : {}">{{ level?.name || \`Error (\${err}.json)\` }}</span>
                                 <span v-if="level" class="level-subinfo">WR: {{ getWR(level) }} | Run: {{ getRunString(level) }}</span>
@@ -219,28 +219,19 @@ export default {
             if (level.isFuture) { futureRank++; level.futureRank = futureRank; }
         });
 
-        list.forEach(([level, err]) => {
-            if (err || !level) return;
-            let maxPercent = Math.max(0, ...(level.records || []).map(r => r.percent));
-            let maxRunDiff = 0;
-            if (level.run && level.run.length) {
-                const diffs = level.run.map(r => {
-                    const parts = String(r.percent).split('-').map(Number);
-                    return (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) ? parts[1] - parts[0] : 0;
-                });
-                maxRunDiff = Math.max(0, ...diffs);
-            }
-            level.maxPercent = maxPercent;
-            level.maxRunDifference = maxRunDiff;
-            level.rankingScore = upcomingScore(maxPercent, maxRunDiff);
+        for (const [level, err] of list) {
+            if (err || !level) continue;
             if (this.isOldLevel(level)) {
                 if (!level.tags) level.tags = [];
                 if (!level.tags.includes('Pending Removal')) level.tags.push('Pending Removal');
             }
-        });
+        }
 
+        // Ranked by upcomingRanking so this page, the mobile page and the
+        // baked static content can never drift apart.
+        const ranked = new Set(upcomingRanking(list.map(([level]) => level).filter(Boolean)));
         this.list = list
-            .filter(([level, err]) => level && !level.isVerified && level.rankingScore > 0 && !(level.records || []).some(r => Number(r.percent) >= 100))
+            .filter(([level]) => ranked.has(level))
             .sort((a, b) => b[0].rankingScore - a[0].rankingScore);
 
         this.loading = false;
@@ -274,11 +265,7 @@ export default {
             }
             return bestRun ? bestRun.percent : 'None';
         },
-        getThumbnail(level) {
-            if (level.thumbnail) return level.thumbnail;
-            const extractYT = (url) => { if (!url || typeof url !== 'string') return ''; const m = url.match(/.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/); return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : ''; };
-            return extractYT(level.verification) || extractYT(level.showcase) || '';
-        },
+        levelThumbnail,
         getLevelNameStyle(level, isSelected) {
             if (!level) return {};
             const dark = !this.store.dark;

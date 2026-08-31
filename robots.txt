@@ -1,4 +1,2 @@
 User-agent: *
-Allow: /
-
-Sitemap: https://ull.pages.dev/sitemap.xml
+Disallow: /
