@@ -403,6 +403,9 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 .ull2 .u-phero h1 { margin: 0 0 0.4rem; font-family: inherit; font-size: 1.15rem; font-weight: 700; letter-spacing: normal; line-height: 1.2; }
 .ull2 .u-phero p { margin: 0; max-width: 44rem; font-size: 0.78rem; line-height: 1.55; opacity: 0.5; letter-spacing: normal; }
 .ull2 .u-phero__side { display: flex; gap: 0.5rem; flex-shrink: 0; }
+/* In the hero the label is wider than the figure, so a left-aligned figure sits
+   off to one side of its own box. Centre both against each other. */
+.ull2 .u-phero__side .u-stat { text-align: center; }
 
 /* ── Thumbnail hero ───────────────────────────────────────────────────────
    The level page's blurred-thumbnail header, reusable: the level detail panel,
@@ -534,7 +537,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                 <div><dt>Constraint</dt><dd>No new fields, and no per-level prose anywhere.</dd></div>
                 <div><dt>Untouched</dt><dd>The page structure of All Levels, Main List and Future List. Only their level container is rebuilt.</dd></div>
                 <div><dt>Deleted</dt><dd>63 inline style attributes across these six pages &mdash; 109 counting the three list pages that duplicate each other &mdash; and .upcoming-hero, which repeats .page-hero rule for rule.</dd></div>
-                <div><dt>Not covered</dt><dd>Information, by request. Admin and the generator are staff tools and left alone.</dd></div>
+                <div><dt>Not covered</dt><dd>Information, which has its own deck of four competing templates. Admin and the generator are staff tools and left alone.</dd></div>
             </dl>
         </div>
 

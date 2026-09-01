@@ -1,0 +1,194 @@
+<!--meta
+title: Hub
+tag: answers up front, long reads behind doors
+files: js/pages/Information.js · css/pages/information.css
+state: click "Open the guidelines" to see a door open
+idea: The page answers first and files second. Above the fold: what the list is in three lines, and a map of the site &mdash; eight cards saying which page holds what, which is the thing a first-time visitor actually needs and the thing the page has never had. Below that, three doors sized by weight, and a reference strip. A door opens into a full-screen reader over the page, with the page still underneath, and closes back to exactly where you were. Nothing long is ever <em>on</em> the hub; the hub is a table of contents that happens to answer the easy questions itself.
+weight: Weight is expressed twice over. On the hub the guidelines are a door twice the size of the others, carrying their five groups and a section count, while the two legends are a single quiet strip at the bottom under &ldquo;Reference&rdquo; &mdash; a strip, not a card, so they cannot read as sections. And a door opens to the full viewport, so the rulebook is finally read on a whole screen rather than in a window inside a card.
+cost: Middling. The hub is static markup; the doors need one overlay component with a scroll lock, focus trap and Escape handling, reused three times. The map cards are the only genuinely new content, and they are eight lines of copy.
+watch: An overlay is a modal, and modals hide the page's depth: nothing on the hub tells you how long the guidelines are until you are inside them. It also needs to be deep-linkable (/information?open=guidelines) or a link to a rule cannot be shared, and history has to work &mdash; Back should close the door, not leave the page.
+-->
+<style>
+.mk-hub { position: relative; display: block; overflow-y: auto; height: 100%; }
+.mk-hub input.hub-r { position: absolute; opacity: 0; pointer-events: none; }
+
+.mk-hub .hub-hero { padding: 2.25rem 2.5rem 1.9rem; border-bottom: 1px solid var(--u-line); background: linear-gradient(150deg, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 58%); }
+.mk-hub .hub-hero h1 { margin: 0; font-family: inherit; font-size: 2.1rem; font-weight: 700; line-height: 1.08; letter-spacing: -0.035em; }
+.mk-hub .hub-hero p { margin: 0.8rem 0 0; max-width: 42rem; font-size: 0.88rem; line-height: 1.7; opacity: 0.55; }
+
+.mk-hub .hub-body { padding: 1.9rem 2.5rem 2.5rem; display: flex; flex-direction: column; gap: 1.9rem; }
+
+.mk-hub .hub-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+.mk-hub .hub-mapc { padding: 0.85rem 0.95rem; }
+.mk-hub .hub-mapc b { display: block; font-size: 0.82rem; font-weight: 600; }
+.mk-hub .hub-mapc span { display: block; margin-top: 0.28rem; font-size: 0.72rem; line-height: 1.5; opacity: 0.48; }
+
+.mk-hub .hub-doors { display: grid; grid-template-columns: 1.6fr 1fr; gap: 0.85rem; align-items: start; }
+.mk-hub .hub-door { display: block; width: 100%; text-align: left; padding: 1.5rem 1.6rem; border-radius: var(--u-r); background: var(--u-fill); border: 1px solid var(--u-line); cursor: pointer; color: inherit; font-family: inherit; transition: border-color 120ms ease; }
+.mk-hub .hub-door:hover { border-color: var(--u-line-2); }
+.mk-hub .hub-door h2 { margin: 0.5rem 0 0; font-family: inherit; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.mk-hub .hub-door p { margin: 0.5rem 0 0; font-size: 0.79rem; line-height: 1.65; opacity: 0.5; }
+.mk-hub .hub-door--main { grid-row: span 2; min-height: 15.5rem; display: flex; flex-direction: column; background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 10%, transparent) 0%, var(--u-fill) 65%); }
+.mk-hub .hub-door--main h2 { font-size: 1.75rem; }
+.mk-hub .hub-door--main p { font-size: 0.85rem; max-width: 30rem; }
+.mk-hub .hub-groups { display: grid; gap: 0.1rem; margin: 1.35rem 0 1.25rem; }
+.mk-hub .hub-groups div { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.32rem 0; border-top: 1px solid var(--u-line); font-size: 0.79rem; }
+.mk-hub .hub-groups div span { margin-left: auto; font-size: 0.68rem; opacity: 0.4; font-variant-numeric: tabular-nums; }
+.mk-hub .hub-door--main .u-btn { align-self: flex-start; margin-top: auto; }
+
+.mk-hub .hub-ref { border-radius: var(--u-r); border: 1px dashed var(--u-line-2); padding: 1rem 1.25rem; display: grid; grid-template-columns: 7rem 1fr auto; gap: 1.25rem; align-items: center; }
+.mk-hub .hub-ref + .hub-ref { margin-top: -1.35rem; }
+.mk-hub .hub-refk { font-size: 0.7rem; font-weight: 600; opacity: 0.45; }
+.mk-hub .hub-refb { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.mk-hub .hub-refb i { width: 0.8rem; height: 0.8rem; border-radius: 50%; display: block; }
+.mk-hub .hub-refb em { font-style: normal; font-size: 0.74rem; opacity: 0.4; margin-left: 0.3rem; }
+.mk-hub .hub-open { font-size: 0.74rem; font-weight: 600; opacity: 0.55; white-space: nowrap; cursor: pointer; }
+
+/* ── A door, opened: the reader takes the whole viewport, the hub stays behind it ── */
+.mk-hub .hub-ov { display: none; position: absolute; inset: 0; z-index: 5; background: var(--color-background); flex-direction: column; }
+.mk-hub #hub-ov:checked ~ .hub-ov { display: flex; }
+.mk-hub .hub-ovtop { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.75rem; border-bottom: 1px solid var(--u-line); flex-shrink: 0; }
+.mk-hub .hub-ovtop b { font-size: 0.9rem; font-weight: 700; }
+.mk-hub .hub-ovtop .hub-x { margin-left: auto; cursor: pointer; font-size: 0.75rem; opacity: 0.5; display: flex; align-items: center; gap: 0.4rem; }
+.mk-hub .hub-ovsearch { width: 17rem; padding: 0.42rem 0.75rem; border-radius: var(--u-r-sm); background: var(--u-fill); border: 1px solid var(--u-line); font-size: 0.75rem; opacity: 0.5; }
+.mk-hub .hub-ovbody { flex: 1; min-height: 0; display: grid; grid-template-columns: 16rem minmax(0, 1fr); }
+.mk-hub .hub-ovtoc { border-right: 1px solid var(--u-line); overflow-y: auto; padding: 1.1rem 0; }
+.mk-hub .hub-ovg { padding: 0.9rem 1.4rem 0.3rem; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; }
+.mk-hub .hub-ovg:first-child { padding-top: 0; }
+.mk-hub .hub-ovtoc a { display: block; padding: 0.35rem 1.4rem; font-size: 0.78rem; opacity: 0.5; border-left: 2px solid transparent; }
+.mk-hub .hub-ovtoc a.on { opacity: 1; font-weight: 600; color: var(--u-accent); border-left-color: var(--color-primary); background: var(--u-fill); }
+.mk-hub .hub-ovread { overflow-y: auto; padding: 2rem 3rem 3rem; max-width: 50rem; }
+.mk-hub .hub-ovread h3 { margin: 0.6rem 0 1rem; font-family: inherit; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
+.mk-hub .hub-ovread h4 { margin: 1.7rem 0 0.6rem; font-family: inherit; font-size: 0.92rem; font-weight: 600; }
+.mk-hub .hub-ovread p, .mk-hub .hub-ovread li { font-size: 0.85rem; line-height: 1.8; opacity: 0.72; }
+.mk-hub .hub-ovread p { margin: 0 0 0.9rem; }
+.mk-hub .hub-ovread ul { margin: 0 0 0.9rem; padding-left: 1.1rem; }
+.mk-hub .hub-ovread li { margin-bottom: 0.45rem; }
+.mk-hub .hub-crumb { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--u-accent); }
+</style>
+
+<div class="mk-hub ull2">
+    <input class="hub-r" type="checkbox" id="hub-ov" />
+
+    <section class="hub-hero">
+        <h1>Information</h1>
+        <p>The Upcoming Levels List forecasts which Extreme Demons are about to be verified and placed on the Demonlist. This page says how that is decided, what everything on the site means, and who to ask.</p>
+    </section>
+
+    <div class="hub-body">
+        <div>
+            <div class="u-eyebrow">Where is what</div>
+            <div class="hub-map">
+                <a class="u-card hub-mapc" href="#"><b>All Levels</b><span>Every level with a chance. Ranks here drive leaderboard points.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Main List</b><span>Same order, higher bar: rate-worthy levels only.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Future List</b><span>Levels very likely to be verified soon.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Pending</b><span>Accepted, not yet placed. Expected range and direction.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Upcoming</b><span>Ordered by how close to verification, not by difficulty.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Leaderboard</b><span>Players ranked by what their records are worth.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Events</b><span>Level of the Day and Month, closest to verification.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>A level&rsquo;s page</b><span>Status, progress, records, creators, rank in each tier.</span></a>
+            </div>
+        </div>
+
+        <div class="hub-doors">
+            <label class="hub-door hub-door--main" for="hub-ov">
+                <div class="u-eyebrow" style="margin:0">The rules</div>
+                <h2>Guidelines</h2>
+                <p>How records are accepted, how levels are chosen and positioned, what the staff may and may not do. Thirteen sections, and the answer to most arguments.</p>
+                <div class="hub-groups">
+                    <div>General<span>2</span></div>
+                    <div>Acceptance of Records<span>4</span></div>
+                    <div>Level Placement<span>3</span></div>
+                    <div>Content Policy<span>2</span></div>
+                    <div>Technical Support<span>2</span></div>
+                </div>
+                <span class="u-btn">Open the guidelines</span>
+            </label>
+
+            <button class="hub-door" type="button">
+                <div class="u-eyebrow" style="margin:0">Answers &middot; 14 questions</div>
+                <h2>FAQ</h2>
+                <p>How to submit a record and what proof it needs, how a level gets listed, how leaderboard points are worked out, why a total changes on its own.</p>
+            </button>
+
+            <button class="hub-door" type="button">
+                <div class="u-eyebrow" style="margin:0">Who to talk to &middot; 12 people</div>
+                <h2>Staff &amp; contact</h2>
+                <p>The team that maintains the list, and where to take a record, a correction, a site bug or a complaint.</p>
+            </button>
+        </div>
+
+        <div>
+            <div class="u-eyebrow">Reference</div>
+            <div class="hub-ref">
+                <div class="hub-refk">Level colouring</div>
+                <div class="hub-refb">
+                    <i style="background:#5599ff"></i><i style="background:#33dddd"></i><i style="background:#55ee55"></i><i style="background:#ffee55"></i><i style="background:#ffaa44"></i><i style="background:#ff6622"></i><i style="background:#ff5555"></i><i style="background:#bbbbbb"></i><i style="background:#ffffff;border:1px solid #555"></i>
+                    <em>layout &rarr; decorated &rarr; verified &rarr; rated</em>
+                </div>
+                <div class="hub-open">All 10 &rarr;</div>
+            </div>
+            <div class="hub-ref" style="margin-top:0.55rem">
+                <div class="hub-refk">Pending icons</div>
+                <div class="hub-refb">
+                    <img src="../../assets/move-up.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/move-down.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/1.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/10.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/20.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/30.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/50.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/75.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/question.svg" alt="" width="16" height="16" />
+                    <em>movement and expected placement</em>
+                </div>
+                <div class="hub-open">All 9 &rarr;</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The door, opened -->
+    <div class="hub-ov">
+        <div class="hub-ovtop">
+            <b>Guidelines</b>
+            <div class="hub-ovsearch">Search the guidelines&hellip;</div>
+            <label class="hub-x" for="hub-ov">Close &nbsp;<span class="u-chip">Esc</span></label>
+        </div>
+        <div class="hub-ovbody">
+            <nav class="hub-ovtoc">
+                <div class="hub-ovg">General</div>
+                <a href="#">Introduction</a>
+                <a href="#">Glossary</a>
+                <div class="hub-ovg">Acceptance of Records</div>
+                <a href="#">Definition of a World Record</a>
+                <a href="#">Proof of legitimacy</a>
+                <a href="#">Tolerance and leniency</a>
+                <a class="on" href="#">Cheating and penalties</a>
+                <div class="hub-ovg">Level Placement</div>
+                <a href="#">List structure</a>
+                <a href="#">Level selection</a>
+                <a href="#">Determining positions</a>
+                <div class="hub-ovg">Content Policy</div>
+                <a href="#">List records</a>
+                <a href="#">Levels and thumbnails</a>
+                <div class="hub-ovg">Technical Support</div>
+                <a href="#">Staff roles</a>
+                <a href="#">Ethical standards</a>
+            </nav>
+            <div class="hub-ovread">
+                <div class="hub-crumb">Acceptance of Records</div>
+                <h3>Cheating and penalties</h3>
+                <p>The list treats a record as a claim about what a player did, and the proof requirements exist so that claim can be checked. Where a record is found to have been obtained by prohibited means, the penalty depends on whether it was deliberate.</p>
+                <h4>Unintentional violations</h4>
+                <p>Where a prohibited modification was active but had no effect on the difficulty of the record, the record is rejected and the player is asked to resubmit without it. No further penalty follows a first occurrence.</p>
+                <h4>Deliberate cheating</h4>
+                <ul>
+                    <li>a submission ban, whose length depends on the severity and on previous occurrences;</li>
+                    <li>removal of every record the player holds on this list;</li>
+                    <li>a permanent <b>Former cheater</b> badge on the Discord server.</li>
+                </ul>
+                <p>Submitting a record on behalf of another person &mdash; to evade a ban, to impersonate, or for no particular reason &mdash; bans both accounts for six months. Where two or more players share one account, each is banned for six months and the shared account is banned permanently.</p>
+            </div>
+        </div>
+    </div>
+</div>

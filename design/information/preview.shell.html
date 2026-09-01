@@ -1,10 +1,11 @@
-<title>ULL Redesign Templates</title>
+<title>ULL — /information, four approaches</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
 <style>
 /* ─────────────────────────────────────────────────────────────────────────
-   Review chrome. Deliberately quiet: everything with colour on this page is
-   supposed to be the mockup, not the deck around it.
+   Review chrome, taken from design/preview.shell.html so this deck and the
+   page deck read as one thing. Deliberately quiet: the only colour on the
+   page should be inside the mockups.
    ───────────────────────────────────────────────────────────────────────── */
 :root {
     --ground: #f4f3f6;
@@ -21,33 +22,23 @@
 }
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --ground: #100f14;
-        --panel: #17161c;
-        --ink: #eceaf2;
-        --muted: #9b96a8;
-        --rule: rgba(155, 150, 168, 0.22);
-        --rule-soft: rgba(155, 150, 168, 0.12);
-        --accent: #a583f7;
-        --warn: #e2915c;
+        --ground: #100f14; --panel: #17161c; --ink: #eceaf2; --muted: #9b96a8;
+        --rule: rgba(155, 150, 168, 0.22); --rule-soft: rgba(155, 150, 168, 0.12);
+        --accent: #a583f7; --warn: #e2915c;
         --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 14px 40px rgba(0, 0, 0, 0.45);
     }
 }
 :root[data-theme="dark"] {
-    --ground: #100f14;
-    --panel: #17161c;
-    --ink: #eceaf2;
-    --muted: #9b96a8;
-    --rule: rgba(155, 150, 168, 0.22);
-    --rule-soft: rgba(155, 150, 168, 0.12);
-    --accent: #a583f7;
-    --warn: #e2915c;
+    --ground: #100f14; --panel: #17161c; --ink: #eceaf2; --muted: #9b96a8;
+    --rule: rgba(155, 150, 168, 0.22); --rule-soft: rgba(155, 150, 168, 0.12);
+    --accent: #a583f7; --warn: #e2915c;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 14px 40px rgba(0, 0, 0, 0.45);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 
-.wrap { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 92rem; margin: 0 auto; padding: 3rem 2.5rem 6rem; }
+.wrap { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 98rem; margin: 0 auto; padding: 3rem 2.5rem 6rem; }
 
 /* ── Rail ── */
 .rail { position: sticky; top: 2rem; align-self: start; display: flex; flex-direction: column; gap: 1.5rem; }
@@ -70,31 +61,40 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 .rail__toggle:hover { border-color: var(--accent); }
 .rail__toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .rail__toggle b { font-family: var(--sans); font-size: 0.78rem; font-weight: 600; }
+.rail__hint { font-family: var(--mono); font-size: 0.6rem; line-height: 1.6; color: var(--muted); }
 
 /* ── Intro ── */
 .intro { margin-bottom: 3.5rem; }
 .intro__eyebrow { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
 .intro h1 { margin: 0.8rem 0 0; font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; text-wrap: balance; }
-.intro__lead { margin: 1.1rem 0 0; max-width: 42rem; font-size: 0.98rem; line-height: 1.7; color: var(--muted); }
-.intro__lead + .intro__lead { margin-top: 0.9rem; }
+.intro__lead { margin: 1.1rem 0 0; max-width: 46rem; font-size: 0.98rem; line-height: 1.7; color: var(--muted); }
 .intro__lead b { color: var(--ink); font-weight: 600; }
 .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1px; margin-top: 2.25rem; background: var(--rule-soft); border: 1px solid var(--rule-soft); border-radius: 0.6rem; overflow: hidden; }
 .rules div { background: var(--panel); padding: 1rem 1.15rem; }
 .rules dt { font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .rules dd { margin: 0.45rem 0 0; font-size: 0.82rem; line-height: 1.55; }
 
+.sect { margin-top: 2.5rem; }
+.sect h3 { margin: 0 0 0.9rem; font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
+.faults { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }
+.faults li { display: grid; grid-template-columns: 1.4rem 1fr; gap: 0.7rem; font-size: 0.85rem; line-height: 1.6; color: var(--muted); }
+.faults b { font-family: var(--mono); font-size: 0.7rem; color: var(--warn); }
+.faults span b { font-family: var(--sans); font-size: inherit; color: var(--ink); font-weight: 600; }
+.faults code { font-family: var(--mono); font-size: 0.78rem; color: var(--ink); }
+
 /* ── Page section ── */
 .pg { padding-top: 3.5rem; border-top: 1px solid var(--rule); margin-top: 3.5rem; }
-.pg:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
 .pg__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
 .pg__label { display: flex; align-items: baseline; gap: 0.8rem; }
 .pg__label h2 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
-.pg__route, .pg__files { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
-.pg__route { padding: 0.15rem 0.5rem; border: 1px solid var(--rule); border-radius: 0.3rem; }
-.pg__notes { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0 1.75rem; }
+.pg__n { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); padding: 0.15rem 0.5rem; border: 1px solid var(--rule); border-radius: 0.3rem; }
+.pg__files { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+.pg__idea { margin: 1.1rem 0 0; max-width: 52rem; font-size: 0.92rem; line-height: 1.7; }
+.pg__notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.25rem; margin: 1.5rem 0 1.75rem; }
 .note { padding-left: 0.9rem; border-left: 2px solid var(--rule); }
-.note--problem { border-left-color: var(--warn); }
-.note--change { border-left-color: var(--accent); }
+.note--weight { border-left-color: var(--accent); }
+.note--cost { border-left-color: var(--rule); }
+.note--watch { border-left-color: var(--warn); }
 .note__k { font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .note p { margin: 0.5rem 0 0; font-size: 0.85rem; line-height: 1.7; }
 
@@ -103,7 +103,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 .frame__bar { display: flex; align-items: center; gap: 0.4rem; padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--rule); background: var(--panel); }
 .frame__bar span { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--rule); }
 .frame__bar code { margin-left: 0.6rem; font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
-.frame__view { height: 41rem; overflow: hidden; display: flex; flex-direction: column; }
+.frame__bar em { margin-left: auto; font-family: var(--mono); font-size: 0.62rem; font-style: normal; color: var(--accent); }
+.frame__view { height: 46rem; overflow: hidden; display: flex; flex-direction: column; }
 .frame__view > * { flex: 1; min-height: 0; }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -127,33 +128,21 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     --color-primary: #3e00f9;
     --color-on-primary: #ffffff;
 }
+/* Role icons ship as two files, -dark being the one for the light theme; the
+   mocks carry the dark-theme file and invert it under .root.dark, which is what
+   the app's :src binding does with a second request. The pending-list icons are
+   not in that set — they carry their own colours — so they never get .mk-inv. */
+[data-mock].root.dark .mk-inv { filter: invert(1); }
 
 /*__COMPONENT_CSS__*/
 
-/* ── Mock stand-ins ──────────────────────────────────────────────────────
-   Level thumbnails are YouTube stills on the real site; the deck can't load
-   them, so each is a stable colour field standing in for the artwork. */
-/* Scoped one level deep so they outrank the component layer's own
-   .ull2 .u-row__thumb placeholder fill, which is also 0,2,0. */
-[data-mock] .mk-thumb { background-size: cover; background-position: center; }
-[data-mock] .mk-thumb--a { background: linear-gradient(135deg, #3b1d6e 0%, #a3357a 55%, #f0803c 100%); }
-[data-mock] .mk-thumb--b { background: linear-gradient(135deg, #123c63 0%, #2f7fa8 50%, #8fd4c8 100%); }
-[data-mock] .mk-thumb--c { background: linear-gradient(135deg, #4a0f2a 0%, #a11d3c 55%, #e8663f 100%); }
-[data-mock] .mk-thumb--d { background: linear-gradient(135deg, #101a33 0%, #2b4a8c 55%, #6fa8dc 100%); }
-[data-mock] .mk-thumb--e { background: linear-gradient(135deg, #06333a 0%, #12787f 55%, #7fe0cf 100%); }
-[data-mock] .mk-thumb--f { background: linear-gradient(135deg, #2b1338 0%, #6a2a95 55%, #c977e0 100%); }
-
-[data-mock] .mk-ic { display: inline-block; width: 0.85rem; height: 0.85rem; background: currentColor; opacity: 0.75; flex-shrink: 0; }
-[data-mock] .mk-ic--filter { -webkit-mask: linear-gradient(currentColor 0 0) center/100% 2px no-repeat, linear-gradient(currentColor 0 0) center 4px/70% 2px no-repeat, linear-gradient(currentColor 0 0) center 8px/40% 2px no-repeat; mask: linear-gradient(currentColor 0 0) center/100% 2px no-repeat, linear-gradient(currentColor 0 0) center 4px/70% 2px no-repeat, linear-gradient(currentColor 0 0) center 8px/40% 2px no-repeat; }
-
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
     .wrap { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem 4rem; }
     .rail { position: static; }
     .rail__nav { flex-direction: row; flex-wrap: wrap; border-left: 0; }
     .rail__item { border-left: 0; border-bottom: 2px solid transparent; }
     .rail__item.is-on { border-left: 0; border-bottom-color: var(--accent); }
-    .pg__notes { grid-template-columns: 1fr; }
-    .frame__view { height: 34rem; }
+    .frame__view { height: 40rem; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 </style>
@@ -161,8 +150,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 <div class="wrap">
     <aside class="rail">
         <div class="rail__brand">
-            <b>ULL Redesign</b>
-            <span>6 templates &middot; v2</span>
+            <b>/information</b>
+            <span>4 approaches &middot; desktop</span>
         </div>
         <nav class="rail__nav">
         <!--__NAV__-->
@@ -171,38 +160,51 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
             <b>Mockup theme</b>
             <span id="theme-name">Dark</span>
         </button>
+        <p class="rail__hint">The mockups are live: blocks open, tabs switch, overlays close. Click inside them.</p>
     </aside>
 
     <main>
         <div class="intro">
             <div class="intro__eyebrow">Design proposal</div>
-            <h1>Bring the rest of the site up to the level page</h1>
+            <h1>One page, four ways to enter it</h1>
             <p class="intro__lead">
-                <b>/level/&lt;slug&gt; already contains the answer.</b> It introduces a level with its own
-                blurred thumbnail, says where it stands with one status pill on a colour scale shared with the
-                list, draws its two progress numbers as meters, and puts its facts in a definition list &mdash;
-                in one stylesheet, with no inline styles. Every other page states the same things in prose,
-                in a different size, in a colour picked for that page alone.
+                <b>/information holds five unrelated things</b> &mdash; what the list is, how to read it,
+                the guidelines, two legends, and who to talk to &mdash; and today it stacks them as cards of
+                roughly equal size. The Pending List legend, nine rows of icons, is given a full-width card;
+                the guidelines, thirteen sections across five groups, are given a 600&nbsp;px window to be read
+                through. Weight on the page is currently the opposite of weight in the content.
             </p>
             <p class="intro__lead">
-                These six templates lift that vocabulary into a shared layer, <b>design/ull-v2.css</b>, and
-                rebuild each page out of it. No new data: every value shown already exists in the level JSON
-                or is derived from it the way the list already derives it, and no page gains a written
-                description of a level.
+                These four templates each fix that a different way, and they differ in one decision:
+                <b>how much of the page is visible before you ask for it</b>. A. Shelf hides everything behind
+                blocks you open. B. Manual keeps one index visible and one topic open. C. Hub answers the
+                common questions on the surface and puts the long reads behind doors. D. Document shows
+                everything at once, in reading order. The content is identical in all four; only the way in
+                changes.
             </p>
             <p class="intro__lead">
-                Building the templates turned up a live bug worth fixing either way: in
-                <b>css/pages/level-page.css</b>, <b>.level-page a { color: inherit }</b> scores higher than
-                <b>.lvl-link</b>, so on the light theme the filled &ldquo;Showcase video&rdquo; button on every
-                level page draws black text on its #3e00f9 fill instead of white. The shared layer scopes each
-                component one level deeper so the cascade resolves the way it reads.
+                All four are built from <b>css/ull-v2.css</b>, the component layer the rest of the site was
+                rebuilt on, so none of them introduces a new card, heading or button. Sections 3 and 4 do not
+                exist yet; the copy for them is drafted in <b>design/information/copy.md</b> and the templates
+                render that draft, not lorem.
             </p>
             <dl class="rules">
-                <div><dt>Constraint</dt><dd>No new fields, and no per-level prose anywhere.</dd></div>
-                <div><dt>Untouched</dt><dd>The page structure of All Levels, Main List and Future List. Only their level container is rebuilt.</dd></div>
-                <div><dt>Deleted</dt><dd>63 inline style attributes across these six pages &mdash; 109 counting the three list pages that duplicate each other &mdash; and .upcoming-hero, which repeats .page-hero rule for rule.</dd></div>
-                <div><dt>Not covered</dt><dd>Information, which has its own deck of four competing templates. Admin and the generator are staff tools and left alone.</dd></div>
+                <div><dt>Scope</dt><dd>Desktop only, as asked. The mobile route <code>/mobile/info</code> is untouched.</dd></div>
+                <div><dt>Sections</dt><dd>The five you listed. &ldquo;How to submit&rdquo; and &ldquo;how points work&rdquo; are FAQ entries; the glossary belongs to the guidelines.</dd></div>
+                <div><dt>New data</dt><dd>None. Editors come from <code>data/_editors.json</code>, guidelines from <code>js/_guidelines.js</code>, both already loaded.</dd></div>
+                <div><dt>Decided later</dt><dd>Which one ships. Nothing under <code>js/</code> or <code>css/</code> has been changed yet.</dd></div>
             </dl>
+
+            <div class="sect">
+                <h3>What is wrong with the page today</h3>
+                <ol class="faults">
+                    <li><b>01</b><span><b>The legends outweigh the guidelines.</b> <code>.info-cards</code> is a 1fr&nbsp;1fr grid and the Pending legend is given <code>grid-column: 1 / -1</code> by an inline style, so nine icon rows occupy the full page width while the entire rulebook is read through a <code>max-height: 600px</code> pane below it.</span></li>
+                    <li><b>02</b><span><b>The guidelines scroll inside a page that scrolls.</b> <code>.info-guidelines-content</code> is its own scroll container inside <code>.info-page</code>, so the wheel does one thing or the other depending on where the pointer is. <code>Information.js</code> carries an IntersectionObserver whose only job is to switch that inner <code>overflow-y</code> on and off &mdash; a workaround for a nesting that does not need to exist.</span></li>
+                    <li><b>03</b><span><b>The colouring legend redraws a component the site already has.</b> Ten swatches are written as inline <code>style="background:#5599ff"</code>, and those ten hex values are the same scale as <code>.u-pill--blue</code> &hellip; <code>.u-pill--done</code> in <code>css/ull-v2.css</code>. The legend for a colour system should be drawn with the colour system, or it will drift from it.</span></li>
+                    <li><b>04</b><span><b>Nothing tells a first-time visitor where anything is.</b> The hero defines the list in four lines and the next thing on the page is a list of editors. There is no map of the site, and no answer to the questions that bring people here &mdash; how to submit, how points are earned &mdash; anywhere on it.</span></li>
+                    <li><b>05</b><span><b>The card hover from the pending page is here too.</b> <code>.info-guidelines:hover</code> applies <code>transform: scale(1.006)</code>, which nudges the layout under the pointer. The same tic was removed from the other pages in the last pass.</span></li>
+                </ol>
+            </div>
         </div>
 <!--__SECTIONS__-->
     </main>

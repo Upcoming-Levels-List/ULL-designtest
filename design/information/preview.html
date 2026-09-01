@@ -1,0 +1,1592 @@
+<title>ULL — /information, four approaches</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+   Review chrome, taken from design/preview.shell.html so this deck and the
+   page deck read as one thing. Deliberately quiet: the only colour on the
+   page should be inside the mockups.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+    --ground: #f4f3f6;
+    --panel: #ffffff;
+    --ink: #1b1a1f;
+    --muted: #6c6879;
+    --rule: rgba(108, 104, 121, 0.2);
+    --rule-soft: rgba(108, 104, 121, 0.11);
+    --accent: #5b12d6;
+    --warn: #b4541f;
+    --shadow: 0 1px 2px rgba(27, 26, 31, 0.05), 0 12px 34px rgba(27, 26, 31, 0.07);
+    --sans: 'Lexend Deca', ui-sans-serif, system-ui, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --ground: #100f14; --panel: #17161c; --ink: #eceaf2; --muted: #9b96a8;
+        --rule: rgba(155, 150, 168, 0.22); --rule-soft: rgba(155, 150, 168, 0.12);
+        --accent: #a583f7; --warn: #e2915c;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 14px 40px rgba(0, 0, 0, 0.45);
+    }
+}
+:root[data-theme="dark"] {
+    --ground: #100f14; --panel: #17161c; --ink: #eceaf2; --muted: #9b96a8;
+    --rule: rgba(155, 150, 168, 0.22); --rule-soft: rgba(155, 150, 168, 0.12);
+    --accent: #a583f7; --warn: #e2915c;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
+
+.wrap { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 98rem; margin: 0 auto; padding: 3rem 2.5rem 6rem; }
+
+/* ── Rail ── */
+.rail { position: sticky; top: 2rem; align-self: start; display: flex; flex-direction: column; gap: 1.5rem; }
+.rail__brand { display: flex; flex-direction: column; gap: 0.3rem; }
+.rail__brand b { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
+.rail__brand span { font-family: var(--mono); font-size: 0.66rem; color: var(--muted); }
+.rail__nav { display: flex; flex-direction: column; gap: 0.1rem; border-left: 1px solid var(--rule); }
+.rail__item { display: flex; flex-direction: column; gap: 0.1rem; padding: 0.5rem 0.8rem; margin-left: -1px; border-left: 2px solid transparent; text-decoration: none; color: inherit; }
+.rail__item b { font-size: 0.82rem; font-weight: 500; }
+.rail__item code { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+.rail__item:hover { border-left-color: var(--rule); }
+.rail__item.is-on { border-left-color: var(--accent); }
+.rail__item.is-on b { font-weight: 700; }
+.rail__toggle {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    padding: 0.6rem 0.8rem; border: 1px solid var(--rule); border-radius: 0.5rem;
+    background: var(--panel); color: inherit; font-family: var(--mono); font-size: 0.66rem;
+    cursor: pointer; text-align: left;
+}
+.rail__toggle:hover { border-color: var(--accent); }
+.rail__toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rail__toggle b { font-family: var(--sans); font-size: 0.78rem; font-weight: 600; }
+.rail__hint { font-family: var(--mono); font-size: 0.6rem; line-height: 1.6; color: var(--muted); }
+
+/* ── Intro ── */
+.intro { margin-bottom: 3.5rem; }
+.intro__eyebrow { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.intro h1 { margin: 0.8rem 0 0; font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.035em; text-wrap: balance; }
+.intro__lead { margin: 1.1rem 0 0; max-width: 46rem; font-size: 0.98rem; line-height: 1.7; color: var(--muted); }
+.intro__lead b { color: var(--ink); font-weight: 600; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1px; margin-top: 2.25rem; background: var(--rule-soft); border: 1px solid var(--rule-soft); border-radius: 0.6rem; overflow: hidden; }
+.rules div { background: var(--panel); padding: 1rem 1.15rem; }
+.rules dt { font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.rules dd { margin: 0.45rem 0 0; font-size: 0.82rem; line-height: 1.55; }
+
+.sect { margin-top: 2.5rem; }
+.sect h3 { margin: 0 0 0.9rem; font-size: 0.95rem; font-weight: 700; letter-spacing: -0.01em; }
+.faults { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.5rem; }
+.faults li { display: grid; grid-template-columns: 1.4rem 1fr; gap: 0.7rem; font-size: 0.85rem; line-height: 1.6; color: var(--muted); }
+.faults b { font-family: var(--mono); font-size: 0.7rem; color: var(--warn); }
+.faults span b { font-family: var(--sans); font-size: inherit; color: var(--ink); font-weight: 600; }
+.faults code { font-family: var(--mono); font-size: 0.78rem; color: var(--ink); }
+
+/* ── Page section ── */
+.pg { padding-top: 3.5rem; border-top: 1px solid var(--rule); margin-top: 3.5rem; }
+.pg__head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+.pg__label { display: flex; align-items: baseline; gap: 0.8rem; }
+.pg__label h2 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+.pg__n { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); padding: 0.15rem 0.5rem; border: 1px solid var(--rule); border-radius: 0.3rem; }
+.pg__files { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+.pg__idea { margin: 1.1rem 0 0; max-width: 52rem; font-size: 0.92rem; line-height: 1.7; }
+.pg__notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.25rem; margin: 1.5rem 0 1.75rem; }
+.note { padding-left: 0.9rem; border-left: 2px solid var(--rule); }
+.note--weight { border-left-color: var(--accent); }
+.note--cost { border-left-color: var(--rule); }
+.note--watch { border-left-color: var(--warn); }
+.note__k { font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.note p { margin: 0.5rem 0 0; font-size: 0.85rem; line-height: 1.7; }
+
+/* ── Mock frame ── */
+.frame { border: 1px solid var(--rule); border-radius: 0.7rem; overflow: hidden; box-shadow: var(--shadow); background: var(--panel); }
+.frame__bar { display: flex; align-items: center; gap: 0.4rem; padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--rule); background: var(--panel); }
+.frame__bar span { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--rule); }
+.frame__bar code { margin-left: 0.6rem; font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+.frame__bar em { margin-left: auto; font-family: var(--mono); font-size: 0.62rem; font-style: normal; color: var(--accent); }
+.frame__view { height: 46rem; overflow: hidden; display: flex; flex-direction: column; }
+.frame__view > * { flex: 1; min-height: 0; }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   The app's own theme tokens, copied from css/main.css so the mockups render
+   in the real palette. .root is ULL's dark default; .root.dark is its light
+   theme — the class names are inverted in the app and kept that way here.
+   ───────────────────────────────────────────────────────────────────────── */
+[data-mock].root {
+    --color-background: #1c1b1f;
+    --color-on-background: #ffffff;
+    --color-background-hover: #27262c;
+    --color-primary: #660aef;
+    --color-on-primary: #ffffff;
+    background: var(--color-background);
+    color: var(--color-on-background);
+}
+[data-mock].root.dark {
+    --color-background: #ffffff;
+    --color-on-background: #000000;
+    --color-background-hover: #eeeeee;
+    --color-primary: #3e00f9;
+    --color-on-primary: #ffffff;
+}
+/* Role icons ship as two files, -dark being the one for the light theme; the
+   mocks carry the dark-theme file and invert it under .root.dark, which is what
+   the app's :src binding does with a second request. The pending-list icons are
+   not in that set — they carry their own colours — so they never get .mk-inv. */
+[data-mock].root.dark .mk-inv { filter: invert(1); }
+
+/* ULL v2 — the shared component layer extracted from the level page.
+
+   The /level/<slug> page already solved most of this site's design problems in
+   one file: neutral tokens that survive both themes, uppercase micro-labels,
+   flat cards on a tinted fill, one status scale, meters, and no inline styles.
+   Everything below is that vocabulary lifted out of css/pages/level-page.css so
+   the home, list, leaderboard, upcoming, pending and events pages can speak it
+   too, instead of each re-inventing a card and a heading.
+
+   Nothing here invents data. Every value a component displays already exists in
+   data/<level>.json or is derived from it the way the list already derives it.
+   The design/ directory holds the static templates these components came from.
+
+   Scope: anything inside an element carrying .ull2. Drop the class on <main>.
+
+   Every rule below is written as `.ull2 .u-thing` rather than `.u-thing`, and
+   that is deliberate. The link reset `.ull2 a { color: inherit }` scores 0,1,1;
+   an unscoped `.u-btn { color: var(--color-on-primary) }` scores 0,1,0 and
+   silently loses to it, so a filled button renders with body-text colour on its
+   own primary fill. css/pages/level-page.css has this exact bug today: its
+   `.level-page a { color: inherit }` beats `.lvl-link`, which is why the filled
+   "Showcase video" button on /level/<slug> is not drawing in --color-on-primary.
+   Scoping every component one level deeper puts them all at 0,2,0 and settles
+   the cascade. */
+
+.ull2 {
+    /* Neutral greys — one set of values reads correctly on both grounds, which
+       is why the level page never needed a .root.dark override for its cards. */
+    --u-line: rgba(128, 128, 128, 0.22);
+    --u-line-2: rgba(128, 128, 128, 0.38);
+    --u-fill: rgba(128, 128, 128, 0.09);
+    --u-fill-2: rgba(128, 128, 128, 0.13);
+    --u-accent: color-mix(in srgb, var(--color-primary) 45%, white);
+
+    --u-r: 0.75rem;
+    --u-r-sm: 0.5rem;
+    --u-gap: 0.85rem;
+
+    font-family: 'Lexend Deca', sans-serif;
+}
+.root.dark .ull2 { --u-accent: color-mix(in srgb, var(--color-primary) 75%, black); }
+.ull2, .ull2 * { box-sizing: border-box; }
+.ull2 a { color: inherit; text-decoration: none; }
+/* css/typography.css hangs ::before/::after spacers off every heading and
+   paragraph to trim leading. These components set their own line-heights, so
+   the spacers only add stray gaps. */
+.ull2 h1::before, .ull2 h1::after, .ull2 h2::before, .ull2 h2::after,
+.ull2 h3::before, .ull2 h3::after, .ull2 h4::before, .ull2 h4::after,
+.ull2 p::before, .ull2 p::after, .ull2 dt::before, .ull2 dt::after { display: none; }
+
+/* ── Eyebrow ──────────────────────────────────────────────────────────────
+   The single section heading on the site. Replaces .home-card__title,
+   .pending-card__title, .events-info-label and four <h3> treatments, all of
+   which said the same thing in four sizes and two colours. */
+.ull2 .u-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.9rem;
+    font-family: inherit;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    opacity: 0.45;
+}
+.ull2 .u-eyebrow--lg { font-size: 0.7rem; }
+.ull2 .u-count {
+    padding: 0.12rem 0.42rem;
+    border-radius: 1rem;
+    background: var(--u-fill-2);
+    font-size: 0.62rem;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────
+   Flat fill + hairline. No shadow, no hover-scale: the pending page's
+   transform: scale(1.006) on hover nudges its neighbours and reads as a bug. */
+.ull2 .u-card {
+    padding: 1.15rem 1.25rem;
+    border-radius: var(--u-r);
+    background: var(--u-fill);
+    border: 1px solid var(--u-line);
+}
+.ull2 .u-card--pad { padding: 1.5rem 1.6rem; }
+.ull2 a.u-card, .ull2 button.u-card { display: block; width: 100%; text-align: left; cursor: pointer; transition: border-color 120ms ease; }
+.ull2 a.u-card:hover, .ull2 button.u-card:hover { border-color: var(--u-line-2); }
+
+/* ── Status pill ──────────────────────────────────────────────────────────
+   One scale, shared with the list's level-name colouring, so a level reads the
+   same in the row, in the panel, on its own page and in an events card.
+   Replaces "Status: Decoration being made - 80% done" set as body copy. */
+.ull2 .u-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.28rem 0.72rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    border: 1px solid currentColor;
+}
+.ull2 .u-pill i { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.ull2 .u-pill--done { color: #9d9d9d; }
+.ull2 .u-pill--red { color: #ff5555; }
+.ull2 .u-pill--orange { color: #ff6622; }
+.ull2 .u-pill--amber { color: #ffaa44; }
+.ull2 .u-pill--yellow { color: #ffee55; }
+.ull2 .u-pill--green { color: #55ee55; }
+.ull2 .u-pill--cyan { color: #33dddd; }
+.ull2 .u-pill--blue { color: #5599ff; }
+.root.dark .ull2 .u-pill--done { color: #6f6f6f; }
+.root.dark .ull2 .u-pill--red { color: #cc4444; }
+.root.dark .ull2 .u-pill--orange { color: #cc511b; }
+.root.dark .ull2 .u-pill--amber { color: #b87a24; }
+.root.dark .ull2 .u-pill--yellow { color: #9a9022; }
+.root.dark .ull2 .u-pill--green { color: #2f9c2f; }
+.root.dark .ull2 .u-pill--cyan { color: #1d8f8f; }
+.root.dark .ull2 .u-pill--blue { color: #3a6cb8; }
+
+/* ── Chip ─────────────────────────────────────────────────────────────────
+   Tags, creators, filter values. Replaces .tag and .lvl-creator. */
+.ull2 .u-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.4rem;
+    font-size: 0.74rem;
+    font-weight: 500;
+    line-height: 1.3;
+    background: var(--u-fill);
+    border: 1px solid var(--u-line);
+}
+.ull2 .u-chip--round { border-radius: 2rem; }
+.ull2 .u-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+/* ── Rank chip ────────────────────────────────────────────────────────────
+   Cross-list placement. Currently rendered as dimmed body text
+   ("#12 in Main List · #7 in Future List") in three different components. */
+.ull2 .u-rank {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--u-r-sm);
+    background: color-mix(in srgb, var(--color-background) 65%, transparent);
+    border: 1px solid var(--u-line);
+    transition: border-color 120ms ease, transform 120ms ease;
+}
+.ull2 .u-rank:hover { border-color: var(--u-line-2); transform: translateY(-1px); }
+.ull2 .u-rank--lead {
+    background: linear-gradient(150deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 55%, white) 130%);
+    border-color: transparent;
+    color: var(--color-on-primary);
+}
+.ull2 .u-rank--lead:hover { border-color: transparent; }
+.ull2 .u-rank__n { font-size: 1.35rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.ull2 .u-rank__l { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; white-space: nowrap; }
+.ull2 .u-rank--lead .u-rank__l { opacity: 0.85; }
+.ull2 .u-ranks { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+/* ── Meter ────────────────────────────────────────────────────────────────
+   Decoration and verification progress. Both numbers already drive sorting and
+   colouring; this is the first place either is drawn rather than written out. */
+.ull2 .u-meter + .u-meter { margin-top: 0.9rem; }
+.ull2 .u-meter__top { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.74rem; margin-bottom: 0.4rem; }
+.ull2 .u-meter__top span { opacity: 0.55; }
+.ull2 .u-meter__top b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ull2 .u-bar { display: block; height: 0.35rem; border-radius: 1rem; background: var(--u-fill-2); overflow: hidden; }
+.ull2 .u-bar i { display: block; height: 100%; border-radius: 1rem; background: linear-gradient(90deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 45%, white)); }
+.ull2 .u-bar--alt i { background: linear-gradient(90deg, #e0762c, #ffc46b); }
+/* Inline in a list row: no labels, just the reading. */
+.ull2 .u-bar--thin { height: 0.22rem; }
+
+/* ── Stat ─────────────────────────────────────────────────────────────────
+   A single figure with a label under it. Replaces .page-hero-stat,
+   .upcoming-hero-stat (an exact duplicate of it), and the world-record boxes. */
+.ull2 .u-stat {
+    padding: 0.75rem 0.9rem;
+    border-radius: var(--u-r-sm);
+    background: var(--u-fill);
+    border: 1px solid var(--u-line);
+    min-width: 0;
+}
+.ull2 .u-stat__k { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.45; }
+.ull2 .u-stat__v {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--u-accent);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+.ull2 a.u-stat__v:hover { text-decoration: underline; }
+.ull2 .u-stat__v--none { color: inherit; opacity: 0.28; font-size: 1.05rem; }
+.ull2 .u-stat__u { margin-top: 0.15rem; font-size: 0.7rem; opacity: 0.5; overflow-wrap: anywhere; }
+.ull2 .u-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.6rem; }
+
+/* ── Definition list ──────────────────────────────────────────────────────
+   Level facts. Replaces the .stats <ul> with justify-content: space-evenly,
+   which drifts apart on a wide panel and collides on a narrow one. */
+.ull2 .u-dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: 0.55rem 1rem;
+    font-size: 0.78rem;
+}
+.ull2 .u-dl dt { font-family: inherit; font-size: 0.78rem; font-weight: 500; line-height: inherit; text-transform: none; opacity: 0.45; }
+.ull2 .u-dl dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.ull2 .u-dl a { color: var(--u-accent); text-decoration: underline; text-underline-offset: 0.15em; }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────
+   Home currently gives three side-by-side links .home-btn--primary, so none of
+   them is primary. One filled, the rest ghost. */
+.ull2 .u-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.65rem 1.1rem;
+    border-radius: var(--u-r-sm);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+.ull2 .u-btn:hover { opacity: 0.88; }
+.ull2 .u-btn--ghost { background: transparent; color: var(--color-on-background); border-color: var(--u-line-2); font-weight: 500; }
+.ull2 .u-btn--ghost:hover { background: var(--u-fill-2); opacity: 1; }
+.ull2 .u-btn--block { display: flex; width: 100%; }
+.ull2 .u-btn--ok { color: #3fbf7f; border-color: #3fbf7f; background: rgba(63, 191, 127, 0.1); }
+.ull2 .u-btn:focus-visible { outline: 2px solid var(--u-accent); outline-offset: 2px; }
+
+/* ── Page hero ────────────────────────────────────────────────────────────
+   css/pages/list-hero.css defines .page-hero and .upcoming-hero as two
+   byte-for-byte identical blocks. One component, one rule set. */
+.ull2 .u-phero {
+    grid-column: 1 / -1;
+    overflow-y: unset !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.1rem 1.75rem;
+    border-bottom: 1px solid var(--u-line);
+    background: linear-gradient(105deg, color-mix(in srgb, var(--color-primary) 8%, transparent) 0%, transparent 55%);
+    position: relative;
+}
+.ull2 .u-phero::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 30%, transparent) 100%);
+}
+.ull2 .u-phero__body { flex: 1; min-width: 0; }
+.ull2 .u-phero h1 { margin: 0 0 0.4rem; font-family: inherit; font-size: 1.15rem; font-weight: 700; letter-spacing: normal; line-height: 1.2; }
+.ull2 .u-phero p { margin: 0; max-width: 44rem; font-size: 0.78rem; line-height: 1.55; opacity: 0.5; letter-spacing: normal; }
+.ull2 .u-phero__side { display: flex; gap: 0.5rem; flex-shrink: 0; }
+/* In the hero the label is wider than the figure, so a left-aligned figure sits
+   off to one side of its own box. Centre both against each other. */
+.ull2 .u-phero__side .u-stat { text-align: center; }
+
+/* ── Thumbnail hero ───────────────────────────────────────────────────────
+   The level page's blurred-thumbnail header, reusable: the level detail panel,
+   the events feature cards and the home spotlight all introduce a level and
+   should introduce it the same way. */
+.ull2 .u-hero { position: relative; overflow: hidden; border-radius: var(--u-r); border: 1px solid var(--u-line); }
+.ull2 .u-hero--flush { border-radius: 0; border: 0; border-bottom: 1px solid var(--u-line); }
+.ull2 .u-hero__bg { position: absolute; inset: -3rem; background-size: cover; background-position: center; filter: blur(2.25rem) saturate(1.35); opacity: 0.5; transform: scale(1.1); }
+.root.dark .ull2 .u-hero__bg { opacity: 0.35; }
+.ull2 .u-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, color-mix(in srgb, var(--color-background) 50%, transparent) 0%, var(--color-background) 94%),
+        linear-gradient(100deg, color-mix(in srgb, var(--color-primary) 40%, transparent) 0%, transparent 62%);
+}
+.ull2 .u-hero__inner { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; padding: 1.6rem 1.5rem 1.35rem; }
+.ull2 .u-hero__body { flex: 1; min-width: 0; }
+.ull2 .u-hero__title { margin: 0; font-family: inherit; font-size: clamp(1.5rem, 3.2vw, 2.2rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance; }
+.ull2 .u-hero__by { margin: 0.55rem 0 0; font-size: 0.85rem; font-weight: 500; line-height: 1.4; opacity: 0.65; }
+.ull2 .u-hero__by b { font-weight: 600; }
+
+/* ── Row ──────────────────────────────────────────────────────────────────
+   A level or player line: thumbnail, name, secondary line, trailing figure.
+   Pending, upcoming, leaderboard and home all draw a version of this today. */
+.ull2 .u-rows { display: flex; flex-direction: column; }
+.ull2 .u-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--u-r-sm);
+    transition: background-color 100ms ease;
+    min-width: 0;
+}
+.ull2 .u-row:hover { background: var(--u-fill); }
+.ull2 .u-row__lead { flex-shrink: 0; width: 2.1rem; text-align: right; font-size: 0.78rem; font-weight: 700; opacity: 0.4; font-variant-numeric: tabular-nums; }
+.ull2 .u-row__thumb { flex-shrink: 0; width: 4.4rem; height: 2.5rem; border-radius: 0.3rem; object-fit: cover; background: var(--u-fill-2); display: block; }
+.ull2 .u-row__body { flex: 1; min-width: 0; }
+.ull2 .u-row__name { display: block; font-size: 0.85rem; font-weight: 600; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ull2 .u-row__sub { display: block; margin-top: 0.15rem; font-size: 0.72rem; font-weight: 500; opacity: 0.45; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ull2 .u-row__end { flex-shrink: 0; margin-left: auto; font-size: 0.74rem; opacity: 0.5; font-variant-numeric: tabular-nums; }
+
+/* ── Empty state ──────────────────────────────────────────────────────────
+   Currently an emoji and a sentence, written inline at four call sites. */
+.ull2 .u-empty { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 2.5rem 1rem; text-align: center; opacity: 0.35; }
+.ull2 .u-empty__t { font-size: 0.85rem; font-weight: 600; }
+.ull2 .u-empty__d { font-size: 0.78rem; opacity: 0.8; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ull2 .u-rank, .ull2 .u-btn, .ull2 .u-row, .ull2 .u-card { transition: none; }
+    .ull2 .u-rank:hover { transform: none; }
+}
+
+
+@media (max-width: 1200px) {
+    .wrap { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem 4rem; }
+    .rail { position: static; }
+    .rail__nav { flex-direction: row; flex-wrap: wrap; border-left: 0; }
+    .rail__item { border-left: 0; border-bottom: 2px solid transparent; }
+    .rail__item.is-on { border-left: 0; border-bottom-color: var(--accent); }
+    .frame__view { height: 40rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+    <aside class="rail">
+        <div class="rail__brand">
+            <b>/information</b>
+            <span>4 approaches &middot; desktop</span>
+        </div>
+        <nav class="rail__nav">
+        <a class="rail__item is-on" href="#shelf"><b>A. Shelf</b><code>blocks that open</code></a>
+        <a class="rail__item" href="#manual"><b>B. Manual</b><code>index + one reader</code></a>
+        <a class="rail__item" href="#hub"><b>C. Hub</b><code>answers up front, long reads behind doors</code></a>
+        <a class="rail__item" href="#document"><b>D. Document</b><code>one page, one scroll</code></a>
+        </nav>
+        <button class="rail__toggle" id="theme-toggle" type="button">
+            <b>Mockup theme</b>
+            <span id="theme-name">Dark</span>
+        </button>
+        <p class="rail__hint">The mockups are live: blocks open, tabs switch, overlays close. Click inside them.</p>
+    </aside>
+
+    <main>
+        <div class="intro">
+            <div class="intro__eyebrow">Design proposal</div>
+            <h1>One page, four ways to enter it</h1>
+            <p class="intro__lead">
+                <b>/information holds five unrelated things</b> &mdash; what the list is, how to read it,
+                the guidelines, two legends, and who to talk to &mdash; and today it stacks them as cards of
+                roughly equal size. The Pending List legend, nine rows of icons, is given a full-width card;
+                the guidelines, thirteen sections across five groups, are given a 600&nbsp;px window to be read
+                through. Weight on the page is currently the opposite of weight in the content.
+            </p>
+            <p class="intro__lead">
+                These four templates each fix that a different way, and they differ in one decision:
+                <b>how much of the page is visible before you ask for it</b>. A. Shelf hides everything behind
+                blocks you open. B. Manual keeps one index visible and one topic open. C. Hub answers the
+                common questions on the surface and puts the long reads behind doors. D. Document shows
+                everything at once, in reading order. The content is identical in all four; only the way in
+                changes.
+            </p>
+            <p class="intro__lead">
+                All four are built from <b>css/ull-v2.css</b>, the component layer the rest of the site was
+                rebuilt on, so none of them introduces a new card, heading or button. Sections 3 and 4 do not
+                exist yet; the copy for them is drafted in <b>design/information/copy.md</b> and the templates
+                render that draft, not lorem.
+            </p>
+            <dl class="rules">
+                <div><dt>Scope</dt><dd>Desktop only, as asked. The mobile route <code>/mobile/info</code> is untouched.</dd></div>
+                <div><dt>Sections</dt><dd>The five you listed. &ldquo;How to submit&rdquo; and &ldquo;how points work&rdquo; are FAQ entries; the glossary belongs to the guidelines.</dd></div>
+                <div><dt>New data</dt><dd>None. Editors come from <code>data/_editors.json</code>, guidelines from <code>js/_guidelines.js</code>, both already loaded.</dd></div>
+                <div><dt>Decided later</dt><dd>Which one ships. Nothing under <code>js/</code> or <code>css/</code> has been changed yet.</dd></div>
+            </dl>
+
+            <div class="sect">
+                <h3>What is wrong with the page today</h3>
+                <ol class="faults">
+                    <li><b>01</b><span><b>The legends outweigh the guidelines.</b> <code>.info-cards</code> is a 1fr&nbsp;1fr grid and the Pending legend is given <code>grid-column: 1 / -1</code> by an inline style, so nine icon rows occupy the full page width while the entire rulebook is read through a <code>max-height: 600px</code> pane below it.</span></li>
+                    <li><b>02</b><span><b>The guidelines scroll inside a page that scrolls.</b> <code>.info-guidelines-content</code> is its own scroll container inside <code>.info-page</code>, so the wheel does one thing or the other depending on where the pointer is. <code>Information.js</code> carries an IntersectionObserver whose only job is to switch that inner <code>overflow-y</code> on and off &mdash; a workaround for a nesting that does not need to exist.</span></li>
+                    <li><b>03</b><span><b>The colouring legend redraws a component the site already has.</b> Ten swatches are written as inline <code>style="background:#5599ff"</code>, and those ten hex values are the same scale as <code>.u-pill--blue</code> &hellip; <code>.u-pill--done</code> in <code>css/ull-v2.css</code>. The legend for a colour system should be drawn with the colour system, or it will drift from it.</span></li>
+                    <li><b>04</b><span><b>Nothing tells a first-time visitor where anything is.</b> The hero defines the list in four lines and the next thing on the page is a list of editors. There is no map of the site, and no answer to the questions that bring people here &mdash; how to submit, how points are earned &mdash; anywhere on it.</span></li>
+                    <li><b>05</b><span><b>The card hover from the pending page is here too.</b> <code>.info-guidelines:hover</code> applies <code>transform: scale(1.006)</code>, which nudges the layout under the pointer. The same tic was removed from the other pages in the last pass.</span></li>
+                </ol>
+            </div>
+        </div>
+
+    <section class="pg" id="shelf">
+        <div class="pg__head">
+            <div class="pg__label">
+                <h2>A. Shelf</h2>
+                <code class="pg__n">blocks that open</code>
+            </div>
+            <code class="pg__files">js/pages/Information.js · css/pages/information.css</code>
+        </div>
+        <p class="pg__idea">The page is a shelf of blocks sized by how much is behind them, and a block opens <em>in place</em> into the full width of the page. Closed, the whole page fits on one screen and every section states its size — &ldquo;13 sections&rdquo;, &ldquo;14 questions&rdquo;, &ldquo;10 colours&rdquo; — so you choose what to read before anything is read at you. Open, the block becomes the page: the guidelines get the full column width and one scroll, the two legends get a small panel, and nothing else moves except downwards. This is the block system you sketched, with the block sizes doing the arguing.</p>
+        <div class="pg__notes">
+            <div class="note note--weight">
+                <div class="note__k">How it settles the weighting</div>
+                <p>Column span is the hierarchy and it is set once: the guidelines take eight of twelve columns, the FAQ four, the two legends two each under a &ldquo;Reference&rdquo; label. A legend can no longer look like a peer of the rulebook because it is a sixth of its size on the shelf, and opened it fills the same width as everything else, so nothing is privileged on the way in.</p>
+            </div>
+            <div class="note note--cost">
+                <div class="note__k">What it costs to build</div>
+                <p>The smallest of the four. One template, one stylesheet; each block is a native &lt;details&gt; so open/close, keyboard and Ctrl+F-into-a-closed-block are the browser's job, not state in Information.js. The guidelines keep their existing TOC markup, minus the fixed-height pane and the IntersectionObserver that patched it.</p>
+            </div>
+            <div class="note note--watch">
+                <div class="note__k">What to watch for</div>
+                <p>Closed blocks are a wall of invitations — someone who wants one fact still has to guess which block holds it, and a deep link has to open the right block on load. Two blocks open at once makes for a long page, so opening one may need to close the others, which is a decision to make before it is built.</p>
+            </div>
+        </div>
+        <div class="frame">
+            <div class="frame__bar"><span></span><span></span><span></span><code>ull.pages.dev/information</code><em>click a block — it opens in place</em></div>
+            <div class="frame__view root" data-mock>
+<style>
+.mk-sh { display: block; overflow-y: auto; height: 100%; }
+.mk-sh .sh-hero { padding: 2.1rem 2.5rem 1.6rem; border-bottom: 1px solid var(--u-line); background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 60%); }
+.mk-sh .sh-hero h1 { margin: 0; font-family: inherit; font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
+.mk-sh .sh-hero p { margin: 0.7rem 0 0; max-width: 44rem; font-size: 0.85rem; line-height: 1.65; opacity: 0.5; }
+.mk-sh .sh-tools { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.25rem; }
+.mk-sh .sh-search { flex: 1; max-width: 22rem; display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.85rem; border-radius: var(--u-r-sm); background: var(--u-fill); border: 1px solid var(--u-line); font-size: 0.8rem; opacity: 0.55; }
+
+.mk-sh .sh-shelf { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(12, 1fr); gap: 0.85rem; padding: 1.6rem 2.5rem 2.5rem; align-items: start; }
+.mk-sh .sh-b { grid-column: span 4; border-radius: var(--u-r); background: var(--u-fill); border: 1px solid var(--u-line); overflow: hidden; }
+.mk-sh .sh-b--lg { grid-column: span 8; }
+.mk-sh .sh-b--sm { grid-column: span 2; }
+.mk-sh .sh-b[open] { grid-column: 1 / -1; background: transparent; border-color: var(--u-line-2); }
+.mk-sh .sh-b > summary { list-style: none; cursor: pointer; padding: 1.15rem 1.25rem; display: block; }
+.mk-sh .sh-b > summary::-webkit-details-marker { display: none; }
+.mk-sh .sh-b:not([open]) > summary:hover { background: var(--u-fill-2); }
+.mk-sh .sh-b[open] > summary { border-bottom: 1px solid var(--u-line); background: var(--u-fill); }
+.mk-sh .sh-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.mk-sh .sh-b h2 { margin: 0.55rem 0 0; font-family: inherit; font-size: 1.15rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+.mk-sh .sh-b--lg h2 { font-size: 1.5rem; }
+.mk-sh .sh-b--sm h2 { font-size: 0.95rem; }
+.mk-sh .sh-b p.sh-d { margin: 0.5rem 0 0; font-size: 0.78rem; line-height: 1.6; opacity: 0.5; }
+.mk-sh .sh-b--sm p.sh-d { display: none; }
+.mk-sh .sh-size { flex-shrink: 0; font-size: 0.66rem; font-weight: 600; opacity: 0.4; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mk-sh .sh-b[open] .sh-size::after { content: ' — click to close'; opacity: 0.7; }
+.mk-sh .sh-peek { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.9rem; }
+.mk-sh .sh-b[open] .sh-peek { display: none; }
+.mk-sh .sh-swatches { display: flex; gap: 0.28rem; margin-top: 0.9rem; }
+.mk-sh .sh-swatches i { width: 0.65rem; height: 0.65rem; border-radius: 50%; display: block; }
+.mk-sh .sh-body { padding: 1.5rem 1.75rem 1.9rem; }
+
+/* Guidelines, opened: a sticky index beside one column of text. No pane of its
+   own — the page is the only thing that scrolls. */
+.mk-sh .sh-gl { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 2.5rem; }
+.mk-sh .sh-toc { position: sticky; top: 0; align-self: start; }
+.mk-sh .sh-toc-g { margin: 1.1rem 0 0.35rem; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; }
+.mk-sh .sh-toc-g:first-child { margin-top: 0; }
+.mk-sh .sh-toc a { display: block; padding: 0.32rem 0.7rem; border-left: 2px solid var(--u-line); font-size: 0.78rem; line-height: 1.45; opacity: 0.5; }
+.mk-sh .sh-toc a.on { border-left-color: var(--color-primary); color: var(--u-accent); opacity: 1; font-weight: 600; }
+.mk-sh .sh-read { max-width: 44rem; }
+.mk-sh .sh-read h3 { margin: 0 0 0.9rem; font-family: inherit; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+.mk-sh .sh-read h4 { margin: 1.6rem 0 0.6rem; font-family: inherit; font-size: 0.9rem; font-weight: 600; }
+.mk-sh .sh-read p, .mk-sh .sh-read li { font-size: 0.85rem; line-height: 1.75; opacity: 0.72; }
+.mk-sh .sh-read p { margin: 0 0 0.85rem; }
+.mk-sh .sh-read ul { margin: 0 0 0.85rem; padding-left: 1.1rem; }
+.mk-sh .sh-read li { margin-bottom: 0.45rem; }
+.mk-sh .sh-crumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.7rem; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--u-accent); }
+.mk-sh .sh-nextprev { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 1.1rem; border-top: 1px solid var(--u-line); font-size: 0.78rem; opacity: 0.55; }
+
+/* Opened-block content. Every block opens into the same reading column width,
+   so a legend and the rulebook are equals once you are inside them — the
+   difference is on the shelf, where it belongs. */
+.mk-sh .sh-lead { margin: 0 0 1.6rem; max-width: 46rem; font-size: 0.9rem; line-height: 1.75; opacity: 0.72; }
+.mk-sh .sh-lead--sm { font-size: 0.82rem; margin-bottom: 1.1rem; }
+
+.mk-sh .sh-faq-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+.mk-sh .sh-q + .sh-q { margin-top: 1.15rem; }
+.mk-sh .sh-q b { display: block; font-size: 0.88rem; font-weight: 600; line-height: 1.45; }
+.mk-sh .sh-q p { margin: 0.4rem 0 0; font-size: 0.82rem; line-height: 1.7; opacity: 0.62; }
+.mk-sh .sh-q code { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; opacity: 0.85; }
+.mk-sh .sh-q a { color: var(--u-accent); text-decoration: underline; text-underline-offset: 0.15em; }
+.mk-sh .sh-points { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--u-line); }
+.mk-sh .sh-pnote { margin: 0 0 1rem; max-width: 44rem; font-size: 0.82rem; line-height: 1.7; opacity: 0.62; }
+.mk-sh .sh-tbl { border-collapse: collapse; margin-bottom: 1.1rem; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.mk-sh .sh-tbl th, .mk-sh .sh-tbl td { padding: 0.4rem 1.1rem 0.4rem 0; text-align: right; }
+.mk-sh .sh-tbl th:first-child, .mk-sh .sh-tbl td:first-child { text-align: left; opacity: 0.6; padding-right: 2rem; }
+.mk-sh .sh-tbl thead th { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.45; border-bottom: 1px solid var(--u-line); }
+.mk-sh .sh-tbl tbody td { border-bottom: 1px solid var(--u-line); }
+
+.mk-sh .sh-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+.mk-sh .sh-mapc { padding: 0.9rem 1rem; }
+.mk-sh .sh-mapc b { display: block; font-size: 0.85rem; font-weight: 600; }
+.mk-sh .sh-mapc span { display: block; margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.55; opacity: 0.5; }
+
+.mk-sh .sh-staff { display: grid; grid-template-columns: 1.35fr 1fr; gap: 2.5rem; }
+.mk-sh .sh-people { display: grid; grid-template-columns: 1fr 1fr; gap: 0.15rem 1.5rem; }
+.mk-sh .sh-p { display: flex; align-items: center; gap: 0.55rem; padding: 0.35rem 0; font-size: 0.85rem; }
+.mk-sh .sh-p b { font-weight: 500; }
+.mk-sh .sh-p .u-chip { margin-left: auto; padding: 0.12rem 0.45rem; font-size: 0.62rem; opacity: 0.65; }
+.mk-sh .sh-where { margin-bottom: 1.25rem; }
+.mk-sh .sh-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.mk-sh .sh-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem 2rem; max-width: 52rem; }
+.mk-sh .sh-legend > div { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; }
+.mk-sh .sh-legend > div > span:last-child { opacity: 0.5; }
+.mk-sh .sh-legend .u-pill { min-width: 8.5rem; justify-content: center; }
+.mk-sh .sh-legend--icons > div { gap: 0.6rem; }
+</style>
+
+<div class="mk-sh ull2">
+    <section class="sh-hero">
+        <h1>Information</h1>
+        <p>Everything about how this list is built, judged and maintained. Six blocks &mdash; open the one you need.</p>
+        <div class="sh-tools">
+            <div class="sh-search">Search every block on this page&hellip;</div>
+            <span class="u-btn u-btn--ghost">Expand all</span>
+        </div>
+    </section>
+
+    <div class="sh-shelf">
+        <!-- Guidelines: eight of twelve columns, and shown here opened. -->
+        <details class="sh-b sh-b--lg">
+            <summary>
+                <div class="sh-top">
+                    <div>
+                        <div class="u-eyebrow" style="margin:0">The rules</div>
+                        <h2>Guidelines</h2>
+                        <p class="sh-d">How records are accepted, how levels are chosen and positioned, what the staff may and may not do. The full rulebook.</p>
+                    </div>
+                    <span class="sh-size">5 groups &middot; 13 sections</span>
+                </div>
+                <div class="sh-peek">
+                    <span class="u-chip">General</span>
+                    <span class="u-chip">Acceptance of Records</span>
+                    <span class="u-chip">Level Placement</span>
+                    <span class="u-chip">Content Policy</span>
+                    <span class="u-chip">Technical Support</span>
+                </div>
+            </summary>
+            <div class="sh-body sh-gl">
+                <nav class="sh-toc">
+                    <div class="sh-toc-g">General</div>
+                    <a href="#">Introduction</a>
+                    <a href="#">Glossary</a>
+                    <div class="sh-toc-g">Acceptance of Records</div>
+                    <a href="#">Definition of a World Record</a>
+                    <a href="#" class="on">Requirements for proof of legitimacy</a>
+                    <a href="#">Tolerance and leniency policy</a>
+                    <a href="#">Cheating and penalties</a>
+                    <div class="sh-toc-g">Level Placement</div>
+                    <a href="#">List structure</a>
+                    <a href="#">Level selection</a>
+                    <a href="#">Determining and adjusting positions</a>
+                    <div class="sh-toc-g">Content Policy</div>
+                    <a href="#">List records</a>
+                    <a href="#">Levels and thumbnails</a>
+                    <div class="sh-toc-g">Technical Support</div>
+                    <a href="#">Staff roles</a>
+                    <a href="#">Ethical standards</a>
+                </nav>
+                <div class="sh-read">
+                    <div class="sh-crumb">Acceptance of Records</div>
+                    <h3>Requirements for proof of legitimacy</h3>
+                    <p>Before submitting a record, you must familiarise yourself with the list of mandatory proof of legitimacy, as well as the requirements for it, to ensure that the record you are submitting complies with them &mdash; otherwise it will be rejected immediately, before the verification stage.</p>
+                    <h4>1. Video recording of the record</h4>
+                    <p>The recording must show the attempt in full, from the starting percentage to the point of death or to 100%. It may contain editing elements intended to conceal personal information, in which case the original recording must be linked in the notes field.</p>
+                    <ul>
+                        <li>the level must be the version listed on this site;</li>
+                        <li>the endscreen must be visible, or the recording must continue past the completion;</li>
+                        <li>cuts are permitted only where the raw footage is attached alongside.</li>
+                    </ul>
+                    <h4>2. Audio</h4>
+                    <p>In-game source audio or clicks. Either is accepted, both are strongly preferred; where neither is present, raw footage that has them must be attached.</p>
+                    <div class="sh-nextprev">
+                        <span>&larr; Definition of a World Record</span>
+                        <span>Tolerance and leniency policy &rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="sh-b">
+            <summary>
+                <div class="sh-top">
+                    <div>
+                        <div class="u-eyebrow" style="margin:0">Answers</div>
+                        <h2>FAQ</h2>
+                        <p class="sh-d">Submitting a record, getting a level listed, how leaderboard points are worked out, and what happens when a level moves.</p>
+                    </div>
+                    <span class="sh-size">14 questions</span>
+                </div>
+                <div class="sh-peek">
+                    <span class="u-chip">How do I submit a record?</span>
+                    <span class="u-chip">How are points calculated?</span>
+                </div>
+            </summary>
+            <div class="sh-body sh-faq">
+                <div class="sh-faq-groups">
+                    <div>
+                        <div class="u-eyebrow">Getting on the list</div>
+                        <div class="sh-q"><b>How does a level get on the list?</b><p>Staff select it. There is no queue a creator joins: moderators assess levels against the Level Selection criteria in the guidelines &mdash; classic gameplay, a public recording, an intended official-server release, and a credible chance of being rated &mdash; and place the ones that pass on the Pending List until an exact position is settled.</p></div>
+                        <div class="sh-q"><b>My level isn&rsquo;t listed. Can I put it forward?</b><p>Raise it in <code>#list-discussion</code> with a public recording of its current state. It is not a submission form, and it goes through the same criteria as everything else.</p></div>
+                        <div class="sh-q"><b>Why is a level on Pending and not on the list?</b><p>It passed selection but has no exact position yet. Pending shows the range it is expected to land in and whether it is moving up or down inside it.</p></div>
+                        <div class="sh-q"><b>A level&rsquo;s information is wrong.</b><p>Report it in <code>#level-update-reporting</code> with something to back it up &mdash; footage, a creator statement, tester feedback.</p></div>
+                    </div>
+                    <div>
+                        <div class="u-eyebrow">Records</div>
+                        <div class="sh-q"><b>How do I submit a record?</b><p>Through the Discord server. Read <a href="#">Acceptance of Records</a> first &mdash; a record without the required proof is rejected before it is assessed, not sent back for more.</p></div>
+                        <div class="sh-q"><b>What proof does a record need?</b><p>A complete uncut playthrough (raw footage attached if your video has cuts), source audio or clicks, and a cheat indicator and fps/tps display where your mod menu provides them &mdash; on the version of the level this site lists.</p></div>
+                        <div class="sh-q"><b>What counts as a world record here?</b><p>Two things, tracked separately: the best completion from 0%, and the longest single run on the current version of the level.</p></div>
+                    </div>
+                </div>
+                <div class="sh-points">
+                    <div class="u-eyebrow">How points are calculated</div>
+                    <p class="sh-pnote">From two things only: the level&rsquo;s rank in <b>All Levels</b>, and the percentage of the record. A verification is worth twice a 100% record on the same level; completing a level that isn&rsquo;t verified yet is worth 0.8 of a verification.</p>
+                    <table class="sh-tbl">
+                        <thead><tr><th></th><th>#1</th><th>#10</th><th>#50</th><th>#100</th></tr></thead>
+                        <tbody>
+                            <tr><td>100% record</td><td>1459</td><td>1196</td><td>663</td><td>425</td></tr>
+                            <tr><td>50% record</td><td>851</td><td>698</td><td>387</td><td>248</td></tr>
+                            <tr><td>Verification</td><td>2919</td><td>2392</td><td>1325</td><td>849</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="sh-pnote">Position is worth far more than percentage: a 50% on #1 beats a 100% on #100. And because points follow a level&rsquo;s <em>current</em> rank, a total changes when levels move, without anyone submitting anything.</p>
+                </div>
+            </div>
+        </details>
+
+        <details class="sh-b">
+            <summary>
+                <div class="sh-top">
+                    <div>
+                        <div class="u-eyebrow" style="margin:0">Start here</div>
+                        <h2>What this list is</h2>
+                        <p class="sh-d">What the list forecasts, what the three tiers mean, and which page holds what.</p>
+                    </div>
+                    <span class="sh-size">4 min read</span>
+                </div>
+                <div class="sh-peek">
+                    <span class="u-chip">All Levels</span>
+                    <span class="u-chip">Main</span>
+                    <span class="u-chip">Future</span>
+                    <span class="u-chip">Pending</span>
+                    <span class="u-chip">+4</span>
+                </div>
+            </summary>
+            <div class="sh-body">
+                <p class="sh-lead">The Upcoming Levels List catalogues upcoming Top 1&ndash;100 Extreme Demons projected to be verified and placed on the Demonlist, along with unrated Extreme Demons that would have qualified for a rating when they were made. It is a forecast of what the Demonlist is about to look like &mdash; not a record of what has already happened. Positions are estimates made by staff against written criteria, and they move as levels progress.</p>
+                <div class="u-eyebrow">Where is what</div>
+                <div class="sh-map">
+                    <a class="u-card sh-mapc" href="#"><b>All Levels</b><span>Every level with a conceivable chance. A level&rsquo;s rank here is what leaderboard points are calculated from.</span></a>
+                    <a class="u-card sh-mapc" href="#"><b>Main List</b><span>Same order, higher bar: levels that meet the standards for an official rating.</span></a>
+                    <a class="u-card sh-mapc" href="#"><b>Future List</b><span>The highest bar of the three &mdash; levels very likely to be verified and published soon.</span></a>
+                    <a class="u-card sh-mapc" href="#"><b>Pending</b><span>Accepted, but not yet placed. Shows the expected range and the direction it is moving.</span></a>
+                    <a class="u-card sh-mapc" href="#"><b>Upcoming</b><span>The same levels ordered by how close they are to verification, not by difficulty.</span></a>
+                    <a class="u-card sh-mapc" href="#"><b>Leaderboard</b><span>Players ranked by what their records, runs and verifications are worth.</span></a>
+                    <a class="u-card sh-mapc" href="#"><b>Events</b><span>Level of the Day, Level of the Month, and the level closest to verification.</span></a>
+                    <a class="u-card sh-mapc" href="#"><b>A level&rsquo;s page</b><span>Status, decoration and verification progress, records, creators, and its rank in each tier.</span></a>
+                </div>
+            </div>
+        </details>
+
+        <details class="sh-b">
+            <summary>
+                <div class="sh-top">
+                    <div>
+                        <div class="u-eyebrow" style="margin:0">Who to talk to</div>
+                        <h2>Staff &amp; contact</h2>
+                        <p class="sh-d">The people who maintain the list, and where to take a record, a correction or a bug.</p>
+                    </div>
+                    <span class="sh-size">12 people</span>
+                </div>
+                <div class="sh-peek">
+                    <span class="u-chip"><img class="mk-inv" src="../../assets/crown.svg" alt="" width="12" height="12" />QwidziT</span>
+                    <span class="u-chip"><img class="mk-inv" src="../../assets/user-gear.svg" alt="" width="12" height="12" />exiled_shade</span>
+                    <span class="u-chip">+10</span>
+                </div>
+            </summary>
+            <div class="sh-body">
+                <div class="sh-staff">
+                    <div>
+                        <div class="u-eyebrow">The team <span class="u-count">12</span></div>
+                        <div class="sh-people">
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/crown.svg" alt="" width="15" height="15" /><b>QwidziT</b><span class="u-chip">List Leader</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-gear.svg" alt="" width="15" height="15" /><b>exiled_shade</b><span class="u-chip">Admin</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>niroi</b><span class="u-chip">Elder Mod</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>Keres</b><span class="u-chip">Elder Mod</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>LukeLGamer</b><span class="u-chip">Elder Mod</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>ItzDel1ghtfuL</b><span class="u-chip">Elder Mod</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-lock.svg" alt="" width="15" height="15" /><b>Terralith</b><span class="u-chip">Mod</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-lock.svg" alt="" width="15" height="15" /><b>TheCatAstronaut</b><span class="u-chip">Mod</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>Prometheus</b><span class="u-chip">Dev</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>NikoYakorem</b><span class="u-chip">Dev</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>ausansdev</b><span class="u-chip">Dev</span></div>
+                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>QwidziT</b><span class="u-chip">Dev</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="u-eyebrow">Where to take what</div>
+                        <dl class="u-dl sh-where">
+                            <dt>A record</dt><dd>The Discord server</dd>
+                            <dt>A level that should be listed</dt><dd>#list-discussion</dd>
+                            <dt>Information that is out of date</dt><dd>#level-update-reporting</dd>
+                            <dt>Something broken on the site</dt><dd>Prometheus</dd>
+                            <dt>A complaint about staff</dt><dd>An Admin, or the List Leader</dd>
+                        </dl>
+                        <div class="sh-links">
+                            <a class="u-btn" href="#"><img src="../../assets/discord.svg" alt="" width="14" height="14" />discord.gg/QRX47v2qyC</a>
+                            <a class="u-btn u-btn--ghost" href="#"><img class="mk-inv" src="../../assets/x.svg" alt="" width="12" height="12" />@ull_gd</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="sh-b sh-b--sm">
+            <summary>
+                <div class="sh-top">
+                    <div>
+                        <div class="u-eyebrow" style="margin:0">Reference</div>
+                        <h2>Level colouring</h2>
+                    </div>
+                </div>
+                <div class="sh-swatches">
+                    <i style="background:#5599ff"></i><i style="background:#33dddd"></i><i style="background:#55ee55"></i>
+                    <i style="background:#ffee55"></i><i style="background:#ffaa44"></i><i style="background:#ff6622"></i>
+                    <i style="background:#ff5555"></i><i style="background:#bbbbbb"></i>
+                </div>
+            </summary>
+            <div class="sh-body">
+                <p class="sh-lead sh-lead--sm">A level&rsquo;s name is coloured by its state when Level Coloring is on. It is the same scale as the status pill on the level&rsquo;s own page.</p>
+                <div class="sh-legend">
+                    <div><span class="u-pill u-pill--blue"><i></i>Layout</span><span>No decoration yet</span></div>
+                    <div><span class="u-pill u-pill--cyan"><i></i>Early deco</span><span>1&ndash;29% decorated</span></div>
+                    <div><span class="u-pill u-pill--green"><i></i>Mid deco</span><span>30&ndash;69% decorated</span></div>
+                    <div><span class="u-pill u-pill--yellow"><i></i>Late deco</span><span>70&ndash;99% decorated</span></div>
+                    <div><span class="u-pill u-pill--amber"><i></i>Deco done</span><span>Decoration finished, not in verification</span></div>
+                    <div><span class="u-pill u-pill--orange"><i></i>Early verify</span><span>Best run 30&ndash;59%</span></div>
+                    <div><span class="u-pill u-pill--red"><i></i>Late verify</span><span>Best run 60&ndash;99%</span></div>
+                    <div><span class="u-pill u-pill--done"><i></i>Verified</span><span>Beaten, not yet rated</span></div>
+                    <div><span class="u-pill"><i></i>Rated</span><span>Verified and rated in game</span></div>
+                    <div><span class="u-pill u-pill--done">&#128683; Pending removal</span><span>No longer meets the criteria it was added under</span></div>
+                </div>
+            </div>
+        </details>
+
+        <details class="sh-b sh-b--sm">
+            <summary>
+                <div class="sh-top">
+                    <div>
+                        <div class="u-eyebrow" style="margin:0">Reference</div>
+                        <h2>Pending icons</h2>
+                    </div>
+                </div>
+                <div class="sh-swatches">
+                    <img src="../../assets/move-up.svg" alt="" width="14" height="14" />
+                    <img src="../../assets/move-down.svg" alt="" width="14" height="14" />
+                    <img src="../../assets/1.svg" alt="" width="14" height="14" />
+                    <img src="../../assets/10.svg" alt="" width="14" height="14" />
+                    <img src="../../assets/question.svg" alt="" width="14" height="14" />
+                </div>
+            </summary>
+            <div class="sh-body">
+                <p class="sh-lead sh-lead--sm">Icons on the Pending List say where a level is expected to land and which way it is moving.</p>
+                <div class="sh-legend sh-legend--icons">
+                    <div><img src="../../assets/move-up.svg" alt="" width="18" height="18" /><span>Moving up</span></div>
+                    <div><img src="../../assets/move-down.svg" alt="" width="18" height="18" /><span>Moving down</span></div>
+                    <div><img src="../../assets/1.svg" alt="" width="18" height="18" /><span>Pending #1</span></div>
+                    <div><img src="../../assets/10.svg" alt="" width="18" height="18" /><span>Pending Top 10</span></div>
+                    <div><img src="../../assets/20.svg" alt="" width="18" height="18" /><span>Pending Top 20</span></div>
+                    <div><img src="../../assets/30.svg" alt="" width="18" height="18" /><span>Pending Top 30</span></div>
+                    <div><img src="../../assets/50.svg" alt="" width="18" height="18" /><span>Pending Top 50</span></div>
+                    <div><img src="../../assets/75.svg" alt="" width="18" height="18" /><span>Pending Top 75</span></div>
+                    <div><img src="../../assets/question.svg" alt="" width="18" height="18" /><span>Unknown placement</span></div>
+                </div>
+            </div>
+        </details>
+    </div>
+</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pg" id="manual">
+        <div class="pg__head">
+            <div class="pg__label">
+                <h2>B. Manual</h2>
+                <code class="pg__n">index + one reader</code>
+            </div>
+            <code class="pg__files">js/pages/Information.js · css/pages/information.css</code>
+        </div>
+        <p class="pg__idea">The page stops being a stack of cards and becomes a small documentation site: one index on the left that lists <em>everything</em> on the page at the same grain &mdash; the two legends sit in it as two entries, the guidelines as thirteen &mdash; and one reader on the right that shows exactly one topic at a time, at full width. It is the layout the guidelines block already tries to be, promoted to run the whole page instead of being trapped in a 600&nbsp;px window inside it. One search field covers the guidelines, the FAQ and the legends together.</p>
+        <div class="pg__notes">
+            <div class="note note--weight">
+                <div class="note__k">How it settles the weighting</div>
+                <p>The index is the hierarchy, and it is honest by construction: an entry is one line whatever it holds, and the guidelines occupy thirteen of the twenty-one lines because there are thirteen of them. The legends stop competing on area &mdash; opened, every topic is the same reader, so the Pending legend gets a screen with nine rows on it and looks exactly as small as it is.</p>
+            </div>
+            <div class="note note--cost">
+                <div class="note__k">What it costs to build</div>
+                <p>The largest of the four, and the only one that needs real routing: every topic wants its own URL (/information/guidelines/cheating) so links into a rule survive, which means either hash routes or child routes under /information, plus a scroll-to-top on change and a mobile fallback since a two-pane layout has none.</p>
+            </div>
+            <div class="note note--watch">
+                <div class="note__k">What to watch for</div>
+                <p>A reader who does not already know what they want sees an index and nothing else &mdash; there is no front page, no first paragraph, and no way to skim the whole thing. It is also the least like the rest of the site: no other page here is a two-pane app, so /information would look like a different product unless the shell is kept familiar.</p>
+            </div>
+        </div>
+        <div class="frame">
+            <div class="frame__bar"><span></span><span></span><span></span><code>ull.pages.dev/information</code><em>three topics switchable — click the index</em></div>
+            <div class="frame__view root" data-mock>
+<style>
+.mk-man { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.mk-man input.man-r { position: absolute; opacity: 0; pointer-events: none; }
+
+.mk-man .man-top { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1rem 1.75rem; border-bottom: 1px solid var(--u-line); flex-shrink: 0; }
+.mk-man .man-top h1 { margin: 0; font-family: inherit; font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+.mk-man .man-top p { margin: 0.2rem 0 0; font-size: 0.72rem; opacity: 0.45; }
+.mk-man .man-search { display: flex; align-items: center; gap: 0.5rem; width: 20rem; padding: 0.5rem 0.8rem; border-radius: var(--u-r-sm); background: var(--u-fill); border: 1px solid var(--u-line); font-size: 0.78rem; opacity: 0.55; }
+.mk-man .man-search b { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; opacity: 0.6; font-weight: 500; }
+
+.mk-man .man-wrap { display: grid; grid-template-columns: 17rem minmax(0, 1fr); flex: 1; min-height: 0; }
+
+/* ── Index ── */
+.mk-man .man-ix { border-right: 1px solid var(--u-line); overflow-y: auto; padding: 1rem 0 2rem; }
+.mk-man .man-g { padding: 1.15rem 1.4rem 0.35rem; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; }
+.mk-man .man-g:first-child { padding-top: 0.2rem; }
+.mk-man .man-i { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.4rem; font-size: 0.8rem; line-height: 1.45; opacity: 0.55; cursor: pointer; border-left: 2px solid transparent; }
+.mk-man .man-i:hover { opacity: 0.9; background: var(--u-fill); }
+.mk-man .man-i small { margin-left: auto; font-size: 0.62rem; opacity: 0.55; font-variant-numeric: tabular-nums; }
+.mk-man .man-sub { padding-left: 2.2rem; font-size: 0.78rem; }
+.mk-man .man-gl-g { padding: 0.75rem 1.4rem 0.25rem; font-size: 0.66rem; font-weight: 600; opacity: 0.42; }
+
+/* ── Reader ── */
+.mk-man .man-read { overflow-y: auto; }
+.mk-man .man-view { display: none; padding: 2.25rem 3rem 3rem; max-width: 52rem; }
+.mk-man .man-crumb { display: flex; align-items: center; gap: 0.45rem; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--u-accent); }
+.mk-man .man-crumb span { opacity: 0.4; }
+.mk-man .man-view h2 { margin: 0.75rem 0 0; font-family: inherit; font-size: 1.65rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; }
+.mk-man .man-stand { margin: 0.8rem 0 1.9rem; font-size: 0.92rem; line-height: 1.7; opacity: 0.55; }
+.mk-man .man-view h3 { margin: 1.9rem 0 0.7rem; font-family: inherit; font-size: 0.95rem; font-weight: 600; }
+.mk-man .man-view p, .mk-man .man-view li { font-size: 0.85rem; line-height: 1.8; opacity: 0.72; }
+.mk-man .man-view p { margin: 0 0 0.9rem; }
+.mk-man .man-view ul { margin: 0 0 0.9rem; padding-left: 1.1rem; }
+.mk-man .man-view li { margin-bottom: 0.5rem; }
+.mk-man .man-foot { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--u-line); font-size: 0.78rem; opacity: 0.5; }
+
+.mk-man .man-q { padding: 1.05rem 0; border-bottom: 1px solid var(--u-line); }
+.mk-man .man-q:first-of-type { border-top: 1px solid var(--u-line); }
+.mk-man .man-q b { display: block; font-size: 0.9rem; font-weight: 600; }
+.mk-man .man-q p { margin: 0.45rem 0 0; font-size: 0.83rem; }
+.mk-man .man-qg { margin: 2rem 0 0.9rem; }
+
+.mk-man .man-legend { display: grid; gap: 0.5rem; }
+.mk-man .man-legend > div { display: flex; align-items: center; gap: 0.9rem; padding: 0.4rem 0; font-size: 0.82rem; }
+.mk-man .man-legend .u-pill { min-width: 9rem; justify-content: center; }
+.mk-man .man-legend span:last-child { opacity: 0.55; }
+
+/* Radio-driven view switching, for the mockup only: in the app this is the
+   route. Kept out of the markup's reading order — the inputs sit before the
+   wrapper so a plain sibling selector can reach the views. */
+.mk-man #man-a:checked ~ .man-wrap .man-view--a,
+.mk-man #man-b:checked ~ .man-wrap .man-view--b,
+.mk-man #man-c:checked ~ .man-wrap .man-view--c { display: block; }
+.mk-man #man-a:checked ~ .man-wrap label[for="man-a"],
+.mk-man #man-b:checked ~ .man-wrap label[for="man-b"],
+.mk-man #man-c:checked ~ .man-wrap label[for="man-c"] { opacity: 1; font-weight: 600; color: var(--u-accent); border-left-color: var(--color-primary); background: var(--u-fill); }
+</style>
+
+<div class="mk-man ull2">
+    <input class="man-r" type="radio" name="mk-man-view" id="man-a" checked />
+    <input class="man-r" type="radio" name="mk-man-view" id="man-b" />
+    <input class="man-r" type="radio" name="mk-man-view" id="man-c" />
+
+    <header class="man-top">
+        <div>
+            <h1>Information</h1>
+            <p>Guidelines, reference and answers for the Upcoming Levels List</p>
+        </div>
+        <div class="man-search">Search guidelines, FAQ and legends<b>Ctrl K</b></div>
+    </header>
+
+    <div class="man-wrap">
+        <nav class="man-ix">
+            <div class="man-g">Start here</div>
+            <label class="man-i" for="man-a">What this list is</label>
+            <div class="man-i">Where is what</div>
+            <div class="man-i">How to read a level</div>
+
+            <div class="man-g">Answers</div>
+            <label class="man-i" for="man-b">FAQ<small>14</small></label>
+
+            <div class="man-g">Reference</div>
+            <label class="man-i" for="man-c">Level colouring<small>10</small></label>
+            <div class="man-i">Pending list icons<small>9</small></div>
+
+            <div class="man-g">Guidelines</div>
+            <div class="man-gl-g">General</div>
+            <div class="man-i man-sub">Introduction</div>
+            <div class="man-i man-sub">Glossary</div>
+            <div class="man-gl-g">Acceptance of Records</div>
+            <div class="man-i man-sub">Definition of a World Record</div>
+            <div class="man-i man-sub">Proof of legitimacy</div>
+            <div class="man-i man-sub">Tolerance and leniency</div>
+            <div class="man-i man-sub">Cheating and penalties</div>
+            <div class="man-gl-g">Level Placement</div>
+            <div class="man-i man-sub">List structure</div>
+            <div class="man-i man-sub">Level selection</div>
+            <div class="man-i man-sub">Determining positions</div>
+            <div class="man-gl-g">Content Policy</div>
+            <div class="man-i man-sub">List records</div>
+            <div class="man-i man-sub">Levels and thumbnails</div>
+            <div class="man-gl-g">Technical Support</div>
+            <div class="man-i man-sub">Staff roles</div>
+            <div class="man-i man-sub">Ethical standards</div>
+
+            <div class="man-g">People</div>
+            <div class="man-i">Staff &amp; contact<small>12</small></div>
+        </nav>
+
+        <div class="man-read">
+            <!-- A. Start here -->
+            <article class="man-view man-view--a">
+                <div class="man-crumb">Start here <span>&rsaquo;</span> <span>What this list is</span></div>
+                <h2>What this list is</h2>
+                <p class="man-stand">A forecast of what the Demonlist is about to look like &mdash; not a record of what has already happened.</p>
+                <p>The Upcoming Levels List catalogues upcoming Top 1&ndash;100 Extreme Demons in Geometry Dash that are projected to be verified and placed on the Demonlist, along with unrated Extreme Demons that would have qualified for a rating when they were made.</p>
+                <p>Nothing here is official. Positions are estimates made by the list staff against written criteria, and they move as levels progress. Levels that are already rated are placed in strict accordance with their ranking on Pointercrate.</p>
+                <h3>The three tiers</h3>
+                <p>The order of levels is the same in all three. What changes is the threshold to appear at all.</p>
+                <ul>
+                    <li><b>All Levels</b> &mdash; every level with a conceivable chance of being verified and published. A level&rsquo;s rank here is what leaderboard points are calculated from.</li>
+                    <li><b>Main List</b> &mdash; levels that meet the standards required to be considered for an official rating.</li>
+                    <li><b>Future List</b> &mdash; levels very likely to be verified and published soon.</li>
+                </ul>
+                <h3>How to read a level</h3>
+                <p>The colour of a name is the level&rsquo;s state, from layout through decoration and verification to rated. Two percentages follow every level &mdash; how much of the decoration is done, and how far the best run has got. The badges are its position in each tier: a level can be #4 in All Levels and #2 in Future List at once.</p>
+                <div class="man-foot"><span></span><span>Where is what &rarr;</span></div>
+            </article>
+
+            <!-- B. FAQ -->
+            <article class="man-view man-view--b">
+                <div class="man-crumb">Answers <span>&rsaquo;</span> <span>FAQ</span></div>
+                <h2>Frequently asked</h2>
+                <p class="man-stand">Fourteen questions, four groups. Anything longer than an answer lives in the guidelines and is linked from here.</p>
+                <div class="u-eyebrow man-qg">Records</div>
+                <div class="man-q"><b>How do I submit a record?</b><p>Through the list&rsquo;s Discord server. Read <a href="#">Acceptance of Records</a> first &mdash; a record that arrives without the required proof is rejected before anyone assesses it, not sent back for more.</p></div>
+                <div class="man-q"><b>What proof does a record need?</b><p>A complete, uncut playthrough (if your video has cuts, attach the raw footage as well), the level&rsquo;s audio or your clicks, and a cheat indicator and fps/tps display where your mod menu provides them. The record has to be on the version of the level this site lists.</p></div>
+                <div class="man-q"><b>What counts as a world record here?</b><p>Two things, tracked separately: the best completion from 0%, and the world record run &mdash; the longest single segment on the current version of the level.</p></div>
+                <div class="u-eyebrow man-qg">Points and the leaderboard</div>
+                <div class="man-q"><b>How are points calculated?</b><p>From the level&rsquo;s rank in All Levels and the percentage of your record. A verification is worth twice a 100% record on the same level; completing a level that is not verified yet is worth 0.8 of a verification. A 100% on&nbsp;#1 is 1459 points, on #50 it is 663, and a 50% on #1 is 851 &mdash; position is worth much more than percentage.</p></div>
+                <div class="man-q"><b>Why did my total change when I didn&rsquo;t submit anything?</b><p>Because points are calculated from a level&rsquo;s current rank, and on a list of upcoming levels ranks move constantly.</p></div>
+                <div class="man-foot"><span>&larr; Where is what</span><span>Level colouring &rarr;</span></div>
+            </article>
+
+            <!-- C. Reference -->
+            <article class="man-view man-view--c">
+                <div class="man-crumb">Reference <span>&rsaquo;</span> <span>Level colouring</span></div>
+                <h2>Level colouring</h2>
+                <p class="man-stand">When Level Coloring is on, a level&rsquo;s name is coloured by its state. It is the same scale as the status pill on the level&rsquo;s own page, so a level reads the same everywhere.</p>
+                <div class="man-legend">
+                    <div><span class="u-pill u-pill--blue"><i></i>Layout</span><span>No decoration yet</span></div>
+                    <div><span class="u-pill u-pill--cyan"><i></i>Early deco</span><span>1&ndash;29% decorated</span></div>
+                    <div><span class="u-pill u-pill--green"><i></i>Mid deco</span><span>30&ndash;69% decorated</span></div>
+                    <div><span class="u-pill u-pill--yellow"><i></i>Late deco</span><span>70&ndash;99% decorated</span></div>
+                    <div><span class="u-pill u-pill--amber"><i></i>Deco done</span><span>Decoration finished, verification not started</span></div>
+                    <div><span class="u-pill u-pill--orange"><i></i>Early verify</span><span>Best run 30&ndash;59%</span></div>
+                    <div><span class="u-pill u-pill--red"><i></i>Late verify</span><span>Best run 60&ndash;99%</span></div>
+                    <div><span class="u-pill u-pill--done"><i></i>Verified</span><span>Beaten, not yet rated</span></div>
+                    <div><span class="u-pill"><i></i>Rated</span><span>Verified and rated in game</span></div>
+                    <div><span class="u-pill u-pill--done">&#128683;&nbsp;Pending removal</span><span>No longer meets the criteria it was added under</span></div>
+                </div>
+                <div class="man-foot"><span>&larr; FAQ</span><span>Pending list icons &rarr;</span></div>
+            </article>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pg" id="hub">
+        <div class="pg__head">
+            <div class="pg__label">
+                <h2>C. Hub</h2>
+                <code class="pg__n">answers up front, long reads behind doors</code>
+            </div>
+            <code class="pg__files">js/pages/Information.js · css/pages/information.css</code>
+        </div>
+        <p class="pg__idea">The page answers first and files second. Above the fold: what the list is in three lines, and a map of the site &mdash; eight cards saying which page holds what, which is the thing a first-time visitor actually needs and the thing the page has never had. Below that, three doors sized by weight, and a reference strip. A door opens into a full-screen reader over the page, with the page still underneath, and closes back to exactly where you were. Nothing long is ever <em>on</em> the hub; the hub is a table of contents that happens to answer the easy questions itself.</p>
+        <div class="pg__notes">
+            <div class="note note--weight">
+                <div class="note__k">How it settles the weighting</div>
+                <p>Weight is expressed twice over. On the hub the guidelines are a door twice the size of the others, carrying their five groups and a section count, while the two legends are a single quiet strip at the bottom under &ldquo;Reference&rdquo; &mdash; a strip, not a card, so they cannot read as sections. And a door opens to the full viewport, so the rulebook is finally read on a whole screen rather than in a window inside a card.</p>
+            </div>
+            <div class="note note--cost">
+                <div class="note__k">What it costs to build</div>
+                <p>Middling. The hub is static markup; the doors need one overlay component with a scroll lock, focus trap and Escape handling, reused three times. The map cards are the only genuinely new content, and they are eight lines of copy.</p>
+            </div>
+            <div class="note note--watch">
+                <div class="note__k">What to watch for</div>
+                <p>An overlay is a modal, and modals hide the page's depth: nothing on the hub tells you how long the guidelines are until you are inside them. It also needs to be deep-linkable (/information?open=guidelines) or a link to a rule cannot be shared, and history has to work &mdash; Back should close the door, not leave the page.</p>
+            </div>
+        </div>
+        <div class="frame">
+            <div class="frame__bar"><span></span><span></span><span></span><code>ull.pages.dev/information</code><em>click "Open the guidelines" to see a door open</em></div>
+            <div class="frame__view root" data-mock>
+<style>
+.mk-hub { position: relative; display: block; overflow-y: auto; height: 100%; }
+.mk-hub input.hub-r { position: absolute; opacity: 0; pointer-events: none; }
+
+.mk-hub .hub-hero { padding: 2.25rem 2.5rem 1.9rem; border-bottom: 1px solid var(--u-line); background: linear-gradient(150deg, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 58%); }
+.mk-hub .hub-hero h1 { margin: 0; font-family: inherit; font-size: 2.1rem; font-weight: 700; line-height: 1.08; letter-spacing: -0.035em; }
+.mk-hub .hub-hero p { margin: 0.8rem 0 0; max-width: 42rem; font-size: 0.88rem; line-height: 1.7; opacity: 0.55; }
+
+.mk-hub .hub-body { padding: 1.9rem 2.5rem 2.5rem; display: flex; flex-direction: column; gap: 1.9rem; }
+
+.mk-hub .hub-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+.mk-hub .hub-mapc { padding: 0.85rem 0.95rem; }
+.mk-hub .hub-mapc b { display: block; font-size: 0.82rem; font-weight: 600; }
+.mk-hub .hub-mapc span { display: block; margin-top: 0.28rem; font-size: 0.72rem; line-height: 1.5; opacity: 0.48; }
+
+.mk-hub .hub-doors { display: grid; grid-template-columns: 1.6fr 1fr; gap: 0.85rem; align-items: start; }
+.mk-hub .hub-door { display: block; width: 100%; text-align: left; padding: 1.5rem 1.6rem; border-radius: var(--u-r); background: var(--u-fill); border: 1px solid var(--u-line); cursor: pointer; color: inherit; font-family: inherit; transition: border-color 120ms ease; }
+.mk-hub .hub-door:hover { border-color: var(--u-line-2); }
+.mk-hub .hub-door h2 { margin: 0.5rem 0 0; font-family: inherit; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.mk-hub .hub-door p { margin: 0.5rem 0 0; font-size: 0.79rem; line-height: 1.65; opacity: 0.5; }
+.mk-hub .hub-door--main { grid-row: span 2; min-height: 15.5rem; display: flex; flex-direction: column; background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 10%, transparent) 0%, var(--u-fill) 65%); }
+.mk-hub .hub-door--main h2 { font-size: 1.75rem; }
+.mk-hub .hub-door--main p { font-size: 0.85rem; max-width: 30rem; }
+.mk-hub .hub-groups { display: grid; gap: 0.1rem; margin: 1.35rem 0 1.25rem; }
+.mk-hub .hub-groups div { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.32rem 0; border-top: 1px solid var(--u-line); font-size: 0.79rem; }
+.mk-hub .hub-groups div span { margin-left: auto; font-size: 0.68rem; opacity: 0.4; font-variant-numeric: tabular-nums; }
+.mk-hub .hub-door--main .u-btn { align-self: flex-start; margin-top: auto; }
+
+.mk-hub .hub-ref { border-radius: var(--u-r); border: 1px dashed var(--u-line-2); padding: 1rem 1.25rem; display: grid; grid-template-columns: 7rem 1fr auto; gap: 1.25rem; align-items: center; }
+.mk-hub .hub-ref + .hub-ref { margin-top: -1.35rem; }
+.mk-hub .hub-refk { font-size: 0.7rem; font-weight: 600; opacity: 0.45; }
+.mk-hub .hub-refb { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.mk-hub .hub-refb i { width: 0.8rem; height: 0.8rem; border-radius: 50%; display: block; }
+.mk-hub .hub-refb em { font-style: normal; font-size: 0.74rem; opacity: 0.4; margin-left: 0.3rem; }
+.mk-hub .hub-open { font-size: 0.74rem; font-weight: 600; opacity: 0.55; white-space: nowrap; cursor: pointer; }
+
+/* ── A door, opened: the reader takes the whole viewport, the hub stays behind it ── */
+.mk-hub .hub-ov { display: none; position: absolute; inset: 0; z-index: 5; background: var(--color-background); flex-direction: column; }
+.mk-hub #hub-ov:checked ~ .hub-ov { display: flex; }
+.mk-hub .hub-ovtop { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.75rem; border-bottom: 1px solid var(--u-line); flex-shrink: 0; }
+.mk-hub .hub-ovtop b { font-size: 0.9rem; font-weight: 700; }
+.mk-hub .hub-ovtop .hub-x { margin-left: auto; cursor: pointer; font-size: 0.75rem; opacity: 0.5; display: flex; align-items: center; gap: 0.4rem; }
+.mk-hub .hub-ovsearch { width: 17rem; padding: 0.42rem 0.75rem; border-radius: var(--u-r-sm); background: var(--u-fill); border: 1px solid var(--u-line); font-size: 0.75rem; opacity: 0.5; }
+.mk-hub .hub-ovbody { flex: 1; min-height: 0; display: grid; grid-template-columns: 16rem minmax(0, 1fr); }
+.mk-hub .hub-ovtoc { border-right: 1px solid var(--u-line); overflow-y: auto; padding: 1.1rem 0; }
+.mk-hub .hub-ovg { padding: 0.9rem 1.4rem 0.3rem; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; }
+.mk-hub .hub-ovg:first-child { padding-top: 0; }
+.mk-hub .hub-ovtoc a { display: block; padding: 0.35rem 1.4rem; font-size: 0.78rem; opacity: 0.5; border-left: 2px solid transparent; }
+.mk-hub .hub-ovtoc a.on { opacity: 1; font-weight: 600; color: var(--u-accent); border-left-color: var(--color-primary); background: var(--u-fill); }
+.mk-hub .hub-ovread { overflow-y: auto; padding: 2rem 3rem 3rem; max-width: 50rem; }
+.mk-hub .hub-ovread h3 { margin: 0.6rem 0 1rem; font-family: inherit; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
+.mk-hub .hub-ovread h4 { margin: 1.7rem 0 0.6rem; font-family: inherit; font-size: 0.92rem; font-weight: 600; }
+.mk-hub .hub-ovread p, .mk-hub .hub-ovread li { font-size: 0.85rem; line-height: 1.8; opacity: 0.72; }
+.mk-hub .hub-ovread p { margin: 0 0 0.9rem; }
+.mk-hub .hub-ovread ul { margin: 0 0 0.9rem; padding-left: 1.1rem; }
+.mk-hub .hub-ovread li { margin-bottom: 0.45rem; }
+.mk-hub .hub-crumb { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--u-accent); }
+</style>
+
+<div class="mk-hub ull2">
+    <input class="hub-r" type="checkbox" id="hub-ov" />
+
+    <section class="hub-hero">
+        <h1>Information</h1>
+        <p>The Upcoming Levels List forecasts which Extreme Demons are about to be verified and placed on the Demonlist. This page says how that is decided, what everything on the site means, and who to ask.</p>
+    </section>
+
+    <div class="hub-body">
+        <div>
+            <div class="u-eyebrow">Where is what</div>
+            <div class="hub-map">
+                <a class="u-card hub-mapc" href="#"><b>All Levels</b><span>Every level with a chance. Ranks here drive leaderboard points.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Main List</b><span>Same order, higher bar: rate-worthy levels only.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Future List</b><span>Levels very likely to be verified soon.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Pending</b><span>Accepted, not yet placed. Expected range and direction.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Upcoming</b><span>Ordered by how close to verification, not by difficulty.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Leaderboard</b><span>Players ranked by what their records are worth.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>Events</b><span>Level of the Day and Month, closest to verification.</span></a>
+                <a class="u-card hub-mapc" href="#"><b>A level&rsquo;s page</b><span>Status, progress, records, creators, rank in each tier.</span></a>
+            </div>
+        </div>
+
+        <div class="hub-doors">
+            <label class="hub-door hub-door--main" for="hub-ov">
+                <div class="u-eyebrow" style="margin:0">The rules</div>
+                <h2>Guidelines</h2>
+                <p>How records are accepted, how levels are chosen and positioned, what the staff may and may not do. Thirteen sections, and the answer to most arguments.</p>
+                <div class="hub-groups">
+                    <div>General<span>2</span></div>
+                    <div>Acceptance of Records<span>4</span></div>
+                    <div>Level Placement<span>3</span></div>
+                    <div>Content Policy<span>2</span></div>
+                    <div>Technical Support<span>2</span></div>
+                </div>
+                <span class="u-btn">Open the guidelines</span>
+            </label>
+
+            <button class="hub-door" type="button">
+                <div class="u-eyebrow" style="margin:0">Answers &middot; 14 questions</div>
+                <h2>FAQ</h2>
+                <p>How to submit a record and what proof it needs, how a level gets listed, how leaderboard points are worked out, why a total changes on its own.</p>
+            </button>
+
+            <button class="hub-door" type="button">
+                <div class="u-eyebrow" style="margin:0">Who to talk to &middot; 12 people</div>
+                <h2>Staff &amp; contact</h2>
+                <p>The team that maintains the list, and where to take a record, a correction, a site bug or a complaint.</p>
+            </button>
+        </div>
+
+        <div>
+            <div class="u-eyebrow">Reference</div>
+            <div class="hub-ref">
+                <div class="hub-refk">Level colouring</div>
+                <div class="hub-refb">
+                    <i style="background:#5599ff"></i><i style="background:#33dddd"></i><i style="background:#55ee55"></i><i style="background:#ffee55"></i><i style="background:#ffaa44"></i><i style="background:#ff6622"></i><i style="background:#ff5555"></i><i style="background:#bbbbbb"></i><i style="background:#ffffff;border:1px solid #555"></i>
+                    <em>layout &rarr; decorated &rarr; verified &rarr; rated</em>
+                </div>
+                <div class="hub-open">All 10 &rarr;</div>
+            </div>
+            <div class="hub-ref" style="margin-top:0.55rem">
+                <div class="hub-refk">Pending icons</div>
+                <div class="hub-refb">
+                    <img src="../../assets/move-up.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/move-down.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/1.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/10.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/20.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/30.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/50.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/75.svg" alt="" width="16" height="16" />
+                    <img src="../../assets/question.svg" alt="" width="16" height="16" />
+                    <em>movement and expected placement</em>
+                </div>
+                <div class="hub-open">All 9 &rarr;</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The door, opened -->
+    <div class="hub-ov">
+        <div class="hub-ovtop">
+            <b>Guidelines</b>
+            <div class="hub-ovsearch">Search the guidelines&hellip;</div>
+            <label class="hub-x" for="hub-ov">Close &nbsp;<span class="u-chip">Esc</span></label>
+        </div>
+        <div class="hub-ovbody">
+            <nav class="hub-ovtoc">
+                <div class="hub-ovg">General</div>
+                <a href="#">Introduction</a>
+                <a href="#">Glossary</a>
+                <div class="hub-ovg">Acceptance of Records</div>
+                <a href="#">Definition of a World Record</a>
+                <a href="#">Proof of legitimacy</a>
+                <a href="#">Tolerance and leniency</a>
+                <a class="on" href="#">Cheating and penalties</a>
+                <div class="hub-ovg">Level Placement</div>
+                <a href="#">List structure</a>
+                <a href="#">Level selection</a>
+                <a href="#">Determining positions</a>
+                <div class="hub-ovg">Content Policy</div>
+                <a href="#">List records</a>
+                <a href="#">Levels and thumbnails</a>
+                <div class="hub-ovg">Technical Support</div>
+                <a href="#">Staff roles</a>
+                <a href="#">Ethical standards</a>
+            </nav>
+            <div class="hub-ovread">
+                <div class="hub-crumb">Acceptance of Records</div>
+                <h3>Cheating and penalties</h3>
+                <p>The list treats a record as a claim about what a player did, and the proof requirements exist so that claim can be checked. Where a record is found to have been obtained by prohibited means, the penalty depends on whether it was deliberate.</p>
+                <h4>Unintentional violations</h4>
+                <p>Where a prohibited modification was active but had no effect on the difficulty of the record, the record is rejected and the player is asked to resubmit without it. No further penalty follows a first occurrence.</p>
+                <h4>Deliberate cheating</h4>
+                <ul>
+                    <li>a submission ban, whose length depends on the severity and on previous occurrences;</li>
+                    <li>removal of every record the player holds on this list;</li>
+                    <li>a permanent <b>Former cheater</b> badge on the Discord server.</li>
+                </ul>
+                <p>Submitting a record on behalf of another person &mdash; to evade a ban, to impersonate, or for no particular reason &mdash; bans both accounts for six months. Where two or more players share one account, each is banned for six months and the shared account is banned permanently.</p>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pg" id="document">
+        <div class="pg__head">
+            <div class="pg__label">
+                <h2>D. Document</h2>
+                <code class="pg__n">one page, one scroll</code>
+            </div>
+            <code class="pg__files">js/pages/Information.js · css/pages/information.css</code>
+        </div>
+        <p class="pg__idea">Everything, visible, in reading order, on one scroll: what the list is, where everything lives, the FAQ, the two legends, the whole rulebook, then the staff. No block to open, no pane inside a pane, no modal &mdash; the only thing that scrolls is the page. A rail on the left is a mini-map rather than a menu: it shows where you are in the document and how much of it is left, and the guidelines nest under it as thirteen marks because they are thirteen marks of the total. This is the opposite bet to the shelf: that people skim, and that a page which hides itself cannot be skimmed.</p>
+        <div class="pg__notes">
+            <div class="note note--weight">
+                <div class="note__k">How it settles the weighting</div>
+                <p>By length, which is the honest measure for a document: the guidelines are roughly three quarters of the page and the two legends are one compact band between the FAQ and the rules, set as a two-column reference strip rather than as sections. Nothing needs a size rule &mdash; a legend is short, so it looks short.</p>
+            </div>
+            <div class="note note--cost">
+                <div class="note__k">What it costs to build</div>
+                <p>Small, and the least risky. It deletes more than it adds: the nested scroll pane, the IntersectionObserver that manages it, and the card grid all go, leaving one column, anchors and a scroll-spy rail. Ctrl+F finds every rule on the page, every heading is linkable, and the page prints.</p>
+            </div>
+            <div class="note note--watch">
+                <div class="note__k">What to watch for</div>
+                <p>It is long &mdash; the guidelines alone are a substantial read, and after them the staff section is a long way down. It also gives the newcomer and the rules-lawyer the same page: whoever wants one fact scrolls past everything else to reach it, unless the rail carries the search field and does real work.</p>
+            </div>
+        </div>
+        <div class="frame">
+            <div class="frame__bar"><span></span><span></span><span></span><code>ull.pages.dev/information</code><em>scroll the frame — it is one continuous page</em></div>
+            <div class="frame__view root" data-mock>
+<style>
+.mk-doc { display: block; overflow-y: auto; height: 100%; }
+.mk-doc .doc-wrap { display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); gap: 3rem; max-width: 68rem; margin: 0 auto; padding: 2.25rem 2.5rem 4rem; }
+
+/* ── Mini-map ── */
+.mk-doc .doc-rail { position: sticky; top: 0; align-self: start; padding-top: 0.5rem; }
+.mk-doc .doc-search { display: flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.7rem; margin-bottom: 1.1rem; border-radius: var(--u-r-sm); background: var(--u-fill); border: 1px solid var(--u-line); font-size: 0.74rem; opacity: 0.5; }
+.mk-doc .doc-rail a { display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0 0.3rem 0.75rem; border-left: 2px solid var(--u-line); font-size: 0.79rem; line-height: 1.4; opacity: 0.45; }
+.mk-doc .doc-rail a.on { border-left-color: var(--color-primary); color: var(--u-accent); opacity: 1; font-weight: 600; }
+.mk-doc .doc-rail a small { margin-left: auto; font-size: 0.62rem; opacity: 0.6; font-variant-numeric: tabular-nums; }
+.mk-doc .doc-rail .sub { padding-left: 1.5rem; font-size: 0.73rem; }
+.mk-doc .doc-rail a.doc-last { margin-top: 0.9rem; }
+.mk-doc .doc-railg { padding: 0.85rem 0 0.3rem 0.75rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
+
+/* ── The document ── */
+.mk-doc .doc-body { min-width: 0; }
+.mk-doc .doc-h1 { margin: 0; font-family: inherit; font-size: 2.1rem; font-weight: 700; line-height: 1.08; letter-spacing: -0.035em; }
+.mk-doc .doc-lead { margin: 0.9rem 0 0; font-size: 0.92rem; line-height: 1.8; opacity: 0.62; }
+.mk-doc .doc-s { padding-top: 2.5rem; margin-top: 2.5rem; border-top: 1px solid var(--u-line); }
+.mk-doc .doc-s > h2 { margin: 0.35rem 0 1.1rem; font-family: inherit; font-size: 1.45rem; font-weight: 700; letter-spacing: -0.028em; line-height: 1.2; }
+.mk-doc .doc-s p, .mk-doc .doc-s li { font-size: 0.85rem; line-height: 1.8; opacity: 0.72; }
+.mk-doc .doc-s > p { margin: 0 0 0.9rem; max-width: 44rem; }
+
+.mk-doc .doc-map { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+/* .ull2 a.u-card sets display:block at (0,2,1); the mock has to name the
+   element too or the card never becomes a flex row. */
+.mk-doc a.doc-mapc { display: flex; align-items: baseline; gap: 0.7rem; padding: 0.7rem 0.9rem; }
+.mk-doc .doc-mapc b { font-size: 0.82rem; font-weight: 600; flex-shrink: 0; width: 6.5rem; }
+.mk-doc .doc-mapc span { font-size: 0.75rem; line-height: 1.55; opacity: 0.5; }
+
+.mk-doc .doc-q { padding: 0.95rem 0; border-bottom: 1px solid var(--u-line); max-width: 46rem; }
+.mk-doc .doc-q:first-of-type { border-top: 1px solid var(--u-line); }
+.mk-doc .doc-q b { display: block; font-size: 0.88rem; font-weight: 600; }
+.mk-doc .doc-q p { margin: 0.4rem 0 0; font-size: 0.82rem; line-height: 1.75; opacity: 0.62; }
+.mk-doc .doc-q a { color: var(--u-accent); text-decoration: underline; text-underline-offset: 0.15em; }
+.mk-doc .doc-qg { margin: 1.6rem 0 0.6rem; }
+.mk-doc .doc-qg:first-of-type { margin-top: 0; }
+
+/* Reference: one band, two columns, deliberately quieter than everything
+   around it — the legends are lookup tables, not chapters. */
+.mk-doc .doc-ref { display: grid; grid-template-columns: 1.25fr 1fr; gap: 2rem; padding: 1.25rem 1.4rem; border-radius: var(--u-r); border: 1px solid var(--u-line); background: var(--u-fill); }
+.mk-doc .doc-leg { display: grid; gap: 0.35rem; }
+.mk-doc .doc-leg > div { display: flex; align-items: center; gap: 0.7rem; font-size: 0.76rem; }
+.mk-doc .doc-leg > div > span:last-child { opacity: 0.5; }
+.mk-doc .doc-leg .u-pill { min-width: 7.5rem; justify-content: center; padding: 0.16rem 0.55rem; font-size: 0.66rem; }
+.mk-doc .doc-leg--icons > div { gap: 0.55rem; }
+.mk-doc .doc-leg--icons img { opacity: 0.9; }
+
+/* Guidelines: the same one column as everything above it. */
+.mk-doc .doc-glg { margin: 2.25rem 0 1.1rem; padding-top: 1.1rem; border-top: 1px solid var(--u-line); font-family: inherit; font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--u-accent); }
+.mk-doc .doc-gl h3 { margin: 1.6rem 0 0.6rem; font-family: inherit; font-size: 1.05rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.3; }
+.mk-doc .doc-gl h4 { margin: 1.2rem 0 0.45rem; font-family: inherit; font-size: 0.86rem; font-weight: 600; }
+.mk-doc .doc-gl p { margin: 0 0 0.8rem; max-width: 44rem; }
+.mk-doc .doc-gl ul { margin: 0 0 0.9rem; padding-left: 1.1rem; max-width: 44rem; }
+.mk-doc .doc-gl li { margin-bottom: 0.4rem; }
+.mk-doc .doc-trunc { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0.2rem 0 0.4rem; font-size: 0.68rem; font-style: italic; opacity: 0.32; }
+
+.mk-doc .doc-people { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.15rem 1.5rem; max-width: 46rem; }
+.mk-doc .doc-p { display: flex; align-items: center; gap: 0.5rem; padding: 0.32rem 0; font-size: 0.82rem; }
+.mk-doc .doc-p span { margin-left: auto; font-size: 0.62rem; opacity: 0.4; }
+</style>
+
+<div class="mk-doc ull2">
+    <div class="doc-wrap">
+        <nav class="doc-rail">
+            <div class="doc-search">Search this page&hellip;</div>
+            <a class="on" href="#">What this list is</a>
+            <a href="#">Where is what</a>
+            <a href="#">FAQ<small>14</small></a>
+            <a href="#">Reference<small>19</small></a>
+            <div class="doc-railg">Guidelines</div>
+            <a class="sub" href="#">General<small>2</small></a>
+            <a class="sub" href="#">Acceptance of Records<small>4</small></a>
+            <a class="sub" href="#">Level Placement<small>3</small></a>
+            <a class="sub" href="#">Content Policy<small>2</small></a>
+            <a class="sub" href="#">Technical Support<small>2</small></a>
+            <a class="doc-last" href="#">Staff &amp; contact<small>12</small></a>
+        </nav>
+
+        <div class="doc-body">
+            <h1 class="doc-h1">Information</h1>
+            <p class="doc-lead">The Upcoming Levels List catalogues upcoming Top 1&ndash;100 Extreme Demons projected to be verified and placed on the Demonlist, along with unrated Extreme Demons that would have qualified for a rating when they were made. It is a forecast of what the Demonlist is about to look like &mdash; not a record of what has already happened. Nothing here is official: positions are estimates made by the list staff against the criteria written further down this page, and they move as levels progress.</p>
+
+            <section class="doc-s">
+                <div class="u-eyebrow">Section one</div>
+                <h2>Where is what</h2>
+                <div class="doc-map">
+                    <a class="u-card doc-mapc" href="#"><b>All Levels</b><span>Every level with a conceivable chance of being verified. A level&rsquo;s rank here is what leaderboard points are calculated from.</span></a>
+                    <a class="u-card doc-mapc" href="#"><b>Main List</b><span>The same order, higher bar: levels that meet the standards for an official rating.</span></a>
+                    <a class="u-card doc-mapc" href="#"><b>Future List</b><span>The highest bar of the three &mdash; levels very likely to be verified and published soon.</span></a>
+                    <a class="u-card doc-mapc" href="#"><b>Pending</b><span>Accepted but not yet placed, with the range it is expected to land in and the direction it is moving.</span></a>
+                    <a class="u-card doc-mapc" href="#"><b>Upcoming</b><span>The same levels ordered by how close they are to verification rather than by difficulty.</span></a>
+                    <a class="u-card doc-mapc" href="#"><b>Leaderboard</b><span>Players ranked by what their records, runs and verifications are worth.</span></a>
+                    <a class="u-card doc-mapc" href="#"><b>Events</b><span>Level of the Day, Level of the Month, and the level closest to verification.</span></a>
+                    <a class="u-card doc-mapc" href="#"><b>A level&rsquo;s page</b><span>Status, decoration and verification progress, records, creators, and its rank in each tier.</span></a>
+                </div>
+            </section>
+
+            <section class="doc-s">
+                <div class="u-eyebrow">Section two</div>
+                <h2>Frequently asked</h2>
+                <div class="u-eyebrow doc-qg">Records</div>
+                <div class="doc-q"><b>How do I submit a record?</b><p>Through the list&rsquo;s Discord server. Read <a href="#">Acceptance of Records</a> below first &mdash; a record that arrives without the required proof is rejected before anyone assesses it, not sent back for more.</p></div>
+                <div class="doc-q"><b>What proof does a record need?</b><p>A complete, uncut playthrough (if your video has cuts, attach the raw footage as well), the level&rsquo;s audio or your clicks, and a cheat indicator and fps/tps display where your mod menu provides them &mdash; on the version of the level this site lists.</p></div>
+                <div class="u-eyebrow doc-qg">Points and the leaderboard</div>
+                <div class="doc-q"><b>How are points calculated?</b><p>From the level&rsquo;s rank in All Levels and the percentage of your record. A verification is worth twice a 100% record on the same level, and completing a level that is not verified yet is worth 0.8 of a verification. A 100% on #1 is 1459 points, on #50 it is 663, and a 50% on #1 is 851 &mdash; position is worth far more than percentage.</p></div>
+                <div class="doc-q"><b>Why did my total change when I didn&rsquo;t submit anything?</b><p>Points follow a level&rsquo;s current rank, and on a list of upcoming levels ranks move constantly.</p></div>
+                <div class="u-eyebrow doc-qg">Getting on the list</div>
+                <div class="doc-q"><b>How does a level get on the list?</b><p>Staff select it against the Level Selection criteria below. There is no queue a creator joins; levels that pass go to the Pending List until an exact position is settled.</p></div>
+            </section>
+
+            <section class="doc-s">
+                <div class="u-eyebrow">Section three</div>
+                <h2>Reference</h2>
+                <div class="doc-ref">
+                    <div>
+                        <div class="u-eyebrow">Level colouring</div>
+                        <div class="doc-leg">
+                            <div><span class="u-pill u-pill--blue"><i></i>Layout</span><span>No decoration yet</span></div>
+                            <div><span class="u-pill u-pill--cyan"><i></i>Early deco</span><span>1&ndash;29% decorated</span></div>
+                            <div><span class="u-pill u-pill--green"><i></i>Mid deco</span><span>30&ndash;69% decorated</span></div>
+                            <div><span class="u-pill u-pill--yellow"><i></i>Late deco</span><span>70&ndash;99% decorated</span></div>
+                            <div><span class="u-pill u-pill--amber"><i></i>Deco done</span><span>Decoration finished</span></div>
+                            <div><span class="u-pill u-pill--orange"><i></i>Early verify</span><span>Best run 30&ndash;59%</span></div>
+                            <div><span class="u-pill u-pill--red"><i></i>Late verify</span><span>Best run 60&ndash;99%</span></div>
+                            <div><span class="u-pill u-pill--done"><i></i>Verified</span><span>Beaten, not yet rated</span></div>
+                            <div><span class="u-pill"><i></i>Rated</span><span>Verified and rated in game</span></div>
+                            <div><span class="u-pill u-pill--done">&#128683;</span><span>Pending removal</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="u-eyebrow">Pending list icons</div>
+                        <div class="doc-leg doc-leg--icons">
+                            <div><img src="../../assets/move-up.svg" alt="" width="16" height="16" /><span>Moving up</span></div>
+                            <div><img src="../../assets/move-down.svg" alt="" width="16" height="16" /><span>Moving down</span></div>
+                            <div><img src="../../assets/1.svg" alt="" width="16" height="16" /><span>Pending #1</span></div>
+                            <div><img src="../../assets/10.svg" alt="" width="16" height="16" /><span>Pending Top 10</span></div>
+                            <div><img src="../../assets/20.svg" alt="" width="16" height="16" /><span>Pending Top 20</span></div>
+                            <div><img src="../../assets/30.svg" alt="" width="16" height="16" /><span>Pending Top 30</span></div>
+                            <div><img src="../../assets/50.svg" alt="" width="16" height="16" /><span>Pending Top 50</span></div>
+                            <div><img src="../../assets/75.svg" alt="" width="16" height="16" /><span>Pending Top 75</span></div>
+                            <div><img src="../../assets/question.svg" alt="" width="16" height="16" /><span>Unknown placement</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="doc-s doc-gl">
+                <div class="u-eyebrow">Section four &middot; the bulk of this page</div>
+                <h2>Guidelines</h2>
+                <p>How records are accepted, how levels are chosen and positioned, and what the list staff may and may not do. These rules are subject to change; changes are announced in the Discord server.</p>
+
+                <div class="doc-glg">General</div>
+                <h3>Introduction</h3>
+                <p>These guidelines are directly adapted from, and heavily rely on, the structure and principles of the Global Demonlist Guidelines. We extend our full credit and gratitude to the original authors.</p>
+                <p>The text below explains how the list works in terms of accepting records, managing levels, recognising permitted and prohibited software, and establishing the duties and areas of responsibility of the list staff.</p>
+                <h3>Glossary</h3>
+                <p>The terms used throughout these guidelines and across the site &mdash; layout, decoration percentage, verification percentage, world record run, NC and NONG, and what &ldquo;pending indefinitely&rdquo; means.</p>
+                <div class="doc-trunc">&mdash; section continues &mdash;</div>
+
+                <div class="doc-glg">Acceptance of Records</div>
+                <h3>Definition of a World Record</h3>
+                <p>Two records are tracked for every level. The <b>world record from 0%</b> is the highest completion percentage achieved from the start of the level. The <b>world record run</b> is the longest recorded segment performed on the current version of the level, measured as the difference between the percentage a run starts at and the point of death or completion.</p>
+                <h3>Requirements for proof of legitimacy</h3>
+                <p>Before submitting a record, you must familiarise yourself with the list of mandatory proof of legitimacy, as well as the requirements for it, to ensure that the record you are submitting complies with them &mdash; otherwise it will be rejected immediately, before the verification stage.</p>
+                <ul>
+                    <li>the recording must show the attempt in full, from its starting percentage to the point of death or to 100%;</li>
+                    <li>it may contain editing intended to conceal personal information, provided the original recording is linked in the notes field;</li>
+                    <li>in-game source audio or clicks &mdash; either is accepted, both are strongly preferred;</li>
+                    <li>the level must be the version listed on this site.</li>
+                </ul>
+                <div class="doc-trunc">&mdash; section continues &mdash;</div>
+            </section>
+
+            <section class="doc-s">
+                <div class="u-eyebrow">Section five</div>
+                <h2>Staff &amp; contact</h2>
+                <p>Moderators and Elder Moderators determine level positions, place levels, take part in quality control and keep the site up to date. Admins manage a sector of the project&rsquo;s operation; the List Leader oversees the list and its staff.</p>
+                <div class="doc-people">
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/crown.svg" alt="" width="14" height="14" />QwidziT<span>Leader</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/user-gear.svg" alt="" width="14" height="14" />exiled_shade<span>Admin</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="14" height="14" />niroi<span>Elder</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="14" height="14" />Keres<span>Elder</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="14" height="14" />LukeLGamer<span>Elder</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="14" height="14" />ItzDel1ghtfuL<span>Elder</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/user-lock.svg" alt="" width="14" height="14" />Terralith<span>Mod</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/user-lock.svg" alt="" width="14" height="14" />TheCatAstronaut<span>Mod</span></div>
+                    <div class="doc-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="14" height="14" />Prometheus<span>Dev</span></div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </section>
+    </main>
+</div>
+
+<script>
+(function () {
+    var views = document.querySelectorAll('[data-mock]');
+    var btn = document.getElementById('theme-toggle');
+    var name = document.getElementById('theme-name');
+    var light = false;
+    btn.addEventListener('click', function () {
+        light = !light;
+        // In the app, .dark on .root selects the LIGHT palette. Kept as-is.
+        views.forEach(function (v) { v.classList.toggle('dark', light); });
+        name.textContent = light ? 'Light' : 'Dark';
+    });
+
+    var items = [].slice.call(document.querySelectorAll('.rail__item'));
+    var seen = new Map();
+    var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { seen.set(e.target.id, e.intersectionRatio); });
+        var best = null;
+        seen.forEach(function (ratio, id) { if (!best || ratio > best.ratio) best = { id: id, ratio: ratio }; });
+        if (!best || !best.ratio) return;
+        items.forEach(function (a) { a.classList.toggle('is-on', a.getAttribute('href') === '#' + best.id); });
+    }, { threshold: [0, 0.15, 0.4, 0.75] });
+    document.querySelectorAll('.pg').forEach(function (s) { obs.observe(s); });
+})();
+</script>

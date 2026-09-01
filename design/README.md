@@ -3,8 +3,10 @@
 Six page templates that rebuild the site out of the vocabulary `/level/<slug>`
 already established, plus the shared layer they are built from.
 
-Not covered: `/information` (by request), `/admin` and `/generator` (staff
-tools). The `/mobile/*` routes have their own deck in `design/mobile/`.
+Not covered: `/admin` and `/generator` (staff tools). The `/mobile/*` routes
+have their own deck in `design/mobile/`, and `/information` — held back from
+this pass — now has four competing templates of its own in
+`design/information/`.
 
 These templates have since been built into the site. They stay here as the
 reference the pages were made from, and the deck now reads the shipped
