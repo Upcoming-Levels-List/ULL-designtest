@@ -1,6 +1,9 @@
-﻿import { store } from '../main.js';
+import { store } from '../main.js';
 import { fetchEditors } from '../content.js';
 import { guidelinesData } from '../_guidelines.js';
+import {
+    navigationData, faqData, apiData, coloringLegend, pendingLegend, contactRouting,
+} from '../_info.js';
 import Footer from '../components/Footer.js';
 
 const roleIconMap = {
@@ -12,241 +15,547 @@ const roleIconMap = {
 };
 
 const roleLabelMap = {
-    owner: 'Owner',
+    owner: 'List Leader',
     admin: 'Admin',
     seniormod: 'Elder Mod',
     mod: 'Mod',
     dev: 'Dev',
 };
 
+// The six windows the page can open. The key is also the ?open= value, so a
+// window is a URL and a rule can be linked to.
+const WINDOWS = ['about', 'faq', 'navigation', 'guidelines', 'reference', 'staff', 'api'];
+
+// Search runs over prose that is authored as HTML. Strip it once per string
+// rather than on every keystroke.
+const plainCache = new Map();
+function plain(html) {
+    let text = plainCache.get(html);
+    if (text === undefined) {
+        text = String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+        plainCache.set(html, text);
+    }
+    return text;
+}
+
+const flatSections = guidelinesData.flatMap((group) =>
+    group.sections.map((section) => ({ ...section, group: group.group })));
+
 export default {
     components: { Footer },
     template: `
-<main class="info-page surface">
-    <!-- Hero -->
+<main class="info-page surface ull2" :class="{ 'info-page--locked': openKey }" ref="page">
+
     <section class="info-hero">
-        <h1>Upcoming Levels List</h1>
+        <h1>Information</h1>
         <p>
-            The Upcoming Levels List (ULL) is a comprehensive catalogue of upcoming Top 1\u2013100 Extreme Demons
-            in Geometry Dash projected to be verified and placed on the Demonlist. The list aims to forecast the future of
-            the Demonlist, and also features unrated Extreme Demons that may have qualified for a rating
-            at the time of their creation.
+            The Upcoming Levels List forecasts which Extreme Demons are about to be verified and placed on
+            the Demonlist. This page says how that is decided, what everything on the site means, who to
+            ask, and how to read the whole list as JSON.
+            <button type="button" class="info-more" @click="open('about')">What this list is, in full &rarr;</button>
         </p>
-    </section>
 
-    <!-- Cards -->
-    <div class="info-content">
-        <div class="info-cards">
-
-            <!-- List Editors -->
-            <div class="info-card">
-                <div class="info-card__title">List Editors</div>
-                <p class="info-coloring-desc">
-                     Trusted group of dedicated members responsible for maintaining the Upcoming Levels List. Their work includes adding new levels, editing existing ones, and ensuring the list stays accurate.
-                </p>
-                <div class="info-editors">
-                    <div v-for="editor in editors" class="info-editor">
-                        <img :src="'/assets/' + (roleIconMap[editor.role] || 'user-lock') + (store.dark ? '' : '-dark') + '.svg'" :alt="editor.role" />
-                        <a v-if="editor.link && editor.link !== '#'" :href="editor.link" target="_blank">{{ editor.name }}</a>
-                        <span v-else class="info-editor__name">{{ editor.name }}</span>
-                        <span class="info-role" :class="'info-role-' + editor.role">{{ roleLabel(editor.role) }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Level Coloring -->
-            <div class="info-card">
-                <div class="info-card__title">Level Coloring</div>
-                <p class="info-coloring-desc">
-                    When Level Coloring is enabled, level names in the list are color-coded
-                    based on their decoration progress and verification status.
-                </p>
-                <div class="info-legend">
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#5599ff"></span>
-                        On layout state
-                        <span class="info-legend-label">Deco 0%</span>
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#33dddd"></span>
-                        Deco is 1%\u201329% finished
-                        <span class="info-legend-label">Early deco</span>
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#55ee55"></span>
-                        Deco is 30%\u201369% finished
-                        <span class="info-legend-label">Mid deco</span>
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#ffee55"></span>
-                        Deco is 70%\u201399% finished
-                        <span class="info-legend-label">Late deco</span>
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#ffaa44"></span>
-                        Decoration finished
-                        <span class="info-legend-label">Deco 100%</span>
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#ff6622"></span>
-                        Verification progress 30%\u201359%
-                        <span class="info-legend-label">Early verify</span>
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#ff5555"></span>
-                        Verification progress 60%\u201399%
-                        <span class="info-legend-label">Late verify</span>
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#bbbbbb"></span>
-                        Verified, not rated
-                    </div>
-                    <div class="info-legend-row">
-                        <span class="info-legend-dot" style="background:#ffffff; border:1px solid #555;"></span>
-                        Verified and rated
-                    </div>
-                    <div class="info-legend-row">
-                        <span style="font-size:0.7rem; width:0.7rem; text-align:center; flex-shrink:0;">\u{1F6AB}</span>
-                        Pending for removal
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pending List Legend (full width) -->
-            <div class="info-card" style="grid-column: 1 / -1;">
-                <div class="info-card__title">Pending List Legend</div>
-                <div class="info-pending">
-                    <div class="info-pending-row"><img src="/assets/move-up.svg" alt="up" />Moving Up</div>
-                    <div class="info-pending-row"><img src="/assets/move-down.svg" alt="down" />Moving Down</div>
-                    <div class="info-pending-row"><img src="/assets/1.svg" alt="1" />Pending #1</div>
-                    <div class="info-pending-row"><img src="/assets/10.svg" alt="10" />Pending Top 10</div>
-                    <div class="info-pending-row"><img src="/assets/20.svg" alt="20" />Pending Top 20</div>
-                    <div class="info-pending-row"><img src="/assets/30.svg" alt="30" />Pending Top 30</div>
-                    <div class="info-pending-row"><img src="/assets/50.svg" alt="50" />Pending Top 50</div>
-                    <div class="info-pending-row"><img src="/assets/75.svg" alt="75" />Pending Top 75</div>
-                    <div class="info-pending-row"><img src="/assets/question.svg" alt="?" />Unknown Placement</div>
-                </div>
+        <div class="info-search" :class="{ 'is-open': query.trim().length > 0 }">
+            <span class="info-mag" aria-hidden="true"></span>
+            <input
+                ref="search"
+                v-model="query"
+                type="search"
+                class="info-search__field"
+                placeholder="Search the guidelines, the FAQ, the endpoints and the legends"
+                aria-label="Search this page"
+                @keydown.esc="query = ''"
+            />
+            <kbd v-if="!query.trim()" class="info-kbd">Ctrl K</kbd>
+            <div v-if="query.trim()" class="info-results">
+                <button
+                    v-for="hit in results"
+                    :key="hit.kind + hit.label + (hit.section || '')"
+                    type="button"
+                    class="info-result"
+                    @click="openHit(hit)"
+                >
+                    <span class="info-result__k">{{ hit.where }}</span>
+                    <span class="info-result__t">{{ hit.label }}</span>
+                    <span v-if="hit.sub" class="info-result__s">{{ hit.sub }}</span>
+                </button>
+                <p v-if="!results.length" class="info-result__none">Nothing on this page matches &ldquo;{{ query.trim() }}&rdquo;.</p>
             </div>
         </div>
+    </section>
 
-        <!-- Guidelines -->
-        <div class="info-guidelines">
-            <div class="info-guidelines-header">
-                <div>
-                    <h2>Guidelines</h2>
-                    <p>How the Upcoming Levels List works \u2014 rules, criteria, and procedures</p>
-                </div>
-                <input class="info-guidelines-search" type="text" placeholder="Search guidelines..." v-model="glSearch" />
+    <div class="info-blocks">
+        <button type="button" class="info-block info-block--faq" @click="open('faq')">
+            <div class="u-eyebrow">Answers &middot; {{ faqCount }} questions</div>
+            <h2>FAQ</h2>
+            <p>
+                Submitting a record and what proof it needs, how a level gets listed, how leaderboard points
+                are worked out, and why a total changes when you have submitted nothing. {{ faqCount }} questions
+                in {{ faqData.length }} groups, each answered here rather than pointed at the guidelines.
+            </p>
+            <span class="info-block__more">All {{ faqCount }} questions &rarr;</span>
+        </button>
+
+        <button type="button" class="info-block info-block--nav" @click="open('navigation')">
+            <div class="u-eyebrow">Navigation &middot; {{ pageCount }} pages</div>
+            <h2>What is on each page</h2>
+            <p>
+                Every page on the site and what you will find on it &mdash; the three list tiers and how they
+                differ from each other, pending and upcoming, the leaderboard, events, and a level&rsquo;s own
+                page. Written so you can tell which page answers your question before you open it.
+            </p>
+            <div class="info-chips">
+                <span v-for="page in navPreview" :key="page" class="u-chip">{{ page }}</span>
+                <span v-if="pageCount > navPreview.length" class="u-chip">+{{ pageCount - navPreview.length }}</span>
             </div>
-            <div class="info-guidelines-body" ref="glBody">
-                <nav class="info-toc" :style="{ overflowY: glBodyVisible ? 'auto' : 'hidden' }">
-                    <template v-for="group in filteredGuidelines" :key="group.id">
-                        <div class="info-toc-group">{{ group.group }}</div>
-                        <a v-for="section in group.sections" :key="section.id"
-                           class="info-toc-link"
-                           :class="{ active: activeSection === section.id }"
-                           @click="scrollToSection(section.id)">
-                            {{ section.title }}
-                        </a>
+        </button>
+
+        <button type="button" class="info-block info-block--gl" @click="open('guidelines')">
+            <div class="u-eyebrow">The rules</div>
+            <h2>Guidelines</h2>
+            <p>
+                How records are accepted, how levels are chosen and positioned, what the staff may and may not
+                do. {{ sectionCount }} sections, and the answer to most arguments.
+            </p>
+            <div class="info-groups">
+                <div v-for="group in guidelinesData" :key="group.id">
+                    {{ group.group }}<span>{{ group.sections.length }}</span>
+                </div>
+            </div>
+            <span class="u-btn">Open the guidelines</span>
+        </button>
+
+        <button type="button" class="info-block info-block--ref" @click="open('reference')">
+            <div class="u-eyebrow">Reference &middot; {{ markCount }} marks</div>
+            <h2>What the marks mean</h2>
+            <p>The colour a level&rsquo;s name is drawn in, and the icons on the Pending List.</p>
+            <div class="info-marks">
+                <div class="info-dots">
+                    <i v-for="row in coloringLegend.slice(0, 8)" :key="row.label" :class="['info-dot', row.pill]"></i>
+                </div>
+                <div class="info-icons">
+                    <img v-for="row in pendingLegend.slice(0, 5)" :key="row.icon" :src="'/assets/' + row.icon + '.svg'" :alt="''" />
+                </div>
+            </div>
+        </button>
+
+        <button type="button" class="info-block info-block--staff" @click="open('staff')">
+            <div class="u-eyebrow">Who to talk to<template v-if="editors.length"> &middot; {{ editors.length }} people</template></div>
+            <h2>Staff &amp; contact</h2>
+            <p>The team that maintains the list, and where to take a record, a correction, a site bug or a complaint.</p>
+        </button>
+
+        <button type="button" class="info-block info-block--api" @click="open('api')">
+            <div class="u-eyebrow">Build on it &middot; {{ apiData.endpoints.length }} endpoints</div>
+            <h2>API documentation</h2>
+            <p>The whole list as public JSON &mdash; no key, no signup, CORS open.</p>
+            <div class="info-chips">
+                <span class="u-chip">/api/list</span>
+                <span class="u-chip">/api/pending</span>
+                <span class="u-chip">+{{ apiData.endpoints.length - 2 }}</span>
+            </div>
+        </button>
+    </div>
+
+    <Footer />
+
+    <!-- ── The reader ─────────────────────────────────────────────────────── -->
+    <div v-if="openKey" class="info-win" @click.self="close()">
+        <div class="info-win__box" role="dialog" aria-modal="true" :aria-label="winTitle" tabindex="-1" ref="win">
+            <div class="info-win__bar">
+                <span class="info-win__k">{{ winEyebrow }}</span>
+                <b>{{ winTitle }}</b>
+                <button type="button" class="info-win__x" @click="close()">Close <span class="u-chip">Esc</span></button>
+            </div>
+
+            <!-- Guidelines: index beside one section -->
+            <div v-if="openKey === 'guidelines'" class="info-win__split">
+                <nav class="info-toc">
+                    <template v-for="group in guidelinesData" :key="group.id">
+                        <div class="info-toc__g">{{ group.group }}</div>
+                        <button
+                            v-for="section in group.sections"
+                            :key="section.id"
+                            type="button"
+                            class="info-toc__a"
+                            :class="{ 'is-on': section.id === activeSection }"
+                            @click="goSection(section.id)"
+                        >{{ section.title }}</button>
                     </template>
                 </nav>
-                <div class="info-guidelines-content" ref="glContent" @scroll="onGlScroll" :style="{ overflowY: glBodyVisible ? 'auto' : 'hidden' }">
-                    <template v-if="filteredGuidelines.length">
-                        <template v-for="group in filteredGuidelines" :key="group.id">
-                            <div class="info-gl-group-header" :id="'gl-group-' + group.id">
-                                <h2>{{ group.group }}</h2>
-                            </div>
-                            <div v-if="group.intro" class="info-gl-intro" v-html="group.intro"></div>
-                            <div v-for="section in group.sections" :key="section.id"
-                                 :id="'gl-' + section.id"
-                                 class="info-gl-section">
-                                <h3>{{ section.title }}</h3>
-                                <div v-html="section.content"></div>
-                            </div>
-                        </template>
-                    </template>
-                    <div v-else class="info-gl-no-results">
-                        <span>\u{1F50D}</span>
-                        <p>No guidelines match your search.</p>
+                <div class="info-win__body" ref="body">
+                    <div class="info-crumb">{{ current.group }}</div>
+                    <h3>{{ current.title }}</h3>
+                    <div class="info-prose" v-html="current.content"></div>
+                    <div class="info-updown">
+                        <button type="button" :disabled="!prevSection" @click="prevSection && goSection(prevSection.id)">
+                            <span v-if="prevSection">&larr; {{ prevSection.title }}</span>
+                        </button>
+                        <button type="button" :disabled="!nextSection" @click="nextSection && goSection(nextSection.id)">
+                            <span v-if="nextSection">{{ nextSection.title }} &rarr;</span>
+                        </button>
                     </div>
                 </div>
+            </div>
+
+            <div v-else class="info-win__body">
+
+                <!-- What this list is -->
+                <template v-if="openKey === 'about'">
+                    <p class="info-lead">
+                        The Upcoming Levels List catalogues upcoming Top 1&ndash;100 Extreme Demons projected to
+                        be verified and placed on the Demonlist, along with unrated Extreme Demons that would
+                        have qualified for a rating when they were made. It is a forecast of what the Demonlist
+                        is about to look like &mdash; not a record of what has already happened.
+                    </p>
+                    <div class="info-prose">
+                        <p>
+                            Nothing here is official. Positions are estimates made by the list staff against the
+                            criteria written in the guidelines, and they move as levels progress. Levels that are
+                            already rated are placed in strict accordance with their ranking on Pointercrate.
+                        </p>
+                        <h4>The three tiers</h4>
+                        <p>The order of levels is the same in all three. What changes is the threshold to appear at all.</p>
+                        <ul>
+                            <li><strong>All Levels</strong> &mdash; every level with a conceivable chance of being verified and published. A level&rsquo;s rank here is what leaderboard points are calculated from.</li>
+                            <li><strong>Main List</strong> &mdash; levels that meet the standards required to be considered for an official rating.</li>
+                            <li><strong>Future List</strong> &mdash; levels very likely to be verified and published soon.</li>
+                        </ul>
+                        <h4>How to read a level</h4>
+                        <p>
+                            The colour of a name is the level&rsquo;s state, from layout through decoration and
+                            verification to rated. Two percentages follow every level &mdash; how much of the
+                            decoration is done, and how far the best run has got. The badges are its position in
+                            each tier: a level can be #4 in All Levels and #2 in Future List at once.
+                        </p>
+                    </div>
+                    <div class="info-winlinks">
+                        <button type="button" class="u-btn u-btn--ghost" @click="open('navigation')">What is on each page &rarr;</button>
+                        <button type="button" class="u-btn u-btn--ghost" @click="open('reference')">What the marks mean &rarr;</button>
+                    </div>
+                </template>
+
+                <!-- FAQ -->
+                <template v-else-if="openKey === 'faq'">
+                    <div v-for="group in faqData" :key="group.group" class="info-faqg">
+                        <div class="u-eyebrow">{{ group.group }}</div>
+                        <div v-for="item in group.questions" :key="item.q" class="info-q">
+                            <b>{{ item.q }}</b>
+                            <div class="info-prose" v-html="item.a"></div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Navigation -->
+                <template v-else-if="openKey === 'navigation'">
+                    <p class="info-lead">Every page on the site, grouped the way the menu groups them.</p>
+                    <div class="info-cols">
+                        <div v-for="group in navigationData" :key="group.group">
+                            <div class="u-eyebrow">{{ group.group }}</div>
+                            <router-link v-for="page in group.pages" :key="page.name" :to="page.to" class="info-nav">
+                                <span class="info-nav__n">{{ page.name }} <code>{{ page.path || page.to }}</code></span>
+                                <span class="info-nav__d">{{ page.desc }}</span>
+                            </router-link>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Reference -->
+                <template v-else-if="openKey === 'reference'">
+                    <div class="info-cols">
+                        <div>
+                            <div class="u-eyebrow">Level colouring</div>
+                            <p class="info-note">
+                                A level&rsquo;s name is coloured by its state when Level Coloring is on &mdash; the
+                                same scale as the status pill on the level&rsquo;s own page. If names look plain,
+                                turn the setting on.
+                            </p>
+                            <div class="info-legend">
+                                <div v-for="row in coloringLegend" :key="row.label + row.meaning">
+                                    <span class="u-pill" :class="row.pill">
+                                        <i v-if="!row.glyph"></i>{{ row.label }}
+                                    </span>
+                                    <span>{{ row.meaning }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="u-eyebrow">Pending list icons</div>
+                            <p class="info-note">
+                                Icons on the Pending List say where a level is expected to land and which way it is
+                                moving inside that range.
+                            </p>
+                            <div class="info-legend info-legend--icons">
+                                <div v-for="row in pendingLegend" :key="row.icon">
+                                    <img :src="'/assets/' + row.icon + '.svg'" alt="" />
+                                    <span>{{ row.label }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Staff & contact -->
+                <template v-else-if="openKey === 'staff'">
+                    <p class="info-lead">
+                        Moderators and Elder Moderators determine level positions, place levels, take part in
+                        quality control and keep the site up to date. Admins manage a sector of the project&rsquo;s
+                        operation; the List Leader oversees the list and its staff.
+                    </p>
+                    <div class="info-cols">
+                        <div>
+                            <div class="u-eyebrow">The team <span v-if="editors.length" class="u-count">{{ editors.length }}</span></div>
+                            <div class="info-people">
+                                <div v-for="(editor, i) in editors" :key="editor.name + i" class="info-person">
+                                    <img :src="'/assets/' + (roleIconMap[editor.role] || 'user-lock') + (store.dark ? '' : '-dark') + '.svg'" :alt="''" />
+                                    <a v-if="editor.link && editor.link !== '#'" :href="editor.link" target="_blank" rel="noopener">{{ editor.name }}</a>
+                                    <span v-else>{{ editor.name }}</span>
+                                    <span class="u-chip">{{ roleLabel(editor.role) }}</span>
+                                </div>
+                                <p v-if="!editors.length" class="info-note">The staff list could not be loaded.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="u-eyebrow">Where to take what</div>
+                            <dl class="u-dl">
+                                <template v-for="row in contactRouting" :key="row.what">
+                                    <dt>{{ row.what }}</dt><dd>{{ row.where }}</dd>
+                                </template>
+                            </dl>
+                            <div class="info-winlinks">
+                                <a class="u-btn" href="https://discord.gg/QRX47v2qyC" target="_blank" rel="noopener">
+                                    <img src="/assets/discord.svg" alt="" width="14" height="14" />discord.gg/QRX47v2qyC
+                                </a>
+                                <a class="u-btn u-btn--ghost" href="https://x.com/ull_gd" target="_blank" rel="noopener">@ull_gd</a>
+                            </div>
+                            <p class="info-note">
+                                Individual handles for the people above are listed under
+                                <button type="button" class="info-link" @click="goSection('contacts')">Contacts</button>
+                                in the guidelines.
+                            </p>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- API -->
+                <template v-else-if="openKey === 'api'">
+                    <p class="info-lead">
+                        Everything this site shows comes from a public JSON API. It needs no key, no signup and
+                        no referrer, and it sends <code>Access-Control-Allow-Origin: *</code>, so a page or a bot
+                        can read the list straight from the browser.
+                    </p>
+                    <h4 class="info-h4">Base URL</h4>
+                    <pre class="info-pre">{{ apiData.base }}</pre>
+                    <h4 class="info-h4">Endpoints</h4>
+                    <table class="info-tbl">
+                        <thead><tr><th class="info-tbl__path">Path</th><th>Returns</th></tr></thead>
+                        <tbody>
+                            <tr v-for="row in apiData.endpoints" :key="row.path">
+                                <td class="info-mono"><span class="info-get">GET</span>{{ row.path }}</td>
+                                <td>{{ row.returns }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="info-note">
+                        Writing to the list needs a staff API key and is not part of the public API. There is no
+                        public leaderboard endpoint: the leaderboard is derived from <code>/api/list</code>, by the
+                        rules written out under &ldquo;How are leaderboard points calculated?&rdquo; in the FAQ.
+                    </p>
+                    <h4 class="info-h4">Example</h4>
+                    <pre class="info-pre">{{ apiData.example }}</pre>
+                    <h4 class="info-h4">The level object</h4>
+                    <table class="info-tbl">
+                        <thead><tr><th class="info-tbl__field">Field</th><th class="info-tbl__type">Type</th><th>Meaning</th></tr></thead>
+                        <tbody>
+                            <tr v-for="row in apiData.fields" :key="row.name">
+                                <td class="info-mono">{{ row.name }}</td>
+                                <td>{{ row.type }}</td>
+                                <td>{{ row.meaning }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h4 class="info-h4">Fair use</h4>
+                    <div class="info-prose">
+                        <ul><li v-for="rule in apiData.fairUse" :key="rule">{{ rule }}</li></ul>
+                    </div>
+                </template>
+
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <Footer />
 </main>
     `,
     data: () => ({
         store,
         roleIconMap,
+        guidelinesData,
+        navigationData,
+        faqData,
+        apiData,
+        coloringLegend,
+        pendingLegend,
+        contactRouting,
         editors: [],
-        glSearch: '',
-        activeSection: '',
-        glBodyVisible: false,
+        query: '',
+        // Whether this component pushed the ?open= entry, so closing can go back
+        // rather than stacking another entry on the history.
+        pushed: 0,
     }),
     computed: {
-        filteredGuidelines() {
-            const q = this.glSearch.trim().toLowerCase();
-            if (!q) return guidelinesData;
-            return guidelinesData
-                .map(group => {
-                    const sections = group.sections.filter(s =>
-                        s.title.toLowerCase().includes(q) ||
-                        s.content.toLowerCase().includes(q)
-                    );
-                    if (!sections.length) return null;
-                    return { ...group, sections };
-                })
-                .filter(Boolean);
+        openKey() {
+            const key = this.$route.query.open;
+            return WINDOWS.includes(key) ? key : '';
+        },
+        activeSection() {
+            const id = this.$route.query.section;
+            return flatSections.some((s) => s.id === id) ? id : flatSections[0].id;
+        },
+        current() {
+            return flatSections.find((s) => s.id === this.activeSection) || flatSections[0];
+        },
+        sectionIndex() {
+            return flatSections.findIndex((s) => s.id === this.current.id);
+        },
+        prevSection() { return flatSections[this.sectionIndex - 1] || null; },
+        nextSection() { return flatSections[this.sectionIndex + 1] || null; },
+        sectionCount() { return flatSections.length; },
+        faqCount() { return faqData.reduce((n, g) => n + g.questions.length, 0); },
+        pageCount() { return navigationData.reduce((n, g) => n + g.pages.length, 0); },
+        markCount() { return coloringLegend.length + pendingLegend.length; },
+        navPreview() {
+            return navigationData.flatMap((g) => g.pages.map((p) => p.name)).slice(0, 7);
+        },
+        winTitle() {
+            return {
+                about: 'What this list is',
+                faq: 'FAQ',
+                navigation: 'What is on each page',
+                guidelines: 'Guidelines',
+                reference: 'What the marks mean',
+                staff: 'Staff & contact',
+                api: 'API documentation',
+            }[this.openKey] || '';
+        },
+        winEyebrow() {
+            return {
+                about: 'Start here',
+                faq: 'Answers · ' + this.faqCount + ' questions',
+                navigation: 'Navigation · ' + this.pageCount + ' pages',
+                guidelines: 'The rules',
+                reference: 'Reference · ' + this.markCount + ' marks',
+                staff: 'Who to talk to',
+                api: 'Build on it · ' + this.apiData.endpoints.length + ' endpoints',
+            }[this.openKey] || '';
+        },
+        // One index over everything on the page, so the field in the hero means
+        // what it says rather than searching the guidelines alone.
+        results() {
+            const q = this.query.trim().toLowerCase();
+            if (!q) return [];
+            const hits = [];
+            for (const section of flatSections) {
+                if (section.title.toLowerCase().includes(q) || plain(section.content).includes(q)) {
+                    hits.push({ kind: 'guidelines', where: section.group, label: section.title, section: section.id });
+                }
+            }
+            for (const group of faqData) {
+                for (const item of group.questions) {
+                    if (item.q.toLowerCase().includes(q) || plain(item.a).includes(q)) {
+                        hits.push({ kind: 'faq', where: 'FAQ · ' + group.group, label: item.q });
+                    }
+                }
+            }
+            for (const group of navigationData) {
+                for (const page of group.pages) {
+                    if (page.name.toLowerCase().includes(q) || page.desc.toLowerCase().includes(q)) {
+                        hits.push({ kind: 'navigation', where: 'Page', label: page.name, sub: page.path || page.to });
+                    }
+                }
+            }
+            for (const row of apiData.endpoints) {
+                if (row.path.toLowerCase().includes(q) || row.returns.toLowerCase().includes(q)) {
+                    hits.push({ kind: 'api', where: 'Endpoint', label: row.path, sub: row.returns });
+                }
+            }
+            for (const row of apiData.fields) {
+                if (row.name.toLowerCase().includes(q) || row.meaning.toLowerCase().includes(q)) {
+                    hits.push({ kind: 'api', where: 'Level field', label: row.name, sub: row.meaning });
+                }
+            }
+            for (const row of coloringLegend) {
+                if (row.label.toLowerCase().includes(q) || row.meaning.toLowerCase().includes(q)) {
+                    hits.push({ kind: 'reference', where: 'Level colouring', label: row.label, sub: row.meaning });
+                }
+            }
+            for (const row of pendingLegend) {
+                if (row.label.toLowerCase().includes(q)) {
+                    hits.push({ kind: 'reference', where: 'Pending icon', label: row.label });
+                }
+            }
+            return hits.slice(0, 12);
         },
     },
     methods: {
         roleLabel(role) { return roleLabelMap[role] || role; },
-        scrollToSection(id) {
-            const container = this.$refs.glContent;
-            const el = document.getElementById('gl-' + id);
-            if (el && container) {
-                container.scrollTo({
-                    top: el.offsetTop - container.offsetTop,
-                    behavior: 'smooth'
-                });
-                this.activeSection = id;
+        open(key, section) {
+            const query = { ...this.$route.query, open: key };
+            if (section) query.section = section; else delete query.section;
+            this.pushed += 1;
+            this.$router.push({ query });
+        },
+        close() {
+            if (this.pushed > 0) {
+                this.pushed -= 1;
+                this.$router.back();
+                return;
+            }
+            // Arrived straight at /information?open=…: there is nothing of ours
+            // to go back to, so drop the query without growing the history.
+            const query = { ...this.$route.query };
+            delete query.open;
+            delete query.section;
+            this.$router.replace({ query });
+        },
+        goSection(id) {
+            if (this.openKey === 'guidelines') {
+                this.pushed += 1;
+                this.$router.push({ query: { ...this.$route.query, open: 'guidelines', section: id } });
+            } else {
+                this.open('guidelines', id);
             }
         },
-        onGlScroll() {
-            const container = this.$refs.glContent;
-            if (!container) return;
-            const sections = container.querySelectorAll('.info-gl-section');
-            let current = '';
-            for (const sec of sections) {
-                const rect = sec.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-                if (rect.top - containerRect.top <= 60) {
-                    current = sec.id.replace('gl-', '');
-                }
+        openHit(hit) {
+            this.query = '';
+            this.open(hit.kind, hit.kind === 'guidelines' ? hit.section : undefined);
+        },
+        onKeydown(e) {
+            if (e.key === 'Escape') {
+                if (this.openKey) { this.close(); return; }
+                if (this.query) this.query = '';
+                return;
             }
-            if (current) this.activeSection = current;
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+                e.preventDefault();
+                this.$refs.search?.focus();
+            }
+        },
+    },
+    watch: {
+        openKey(key) {
+            if (!key) return;
+            this.$nextTick(() => this.$refs.win?.focus());
+        },
+        // A different section is a different read: start it at the top rather
+        // than wherever the previous one was scrolled to.
+        activeSection() {
+            this.$nextTick(() => { if (this.$refs.body) this.$refs.body.scrollTop = 0; });
         },
     },
     async mounted() {
-        this.editors = await fetchEditors().then(r => r || []);
-        if (guidelinesData.length && guidelinesData[0].sections.length) {
-            this.activeSection = guidelinesData[0].sections[0].id;
-        }
-        this.$nextTick(() => {
-            const body = this.$refs.glBody;
-            if (body) {
-                this._glObserver = new IntersectionObserver(([entry]) => {
-                    this.glBodyVisible = entry.intersectionRatio >= 0.5;
-                }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
-                this._glObserver.observe(body);
-            }
-        });
+        window.addEventListener('keydown', this.onKeydown);
+        this.editors = await fetchEditors().then((r) => r || []);
     },
     beforeUnmount() {
-        if (this._glObserver) this._glObserver.disconnect();
+        window.removeEventListener('keydown', this.onKeydown);
     },
 };
-

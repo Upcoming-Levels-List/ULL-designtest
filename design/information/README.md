@@ -1,8 +1,11 @@
 # /information — the hub
 
 The one page the [main redesign](../README.md) skipped, rebuilt as a hub: a
-front screen that answers the easy questions itself and opens the long reads in
-a reader over the page.
+front screen of six faces, each opening its content in a reader over the page.
+
+**This has since been built into the site.** The template stays here as the
+reference the page was made from, and the deck reads the shipped stylesheet, so
+it renders whatever `css/ull-v2.css` currently says.
 
 ```
 design/information/
@@ -94,9 +97,31 @@ guidelines block and the right-hand stack balance to within a pixel.
 
 A glossary belongs inside the guidelines, as a section of *General*.
 
+## What shipped
+
+- `js/pages/Information.js` — the hub and its reader, with the six windows on
+  `?open=` so a rule can be linked to, Escape and Back closing one, and the page
+  behind it locked while it is open.
+- `js/_info.js` — the navigation copy, the FAQ, the API reference, the two
+  legends and the contact routing, alongside `js/_guidelines.js` for the same
+  reason: it is prose, edited by people who are not editing components.
+- A **Glossary** section in `js/_guidelines.js`, under General.
+- `css/pages/information.css`, rewritten.
+- The editor-list rules moved from `information.css` to `css/pages/home.css`,
+  where their only remaining caller lives, under home's own prefix.
+
+Two things worth knowing about the build:
+
+- The search field is real. It runs over the guidelines, the FAQ, the endpoints,
+  the level fields and both legends, and a hit opens the window it lives in — a
+  guidelines hit opens that section.
+- Every count on the page is computed from the data. "14 sections", "15
+  questions", "9 pages", "19 marks", "9 endpoints" and the group counts are
+  lengths of the arrays behind them, so they cannot drift from what is there.
+
 ## Not covered
 
-- Mobile. `/mobile/info` has its own deck in [`design/mobile/`](../mobile/).
-- Any change to `js/` or `css/`. Nothing has been built yet.
+- Mobile. `/mobile/info` has its own deck in [`design/mobile/`](../mobile/) and
+  is untouched.
 - The four approaches this was chosen from — A. Shelf, B. Manual, D. Document,
   E. Tiles. All are in git history.

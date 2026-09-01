@@ -334,3 +334,57 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
     .home-content { padding-inline: 1.5rem; }
     .home-grid-2col { grid-template-columns: 1fr; }
 }
+
+/* ── The editors card ──
+   These rules used to live in css/pages/information.css, which is where the
+   class names came from: both pages listed the editors the same way. The
+   information page now draws its team inside its own reader, so home is the
+   only page using them and they belong here, under home's own prefix. */
+.home-editors-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+.home-editor {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 0.35rem;
+    transition: background-color 100ms ease;
+}
+.home-editor:hover { background: rgba(128,128,128,0.08); }
+.home-editor img {
+    width: 1.1rem;
+    height: 1.1rem;
+    opacity: 0.7;
+}
+.home-editor a, .home-editor span.home-editor__name {
+    color: var(--color-on-background);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.6;
+}
+.home-editor a:hover { text-decoration: underline; }
+.home-role {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    background: rgba(128,128,128,0.15);
+    color: var(--color-on-background);
+    opacity: 0.5;
+    margin-left: auto;
+    white-space: nowrap;
+}
+.home-role-owner  { background: rgba(255,180,50,0.15); color: #ffcc55; opacity:1; }
+.home-role-admin  { background: rgba(100,180,255,0.15); color: #77bbff; opacity:1; }
+.home-role-seniormod { background: rgba(100,220,180,0.15); color: #66ddaa; opacity:1; }
+.home-role-dev    { background: rgba(200,100,255,0.15); color: #cc88ff; opacity:1; }
+.root.dark .home-role-owner  { background: rgba(200,140,0,0.15); color: #b38800; }
+.root.dark .home-role-admin  { background: rgba(30,100,200,0.15); color: #2266bb; }
+.root.dark .home-role-seniormod { background: rgba(30,160,100,0.15); color: #1a8855; }
+.root.dark .home-role-dev    { background: rgba(130,40,200,0.15); color: #7722bb; }

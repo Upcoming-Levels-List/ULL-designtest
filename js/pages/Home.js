@@ -128,17 +128,17 @@ export default {
                 </div>
                 <p class="home-editors-desc">Trusted members responsible for maintaining the Upcoming Levels List &mdash; adding levels, updating placements, and keeping the list accurate.</p>
                 <div class="home-editors">
-                    <!-- Each group gets its own .info-editors grid. Putting the
+                    <!-- Each group gets its own .home-editors-grid. Putting the
                          headings straight into one shared grid made them take a
                          cell of their own, which shuffled the names into it. -->
                     <div v-for="group in editorGroups" :key="group.label" class="home-editors-group">
                         <div class="home-editors-group__label">{{ group.label }}</div>
-                        <div class="info-editors">
-                            <div v-for="editor in group.editors" :key="editor.name" class="info-editor">
+                        <div class="home-editors-grid">
+                            <div v-for="editor in group.editors" :key="editor.name" class="home-editor">
                                 <img :src="'/assets/' + (roleIconMap[editor.role] || 'user-lock') + (store.dark ? '' : '-dark') + '.svg'" :alt="editor.role" />
                                 <a v-if="editor.link && editor.link !== '#'" :href="editor.link" target="_blank">{{ editor.name }}</a>
-                                <span v-else class="info-editor__name">{{ editor.name }}</span>
-                                <span class="info-role" :class="'info-role-' + editor.role">{{ roleLabel(editor.role) }}</span>
+                                <span v-else class="home-editor__name">{{ editor.name }}</span>
+                                <span class="home-role" :class="'home-role-' + editor.role">{{ roleLabel(editor.role) }}</span>
                             </div>
                         </div>
                     </div>
