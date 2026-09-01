@@ -11,13 +11,13 @@ const roleIconMap = {
     dev: 'code',
 };
 
-const roleLabelMap = { owner: 'Owner', admin: 'Admin', seniormod: 'Sr. Mod', mod: 'Mod', dev: 'Dev' };
+const roleLabelMap = { owner: 'Owner', admin: 'Admin', seniormod: 'Elder Mod', mod: 'Mod', dev: 'Dev' };
 
 // Editors are shown in the order the database gives them, grouped by seniority.
 // The groups only decide the sub-headings; within a group the DB order stands.
 const roleGroups = [
     { label: 'Owner & admin', roles: ['owner', 'admin'] },
-    { label: 'Senior moderators', roles: ['seniormod'] },
+    { label: 'Elder moderators', roles: ['seniormod'] },
     { label: 'Moderators', roles: ['mod'] },
     { label: 'Developers', roles: ['dev'] },
 ];
@@ -61,7 +61,7 @@ export default {
 
                 <section class="u-card">
                     <h2 class="u-eyebrow">Recent changes</h2>
-                    <div v-if="recentChanges.length">
+                    <div v-if="recentChanges.length" class="m2-changes">
                         <template v-for="group in recentChanges" :key="group.date">
                             <div class="m2-tl-date">{{ group.date }}</div>
                             <div v-for="entry in group.entries" :key="entry" class="m2-tl-item" :class="changeTone(entry)">

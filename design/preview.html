@@ -722,7 +722,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                         <a class="hm-ed-row" href="#"><span class="hm-ed-ic"></span>exiled_shade</a>
                     </div>
                     <div class="hm-ed-group">
-                        <div class="hm-ed-label">Senior moderators</div>
+                        <div class="hm-ed-label">Elder moderators</div>
                         <a class="hm-ed-row" href="#"><span class="hm-ed-ic"></span>niroi</a>
                         <a class="hm-ed-row" href="#"><span class="hm-ed-ic"></span>Keres</a>
                         <a class="hm-ed-row" href="#"><span class="hm-ed-ic"></span>LukeLGamer</a>
@@ -793,7 +793,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 .mk-panel .pn-video { width: 100%; aspect-ratio: 16/9; border-radius: var(--u-r); border: 1px solid var(--u-line); background: var(--u-fill-2); display: flex; align-items: center; justify-content: center; }
 .mk-panel .pn-play { width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid var(--u-line-2); display: flex; align-items: center; justify-content: center; opacity: 0.45; }
 .mk-panel .pn-play::after { content: ''; border-left: 0.7rem solid currentColor; border-top: 0.45rem solid transparent; border-bottom: 0.45rem solid transparent; margin-left: 0.2rem; }
-.mk-panel .pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; align-items: stretch; }
+.mk-panel .pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; align-items: start; }
+.mk-panel .pn-col { display: flex; flex-direction: column; gap: 0.85rem; min-width: 0; }
 .mk-panel .pn-actions { display: flex; gap: 0.5rem; }
 @media (max-width: 900px) { .mk-panel { grid-template-columns: 1fr; } .mk-panel .mk-left { display: none; } .mk-panel .pn-grid { grid-template-columns: 1fr; } }
 </style>
@@ -886,7 +887,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
             </div>
             <div class="pn-video"><span class="pn-play"></span></div>
 
-            <div class="pn-grid">
+                <div class="pn-grid">
+                    <div class="pn-col">
                 <div class="u-card">
                     <h3 class="u-eyebrow">Progress</h3>
                     <div class="u-meter">
@@ -898,7 +900,18 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                         <div class="u-bar u-bar--alt"><i style="width:0%"></i></div>
                     </div>
                 </div>
-
+                <div class="u-card">
+                    <h3 class="u-eyebrow">Details</h3>
+                    <dl class="u-dl">
+                        <dt>Host</dt><dd>Duke</dd>
+                        <dt>Verifier</dt><dd>wPopoff</dd>
+                        <dt>Level ID</dt><dd>Private</dd>
+                        <dt>Length</dt><dd>2m 28s</dd>
+                        <dt>Updated</dt><dd>20.06.2026</dd>
+                    </dl>
+                </div>
+                    </div>
+                    <div class="pn-col">
                 <div class="u-card">
                     <h3 class="u-eyebrow">World records</h3>
                     <div class="u-stats">
@@ -912,18 +925,6 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                         </div>
                     </div>
                 </div>
-
-                <div class="u-card">
-                    <h3 class="u-eyebrow">Details</h3>
-                    <dl class="u-dl">
-                        <dt>Host</dt><dd>Duke</dd>
-                        <dt>Verifier</dt><dd>wPopoff</dd>
-                        <dt>Level ID</dt><dd>Private</dd>
-                        <dt>Length</dt><dd>2m 28s</dd>
-                        <dt>Updated</dt><dd>20.06.2026</dd>
-                    </dl>
-                </div>
-
                 <div class="u-card">
                     <h3 class="u-eyebrow">Creators <span class="u-count">14</span></h3>
                     <div class="u-chips">
@@ -934,7 +935,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                         <span class="u-chip">xol</span><span class="u-chip">Aris</span>
                     </div>
                 </div>
-            </div>
+                    </div>
+                </div>
 
             <div class="pn-actions">
                 <a class="u-btn" href="#">Open level page</a>
@@ -1285,7 +1287,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 .mk-pd .pd-hero h1 { margin: 0; font-family: inherit; font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
 .mk-pd .pd-hero p { margin: 0.7rem 0 0; max-width: 38rem; font-size: 0.85rem; line-height: 1.65; opacity: 0.5; }
 .mk-pd .pd-counts { display: flex; gap: 0.5rem; margin-top: 1.35rem; flex-wrap: wrap; }
-.mk-pd .pd-count { display: flex; align-items: baseline; gap: 0.45rem; padding: 0.45rem 0.85rem; border-radius: 2rem; border: 1px solid var(--u-line); background: var(--u-fill); font-size: 0.72rem; }
+.mk-pd .pd-count { cursor: pointer; color: var(--color-on-background); font-family: inherit; display: flex; align-items: baseline; gap: 0.45rem; padding: 0.45rem 0.85rem; border-radius: 2rem; border: 1px solid var(--u-line); background: var(--u-fill); font-size: 0.72rem; }
 .mk-pd .pd-count b { font-size: 0.95rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .mk-pd .pd-count span { opacity: 0.5; }
 
@@ -1321,10 +1323,10 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
         <h1>Pending List</h1>
         <p>Levels awaiting a decision from the staff team &mdash; a first placement, a move up or down, a removal, or a hold with no decision expected soon.</p>
         <div class="pd-counts">
-            <span class="pd-count"><b>41</b><span>placements</span></span>
-            <span class="pd-count"><b>28</b><span>movements</span></span>
-            <span class="pd-count"><b>12</b><span>removals</span></span>
-            <span class="pd-count"><b>15</b><span>on hold</span></span>
+            <button class="pd-count" type="button"><b>41</b><span>placements</span></button>
+            <button class="pd-count" type="button"><b>28</b><span>movements</span></button>
+            <button class="pd-count" type="button"><b>12</b><span>removals</span></button>
+            <button class="pd-count" type="button"><b>15</b><span>on hold</span></button>
         </div>
     </section>
 

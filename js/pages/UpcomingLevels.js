@@ -29,7 +29,7 @@ export default {
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/></svg>
                 </button>
             </div>
-            <table class="list" v-if="list.length && filteredList.length">
+            <table class="list" v-if="list.length && filteredList.length && !noResults">
                 <tr v-for="([level, err], i) in filteredList" :key="i" :class="{ 'level-hidden': level?.isHidden }">
                     <td class="rank">
                         <p class="type-label-lg">#{{ i + 1 }}</p>
@@ -47,11 +47,17 @@ export default {
                     </td>
                 </tr>
             </table>
-            <div v-else-if="list.length && !filteredList.length" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
+            <div v-else-if="list.length" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;opacity:0.25;gap:0.5rem;text-align:center;color:var(--color-on-background);">
                 <span style="font-size:2rem;">🔍</span>
-                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search or filters.</p>
             </div>
             <p v-else style="padding:1rem; opacity:0.5;">No upcoming levels found</p>
+            <div class="scroll-top-wrap">
+                <button v-if="showScrollTop" class="scroll-top-btn" @click="scrollToTop">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg>
+                    Return to top
+                </button>
+            </div>
         </div>
         <div class="level-container-new surface">
             <LevelPanel :level="selectedLevel" :all-paths="allPaths" current="all" lead-progress></LevelPanel>
@@ -134,8 +140,15 @@ export default {
         ],
         minDecoration: 0,
         minVerification: 0,
+        showScrollTop: false,
     }),
     computed: {
+        // Filters hide rows rather than removing them, so a fully filtered list
+        // still has length; the page owes the same answer either way.
+        noResults() {
+            if (!this.filteredList.length) return true;
+            return this.filteredList.every(([level]) => !level || level.isHidden);
+        },
         filteredList() {
             if (!this.search.trim()) return this.list;
             const q = this.search.toLowerCase().trim();
@@ -150,6 +163,9 @@ export default {
         },
     },
     watch: { search() { this.selected = 0; } },
+    beforeUnmount() {
+        if (this._scrollEl) this._scrollEl.removeEventListener('scroll', this._onScroll);
+    },
     async mounted() {
         let list = await fetchList();
         if (!list) { this.loading = false; return; }
@@ -183,8 +199,30 @@ export default {
             .sort((a, b) => b[0].rankingScore - a[0].rankingScore);
 
         this.loading = false;
+        this.$nextTick(() => this.watchScroll());
     },
     methods: {
+        // The left column (.list-container-new) is the scroll container. Show the
+        // button once roughly ten rows have scrolled past, measuring one real row
+        // instead of hard-coding a pixel height.
+        watchScroll() {
+            const el = this.$el && this.$el.querySelector && this.$el.querySelector('.list-container-new');
+            if (!el || this._scrollEl) return;
+            this._scrollEl = el;
+            this._onScroll = () => {
+                if (!this._rowHeight) {
+                    const row = el.querySelector('.list tr');
+                    const h = row ? row.getBoundingClientRect().height : 0;
+                    if (h) this._rowHeight = h;
+                }
+                this.showScrollTop = el.scrollTop > (this._rowHeight || 56) * 10;
+            };
+            el.addEventListener('scroll', this._onScroll, { passive: true });
+        },
+        scrollToTop() {
+            if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
         isOldLevel(level) {
             if (!level.lastUpd) return false;
             const parts = level.lastUpd.split('.');

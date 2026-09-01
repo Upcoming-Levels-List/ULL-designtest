@@ -7,15 +7,15 @@ export default {
                 <h1>Pending List</h1>
                 <p>Levels awaiting a decision from the staff team — a first placement, a move up or down, a removal, or a hold.</p>
                 <div class="m2-figs">
-                    <span class="m2-fig"><b>{{ mobileStore.pendingPlacements.length }}</b><span>placements</span></span>
-                    <span class="m2-fig"><b>{{ mobileStore.pendingMovements.length }}</b><span>movements</span></span>
-                    <span class="m2-fig"><b>{{ removalCandidates.length }}</b><span>removals</span></span>
-                    <span class="m2-fig"><b>{{ mobileStore.pendingIndefinite.length }}</b><span>on hold</span></span>
+                    <button class="m2-fig" type="button" @click="jumpTo('place')"><b>{{ mobileStore.pendingPlacements.length }}</b><span>placements</span></button>
+                    <button class="m2-fig" type="button" @click="jumpTo('move')"><b>{{ mobileStore.pendingMovements.length }}</b><span>movements</span></button>
+                    <button class="m2-fig" type="button" @click="jumpTo('remove')"><b>{{ removalCandidates.length }}</b><span>removals</span></button>
+                    <button class="m2-fig" type="button" @click="jumpTo('hold')"><b>{{ mobileStore.pendingIndefinite.length }}</b><span>on hold</span></button>
                 </div>
             </section>
 
             <div class="m2-body">
-                <section class="mob-pending-card u-card m2-lane m2-lane--place">
+                <section class="mob-pending-card u-card m2-lane m2-lane--place" ref="place">
                     <h2 class="u-eyebrow">Pending Placements <span class="u-count">{{ mobileStore.pendingPlacements.length }}</span></h2>
                     <div v-if="mobileStore.pendingPlacements.length" class="m2-plist">
                         <div v-for="level in mobileStore.pendingPlacements" :key="level.name" class="mob-pending-row m2-prow">
@@ -28,7 +28,7 @@ export default {
                     <p v-else class="u-empty__d">No pending placements.</p>
                 </section>
 
-                <section class="mob-pending-card u-card m2-lane m2-lane--move">
+                <section class="mob-pending-card u-card m2-lane m2-lane--move" ref="move">
                     <h2 class="u-eyebrow">Pending Movements <span class="u-count">{{ mobileStore.pendingMovements.length }}</span></h2>
                     <div v-if="mobileStore.pendingMovements.length" class="m2-plist">
                         <div v-for="level in mobileStore.pendingMovements" :key="level.name" class="mob-pending-row m2-prow">
@@ -41,7 +41,7 @@ export default {
                     <p v-else class="u-empty__d">No pending movements.</p>
                 </section>
 
-                <section class="mob-pending-card u-card m2-lane m2-lane--remove">
+                <section class="mob-pending-card u-card m2-lane m2-lane--remove" ref="remove">
                     <h2 class="u-eyebrow">Pending Removals <span class="u-count">{{ removalCandidates.length }}</span></h2>
                     <div v-if="removalCandidates.length" class="m2-plist">
                         <div v-for="level in removalCandidates" :key="level.name" class="mob-pending-row m2-prow">
@@ -54,7 +54,7 @@ export default {
                     <p v-else class="u-empty__d">No pending removals.</p>
                 </section>
 
-                <section class="mob-pending-card u-card m2-lane m2-lane--hold">
+                <section class="mob-pending-card u-card m2-lane m2-lane--hold" ref="hold">
                     <h2 class="u-eyebrow">Pending Indefinitely <span class="u-count">{{ mobileStore.pendingIndefinite.length }}</span></h2>
                     <div v-if="mobileStore.pendingIndefinite.length" class="m2-plist">
                         <div v-for="level in mobileStore.pendingIndefinite" :key="level.name" class="mob-pending-row m2-prow">
@@ -92,6 +92,11 @@ export default {
         },
     },
     methods: {
+        jumpTo(lane) {
+            const el = this.$refs[lane];
+            const target = Array.isArray(el) ? el[0] : el;
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
         getIconPath(placement) {
             return `/assets/${placement === '?' || !placement ? 'question' : placement}.svg`;
         },

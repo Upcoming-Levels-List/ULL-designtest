@@ -3,7 +3,7 @@ title: Pending List
 route: /mobile/pending
 files: js/pages/mobile/MobilePending.js
 problem: Four cards under a centred purple headline, each row an icon and a name. The placement a level is waiting for — the one fact the page exists to state — is encoded only in which of six SVG icons is drawn, so "Top 10" and "Top 75" look the same at a glance. There are no counts and no colour separating a placement from a removal; the desktop page gained all three.
-change: The desktop's four lanes, stacked one per row on a phone: the same tint per lane, the same count beside each heading, and the placement spelled out as a chip beside every name. The hero carries the four counts so the queue reads before you scroll into it.
+change: The desktop's four lanes, stacked one per row on a phone: the same tint per lane, the same count beside each heading, and the placement spelled out as a chip beside every name. The hero's four counts are buttons that jump to the lane they count, so a long queue is one tap deep rather than a scroll.
 -->
 <div class="m2 ull2">
     <header class="m2-top">
@@ -19,10 +19,10 @@ change: The desktop's four lanes, stacked one per row on a phone: the same tint 
             <h1>Pending List</h1>
             <p>Levels awaiting a decision from the staff team &mdash; a first placement, a move up or down, a removal, or a hold.</p>
             <div class="m2-figs">
-                <span class="m2-fig"><b>5</b><span>placements</span></span>
-                <span class="m2-fig"><b>2</b><span>movements</span></span>
-                <span class="m2-fig"><b>27</b><span>removals</span></span>
-                <span class="m2-fig"><b>2</b><span>on hold</span></span>
+                <button class="m2-fig" type="button"><b>5</b><span>placements</span></button>
+                <button class="m2-fig" type="button"><b>2</b><span>movements</span></button>
+                <button class="m2-fig" type="button"><b>27</b><span>removals</span></button>
+                <button class="m2-fig" type="button"><b>2</b><span>on hold</span></button>
             </div>
         </section>
 

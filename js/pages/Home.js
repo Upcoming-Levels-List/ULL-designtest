@@ -14,7 +14,7 @@ const roleIconMap = {
 const roleLabelMap = {
     owner: 'Owner',
     admin: 'Admin',
-    seniormod: 'Sr. Mod',
+    seniormod: 'Elder Mod',
     mod: 'Mod',
     dev: 'Dev',
 };
@@ -23,7 +23,7 @@ const roleLabelMap = {
 // The groups only decide the sub-headings; within a group the DB order stands.
 const roleGroups = [
     { label: 'Owner & admin', roles: ['owner', 'admin'] },
-    { label: 'Senior moderators', roles: ['seniormod'] },
+    { label: 'Elder moderators', roles: ['seniormod'] },
     { label: 'Moderators', roles: ['mod'] },
     { label: 'Developers', roles: ['dev'] },
 ];

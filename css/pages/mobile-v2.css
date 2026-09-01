@@ -63,11 +63,14 @@
     justify-content: center;
     border: 0;
     border-radius: 0.5rem;
-    background: rgba(255, 255, 255, 0.14);
+    /* Transparent at rest. A permanent wash made both buttons look held down. */
+    background: transparent;
     color: inherit;
     cursor: pointer;
+    transition: background-color 120ms ease;
 }
-.m2-top__btn:active { background: rgba(255, 255, 255, 0.26); }
+.m2-top__btn:active,
+.m2-top__btn.active { background: rgba(255, 255, 255, 0.22); }
 
 /* ── Bottom tab bar ───────────────────────────────────────────────────────
    The same eight destinations the "Pages" popup held, in the order the desktop
@@ -141,8 +144,13 @@
     border-radius: 2rem;
     border: 1px solid var(--u-line);
     background: var(--u-fill);
+    color: var(--color-on-background);
+    font-family: inherit;
     font-size: 0.68rem;
 }
+/* On Pending, each figure jumps to the lane it counts. */
+button.m2-fig { cursor: pointer; }
+button.m2-fig:active { background: var(--u-fill-2); }
 .m2-fig b { font-size: 0.88rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .m2-fig span { opacity: 0.5; }
 .m2-fig--lead b { color: var(--u-accent); }
@@ -303,6 +311,8 @@
 .m2-detail__by b { font-weight: 600; }
 .m2-detail__pills { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.55rem; }
 .m2-detail__body { padding: 0.75rem var(--m-pad) 0.9rem; display: flex; flex-direction: column; gap: 0.8rem; }
+/* The flex gap already separates a heading from what follows it. */
+.m2-detail__body > .u-eyebrow { margin-bottom: 0; }
 
 /* Rank chips scroll sideways rather than wrapping onto a second line. */
 .m2-ranks {
@@ -401,7 +411,7 @@
 .m2-row.is-error { color: var(--color-error); text-decoration: line-through; cursor: not-allowed; }
 
 /* ── Lane (pending) ───────────────────────────────────────────────────── */
-.m2-lane { position: relative; overflow: hidden; padding: 1rem 1.1rem; }
+.m2-lane { scroll-margin-top: 1rem; position: relative; overflow: hidden; padding: 1rem 1.1rem; }
 .m2-lane::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--m-tone, transparent); }
 .m2-lane--place  { --m-tone: #5599ff; }
 .m2-lane--move   { --m-tone: #55ee55; }
@@ -522,8 +532,14 @@
     background: var(--color-background);
 }
 .m2-sheet__grip { width: 2.25rem; height: 0.25rem; border-radius: 1rem; background: var(--u-line-2); margin: 0.6rem auto 0.2rem; }
-.m2-sheet__head { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem var(--m-pad) 0.75rem; }
-.m2-sheet__head h2 { font-size: 0.95rem; font-weight: 700; }
+.m2-sheet__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem var(--m-pad) 0.9rem;
+}
+.m2-sheet__head h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
 .m2-sheet__body { flex: 1; overflow-y: auto; padding: 0 var(--m-pad) 0.75rem; }
 .m2-sheet__foot { display: flex; gap: 0.5rem; padding: 0.75rem var(--m-pad) 1rem; border-top: 1px solid var(--u-line); }
 .m2-sheet__foot > * { flex: 1; min-height: var(--m-tap); }
@@ -562,14 +578,26 @@
     cursor: pointer;
 }
 .m2-filter.is-on { border-color: transparent; background: var(--color-primary); color: var(--color-on-primary); }
-/* A destination in the Other sheet. */
+/* A destination in the Other sheet. The rule runs the full width of the sheet
+   body rather than the text box, so it lines up with the group labels above it
+   instead of starting a fraction of a pixel in. */
+.m2-pages { display: flex; flex-direction: column; }
+.m2-pages__label {
+    margin: 0.85rem 0 0.15rem;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.3;
+}
+.m2-pages__label:first-child { margin-top: 0; }
 .m2-page {
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
     min-height: var(--m-tap);
-    padding: 0 0.2rem;
+    padding: 0;
     border: 0;
-    border-bottom: 1px solid var(--u-line);
     background: transparent;
     color: var(--color-on-background);
     font-family: inherit;
@@ -578,7 +606,7 @@
     text-align: left;
     cursor: pointer;
 }
-.m2-page:last-child { border-bottom: 0; }
+.m2-page + .m2-page { border-top: 1px solid var(--u-line); }
 .m2-page.is-on { color: var(--u-accent); font-weight: 700; }
 
 .m2-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.9rem; }
@@ -595,7 +623,18 @@
     font-size: 0.85rem;
 }
 
-/* ── Timeline (home) ──────────────────────────────────────────────────── */
+/* ── Timeline (home) ──────────────────────────────────────────────────────
+   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
+   the editors card off the end of a long scroll. */
+.m2-changes {
+    max-height: 18rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--u-line);
+    border-radius: var(--m-r);
+    background: color-mix(in srgb, #808080 4%, var(--color-background));
+}
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
 .m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }

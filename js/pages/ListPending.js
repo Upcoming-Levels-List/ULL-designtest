@@ -16,10 +16,10 @@ export default {
                 <h1>Pending List</h1>
                 <p>Levels awaiting a decision from the staff team &mdash; a first placement, a move up or down, a removal, or a hold with no decision expected soon.</p>
                 <div class="pending-counts">
-                    <span class="pending-count"><b>{{ pendingPlacements.length }}</b><span>placements</span></span>
-                    <span class="pending-count"><b>{{ pendingMovements.length }}</b><span>movements</span></span>
-                    <span class="pending-count"><b>{{ removalCandidates.length }}</b><span>removals</span></span>
-                    <span class="pending-count"><b>{{ pendingIndefinite.length }}</b><span>on hold</span></span>
+                    <button class="pending-count" type="button" @click="jumpTo('place')"><b>{{ pendingPlacements.length }}</b><span>placements</span></button>
+                    <button class="pending-count" type="button" @click="jumpTo('move')"><b>{{ pendingMovements.length }}</b><span>movements</span></button>
+                    <button class="pending-count" type="button" @click="jumpTo('remove')"><b>{{ removalCandidates.length }}</b><span>removals</span></button>
+                    <button class="pending-count" type="button" @click="jumpTo('hold')"><b>{{ pendingIndefinite.length }}</b><span>on hold</span></button>
                 </div>
             </section>
 
@@ -29,7 +29,7 @@ export default {
             <div class="pending-content">
                 <div class="pending-cards">
                     <div class="pending-col">
-                        <section class="pending-card pending-card--place">
+                        <section class="pending-card pending-card--place" ref="place">
                             <h2 class="u-eyebrow pending-card__title">Pending Placements <span class="u-count">{{ pendingPlacements.length }}</span></h2>
                             <div v-if="pendingPlacements.length" class="pending-rows">
                                 <div v-for="level in pendingPlacements" :key="level.name" class="pending-row">
@@ -41,7 +41,8 @@ export default {
                             </div>
                             <p v-else class="pending-empty">No pending placements.</p>
                         </section>
-                        <section class="pending-card pending-card--hold">
+                        <template v-if="!placementsDominate">
+                        <section class="pending-card pending-card--hold" ref="hold">
                             <h2 class="u-eyebrow pending-card__title">Pending Indefinitely <span class="u-count">{{ pendingIndefinite.length }}</span></h2>
                             <div v-if="pendingIndefinite.length" class="pending-rows">
                                 <div v-for="level in pendingIndefinite" :key="level.name" class="pending-row">
@@ -53,9 +54,27 @@ export default {
                             </div>
                             <p v-else class="pending-empty">No levels pending indefinitely.</p>
                         </section>
+                        </template>
                     </div>
                     <div class="pending-col">
-                        <section class="pending-card pending-card--move">
+                        <!-- Placements can run longer than the other three put
+                             together. When it does, the hold lane moves over so
+                             the second column is not left short. -->
+                        <template v-if="placementsDominate">
+                        <section class="pending-card pending-card--hold" ref="hold">
+                            <h2 class="u-eyebrow pending-card__title">Pending Indefinitely <span class="u-count">{{ pendingIndefinite.length }}</span></h2>
+                            <div v-if="pendingIndefinite.length" class="pending-rows">
+                                <div v-for="level in pendingIndefinite" :key="level.name" class="pending-row">
+                                    <img class="pending-row__icon" :src="getIconPath(level.placement === '?' ? 'question' : level.placement)" alt="" />
+                                    <a v-if="level.link" :href="level.link" class="pending-row__name">{{ level.name }}</a>
+                                    <span v-else class="pending-row__name">{{ level.name }}</span>
+                                    <span class="pending-row__target">{{ placementLabel(level.placement) }}</span>
+                                </div>
+                            </div>
+                            <p v-else class="pending-empty">No levels pending indefinitely.</p>
+                        </section>
+                        </template>
+                        <section class="pending-card pending-card--move" ref="move">
                             <h2 class="u-eyebrow pending-card__title">Pending Movements <span class="u-count">{{ pendingMovements.length }}</span></h2>
                             <div v-if="pendingMovements.length" class="pending-rows">
                                 <div v-for="level in pendingMovements" :key="level.name" class="pending-row">
@@ -67,7 +86,7 @@ export default {
                             </div>
                             <p v-else class="pending-empty">No pending movements.</p>
                         </section>
-                        <section class="pending-card pending-card--remove">
+                        <section class="pending-card pending-card--remove" ref="remove">
                             <h2 class="u-eyebrow pending-card__title">Pending Removals <span class="u-count">{{ removalCandidates.length }}</span></h2>
                             <div v-if="removalCandidates.length" class="pending-rows">
                                 <div v-for="level in removalCandidates" :key="level.name" class="pending-row">
@@ -139,7 +158,20 @@ export default {
 
         this.loading = false;
     },
+    computed: {
+        // Rows, not pixels: the lanes are all the same shape, so their row
+        // counts stand in for their heights without measuring anything.
+        placementsDominate() {
+            return this.pendingPlacements.length
+                > this.pendingMovements.length + this.removalCandidates.length + this.pendingIndefinite.length;
+        },
+    },
     methods: {
+        jumpTo(lane) {
+            const el = this.$refs[lane];
+            const target = Array.isArray(el) ? el[0] : el;
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
         // The placement a level is waiting for is the one thing this page
         // exists to say, and it used to be encoded only in which of six icons
         // was drawn. The icon stays for scanning; the words say it outright.

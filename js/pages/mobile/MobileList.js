@@ -37,8 +37,8 @@ export default {
             </div>
 
             <div v-if="noResults" class="u-empty">
-                <div class="u-empty__t">No levels match your search</div>
-                <div class="u-empty__d">Try part of a name, or clear the box to see everything.</div>
+                <div class="u-empty__t">No levels match your search or filters</div>
+                <div class="u-empty__d">Try a different name, or reset the filters to see everything.</div>
             </div>
 
             <div class="m2-rows">
@@ -160,7 +160,9 @@ export default {
             return ranks;
         },
         noResults() {
-            if (!mobileStore.search.trim()) return false;
+            // Filters empty the list the same way a search does, and the page
+            // owes the reader the same answer either way.
+            if (!this.displayList.length) return false;
             return this.displayList.every(([level]) => !level || level.isHidden);
         },
         visibleCount() {

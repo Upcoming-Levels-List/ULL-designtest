@@ -96,14 +96,16 @@ export default {
             <!-- Other pages -->
             <template v-if="mobileStore.openMenu === 'pages'">
                 <div class="m2-sheet__head"><h2>Other pages</h2></div>
-                <div class="m2-sheet__body">
-                    <div class="m2-eds__label">Lists</div>
+                <div class="m2-sheet__body m2-pages">
+                    <div class="m2-pages__label">Lists</div>
+                    <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/all' }" @click="goPage('all')">All Levels</button>
                     <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/main' }" @click="goPage('main')">Main List</button>
                     <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/future' }" @click="goPage('future')">Future List</button>
-                    <div class="m2-eds__label">Other</div>
+                    <div class="m2-pages__label">Other</div>
                     <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/leaderboard' }" @click="goPage('leaderboard')">Leaderboard</button>
                     <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/upcoming' }" @click="goPage('upcoming')">Upcoming Levels</button>
                     <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/pending' }" @click="goPage('pending')">Pending List</button>
+                    <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/info' }" @click="goPage('info')">Information</button>
                     <button class="m2-page" :class="{ 'is-on': $route.path === '/mobile/events' }" @click="goPage('events')">Events</button>
                 </div>
             </template>

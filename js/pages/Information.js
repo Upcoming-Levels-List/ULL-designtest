@@ -14,7 +14,7 @@ const roleIconMap = {
 const roleLabelMap = {
     owner: 'Owner',
     admin: 'Admin',
-    seniormod: 'Sr. Mod',
+    seniormod: 'Elder Mod',
     mod: 'Mod',
     dev: 'Dev',
 };

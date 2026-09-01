@@ -89,15 +89,20 @@
     opacity: 0.35;
 }
 
-/* Cards stretch to their row rather than sitting at its top. That squares
-   Progress against World records beside it, and it closes the gap that opened
-   under a short card when the taller one beside it set the row height — the
-   next card down used to start level with the tall one's bottom edge. */
+/* Two independent stacks. Under a grid, every card shared a row with the card
+   beside it, so a short card was either stretched to the taller one's height or
+   left a gap under it — neither is what a column of cards should do. */
 .lp-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
     gap: 0.85rem;
-    align-items: stretch;
+    align-items: start;
+}
+.lp-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-width: 0;
 }
 /* The share control keeps its own pill shape (css/components/level-share.css);
    align it to the filled button beside it. */
@@ -108,6 +113,7 @@
     .lp-hero .u-hero__inner { padding: 1.35rem 1.25rem 1.1rem; }
     .lp-body { padding: 1.1rem 1.25rem 1.75rem; }
     .lp-grid { grid-template-columns: minmax(0, 1fr); }
+    .lp-col { gap: 0.85rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -3,6 +3,10 @@ import { mobileStore } from './mobileStore.js';
 export default {
     template: `
         <div class="mob-list m2-page-body">
+            <button v-if="showScrollTop" class="mob-scroll-top-btn" @click="scrollToTop">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg>
+                Return to top
+            </button>
             <section class="m2-hero">
                 <h1>Leaderboard</h1>
                 <p>Top players ranked by their records on upcoming levels and their verifications of Demonlist levels.</p>
@@ -59,6 +63,7 @@ export default {
         mobileStore,
         playerSelected: -1,
         playerSearch: '',
+        showScrollTop: false,
     }),
     computed: {
         // Second, first, third — so the winner stands in the middle.
@@ -72,7 +77,23 @@ export default {
             return mobileStore.players.filter(p => p.name.toLowerCase().includes(q));
         },
     },
+    mounted() {
+        // .mob-content is the shell's scroll container; the button appears once
+        // roughly a screen of rows has gone past.
+        const container = this.$el.closest('.mob-content');
+        if (container) {
+            this._scrollEl = container;
+            this._onScroll = () => { this.showScrollTop = container.scrollTop > 300; };
+            container.addEventListener('scroll', this._onScroll, { passive: true });
+        }
+    },
+    beforeUnmount() {
+        if (this._scrollEl) this._scrollEl.removeEventListener('scroll', this._onScroll);
+    },
     methods: {
+        scrollToTop() {
+            if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+        },
         ordinal(n) {
             const tens = n % 100;
             if (tens >= 11 && tens <= 13) return `${n}th`;

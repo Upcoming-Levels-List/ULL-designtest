@@ -119,7 +119,7 @@ export default {
         store,
         mobileStore,
         roleIconMap,
-        roleLabelMap: { owner: 'Owner', admin: 'Admin', seniormod: 'Sr. Mod', mod: 'Mod', dev: 'Dev' },
+        roleLabelMap: { owner: 'Owner', admin: 'Admin', seniormod: 'Elder Mod', mod: 'Mod', dev: 'Dev' },
         mobGlSearch: '',
         mobActiveSection: guidelinesData.length && guidelinesData[0].sections.length ? guidelinesData[0].sections[0].id : '',
         showScrollTop: false,

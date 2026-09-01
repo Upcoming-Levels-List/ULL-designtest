@@ -13,7 +13,9 @@
    instead of sitting beside it, controls within thumb reach, and a type scale
    one step down.
 
-   Scope: .m2 sits alongside .ull2 on the mobile shell. */
+   Scope: .m2 and .ull2 both sit on the mobile shell (js/pages/Mobile.js), so
+   every page under /mobile/* has both. The templates this came from are in
+   design/mobile/. */
 
 .m2 {
     /* One step down from the desktop scale. The tokens themselves are .ull2's. */
@@ -23,7 +25,7 @@
 
     display: flex;
     flex-direction: column;
-    min-height: 100%;
+    height: 100%;
     background: var(--color-background);
     color: var(--color-on-background);
     font-family: 'Lexend Deca', sans-serif;
@@ -61,11 +63,14 @@
     justify-content: center;
     border: 0;
     border-radius: 0.5rem;
-    background: rgba(255, 255, 255, 0.14);
+    /* Transparent at rest. A permanent wash made both buttons look held down. */
+    background: transparent;
     color: inherit;
     cursor: pointer;
+    transition: background-color 120ms ease;
 }
-.m2-top__btn:active { background: rgba(255, 255, 255, 0.26); }
+.m2-top__btn:active,
+.m2-top__btn.active { background: rgba(255, 255, 255, 0.22); }
 
 /* ── Bottom tab bar ───────────────────────────────────────────────────────
    The same eight destinations the "Pages" popup held, in the order the desktop
@@ -139,11 +144,19 @@
     border-radius: 2rem;
     border: 1px solid var(--u-line);
     background: var(--u-fill);
+    color: var(--color-on-background);
+    font-family: inherit;
     font-size: 0.68rem;
 }
+/* On Pending, each figure jumps to the lane it counts. */
+button.m2-fig { cursor: pointer; }
+button.m2-fig:active { background: var(--u-fill-2); }
 .m2-fig b { font-size: 0.88rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .m2-fig span { opacity: 0.5; }
 .m2-fig--lead b { color: var(--u-accent); }
+
+/* Each page fills the shell's scroll container. */
+.m2-page-body { display: flex; flex-direction: column; }
 
 /* ── Body ─────────────────────────────────────────────────────────────── */
 .m2-body { flex: 1; padding: 1rem var(--m-pad) 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
@@ -153,8 +166,9 @@
 
 /* ── Search ───────────────────────────────────────────────────────────── */
 .m2-search {
+    /* Sticky against .mob-content, which is the scroll container. */
     position: sticky;
-    top: 3.25rem;
+    top: 0;
     z-index: 10;
     display: flex;
     gap: 0.5rem;
@@ -194,6 +208,8 @@
    secondary line — at tap size, with the trailing figure the page cares
    about (a status pill on the lists, a percentage on Upcoming). */
 .m2-rows { display: flex; flex-direction: column; }
+/* Inside a card or a section, rows lose the full-bleed rule under the last one. */
+.m2-rows--flush .m2-row:last-child { border-bottom: 0; }
 .m2-row {
     display: flex;
     align-items: center;
@@ -295,6 +311,8 @@
 .m2-detail__by b { font-weight: 600; }
 .m2-detail__pills { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.55rem; }
 .m2-detail__body { padding: 0.75rem var(--m-pad) 0.9rem; display: flex; flex-direction: column; gap: 0.8rem; }
+/* The flex gap already separates a heading from what follows it. */
+.m2-detail__body > .u-eyebrow { margin-bottom: 0; }
 
 /* Rank chips scroll sideways rather than wrapping onto a second line. */
 .m2-ranks {
@@ -370,8 +388,30 @@
 .m2-sum__u { margin-top: 0.05rem; font-size: 0.66rem; opacity: 0.5; overflow-wrap: anywhere; }
 .m2-sum .u-btn { width: 100%; min-height: var(--m-tap); }
 
+/* The pending-list nudge under a search with few results. */
+.m2-suggest {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 1.25rem var(--m-pad);
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--u-line);
+    border-radius: var(--m-r);
+    text-align: center;
+}
+.m2-suggest__k { font-size: 0.72rem; opacity: 0.55; }
+.m2-suggest__name { display: flex; align-items: center; gap: 0.4rem; font-size: 1rem; font-weight: 700; }
+.m2-suggest__name img { width: 1.3rem; height: 1.3rem; flex-shrink: 0; }
+.m2-suggest__name a { text-decoration: underline; }
+.m2-suggest__d { font-size: 0.75rem; opacity: 0.6; }
+.m2-suggest__d a { text-decoration: underline; }
+
+/* A level whose JSON failed to load. */
+.m2-row.is-error { color: var(--color-error); text-decoration: line-through; cursor: not-allowed; }
+
 /* ── Lane (pending) ───────────────────────────────────────────────────── */
-.m2-lane { position: relative; overflow: hidden; padding: 1rem 1.1rem; }
+.m2-lane { scroll-margin-top: 1rem; position: relative; overflow: hidden; padding: 1rem 1.1rem; }
 .m2-lane::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--m-tone, transparent); }
 .m2-lane--place  { --m-tone: #5599ff; }
 .m2-lane--move   { --m-tone: #55ee55; }
@@ -446,6 +486,7 @@
 /* The lead figure on an expanded Upcoming row. */
 .m2-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .m2-total b { font-size: 2rem; font-weight: 700; line-height: 1; letter-spacing: -0.03em; color: var(--u-accent); font-variant-numeric: tabular-nums; }
+.m2-total__bar { margin-top: 0.7rem; }
 .m2-total span { display: block; margin-top: 0.3rem; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; }
 /* Score, level, then what the record was — all on one line. The level name is
    the only part that can give ground, so it is the only part that truncates. */
@@ -476,14 +517,14 @@
 /* ── Sheet ────────────────────────────────────────────────────────────────
    Filters and settings, which the current build shows as a centred popup.
    A bottom sheet puts the actions where the thumb already is. */
-.m2-sheet-scrim { position: absolute; inset: 0; z-index: 30; background: rgba(0, 0, 0, 0.5); }
+.m2-sheet-scrim { position: fixed; inset: 0; z-index: 300; background: rgba(0, 0, 0, 0.5); }
 .m2-sheet {
-    position: absolute;
+    position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 31;
-    max-height: 78%;
+    z-index: 301;
+    max-height: 78vh;
     display: flex;
     flex-direction: column;
     border-radius: 1rem 1rem 0 0;
@@ -491,8 +532,14 @@
     background: var(--color-background);
 }
 .m2-sheet__grip { width: 2.25rem; height: 0.25rem; border-radius: 1rem; background: var(--u-line-2); margin: 0.6rem auto 0.2rem; }
-.m2-sheet__head { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem var(--m-pad) 0.75rem; }
-.m2-sheet__head h2 { font-size: 0.95rem; font-weight: 700; }
+.m2-sheet__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem var(--m-pad) 0.9rem;
+}
+.m2-sheet__head h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
 .m2-sheet__body { flex: 1; overflow-y: auto; padding: 0 var(--m-pad) 0.75rem; }
 .m2-sheet__foot { display: flex; gap: 0.5rem; padding: 0.75rem var(--m-pad) 1rem; border-top: 1px solid var(--u-line); }
 .m2-sheet__foot > * { flex: 1; min-height: var(--m-tap); }
@@ -513,6 +560,9 @@
     cursor: pointer;
 }
 .m2-toggle button.is-on { opacity: 1; background: var(--color-primary); color: var(--color-on-primary); }
+/* The e2e/list-ui suites drive these toggles through .mob-toggle button.active,
+   which is the same state under the class name the old markup used. */
+.m2-toggle button.active { opacity: 1; background: var(--color-primary); color: var(--color-on-primary); }
 .m2-filters { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .m2-filter {
     display: inline-flex;
@@ -528,6 +578,37 @@
     cursor: pointer;
 }
 .m2-filter.is-on { border-color: transparent; background: var(--color-primary); color: var(--color-on-primary); }
+/* A destination in the Other sheet. The rule runs the full width of the sheet
+   body rather than the text box, so it lines up with the group labels above it
+   instead of starting a fraction of a pixel in. */
+.m2-pages { display: flex; flex-direction: column; }
+.m2-pages__label {
+    margin: 0.85rem 0 0.15rem;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.3;
+}
+.m2-pages__label:first-child { margin-top: 0; }
+.m2-page {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: var(--m-tap);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-on-background);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+.m2-page + .m2-page { border-top: 1px solid var(--u-line); }
+.m2-page.is-on { color: var(--u-accent); font-weight: 700; }
+
 .m2-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.9rem; }
 .m2-num label { display: block; margin-bottom: 0.3rem; font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.45; }
 .m2-num input {
@@ -542,7 +623,18 @@
     font-size: 0.85rem;
 }
 
-/* ── Timeline (home) ──────────────────────────────────────────────────── */
+/* ── Timeline (home) ──────────────────────────────────────────────────────
+   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
+   the editors card off the end of a long scroll. */
+.m2-changes {
+    max-height: 18rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--u-line);
+    border-radius: var(--m-r);
+    background: color-mix(in srgb, #808080 4%, var(--color-background));
+}
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
 .m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }

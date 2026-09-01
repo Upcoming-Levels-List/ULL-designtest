@@ -43,6 +43,7 @@
     line-height: 1.65;
 }
 .pending-counts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.35rem; }
+/* Each count jumps to the lane it counts. */
 .pending-count {
     display: flex;
     align-items: baseline;
@@ -51,8 +52,14 @@
     border-radius: 2rem;
     border: 1px solid rgba(128, 128, 128, 0.22);
     background: rgba(128, 128, 128, 0.09);
+    color: var(--color-on-background);
+    font-family: "Lexend Deca", sans-serif;
     font-size: 0.72rem;
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease;
 }
+.pending-count:hover { border-color: rgba(128, 128, 128, 0.45); background: rgba(128, 128, 128, 0.16); }
+.pending-count:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .pending-count b { font-size: 0.95rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .pending-count span { opacity: 0.5; }
 
@@ -83,6 +90,7 @@
    The stripe is the only place a lane's meaning is coloured; the heading takes
    the same colour and everything else stays neutral. */
 .pending-card {
+    scroll-margin-top: 1rem;
     position: relative;
     overflow: hidden;
     padding: 1.5rem 1.6rem;

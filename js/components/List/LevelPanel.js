@@ -79,60 +79,64 @@ export default {
         <iframe v-if="videoSrc" class="lp-video" :src="videoSrc" frameborder="0" allowfullscreen></iframe>
         <div v-else class="lp-video lp-video--empty">No video yet</div>
 
+        <!-- Two independent stacks, not one grid: in a grid every card shares a
+             row with the card beside it, so a short card was stretched to the
+             taller one's height. Same shape the pending lanes use. -->
         <div class="lp-grid">
-            <div v-if="!leadProgress" class="u-card">
-                <h3 class="u-eyebrow">Progress</h3>
-                <div class="u-meter">
-                    <div class="u-meter__top"><span>Decoration</span><b>{{ decoration }}%</b></div>
-                    <div class="u-bar"><i :style="{ width: decoration + '%' }"></i></div>
-                </div>
-                <div class="u-meter">
-                    <div class="u-meter__top"><span>Verification</span><b>{{ verification }}%</b></div>
-                    <div class="u-bar u-bar--alt"><i :style="{ width: verification + '%' }"></i></div>
-                </div>
-            </div>
-
-            <div class="u-card">
-                <h3 class="u-eyebrow">World records</h3>
-                <div class="u-stats">
-                    <div class="u-stat">
-                        <div class="u-stat__k">From 0%</div>
-                        <template v-if="record">
-                            <a v-if="recordHref" class="u-stat__v" :href="recordHref" target="_blank" rel="noopener">{{ record.percent }}%</a>
-                            <span v-else class="u-stat__v">{{ record.percent }}%</span>
-                            <div class="u-stat__u">{{ record.user }}<template v-if="record.hz"> &middot; {{ record.hz }}Hz</template></div>
-                        </template>
-                        <span v-else class="u-stat__v u-stat__v--none">None</span>
+            <div class="lp-col">
+                <div v-if="!leadProgress" class="u-card">
+                    <h3 class="u-eyebrow">Progress</h3>
+                    <div class="u-meter">
+                        <div class="u-meter__top"><span>Decoration</span><b>{{ decoration }}%</b></div>
+                        <div class="u-bar"><i :style="{ width: decoration + '%' }"></i></div>
                     </div>
-                    <div class="u-stat">
-                        <div class="u-stat__k">Best run</div>
-                        <template v-if="run">
-                            <a v-if="runHref" class="u-stat__v" :href="runHref" target="_blank" rel="noopener">{{ run.percent }}%</a>
-                            <span v-else class="u-stat__v">{{ run.percent }}%</span>
-                            <div class="u-stat__u">{{ run.user }}<template v-if="run.hz"> &middot; {{ run.hz }}Hz</template></div>
-                        </template>
-                        <span v-else class="u-stat__v u-stat__v--none">None</span>
+                    <div class="u-meter">
+                        <div class="u-meter__top"><span>Verification</span><b>{{ verification }}%</b></div>
+                        <div class="u-bar u-bar--alt"><i :style="{ width: verification + '%' }"></i></div>
                     </div>
                 </div>
+                <div class="u-card">
+                    <h3 class="u-eyebrow">Details</h3>
+                    <dl class="u-dl">
+                        <template v-for="fact in facts" :key="fact[0]">
+                            <dt>{{ fact[0] }}</dt>
+                            <dd>
+                                <a v-if="fact[2]" :href="fact[2]" target="_blank" rel="noopener">{{ fact[1] }}</a>
+                                <template v-else>{{ fact[1] }}</template>
+                            </dd>
+                        </template>
+                    </dl>
+                </div>
             </div>
-
-            <div class="u-card">
-                <h3 class="u-eyebrow">Details</h3>
-                <dl class="u-dl">
-                    <template v-for="fact in facts" :key="fact[0]">
-                        <dt>{{ fact[0] }}</dt>
-                        <dd>
-                            <a v-if="fact[2]" :href="fact[2]" target="_blank" rel="noopener">{{ fact[1] }}</a>
-                            <template v-else>{{ fact[1] }}</template>
-                        </dd>
-                    </template>
-                </dl>
-            </div>
-
-            <div v-if="level.creators && level.creators.length" class="u-card">
-                <h3 class="u-eyebrow">Creators <span class="u-count">{{ level.creators.length }}</span></h3>
-                <div class="u-chips">
-                    <span v-for="(creator, i) in level.creators" :key="i" class="u-chip">{{ creator }}</span>
+            <div class="lp-col">
+                <div class="u-card">
+                    <h3 class="u-eyebrow">World records</h3>
+                    <div class="u-stats">
+                        <div class="u-stat">
+                            <div class="u-stat__k">From 0%</div>
+                            <template v-if="record">
+                                <a v-if="recordHref" class="u-stat__v" :href="recordHref" target="_blank" rel="noopener">{{ record.percent }}%</a>
+                                <span v-else class="u-stat__v">{{ record.percent }}%</span>
+                                <div class="u-stat__u">{{ record.user }}<template v-if="record.hz"> &middot; {{ record.hz }}Hz</template></div>
+                            </template>
+                            <span v-else class="u-stat__v u-stat__v--none">None</span>
+                        </div>
+                        <div class="u-stat">
+                            <div class="u-stat__k">Best run</div>
+                            <template v-if="run">
+                                <a v-if="runHref" class="u-stat__v" :href="runHref" target="_blank" rel="noopener">{{ run.percent }}%</a>
+                                <span v-else class="u-stat__v">{{ run.percent }}%</span>
+                                <div class="u-stat__u">{{ run.user }}<template v-if="run.hz"> &middot; {{ run.hz }}Hz</template></div>
+                            </template>
+                            <span v-else class="u-stat__v u-stat__v--none">None</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="level.creators && level.creators.length" class="u-card">
+                    <h3 class="u-eyebrow">Creators <span class="u-count">{{ level.creators.length }}</span></h3>
+                    <div class="u-chips">
+                        <span v-for="(creator, i) in level.creators" :key="i" class="u-chip">{{ creator }}</span>
+                    </div>
                 </div>
             </div>
         </div>

@@ -34,7 +34,8 @@ change: Rebuild the panel out of the level page's own components — thumbnail h
 .mk-panel .pn-video { width: 100%; aspect-ratio: 16/9; border-radius: var(--u-r); border: 1px solid var(--u-line); background: var(--u-fill-2); display: flex; align-items: center; justify-content: center; }
 .mk-panel .pn-play { width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid var(--u-line-2); display: flex; align-items: center; justify-content: center; opacity: 0.45; }
 .mk-panel .pn-play::after { content: ''; border-left: 0.7rem solid currentColor; border-top: 0.45rem solid transparent; border-bottom: 0.45rem solid transparent; margin-left: 0.2rem; }
-.mk-panel .pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; align-items: stretch; }
+.mk-panel .pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; align-items: start; }
+.mk-panel .pn-col { display: flex; flex-direction: column; gap: 0.85rem; min-width: 0; }
 .mk-panel .pn-actions { display: flex; gap: 0.5rem; }
 @media (max-width: 900px) { .mk-panel { grid-template-columns: 1fr; } .mk-panel .mk-left { display: none; } .mk-panel .pn-grid { grid-template-columns: 1fr; } }
 </style>
@@ -127,7 +128,8 @@ change: Rebuild the panel out of the level page's own components — thumbnail h
             </div>
             <div class="pn-video"><span class="pn-play"></span></div>
 
-            <div class="pn-grid">
+                <div class="pn-grid">
+                    <div class="pn-col">
                 <div class="u-card">
                     <h3 class="u-eyebrow">Progress</h3>
                     <div class="u-meter">
@@ -139,7 +141,18 @@ change: Rebuild the panel out of the level page's own components — thumbnail h
                         <div class="u-bar u-bar--alt"><i style="width:0%"></i></div>
                     </div>
                 </div>
-
+                <div class="u-card">
+                    <h3 class="u-eyebrow">Details</h3>
+                    <dl class="u-dl">
+                        <dt>Host</dt><dd>Duke</dd>
+                        <dt>Verifier</dt><dd>wPopoff</dd>
+                        <dt>Level ID</dt><dd>Private</dd>
+                        <dt>Length</dt><dd>2m 28s</dd>
+                        <dt>Updated</dt><dd>20.06.2026</dd>
+                    </dl>
+                </div>
+                    </div>
+                    <div class="pn-col">
                 <div class="u-card">
                     <h3 class="u-eyebrow">World records</h3>
                     <div class="u-stats">
@@ -153,18 +166,6 @@ change: Rebuild the panel out of the level page's own components — thumbnail h
                         </div>
                     </div>
                 </div>
-
-                <div class="u-card">
-                    <h3 class="u-eyebrow">Details</h3>
-                    <dl class="u-dl">
-                        <dt>Host</dt><dd>Duke</dd>
-                        <dt>Verifier</dt><dd>wPopoff</dd>
-                        <dt>Level ID</dt><dd>Private</dd>
-                        <dt>Length</dt><dd>2m 28s</dd>
-                        <dt>Updated</dt><dd>20.06.2026</dd>
-                    </dl>
-                </div>
-
                 <div class="u-card">
                     <h3 class="u-eyebrow">Creators <span class="u-count">14</span></h3>
                     <div class="u-chips">
@@ -175,7 +176,8 @@ change: Rebuild the panel out of the level page's own components — thumbnail h
                         <span class="u-chip">xol</span><span class="u-chip">Aris</span>
                     </div>
                 </div>
-            </div>
+                    </div>
+                </div>
 
             <div class="pn-actions">
                 <a class="u-btn" href="#">Open level page</a>

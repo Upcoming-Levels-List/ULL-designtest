@@ -60,7 +60,7 @@ export default {
             </table>
             <div v-if="noResults" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem 0;gap:0.5rem;opacity:0.25;text-align:center;color:var(--color-on-background);">
                 <span style="font-size:2rem;">🔍</span>
-                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search.</p>
+                <p style="font-size:0.85rem;font-family:'Lexend Deca',sans-serif;">No levels match your search or filters.</p>
             </div>
             <div v-if="pendingSuggestion && (noResults || visibleCount <= 3)" style="display:flex;flex-direction:column;align-items:center;gap:0.55rem;margin:1.5rem auto 1rem;max-width:26rem;padding:1.25rem 1.5rem;border:1px solid rgba(128,128,128,0.25);border-radius:0.6rem;font-family:'Lexend Deca',sans-serif;text-align:center;color:var(--color-on-background);">
                 <p style="font-size:0.82rem;opacity:0.55;margin:0;">Maybe you were searching for this:</p>
@@ -181,7 +181,9 @@ export default {
             return (this.list || []).map(([level]) => level?.path).filter(Boolean);
         },
         noResults() {
-            if (!this.list || !this.search.trim()) return false;
+            // Filters empty the list the same way a search does, and the page
+            // owes the reader the same answer either way.
+            if (!this.list || !this.list.length) return false;
             return this.list.every(([level]) => !level || level.isHidden);
         },
         pendingSuggestion() {

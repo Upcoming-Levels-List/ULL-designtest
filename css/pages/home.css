@@ -180,15 +180,18 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
 
 /* ── RECENT CHANGES ── */
 .home-card--scroll {
-    min-height: 0;
+    min-height: 20rem;
     overflow: hidden;
 }
+/* Fills whatever height the card has. A fixed max-height left the scroll window
+   short of the card's bottom edge whenever the editors card beside it grew
+   taller, which read as a box floating inside a box. */
 .home-changes {
     flex: 1;
     min-height: 0;
-    max-height: 22rem;
     overflow-y: auto;
     scrollbar-width: thin;
+    padding-right: 0.35rem;
 }
 .home-changes-date {
     display: flex;

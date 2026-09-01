@@ -11,7 +11,7 @@ change: Four equal-width lanes in two independent stacks, coloured by what each 
 .mk-pd .pd-hero h1 { margin: 0; font-family: inherit; font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
 .mk-pd .pd-hero p { margin: 0.7rem 0 0; max-width: 38rem; font-size: 0.85rem; line-height: 1.65; opacity: 0.5; }
 .mk-pd .pd-counts { display: flex; gap: 0.5rem; margin-top: 1.35rem; flex-wrap: wrap; }
-.mk-pd .pd-count { display: flex; align-items: baseline; gap: 0.45rem; padding: 0.45rem 0.85rem; border-radius: 2rem; border: 1px solid var(--u-line); background: var(--u-fill); font-size: 0.72rem; }
+.mk-pd .pd-count { cursor: pointer; color: var(--color-on-background); font-family: inherit; display: flex; align-items: baseline; gap: 0.45rem; padding: 0.45rem 0.85rem; border-radius: 2rem; border: 1px solid var(--u-line); background: var(--u-fill); font-size: 0.72rem; }
 .mk-pd .pd-count b { font-size: 0.95rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .mk-pd .pd-count span { opacity: 0.5; }
 
@@ -47,10 +47,10 @@ change: Four equal-width lanes in two independent stacks, coloured by what each 
         <h1>Pending List</h1>
         <p>Levels awaiting a decision from the staff team &mdash; a first placement, a move up or down, a removal, or a hold with no decision expected soon.</p>
         <div class="pd-counts">
-            <span class="pd-count"><b>41</b><span>placements</span></span>
-            <span class="pd-count"><b>28</b><span>movements</span></span>
-            <span class="pd-count"><b>12</b><span>removals</span></span>
-            <span class="pd-count"><b>15</b><span>on hold</span></span>
+            <button class="pd-count" type="button"><b>41</b><span>placements</span></button>
+            <button class="pd-count" type="button"><b>28</b><span>movements</span></button>
+            <button class="pd-count" type="button"><b>12</b><span>removals</span></button>
+            <button class="pd-count" type="button"><b>15</b><span>on hold</span></button>
         </div>
     </section>
 

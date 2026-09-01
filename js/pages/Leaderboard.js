@@ -70,6 +70,12 @@ export default {
                 <div class="u-empty__t">No players yet</div>
                 <div class="u-empty__d">Scores appear as records are added to the list.</div>
             </div>
+            <div class="scroll-top-wrap">
+                <button v-if="showScrollTop" class="scroll-top-btn" @click="scrollToTop">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/></svg>
+                    Return to top
+                </button>
+            </div>
         </div>
 
         <div class="level-container-new surface">
@@ -115,6 +121,7 @@ export default {
         loading: true,
         selected: 0,
         search: '',
+        showScrollTop: false,
         store,
     }),
     computed: {
@@ -144,8 +151,33 @@ export default {
         this.players = buildLeaderboard(list);
 
         this.loading = false;
+        this.$nextTick(() => this.watchScroll());
+    },
+    beforeUnmount() {
+        if (this._scrollEl) this._scrollEl.removeEventListener('scroll', this._onScroll);
     },
     methods: {
+        // The left column (.list-container-new) is the scroll container. Show the
+        // button once roughly ten rows have scrolled past, measuring one real row
+        // instead of hard-coding a pixel height.
+        watchScroll() {
+            const el = this.$el && this.$el.querySelector && this.$el.querySelector('.list-container-new');
+            if (!el || this._scrollEl) return;
+            this._scrollEl = el;
+            this._onScroll = () => {
+                if (!this._rowHeight) {
+                    const row = el.querySelector('.lb-row');
+                    const h = row ? row.getBoundingClientRect().height : 0;
+                    if (h) this._rowHeight = h;
+                }
+                this.showScrollTop = el.scrollTop > (this._rowHeight || 56) * 10;
+            };
+            el.addEventListener('scroll', this._onScroll, { passive: true });
+        },
+        scrollToTop() {
+            if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
         tone(type) { return TYPE_TONE[type] || 'done'; },
         ordinal(n) {
             const tens = n % 100;
