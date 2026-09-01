@@ -153,6 +153,7 @@ Some tags are **auto-assigned by the frontend** and are NOT manually editable: `
 | `editor_name` | TEXT    | display name, shown in "List Editors" and audit log. **The column is `editor_name`, NOT `name`.** |
 | `key_hash`    | TEXT    | SHA-256 hex of the editor's API key |
 | `role`        | TEXT    | one of `owner, admin, seniormod, mod, dev` (DEFAULT `'mod'`) |
+|               |         | `seniormod` displays as **Elder Mod**, matching `js/_guidelines.js`; the stored key is unchanged |
 | `link`        | TEXT    | profile URL (YouTube etc.), DEFAULT `''` |
 | `sort_order`  | INTEGER | **added 2026-08-24** — manual display order, DEFAULT `0`. `GET /api/editors` sorts by `sort_order ASC, id ASC`; the list is **never alphabetical**. |
 
@@ -493,13 +494,25 @@ the real message reaches the panel. Never remove it.
   — the exact condition that colors a level's name orange (≥30) or red (≥60).
   `verifyProgress` = max of best record % and best run span. Fully automatic (removed from the
   admin/generator tag pickers); the frontend adds/removes it on load.
-- **Cross-list position** (`List.js`/`ListMain.js`/`ListFuture.js`, and mobile
-  `MobileList.js`): each level page shows the level's rank in the *other* two lists (e.g.
-  "#12 in All Levels · #3 in Future List"), computed as `allLevelsRank` / `mainRank` /
-  `futureRank` on mount (desktop pages) or in `Mobile.js` (mobile), mirroring Upcoming Levels.
+- **Cross-list position** (`js/components/List/LevelPanel.js`, mobile `MobileList.js`):
+  every level shows its rank in each list it appears on as a rank chip, the one for the
+  page you are on leading. Computed as `allLevelsRank` / `mainRank` / `futureRank` on
+  mount (desktop pages) or in `Mobile.js` (mobile), mirroring Upcoming Levels. A level
+  absent from a list gets no chip for it.
+- **Design system** (`css/ull-v2.css`, `css/pages/mobile-v2.css`): every page is built
+  from one set of components — eyebrow headings, cards, the status pill, chips, rank chips,
+  meters, stat cards, definition lists, buttons, the page hero, the thumbnail hero, rows and
+  empty states — scoped to `.ull2`, which each page carries on its `<main>`. The mobile
+  layer adds only what differs at 390px. Two rules: components are written `.ull2 .u-thing`
+  so the link reset (`.ull2 a { color: inherit }`, 0,1,1) cannot outrank them, and
+  **`.root.dark` is the light theme** — the class names are inverted throughout the app.
+  The static templates the pages were built from live in `design/` and `design/mobile/`.
 - **Level page** (`js/pages/LevelPage.js`, `css/pages/level-page.css`): the standalone
   `/level/<slug>` page renders from the same `/api/list` payload as the list panels and adds
-  **no fields of its own**. Everything on it is either a stored column or derived from one:
+  **no fields of its own**. Every reading below is computed once, in `js/util.js`
+  (`decorationPercent`, `verificationPercent`, `levelStatus`, `bestRecord`, `bestRun`,
+  `recordLink`, `levelLength`, `levelId`, `hasVerifier`), and shared with the level
+  container and the mobile pages so nothing is derived twice:
   - **Progress bars.** Decoration is `percentFinished`. Verification is `100` when
     `isVerified`, otherwise the same `verifyProgress` the lists use — `max(best record %,
     widest run span)`, where a run span is `|b − a|` parsed out of a `"a-b"` `run[].percent`.
@@ -517,21 +530,32 @@ the real message reaches the panel. Never remove it.
     (`Admin.js`), so the row is skipped when the value is null, undefined or whitespace.
   - **`id`** shows `leakID` when `id === 'private'` and a leak ID exists, else `Private` —
     same rule as the list panels' ID stat.
-- **Open Level Page button** (`List.js`/`ListMain.js`/`ListFuture.js`, `.level-open` in
-  `css/components/level-share.css`): sits on the detail panel's title row, opposite the level
-  name, as a `router-link` to `/level/' + levelSlug(level.path, allPaths)`. Rendered only when
-  the level has a `path`. Distinct from the `.level-share` control further down the panel,
-  which is a link to the same URL but copies it instead of navigating.
+- **Level container** (`js/components/List/LevelPanel.js`, `css/pages/level-panel.css`):
+  one component, rendered by All Levels, Main List, Future List and Upcoming Levels. It is
+  the level page's design at panel size — thumbnail hero, status pill, tags, rank chips,
+  the video with its tabs, then Progress, World records, Details and Creators as cards in
+  **two independent column stacks**, so a short card is never stretched to the height of
+  the one beside it. It ends with **Open level page** (a `router-link` to
+  `/level/' + levelSlug(level.path, allPaths)`, rendered only when the level has a `path`)
+  beside **Share level** (`.level-share`, a link to the same URL that copies it instead of
+  navigating). Upcoming Levels passes `lead-progress`, which swaps the Progress card for
+  the furthest-progress figure the page ranks by.
+- **Mobile level detail** (`MobileList.js`, `MobileUpcoming.js`): the same information at
+  summary length — status pill, tags, rank chips, the two meters, the best record and run,
+  then **Open level page**. The video, creators, ID and length live on the level page;
+  unfolding the whole record under a row pushed the next level most of a screen down.
 - **Pending search fallback** (`List.js`/`ListMain.js`/`ListFuture.js`, `MobileList.js`): when a
   search returns **no matches, or 3 or fewer**, the page checks the pending list (`fetchPending`,
   kept in `this.pending` / `mobileStore.pending`) for an entry whose name contains the query and,
   if found, shows a "Maybe you were searching for this: …?" card below the results, with the
   level's placement icon, an estimated-position line, and a link to the Pending List. Shown when
   `pendingSuggestion && (noResults || visibleCount <= 3)`.
-- **Mobile filters scroll indicator** (`Mobile.js`, `css/pages/mobile.css`): the filters popup's
-  tag list is a bounded scroll area (`.mob-filters-scroll`, max-height 46vh) so Apply/Reset stay
-  visible; a fade + bouncing chevron (`.mob-filters-scroll-hint`) signals more filters and hides
-  once scrolled to the bottom (`filtersAtEnd`).
+- **Mobile sheets** (`Mobile.js`, `css/pages/mobile-v2.css`): Other pages, Filters and
+  Settings all open as one bottom sheet (`.m2-sheet`) anchored to the bottom edge, so Apply
+  and Reset sit where the thumb already is. Filters are a wrapped chip field rather than one
+  check-box per line. The scrim keeps its old class name, `.mob-popup-overlay` —
+  `js/list-ui.test.mjs` taps it to dismiss the sheet, from **above** it, since the sheet
+  itself occupies the lower 78vh.
 - **Mobile footer gap** (`css/pages/mobile.css`): `.mob-footer` carries a **fixed**
   `margin-top: calc(var(--mob-level-h) * 2)` — two level rows' worth of blank space,
   always present, whether the page is one search result or the whole list.
@@ -580,9 +604,10 @@ the real message reaches the panel. Never remove it.
   - **Reset Filters does not touch it.** It used to set `store.benchmarkMode = false` and
     persist that, silently undoing a setting that lives in the settings popup, not in the
     filters panel. Fixed 2026-08-24; mobile's `resetFilters()` never did this.
-- **Return to top** (`.scroll-top-wrap` / `.scroll-top-btn` in `css/pages/list.css`):
-  desktop List/Main/Future show a floating "Return to top" pill once roughly **ten level
-  rows** have scrolled past, mirroring mobile's `.mob-scroll-top-btn`. The scroll container
+- **Return to top** (`.scroll-top-wrap` / `.scroll-top-btn` in `css/pages/list.css`;
+  `.mob-scroll-top-btn` in `css/pages/mobile.css`): on All Levels, Main List, Future List,
+  Upcoming Levels and the Leaderboard, desktop and mobile alike. The desktop pages show a
+  floating "Return to top" pill once roughly **ten rows** have scrolled past. The scroll container
   is the left column (`.list-container-new`), so the button is its last child and uses
   `position: sticky; bottom; height: 0` to float above the rows without taking space or
   drifting over the level detail pane. The threshold measures one real row
@@ -869,12 +894,18 @@ Gotchas learned the hard way:
   "Requests without any query are not supported" and runs nothing
 - `sort_order` = level ranking (contiguous integer, shifted on insert/delete/move)
 - Dates use `DD.MM.YYYY`
+- Every page is built from `css/ull-v2.css` (`.ull2`); mobile adds `css/pages/mobile-v2.css`
+- `.root.dark` is the **light** theme — the class names are inverted throughout the app
+- Component rules are scoped `.ull2 .u-thing`, or the link reset outranks them
+- `seniormod` displays as **Elder Mod**; the stored role key is unchanged
 - Current site version: **v2.0.0**
 - Tests: `node worker/worker.test.mjs` (Worker vs. real schema),
   `node worker/worker.unmigrated.test.mjs` (Worker vs. the PRE-migration schema),
   `node worker/worker.throttle.test.mjs` (the auth rate limiter),
   `node js/leaderboard.test.mjs` and `node js/upcoming.test.mjs` (scoring vs. the /data
-  snapshot), `node js/list-ui.test.mjs` (benchmark recounting + Return to top in a
-  browser), `node css/mobile-footer.test.mjs` and
+  snapshot), `node js/util.test.mjs`, `node js/registry.test.mjs`,
+  `node js/list-ui.test.mjs` (benchmark recounting + Return to top, desktop **and**
+  mobile), `node js/pending-ui.test.mjs` (Pending links, desktop **and** mobile),
+  `node css/mobile-footer.test.mjs`, `node js/seo.test.mjs` and
   `node scripts/e2e-test.mjs` (browser, needs `npm i playwright vue@3.2.31 vue-router@4.0.14`)
-- Working branch: `claude/multiple-features-fixes-slberb`
+- Working branch: `main`

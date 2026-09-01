@@ -252,11 +252,16 @@ the status pill already says them.
 `frameCounter` shows up as a **Frame Windows Counter → Watch here** row in
 Details, and the row is omitted entirely when the field is null or blank.
 
-The list panels on All Levels, Main List and Future List each carry an **Open
-Level Page** button on the title row (`.level-open`, in
-`css/components/level-share.css`) — a real `router-link` to `/level/<slug>`, so it
-can also be middle-clicked or copied. The "Share level" control lower down is
-unchanged and still copies the URL rather than navigating.
+The level container on All Levels, Main List, Future List and Upcoming Levels is
+one component, `js/components/List/LevelPanel.js`. It ends with **Open level
+page** — a `router-link` to `/level/<slug>` — beside **Share level**, an ordinary
+`<a href="/level/…">` that copies the URL on click instead of navigating, so it
+can still be middle-clicked, right-click-copied and crawled. On mobile the
+expanded row carries the same Open level page button.
+
+`node js/seo.test.mjs` pins the share control's markup and behaviour: a real
+link, the words "Share level", a click that copies an absolute URL and does not
+navigate away.
 
 The slug comes from the level's API `path`, not its name, because **staff rename
 levels regularly and a URL that 404s throws away whatever ranking and inbound
@@ -306,6 +311,58 @@ Run `node js/seo.test.mjs` after any change here.
 
 ---
 
+## Design system
+
+Every page is built from one set of components rather than its own styling.
+
+| File | What it is |
+|------|------------|
+| `css/ull-v2.css` | The shared layer. Eyebrow headings, cards, the status pill, chips, rank chips, meters, stat cards, definition lists, buttons, the page hero, the thumbnail hero, rows and empty states. Scoped to `.ull2`, which every page carries on its `<main>`. |
+| `css/pages/mobile-v2.css` | Only what differs at 390px: one column, a detail that expands under its row, the tab bar, the bottom sheet, and a type scale one step down. Everything else on mobile comes from `ull-v2.css` unchanged. |
+| `js/components/List/LevelPanel.js` | The level container, rendered by All Levels, Main List, Future List and Upcoming Levels. |
+| `js/util.js` | The shared readings a level page and a list row both need: `levelStatus`, `decorationPercent`, `verificationPercent`, `bestRecord`, `bestRun`, `recordLink`, `levelLength`, `levelId`, `hasVerifier`. Derive nothing twice. |
+
+Two rules worth knowing before editing:
+
+- **Scope components one level deeper.** Every rule in `ull-v2.css` is written
+  `.ull2 .u-thing`, not `.u-thing`. The link reset `.ull2 a { color: inherit }`
+  scores 0,1,1 and silently beats an unscoped `.u-btn` at 0,1,0, which leaves a
+  filled button drawing body-text colour on its own primary fill.
+- **`.root.dark` is the *light* theme.** The class names are inverted throughout
+  the app. Kept that way deliberately; don't "fix" it in one file.
+
+### Design decks
+
+`design/` and `design/mobile/` hold the static templates the pages were built
+from, plus the review deck that renders them:
+
+```bash
+node design/build-preview.mjs          # desktop → design/preview.html
+node design/mobile/build-preview.mjs   # mobile  → design/mobile/preview.html
+```
+
+Both decks read `css/ull-v2.css` directly, so the shared components render
+exactly as they ship. The mobile deck also needs the phone layer, which it keeps
+as a copy at `design/mobile/mob-v2.css` — re-copy it from
+`css/pages/mobile-v2.css` after changing that file. See `design/README.md` and
+`design/mobile/README.md`.
+
+### The mobile shell
+
+`js/pages/Mobile.js` wraps every `/mobile/*` route: a top bar with Settings and
+Discord, a four-tab bar along the bottom (Home, Levels, Information, Other), and
+one bottom sheet used for Other pages, Filters and Settings. `/mobile/info` is
+the one page still on the old styling — it moves when the desktop Information
+page does.
+
+Some class names in the mobile markup are test hooks rather than styling:
+`.mob-level-row`, `.mob-rank`, `.mob-pending-card`, `.mob-pending-row`,
+`.mob-settings-list`, `.mob-setting-row`, `.mob-toggle`, `.mob-topbar-btn` and
+`.mob-popup-overlay` are asserted on by `js/list-ui.test.mjs` and
+`js/pending-ui.test.mjs`. Keep them on the elements they name.
+
+---
+
 ## Deploying
 
 The Worker and its D1 database are managed in the Cloudflare dashboard, not from this
@@ -345,6 +402,9 @@ node scripts/e2e-test.mjs               # home page + admin panel in Chromium
 node js/seo.test.mjs                    # per-URL metadata, crawler + no-JS behaviour
 node js/pending-ui.test.mjs             # Pending List links (desktop + mobile)
 ```
+
+`js/list-ui.test.mjs` and `js/pending-ui.test.mjs` drive the mobile tree as well
+as the desktop one, so run both after touching either.
 
 ## Security
 

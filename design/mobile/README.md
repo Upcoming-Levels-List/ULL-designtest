@@ -1,7 +1,12 @@
 # ULL mobile redesign — templates
 
 Eight templates that rebuild the `/mobile/*` tree on the vocabulary the desktop
-pages now use, plus the phone-only layer they need.
+pages use, plus the phone-only layer they need.
+
+These have been built into the site. The templates stay here as the reference
+the pages were made from; the shipped layer is `css/pages/mobile-v2.css`, and
+`mob-v2.css` beside these templates is a copy of it kept in step so the deck
+renders what the site renders.
 
 Open `preview.html` in a browser, or rebuild it after editing anything:
 
@@ -11,9 +16,9 @@ node design/mobile/build-preview.mjs
 
 ```
 design/mobile/
-  mob-v2.css            the proposed phone layer — the only new stylesheet
-  templates/*.html      one mockup per page, with a meta block saying what is
-                        wrong today and what the template changes
+  mob-v2.css            a copy of the shipped css/pages/mobile-v2.css
+  templates/*.html      one mockup per page, with a meta block saying what was
+                        wrong and what the template changed
   preview.shell.html    the review deck's chrome
   build-preview.mjs     stitches the templates + css/ull-v2.css + mob-v2.css
   preview.html          GENERATED — open this
@@ -36,7 +41,8 @@ step down.
 
 ## Feature parity
 
-Present on the desktop, absent on mobile today — all of it is in the templates:
+What the desktop had and the phone did not. All of it shipped, except the last
+row — see below.
 
 | Page | Missing on mobile |
 | --- | --- |
@@ -48,26 +54,51 @@ Present on the desktop, absent on mobile today — all of it is in the templates
 | Events | Thumbnail hero, status pill, tags, details, and the desktop's ordering |
 | `/level/<slug>` | Any mobile chrome at all — it is the one route that never redirects, so a shared link lands outside the app |
 
-Nothing is added that the desktop does not have. No new data fields, and no
+Nothing was added that the desktop does not have. No new data fields, and no
 per-level prose.
+
+The `/level/<slug>` row is the exception: it was **not** implemented. The page
+already stacks correctly on a phone and its breadcrumbs lead back into the
+mobile tree (`/` and `/list` redirect on a phone), so what is left is the
+desktop sidebar toggle floating over its hero. Wrapping the route in the mobile
+shell would mean redirecting it to `/mobile/level/<slug>`, and that route is the
+one every shared link and search result points at — not worth the SEO risk for a
+floating button. The template stays here as the sketch of what it would look
+like.
 
 ## The two structural calls
 
-Everything else is a restyle of what is already there. These two move things:
+Everything else was a restyle of what was already there. These two moved things:
 
-1. **The tab bar.** The eight destinations currently live behind a "Pages"
-   button in the top bar, two taps from anywhere. They move to a bar along the
-   bottom — the same destinations, in the order the desktop sidebar lists them,
-   within thumb reach. Five fit; the rest sit under More.
-2. **The bottom sheet.** Filters and settings open as a centred popup whose
-   Apply and Reset buttons land in the middle of the screen. They become a
+1. **The tab bar.** The eight destinations used to live behind a "Pages" button
+   in the top bar, two taps from anywhere. They are a bar along the bottom now —
+   Home, Levels, Information, and Other, which opens a sheet listing All Levels,
+   Main List, Future List, Leaderboard, Upcoming Levels, Pending List,
+   Information and Events.
+2. **The bottom sheet.** Filters and settings used to open as a centred popup
+   whose Apply and Reset buttons landed in the middle of the screen. They are a
    sheet anchored to the bottom edge, and the filters a wrapped chip field
    rather than one check-box per line.
 
-Both are re-homes of existing controls, not new features, but they are the two
-things a reviewer should look at first.
+Both re-homed existing controls; neither added a feature.
+
+## The expanded row is a summary
+
+Tapping a level opens four short lines — where it stands, its two progress
+numbers and the best two records — then **Open level page**. The video,
+creators, tags, ID and length are on the level's own page. Unfolding the whole
+record inline pushed the next level most of a screen down.
+
+## Test hooks in the markup
+
+Some class names on these pages exist for the test suites, not for styling:
+`.mob-level-row`, `.mob-rank`, `.mob-pending-card`, `.mob-pending-row`,
+`.mob-settings-list`, `.mob-setting-row`, `.mob-toggle`, `.mob-topbar-btn` and
+`.mob-popup-overlay`. `js/list-ui.test.mjs` and `js/pending-ui.test.mjs` assert
+on them.
 
 ## Not covered
 
 `/mobile/info`, which mirrors the Information page — the desktop side of that
-has not been reworked yet either, so the pair should move together.
+has not been reworked either, so the pair should move together. It is the one
+page in the mobile tree still on the old styling, and it shows.

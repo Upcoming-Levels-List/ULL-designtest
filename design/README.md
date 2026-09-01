@@ -4,7 +4,7 @@ Six page templates that rebuild the site out of the vocabulary `/level/<slug>`
 already established, plus the shared layer they are built from.
 
 Not covered: `/information` (by request), `/admin` and `/generator` (staff
-tools), and the `/mobile/*` routes, which have their own component tree.
+tools). The `/mobile/*` routes have their own deck in `design/mobile/`.
 
 These templates have since been built into the site. They stay here as the
 reference the pages were made from, and the deck now reads the shipped
@@ -84,3 +84,22 @@ rebuilds a page out of them.
 - Rebuilt `Home.js`, `Leaderboard.js`, `UpcomingLevels.js`, `ListPending.js` and
   `Events.js`, with `css/pages/events.css` taking the events rules out of
   `home.css`.
+
+## Changes since the templates were drawn
+
+The templates and this deck have been kept in step with these, so what you see
+is what ships:
+
+- The level container is **two independent stacks**, not a grid — a short card is
+  never stretched to the height of the one beside it. (This reversed an earlier
+  equal-height pass, by request.)
+- Pending's four hero counts are **buttons that jump to the lane they count**,
+  and when Placements runs longer than the other three lanes together, Pending
+  Indefinitely moves to the top of the second column. The decision is made on row
+  counts, which stand in for height without measuring.
+- The Leaderboard lost its "How it was earned" block; the headline figure is
+  **Total points**. **Return to top** works here and on Upcoming Levels.
+- Recent Changes is a framed scroll window that fills its card, and the hero's
+  figure is centred in its own box.
+- **Senior moderators are Elder moderators**, matching `js/_guidelines.js`.
+- An empty list says so whether a search or a **filter** emptied it.

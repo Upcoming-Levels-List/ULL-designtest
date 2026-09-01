@@ -183,15 +183,19 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
     min-height: 20rem;
     overflow: hidden;
 }
-/* Fills whatever height the card has. A fixed max-height left the scroll window
-   short of the card's bottom edge whenever the editors card beside it grew
-   taller, which read as a box floating inside a box. */
+/* A framed scroll window that ends where the card ends. It used to carry a
+   fixed height, so whenever the editors card beside it grew taller the window
+   stopped short of the card's bottom edge and read as a box floating in a box.
+   flex: 1 makes it take whatever height the card has. */
 .home-changes {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
-    padding-right: 0.35rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(128, 128, 128, 0.18);
+    border-radius: 0.5rem;
+    background: rgba(128, 128, 128, 0.04);
 }
 .home-changes-date {
     display: flex;
