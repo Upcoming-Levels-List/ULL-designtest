@@ -556,6 +556,16 @@ the real message reaches the panel. Never remove it.
   check-box per line. The scrim keeps its old class name, `.mob-popup-overlay` —
   `js/list-ui.test.mjs` taps it to dismiss the sheet, from **above** it, since the sheet
   itself occupies the lower 78vh.
+- **Recent Changes window** (`Home.js`, `css/pages/home.css`): the feed is a scroll
+  window whose height is set by the **List Editors card beside it**, not by its own
+  length. `.home-changes` is positioned absolutely inside `.home-changes-wrap`, so it
+  contributes nothing to the card's intrinsic height; the grid row is sized by the
+  editors card, the wrapper takes what is left, and the feed scrolls inside it. In
+  normal flow the card grew to fit every entry instead — the window never scrolled and
+  the editors card was stretched to match, with a screen of empty space under it.
+  `.home-card--scroll { min-height: 20rem }` is the floor for a short editors list.
+  The mobile equivalent is simpler: `.m2-changes` is a plain `max-height: 18rem` box,
+  since nothing sits beside it to match.
 - **Mobile footer gap** (`css/pages/mobile.css`): `.mob-footer` carries a **fixed**
   `margin-top: calc(var(--mob-level-h) * 2)` — two level rows' worth of blank space,
   always present, whether the page is one search result or the whole list.

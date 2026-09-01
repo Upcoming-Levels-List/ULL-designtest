@@ -1030,8 +1030,11 @@ button.m2-fig:active { background: var(--u-fill-2); }
 .m2-sheet__head h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
 .m2-sheet__body { flex: 1; overflow-y: auto; padding: 0 var(--m-pad) 0.75rem; }
 /* The settings rows space themselves with their own dividers, so the body's
-   trailing padding only left a gap between the last row and the footer rule. */
+   trailing padding only left a gap between the last row and the footer, and the
+   footer's own rule then sat right under the Theme row's. Filters keeps its
+   rule — there the chips need separating from Reset and Apply. */
 .m2-sheet__body.mob-settings-list { padding-bottom: 0; }
+.m2-sheet__body.mob-settings-list + .m2-sheet__foot { border-top: 0; }
 .m2-sheet__foot { display: flex; gap: 0.5rem; padding: 0.75rem var(--m-pad) 1rem; border-top: 1px solid var(--u-line); }
 .m2-sheet__foot > * { flex: 1; min-height: var(--m-tap); }
 .m2-setting { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: var(--m-tap); }

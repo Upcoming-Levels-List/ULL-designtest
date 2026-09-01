@@ -183,13 +183,21 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
     min-height: 20rem;
     overflow: hidden;
 }
-/* A framed scroll window that ends where the card ends. It used to carry a
-   fixed height, so whenever the editors card beside it grew taller the window
-   stopped short of the card's bottom edge and read as a box floating in a box.
-   flex: 1 makes it take whatever height the card has. */
-.home-changes {
+/* A framed scroll window the height of the card, the way the mobile one works.
+   The wrapper takes the row's leftover height and the window fills it
+   absolutely, so the feed contributes nothing to the card's intrinsic height:
+   however long it runs, the row is sized by the editors card beside it and the
+   feed scrolls inside. Left in flow it did the opposite — the card grew to fit
+   every entry, the window never scrolled, and the editors card was stretched to
+   match with a screen of empty space under it. */
+.home-changes-wrap {
+    position: relative;
     flex: 1;
     min-height: 0;
+}
+.home-changes {
+    position: absolute;
+    inset: 0;
     overflow-y: auto;
     scrollbar-width: thin;
     padding: 0.85rem 1rem;

@@ -100,7 +100,11 @@ export default {
                 <div class="home-section__head">
                     <h2 class="u-eyebrow">Recent changes</h2>
                 </div>
-                <div class="home-changes">
+                <!-- The window is positioned out of flow inside this wrapper, so the
+                     feed's length never sets the card's height — the editors card
+                     beside it does, and the feed scrolls inside whatever that is. -->
+                <div class="home-changes-wrap">
+                    <div class="home-changes">
                     <template v-if="recentChanges.length">
                         <template v-for="group in recentChanges" :key="group.date">
                             <div class="home-changes-date">{{ group.date }}</div>
@@ -113,6 +117,7 @@ export default {
                     <div v-else class="u-empty">
                         <div class="u-empty__t">Nothing logged yet</div>
                         <div class="u-empty__d">Placement changes show up here as the staff team makes them.</div>
+                    </div>
                     </div>
                 </div>
             </section>
