@@ -3,7 +3,7 @@ title: Leaderboard
 route: /mobile/leaderboard
 files: js/pages/mobile/MobileLeaderboard.js
 problem: Every player is an identical row reading "Score: 11888.473" in the same weight as their name, with nothing marking first place from two-hundredth. Tapping one opens a records list built from about a dozen inline style attributes, with no total, no type pills and no alignment between the score column and the names. The desktop page has a podium, a display total and a pill per record type.
-change: The podium comes over, sized for a phone. Rows put the score at the right in tabular figures so the column reads down. The expanded profile leads with the total as a display figure, then the records as rows with their score chip, level rank and type pill — the pill on its own line, since a phone has no room for three columns.
+change: The podium comes over, sized for a phone. Rows put the score at the right in tabular figures so the column reads down — and since the row already states the player's total, the expanded panel does not repeat it as a display figure; it goes straight to the records. Each record is one line: what it was worth, which level, and what it was.
 -->
 <div class="m2 ull2">
     <header class="m2-top">
@@ -40,41 +40,32 @@ change: The podium comes over, sized for a phone. Rows put the score at the righ
 
             <div class="m2-detail">
                 <div class="m2-detail__body" style="padding-top:0.9rem">
-                    <div class="u-card">
-                        <div class="m2-total">
-                            <div><b>11888.473</b><span>Total points</span></div>
-                            <span class="u-chip u-chip--round">1st of 214</span>
-                        </div>
-                    </div>
-
+                    <h3 class="u-eyebrow">Records <span class="u-count">18</span></h3>
                     <div>
-                        <h3 class="u-eyebrow">Records <span class="u-count">18</span></h3>
-                        <div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+1310.7</span>
-                                <span class="m2-rec__lvl">Thinking Space II<span class="m2-rec__rank">#51</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--blue"><i></i>Verification</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+967.6</span>
-                                <span class="m2-rec__lvl">Tidal Wave<span class="m2-rec__rank">#83</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--blue"><i></i>Verification</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+694.2</span>
-                                <span class="m2-rec__lvl">EXASPERATION<span class="m2-rec__rank">#24</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--green"><i></i>67%</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+671.2</span>
-                                <span class="m2-rec__lvl">Heliopolis<span class="m2-rec__rank">#23</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--cyan"><i></i>37&ndash;100%</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+562.7</span>
-                                <span class="m2-rec__lvl">Silent Kocmoc<span class="m2-rec__rank">#13</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--amber"><i></i>Layout completion</span></span>
-                            </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+1310.7</span>
+                            <span class="m2-rec__lvl">Thinking Space II<span class="m2-rec__rank">#51</span></span>
+                            <span class="m2-rec__type">Verification</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+967.6</span>
+                            <span class="m2-rec__lvl">Tidal Wave<span class="m2-rec__rank">#83</span></span>
+                            <span class="m2-rec__type">Verification</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+694.2</span>
+                            <span class="m2-rec__lvl">EXASPERATION<span class="m2-rec__rank">#24</span></span>
+                            <span class="m2-rec__type">67%</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+671.2</span>
+                            <span class="m2-rec__lvl">Heliopolis<span class="m2-rec__rank">#23</span></span>
+                            <span class="m2-rec__type">37&ndash;100%</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+562.7</span>
+                            <span class="m2-rec__lvl">Silent Kocmoc<span class="m2-rec__rank">#13</span></span>
+                            <span class="m2-rec__type">Layout completion</span>
                         </div>
                     </div>
                 </div>
@@ -111,8 +102,7 @@ change: The podium comes over, sized for a phone. Rows put the score at the righ
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>

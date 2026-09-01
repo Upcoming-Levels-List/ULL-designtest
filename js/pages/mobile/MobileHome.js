@@ -1,5 +1,6 @@
 import { store } from '../../main.js';
 import { fetchRecentChanges } from '../../content.js';
+import { levelThumbnail, levelSlug, levelStatus, decorationPercent } from '../../util.js';
 import { mobileStore } from './mobileStore.js';
 
 const roleIconMap = {
@@ -12,120 +13,84 @@ const roleIconMap = {
 
 const roleLabelMap = { owner: 'Owner', admin: 'Admin', seniormod: 'Sr. Mod', mod: 'Mod', dev: 'Dev' };
 
+// Editors are shown in the order the database gives them, grouped by seniority.
+// The groups only decide the sub-headings; within a group the DB order stands.
+const roleGroups = [
+    { label: 'Owner & admin', roles: ['owner', 'admin'] },
+    { label: 'Senior moderators', roles: ['seniormod'] },
+    { label: 'Moderators', roles: ['mod'] },
+    { label: 'Developers', roles: ['dev'] },
+];
+
 export default {
     template: `
-        <div class="mob-home-page">
+        <div class="mob-home-page m2-page-body">
 
-            <!-- Hero -->
-            <div class="mob-home-hero">
+            <section class="m2-hero">
+                <div class="m2-hero__eyebrow">Geometry Dash · Extreme Demons</div>
                 <h1>Upcoming Levels List</h1>
-                <p>A community-maintained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash.</p>
-            </div>
+                <p>A community-maintained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash, ranked by where the staff team projects each will land on the Demonlist.</p>
+                <div v-if="counts" class="m2-figs">
+                    <span class="m2-fig m2-fig--lead"><b>{{ counts.all }}</b><span>tracked</span></span>
+                    <router-link class="m2-fig" to="/mobile/main"><b>{{ counts.main }}</b><span>main</span></router-link>
+                    <router-link class="m2-fig" to="/mobile/future"><b>{{ counts.future }}</b><span>future</span></router-link>
+                    <span class="m2-fig"><b>{{ counts.verified }}</b><span>verified</span></span>
+                    <router-link class="m2-fig" to="/mobile/pending"><b>{{ counts.pending }}</b><span>pending</span></router-link>
+                </div>
+            </section>
 
-            <!-- Actions -->
-            <div class="mob-home-actions">
-                <div class="mob-home-btn-col">
-                    <router-link to="/mobile/all" class="mob-home-btn">View All Levels</router-link>
-                    <router-link to="/mobile/main" class="mob-home-btn">Main List</router-link>
-                    <router-link to="/mobile/future" class="mob-home-btn">Explore Future List</router-link>
-                    <button class="mob-home-btn mob-home-otherpages-btn" @click="showOtherPages = !showOtherPages">
-                        Other Pages <span class="mob-home-otherpages-arrow">{{ showOtherPages ? '▲' : '▼' }}</span>
-                    </button>
-                    <div v-if="showOtherPages" class="mob-home-otherpages-menu">
-                        <router-link to="/mobile/leaderboard" class="mob-home-other-btn">Leaderboard</router-link>
-                        <router-link to="/mobile/upcoming" class="mob-home-other-btn">Upcoming Levels</router-link>
-                        <router-link to="/mobile/pending" class="mob-home-other-btn">Pending List</router-link>
-                        <router-link to="/mobile/info" class="mob-home-other-btn">Information</router-link>
-                        <router-link to="/mobile/events" class="mob-home-other-btn">Events</router-link>
-                        <button class="mob-home-other-btn" @click="mobileStore.openMenu = 'settings'">Settings</button>
+            <div class="m2-body">
+
+                <section v-if="topLevels.length">
+                    <div class="m2-sec__head">
+                        <h2 class="u-eyebrow">Top of the list</h2>
+                        <router-link class="m2-more" to="/mobile/all">All {{ counts ? counts.all : '' }} →</router-link>
                     </div>
-                </div>
-                <div class="mob-home-social-row">
-                    <a href="https://discord.gg/QRX47v2qyC" target="_blank" class="mob-home-social-btn" title="Discord">
-                        <img src="/assets/discord.svg" :style="store.dark ? 'filter:invert(1)' : ''" alt="Discord" />
-                    </a>
-                    <a href="https://x.com/ull_gd" target="_blank" rel="noopener" class="mob-home-social-btn" title="X (@ull_gd)">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    </a>
-                </div>
-            </div>
+                    <div class="m2-rows m2-rows--flush">
+                        <router-link v-for="entry in topLevels" :key="entry.slug" class="m2-row" :to="'/level/' + entry.slug">
+                            <span class="m2-row__rank">#{{ entry.rank }}</span>
+                            <img class="m2-row__thumb" :src="entry.thumbnail" alt="" loading="lazy" />
+                            <span class="m2-row__body">
+                                <span class="m2-row__name">{{ entry.level.name }}</span>
+                                <span class="m2-row__sub">{{ entry.level.author }} · {{ entry.level.verifier }}</span>
+                            </span>
+                            <span class="u-pill" :class="'u-pill--' + entry.status.tone"><i></i>{{ entry.short }}</span>
+                        </router-link>
+                    </div>
+                </section>
 
-            <!-- Cards -->
-            <div class="mob-home-cards">
-
-                <!-- Recent Changes -->
-                <div class="mob-info-card">
-                    <div class="mob-info-card__title">Recent Changes</div>
-                    <div class="mob-home-changes">
-                        <template v-if="recentChanges.length">
-                            <template v-for="group in recentChanges" :key="group.date">
-                                <div class="mob-home-changes-date">{{ group.date }}</div>
-                                <div v-for="entry in group.entries" :key="entry" class="mob-home-change" v-html="formatChange(entry)"></div>
-                            </template>
+                <section class="u-card">
+                    <h2 class="u-eyebrow">Recent changes</h2>
+                    <div v-if="recentChanges.length">
+                        <template v-for="group in recentChanges" :key="group.date">
+                            <div class="m2-tl-date">{{ group.date }}</div>
+                            <div v-for="entry in group.entries" :key="entry" class="m2-tl-item" :class="changeTone(entry)">
+                                <span class="m2-tl-dot"></span>
+                                <div v-html="formatChange(entry)"></div>
+                            </div>
                         </template>
-                        <p v-else style="opacity:0.4;font-size:0.85rem;padding:0.5rem 0;">No recent changes recorded.</p>
                     </div>
-                </div>
+                    <div v-else class="u-empty">
+                        <div class="u-empty__t">Nothing logged yet</div>
+                        <div class="u-empty__d">Placement changes show up here as the staff team makes them.</div>
+                    </div>
+                </section>
 
-                <!-- List Editors -->
-                <div class="mob-info-card">
-                    <div class="mob-info-card__title">List Editors</div>
-                    <div class="mob-info-editors">
-                        <div v-for="editor in mobileStore.editors" :key="editor.name" class="mob-info-editor">
-                            <img :src="'/assets/' + (roleIconMap[editor.role] || 'user-lock') + (store.dark ? '' : '-dark') + '.svg'" :alt="editor.role" />
-                            <a v-if="editor.link && editor.link !== '#'" :href="editor.link" target="_blank">{{ editor.name }}</a>
-                            <span v-else>{{ editor.name }}</span>
-                            <span class="mob-info-role" :class="'mob-info-role-' + editor.role">{{ roleLabelMap[editor.role] || editor.role }}</span>
+                <section class="u-card">
+                    <h2 class="u-eyebrow">List editors <span class="u-count">{{ mobileStore.editors.length }}</span></h2>
+                    <div class="m2-eds">
+                        <div v-for="group in editorGroups" :key="group.label">
+                            <div class="m2-eds__label">{{ group.label }}</div>
+                            <div v-for="editor in group.editors" :key="editor.name" class="m2-ed">
+                                <img class="m2-ed__ic" :src="'/assets/' + (roleIconMap[editor.role] || 'user-lock') + (store.dark ? '' : '-dark') + '.svg'" :alt="editor.role" />
+                                <a v-if="editor.link && editor.link !== '#'" :href="editor.link" target="_blank">{{ editor.name }}</a>
+                                <span v-else>{{ editor.name }}</span>
+                                <span class="m2-ed__role">{{ roleLabelMap[editor.role] || editor.role }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Partner Lists (hidden for now) -->
-                <div v-if="false" class="mob-info-card">
-                    <div class="mob-info-card__title">Partner Lists</div>
-                    <div class="mob-home-partners-grid">
-                        <a href="#" target="_blank" class="mob-home-partner">
-                            <div class="mob-home-partner-logo"><div class="mob-home-partner-logo-placeholder"></div></div>
-                            <div class="mob-home-partner-name">Demonlist</div>
-                        </a>
-                        <a href="#" target="_blank" class="mob-home-partner">
-                            <div class="mob-home-partner-logo"><div class="mob-home-partner-logo-placeholder"></div></div>
-                            <div class="mob-home-partner-name">Challenge List</div>
-                        </a>
-                        <a href="#" target="_blank" class="mob-home-partner">
-                            <div class="mob-home-partner-logo"><div class="mob-home-partner-logo-placeholder"></div></div>
-                            <div class="mob-home-partner-name">Platformer List</div>
-                        </a>
-                        <a href="#" target="_blank" class="mob-home-partner">
-                            <div class="mob-home-partner-logo"><div class="mob-home-partner-logo-placeholder"></div></div>
-                            <div class="mob-home-partner-name">Upcoming List</div>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Footer -->
-            <div class="mob-footer">
-                <h3>Upcoming Levels List</h3>
-                <p>A community-maintained catalogue forecasting the future of the Geometry Dash Demonlist.</p>
-                <div class="mob-footer-links">
-                    <div class="mob-footer-col">
-                        <h4>Navigate</h4>
-                        <router-link to="/mobile/all">All Levels</router-link>
-                        <router-link to="/mobile/leaderboard">Leaderboard</router-link>
-                        <router-link to="/mobile/pending">Pending List</router-link>
-                        <router-link to="/mobile/upcoming">Upcoming Levels</router-link>
-                    </div>
-                    <div class="mob-footer-col">
-                        <h4>Community</h4>
-                        <a href="https://discord.gg/QRX47v2qyC" target="_blank">Discord</a>
-                        <a href="https://x.com/ull_gd" target="_blank" rel="noopener">X (@ull_gd)</a>
-                    </div>
-                </div>
-                <div class="mob-footer-bottom">
-                    <p>&copy; 2024\u20132026 Upcoming Levels List. Not affiliated with RobTop Games or Pointercrate.</p>
-                </div>
             </div>
         </div>
     `,
@@ -135,12 +100,57 @@ export default {
         roleIconMap,
         roleLabelMap,
         recentChanges: [],
-        showOtherPages: false,
     }),
+    computed: {
+        counts() {
+            const levels = (mobileStore.rawList || []).map(([level]) => level).filter(Boolean);
+            if (!levels.length) return null;
+            return {
+                all: levels.length,
+                main: levels.filter((l) => l.isMain || l.isVerified).length,
+                future: levels.filter((l) => l.isFuture || l.isVerified).length,
+                verified: levels.filter((l) => l.isVerified).length,
+                pending: (mobileStore.pending || []).length,
+            };
+        },
+        topLevels() {
+            const levels = (mobileStore.rawList || []).map(([level]) => level).filter(Boolean);
+            const paths = levels.map((l) => l.path);
+            return levels.slice(0, 5).map((level, i) => {
+                const status = levelStatus(level);
+                const pf = decorationPercent(level);
+                return {
+                    level,
+                    rank: i + 1,
+                    slug: levelSlug(level.path, paths),
+                    thumbnail: levelThumbnail(level),
+                    status,
+                    // The row has no room for "Decoration 80% done".
+                    short: status.label.startsWith('Decoration') ? pf + '%'
+                        : status.label === 'Being verified' ? 'Verifying' : status.label,
+                };
+            });
+        },
+        // Grouped for the sub-headings, never reordered inside a group.
+        editorGroups() {
+            return roleGroups
+                .map((g) => ({ label: g.label, editors: (mobileStore.editors || []).filter((e) => g.roles.includes(e.role)) }))
+                .filter((g) => g.editors.length);
+        },
+    },
     async mounted() {
         this.recentChanges = await fetchRecentChanges() || [];
     },
     methods: {
+        // A change line already says which way a level moved; the dot only
+        // repeats it in colour so the feed can be scanned without reading.
+        changeTone(text) {
+            const t = String(text || '').toLowerCase();
+            if (/\badded\b|\bplaced\b/.test(t)) return 'is-new';
+            if (/\braised\b|\bmoved up\b|\bup\b/.test(t)) return 'is-up';
+            if (/\blowered\b|\bmoved down\b|\bdown\b|\bremoved\b/.test(t)) return 'is-down';
+            return '';
+        },
         // Rendered with v-html so **bold** works — everything else is escaped so
         // stored text can never inject markup into the page.
         formatChange(text) {
@@ -153,7 +163,7 @@ export default {
                     ? `<strong>${esc(part.slice(2, -2))}</strong>`
                     : part ? `<span class="dim">${esc(part)}</span>` : '')
                 .join('');
-            return `<span class="dim">— </span>${html}`;
+            return html;
         },
     },
 };

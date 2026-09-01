@@ -3,7 +3,7 @@ title: Upcoming Levels
 route: /mobile/upcoming
 files: js/pages/mobile/MobileUpcoming.js
 problem: The page is ordered by how far anyone has got into each level, and shows that only as "WR: 99% · Run: 24-100" in the row's second line — the same omission the desktop page had before it was fixed. Its expanded detail is a cut-down of the list detail, so it inherits every problem that one has.
-change: The ranking metric becomes the row's visual: the progress bar the ordering is built from, with the reading at the end of the row where the eye runs down it. The expanded detail opens on that same figure at full size, then reuses the level container's cards. The hero carries the one figure the desktop hero kept.
+change: The ranking metric becomes the row's visual: the progress bar the ordering is built from, with the reading at the end of the row where the eye runs down it. The expanded row opens on that same figure at full size and the two records behind it, then a button to the level's own page — the same short summary the list pages use.
 -->
 <div class="m2 ull2">
     <header class="m2-top">
@@ -58,38 +58,26 @@ change: The ranking metric becomes the row's visual: the progress bar the orderi
                 </div>
 
                 <div class="m2-detail__body">
-                    <div class="u-card">
-                        <div class="m2-total">
-                            <div><b>99%</b><span>Furthest progress</span></div>
-                        </div>
-                        <div class="u-bar u-bar--alt" style="margin-top:0.8rem"><i style="width:99%"></i></div>
-                    </div>
-
-                    <div class="m2-video"></div>
-
-                    <div class="m2-cards">
+                    <div class="m2-sum">
                         <div class="u-card">
-                            <h3 class="u-eyebrow">World records</h3>
-                            <div class="u-stats">
-                                <div class="u-stat"><div class="u-stat__k">From 0%</div><span class="u-stat__v">99%</span><div class="u-stat__u">Hover &middot; 240Hz</div></div>
-                                <div class="u-stat"><div class="u-stat__k">Best run</div><span class="u-stat__v">24&ndash;100%</span><div class="u-stat__u">Hover &middot; 240Hz</div></div>
+                            <div class="m2-total">
+                                <div><b>99%</b><span>Furthest progress</span></div>
+                            </div>
+                            <div class="u-bar u-bar--alt" style="margin-top:0.7rem"><i style="width:99%"></i></div>
+                        </div>
+                        <div class="m2-sum__recs">
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">From 0%</div>
+                                <span class="m2-sum__v">99%</span>
+                                <div class="m2-sum__u">Hover</div>
+                            </div>
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">Best run</div>
+                                <span class="m2-sum__v">24&ndash;100%</span>
+                                <div class="m2-sum__u">Hover</div>
                             </div>
                         </div>
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Details</h3>
-                            <dl class="u-dl">
-                                <dt>Host</dt><dd>ThePurgatory</dd>
-                                <dt>Verifier</dt><dd>Hover</dd>
-                                <dt>Level ID</dt><dd>Private</dd>
-                                <dt>Length</dt><dd>1m 28s</dd>
-                                <dt>Updated</dt><dd>17.07.2026</dd>
-                            </dl>
-                        </div>
-                    </div>
-
-                    <div class="m2-actions">
                         <a class="u-btn" href="#">Open level page</a>
-                        <a class="u-btn u-btn--ghost" href="#">Share level</a>
                     </div>
                 </div>
             </div>
@@ -140,8 +128,7 @@ change: The ranking metric becomes the row's visual: the progress bar the orderi
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>

@@ -560,7 +560,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     bottom: 0;
     z-index: 20;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     border-top: 1px solid var(--u-line);
     background: color-mix(in srgb, var(--color-background) 92%, var(--color-on-background));
     padding-bottom: env(safe-area-inset-bottom, 0);
@@ -775,24 +775,25 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     inset: 0;
     background: linear-gradient(180deg, color-mix(in srgb, var(--color-background) 40%, transparent) 0%, var(--m-detail-bg) 92%);
 }
-.m2-detail__head { position: relative; padding: 0.9rem var(--m-pad); }
+.m2-detail__head { position: relative; padding: 0.75rem var(--m-pad); }
 .m2-detail__by { font-size: 0.78rem; font-weight: 500; line-height: 1.45; opacity: 0.65; }
 .m2-detail__by b { font-weight: 600; }
-.m2-detail__pills { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.7rem; }
-.m2-detail__body { padding: 0 var(--m-pad) 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+.m2-detail__pills { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.55rem; }
+.m2-detail__body { padding: 0.75rem var(--m-pad) 0.9rem; display: flex; flex-direction: column; gap: 0.8rem; }
 
 /* Rank chips scroll sideways rather than wrapping onto a second line. */
 .m2-ranks {
     display: flex;
     gap: 0.4rem;
-    margin-top: 0.75rem;
+    margin-top: 0.6rem;
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
 }
 .m2-ranks::-webkit-scrollbar { display: none; }
-.m2-ranks .u-rank { flex: 0 0 auto; padding: 0.55rem 0.85rem; }
-.m2-ranks .u-rank__n { font-size: 1.1rem; }
+.m2-ranks .u-rank { flex: 0 0 auto; padding: 0.4rem 0.7rem; gap: 0.15rem; }
+.m2-ranks .u-rank__n { font-size: 0.95rem; }
+.m2-ranks .u-rank__l { font-size: 0.5rem; }
 
 .m2-video {
     display: block;
@@ -819,12 +820,40 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 }
 .m2-tab.is-on { opacity: 1; background: var(--color-primary); color: var(--color-on-primary); border-color: transparent; }
 
-/* One column of cards, except the record pair, which fits two-up. */
+/* One column of cards, except the record pair, which fits two-up. Used by the
+   level page, which is the full record; the expanded row is a summary. */
 .m2-cards { display: flex; flex-direction: column; gap: 0.6rem; }
 .m2-cards .u-card { padding: 0.9rem 1rem; }
 .m2-cards .u-stats { grid-template-columns: 1fr 1fr; }
 .m2-actions { display: flex; gap: 0.5rem; }
 .m2-actions > * { flex: 1; min-height: var(--m-tap); }
+
+/* ── Summary ──────────────────────────────────────────────────────────────
+   What an expanded row shows: where the level stands, how far it has got, and
+   the best two records — four short lines. The video, creators, tags, level ID
+   and length are a tap away on the level's own page, which is what the button
+   at the bottom is for. Unfolding the whole record here pushed the next level
+   most of a screen down. */
+.m2-sum { display: flex; flex-direction: column; gap: 0.75rem; }
+.m2-sum__meters { display: flex; flex-direction: column; gap: 0.5rem; }
+.m2-sum__meters .u-meter + .u-meter { margin-top: 0; }
+.m2-sum__recs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.m2-sum__rec { min-width: 0; }
+.m2-sum__k { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.45; }
+.m2-sum__v {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--u-accent);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+.m2-sum__v--none { color: inherit; opacity: 0.3; font-size: 0.85rem; }
+.m2-sum__u { margin-top: 0.05rem; font-size: 0.66rem; opacity: 0.5; overflow-wrap: anywhere; }
+.m2-sum .u-btn { width: 100%; min-height: var(--m-tap); }
 
 /* ── Lane (pending) ───────────────────────────────────────────────────── */
 .m2-lane { position: relative; overflow: hidden; padding: 1rem 1.1rem; }
@@ -899,23 +928,24 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 .m2-pod--3 .m2-pod__s { color: #c08457; }
 .root.dark .m2-pod--2 .m2-pod__s { color: #8b8f98; }
 
-/* Player profile, opened under its row. */
+/* The lead figure on an expanded Upcoming row. */
 .m2-total { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .m2-total b { font-size: 2rem; font-weight: 700; line-height: 1; letter-spacing: -0.03em; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .m2-total span { display: block; margin-top: 0.3rem; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; }
+/* Score, level, then what the record was — all on one line. The level name is
+   the only part that can give ground, so it is the only part that truncates. */
 .m2-rec {
     display: grid;
-    grid-template-columns: 3.2rem minmax(0, 1fr);
+    grid-template-columns: 3.2rem minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.5rem 0;
+    gap: 0.5rem;
+    padding: 0.55rem 0;
 }
 .m2-rec + .m2-rec { border-top: 1px solid var(--u-line); }
 .m2-rec__score { text-align: right; font-size: 0.72rem; font-weight: 700; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .m2-rec__lvl { min-width: 0; font-size: 0.8rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .m2-rec__rank { margin-left: 0.3rem; font-size: 0.66rem; font-weight: 700; opacity: 0.35; }
-.m2-rec__pill { grid-column: 2; }
-.m2-rec .u-pill { padding: 0.15rem 0.45rem; font-size: 0.58rem; }
+.m2-rec__type { font-size: 0.66rem; font-weight: 600; opacity: 0.55; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 /* ── Feature (events) ─────────────────────────────────────────────────── */
 .m2-feature { border: 1px solid var(--u-line); border-radius: var(--m-r); overflow: hidden; background: var(--u-fill); }
@@ -1284,9 +1314,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>
@@ -1310,7 +1339,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                 </div>
                 <div class="note note--change">
                     <div class="note__k">What the template changes</div>
-                    <p>The expanded row becomes the desktop level container, stacked: the thumbnail blurred behind the byline, the status pill and tags, rank chips that scroll sideways, the video with its tabs, then Progress, World records, Details and Creators as cards, and the same Open level page / Share level pair. The row itself keeps its rank, thumbnail and name, and gains the status pill.</p>
+                    <p>The expanded row shows four short lines — where the level stands, how far it has got, and the best two records — then a button to the level's own page, which is the full record. Unfolding everything here pushes the next level most of a screen down, so the video, creators, tags, ID and length stay one tap away rather than in the way. The row itself keeps its rank, thumbnail and name, and gains the status pill the desktop rows carry.</p>
                 </div>
             </div>
             <div class="phone">
@@ -1376,15 +1405,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                 </div>
 
                 <div class="m2-detail__body">
-                    <div class="m2-tabs">
-                        <button class="m2-tab is-on" type="button">Showcase</button>
-                        <button class="m2-tab" type="button">Verification</button>
-                    </div>
-                    <div class="m2-video"></div>
-
-                    <div class="m2-cards">
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Progress</h3>
+                    <div class="m2-sum">
+                        <div class="m2-sum__meters">
                             <div class="u-meter">
                                 <div class="u-meter__top"><span>Decoration</span><b>80%</b></div>
                                 <div class="u-bar"><i style="width:80%"></i></div>
@@ -1394,41 +1416,17 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                                 <div class="u-bar u-bar--alt"><i style="width:0%"></i></div>
                             </div>
                         </div>
-
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">World records</h3>
-                            <div class="u-stats">
-                                <div class="u-stat"><div class="u-stat__k">From 0%</div><span class="u-stat__v u-stat__v--none">None</span></div>
-                                <div class="u-stat"><div class="u-stat__k">Best run</div><span class="u-stat__v u-stat__v--none">None</span></div>
+                        <div class="m2-sum__recs">
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">From 0%</div>
+                                <span class="m2-sum__v m2-sum__v--none">None</span>
+                            </div>
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">Best run</div>
+                                <span class="m2-sum__v m2-sum__v--none">None</span>
                             </div>
                         </div>
-
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Details</h3>
-                            <dl class="u-dl">
-                                <dt>Host</dt><dd>Duke</dd>
-                                <dt>Verifier</dt><dd>wPopoff</dd>
-                                <dt>Level ID</dt><dd>Private</dd>
-                                <dt>Length</dt><dd>2m 28s</dd>
-                                <dt>Updated</dt><dd>20.06.2026</dd>
-                            </dl>
-                        </div>
-
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Creators <span class="u-count">14</span></h3>
-                            <div class="u-chips">
-                                <span class="u-chip">RealVet</span><span class="u-chip">pla</span><span class="u-chip">maxfs</span>
-                                <span class="u-chip">Vanesa</span><span class="u-chip">Duke</span><span class="u-chip">Mercury</span>
-                                <span class="u-chip">arct</span><span class="u-chip">Hyperbola</span><span class="u-chip">function</span>
-                                <span class="u-chip">declan</span><span class="u-chip">rivver</span><span class="u-chip">Blitzer</span>
-                                <span class="u-chip">xol</span><span class="u-chip">Aris</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="m2-actions">
                         <a class="u-btn" href="#">Open level page</a>
-                        <a class="u-btn u-btn--ghost" href="#">Share level</a>
                     </div>
                 </div>
             </div>
@@ -1457,9 +1455,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>
@@ -1483,7 +1480,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                 </div>
                 <div class="note note--change">
                     <div class="note__k">What the template changes</div>
-                    <p>The ranking metric becomes the row's visual: the progress bar the ordering is built from, with the reading at the end of the row where the eye runs down it. The expanded detail opens on that same figure at full size, then reuses the level container's cards. The hero carries the one figure the desktop hero kept.</p>
+                    <p>The ranking metric becomes the row's visual: the progress bar the ordering is built from, with the reading at the end of the row where the eye runs down it. The expanded row opens on that same figure at full size and the two records behind it, then a button to the level's own page — the same short summary the list pages use.</p>
                 </div>
             </div>
             <div class="phone">
@@ -1541,38 +1538,26 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                 </div>
 
                 <div class="m2-detail__body">
-                    <div class="u-card">
-                        <div class="m2-total">
-                            <div><b>99%</b><span>Furthest progress</span></div>
-                        </div>
-                        <div class="u-bar u-bar--alt" style="margin-top:0.8rem"><i style="width:99%"></i></div>
-                    </div>
-
-                    <div class="m2-video"></div>
-
-                    <div class="m2-cards">
+                    <div class="m2-sum">
                         <div class="u-card">
-                            <h3 class="u-eyebrow">World records</h3>
-                            <div class="u-stats">
-                                <div class="u-stat"><div class="u-stat__k">From 0%</div><span class="u-stat__v">99%</span><div class="u-stat__u">Hover &middot; 240Hz</div></div>
-                                <div class="u-stat"><div class="u-stat__k">Best run</div><span class="u-stat__v">24&ndash;100%</span><div class="u-stat__u">Hover &middot; 240Hz</div></div>
+                            <div class="m2-total">
+                                <div><b>99%</b><span>Furthest progress</span></div>
+                            </div>
+                            <div class="u-bar u-bar--alt" style="margin-top:0.7rem"><i style="width:99%"></i></div>
+                        </div>
+                        <div class="m2-sum__recs">
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">From 0%</div>
+                                <span class="m2-sum__v">99%</span>
+                                <div class="m2-sum__u">Hover</div>
+                            </div>
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">Best run</div>
+                                <span class="m2-sum__v">24&ndash;100%</span>
+                                <div class="m2-sum__u">Hover</div>
                             </div>
                         </div>
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Details</h3>
-                            <dl class="u-dl">
-                                <dt>Host</dt><dd>ThePurgatory</dd>
-                                <dt>Verifier</dt><dd>Hover</dd>
-                                <dt>Level ID</dt><dd>Private</dd>
-                                <dt>Length</dt><dd>1m 28s</dd>
-                                <dt>Updated</dt><dd>17.07.2026</dd>
-                            </dl>
-                        </div>
-                    </div>
-
-                    <div class="m2-actions">
                         <a class="u-btn" href="#">Open level page</a>
-                        <a class="u-btn u-btn--ghost" href="#">Share level</a>
                     </div>
                 </div>
             </div>
@@ -1623,9 +1608,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>
@@ -1649,7 +1633,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
                 </div>
                 <div class="note note--change">
                     <div class="note__k">What the template changes</div>
-                    <p>The podium comes over, sized for a phone. Rows put the score at the right in tabular figures so the column reads down. The expanded profile leads with the total as a display figure, then the records as rows with their score chip, level rank and type pill — the pill on its own line, since a phone has no room for three columns.</p>
+                    <p>The podium comes over, sized for a phone. Rows put the score at the right in tabular figures so the column reads down — and since the row already states the player's total, the expanded panel does not repeat it as a display figure; it goes straight to the records. Each record is one line: what it was worth, which level, and what it was.</p>
                 </div>
             </div>
             <div class="phone">
@@ -1689,41 +1673,32 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
 
             <div class="m2-detail">
                 <div class="m2-detail__body" style="padding-top:0.9rem">
-                    <div class="u-card">
-                        <div class="m2-total">
-                            <div><b>11888.473</b><span>Total points</span></div>
-                            <span class="u-chip u-chip--round">1st of 214</span>
-                        </div>
-                    </div>
-
+                    <h3 class="u-eyebrow">Records <span class="u-count">18</span></h3>
                     <div>
-                        <h3 class="u-eyebrow">Records <span class="u-count">18</span></h3>
-                        <div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+1310.7</span>
-                                <span class="m2-rec__lvl">Thinking Space II<span class="m2-rec__rank">#51</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--blue"><i></i>Verification</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+967.6</span>
-                                <span class="m2-rec__lvl">Tidal Wave<span class="m2-rec__rank">#83</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--blue"><i></i>Verification</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+694.2</span>
-                                <span class="m2-rec__lvl">EXASPERATION<span class="m2-rec__rank">#24</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--green"><i></i>67%</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+671.2</span>
-                                <span class="m2-rec__lvl">Heliopolis<span class="m2-rec__rank">#23</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--cyan"><i></i>37&ndash;100%</span></span>
-                            </div>
-                            <div class="m2-rec">
-                                <span class="m2-rec__score">+562.7</span>
-                                <span class="m2-rec__lvl">Silent Kocmoc<span class="m2-rec__rank">#13</span></span>
-                                <span class="m2-rec__pill"><span class="u-pill u-pill--amber"><i></i>Layout completion</span></span>
-                            </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+1310.7</span>
+                            <span class="m2-rec__lvl">Thinking Space II<span class="m2-rec__rank">#51</span></span>
+                            <span class="m2-rec__type">Verification</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+967.6</span>
+                            <span class="m2-rec__lvl">Tidal Wave<span class="m2-rec__rank">#83</span></span>
+                            <span class="m2-rec__type">Verification</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+694.2</span>
+                            <span class="m2-rec__lvl">EXASPERATION<span class="m2-rec__rank">#24</span></span>
+                            <span class="m2-rec__type">67%</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+671.2</span>
+                            <span class="m2-rec__lvl">Heliopolis<span class="m2-rec__rank">#23</span></span>
+                            <span class="m2-rec__type">37&ndash;100%</span>
+                        </div>
+                        <div class="m2-rec">
+                            <span class="m2-rec__score">+562.7</span>
+                            <span class="m2-rec__lvl">Silent Kocmoc<span class="m2-rec__rank">#13</span></span>
+                            <span class="m2-rec__type">Layout completion</span>
                         </div>
                     </div>
                 </div>
@@ -1760,9 +1735,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>
@@ -1856,9 +1830,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>
@@ -1995,9 +1968,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>
@@ -2104,9 +2076,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>
@@ -2148,7 +2119,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
         <div class="m2-detail__hero">
             <div class="m2-detail__bg mk-thumb--a"></div>
             <div class="m2-detail__scrim"></div>
-            <div class="m2-detail__head" style="padding-top:1.1rem;padding-bottom:1.1rem">
+            <div class="m2-detail__head" style="padding-top:1.1rem;padding-bottom:1.2rem">
                 <nav class="mk-crumbs"><a href="#">Upcoming Levels List</a><span>/</span><a href="#">All Levels</a><span>/</span><b>Aeternus</b></nav>
                 <h1 class="mk-lvl-title">Aeternus</h1>
                 <p class="m2-detail__by">by <b>Riot</b> &middot; to be verified by <b>Open Verification</b></p>
@@ -2166,7 +2137,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
             </div>
         </div>
 
-        <div class="m2-detail__body" style="padding-top:1rem">
+        <div class="m2-detail__body">
             <div class="m2-video"></div>
             <div class="m2-cards">
                 <div class="u-card">
@@ -2208,9 +2179,8 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
                 </div>

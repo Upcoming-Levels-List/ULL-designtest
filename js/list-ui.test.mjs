@@ -237,7 +237,9 @@ console.log('\n── mobile list keeps the same recounting ──');
   await mp.click('.mob-topbar-btn[title="Settings"]');
   await mp.waitForSelector('.mob-settings-list');
   await mp.click('.mob-setting-row:has-text("Benchmark Mode") .mob-toggle button:has-text("ON")');
-  await mp.click('.mob-popup-overlay', { position: { x: 5, y: 820 } });
+  // Settings is a bottom sheet now, so "tap outside to close" means tapping
+  // above it rather than below — the sheet itself occupies the lower 78vh.
+  await mp.click('.mob-popup-overlay', { position: { x: 5, y: 60 } });
   await mp.waitForFunction((n) =>
     [...document.querySelectorAll('.mob-level-row')].filter(r => r.offsetParent !== null).length === n,
     expected.length, { timeout: 8000 });

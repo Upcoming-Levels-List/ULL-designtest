@@ -3,7 +3,7 @@ title: Level list
 route: /mobile/all · /mobile/main · /mobile/future
 files: js/pages/mobile/MobileList.js · css/pages/mobile.css
 problem: Tapping a row opens the detail the desktop panel used to look like before it was rebuilt — "#2 in Main List" as dim grey text, a three-row author table, "Status: Decoration 80% done" and "WR From 0: None" as sentences, then the video and three bare stats. There is no status pill, no progress meter, no record card, no rank chip, no creators chips, and no way to reach the level's own page or copy a link to it, all of which the desktop panel now has.
-change: The expanded row becomes the desktop level container, stacked: the thumbnail blurred behind the byline, the status pill and tags, rank chips that scroll sideways, the video with its tabs, then Progress, World records, Details and Creators as cards, and the same Open level page / Share level pair. The row itself keeps its rank, thumbnail and name, and gains the status pill.
+change: The expanded row shows four short lines — where the level stands, how far it has got, and the best two records — then a button to the level's own page, which is the full record. Unfolding everything here pushes the next level most of a screen down, so the video, creators, tags, ID and length stay one tap away rather than in the way. The row itself keeps its rank, thumbnail and name, and gains the status pill the desktop rows carry.
 -->
 <div class="m2 ull2">
     <header class="m2-top">
@@ -66,15 +66,8 @@ change: The expanded row becomes the desktop level container, stacked: the thumb
                 </div>
 
                 <div class="m2-detail__body">
-                    <div class="m2-tabs">
-                        <button class="m2-tab is-on" type="button">Showcase</button>
-                        <button class="m2-tab" type="button">Verification</button>
-                    </div>
-                    <div class="m2-video"></div>
-
-                    <div class="m2-cards">
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Progress</h3>
+                    <div class="m2-sum">
+                        <div class="m2-sum__meters">
                             <div class="u-meter">
                                 <div class="u-meter__top"><span>Decoration</span><b>80%</b></div>
                                 <div class="u-bar"><i style="width:80%"></i></div>
@@ -84,41 +77,17 @@ change: The expanded row becomes the desktop level container, stacked: the thumb
                                 <div class="u-bar u-bar--alt"><i style="width:0%"></i></div>
                             </div>
                         </div>
-
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">World records</h3>
-                            <div class="u-stats">
-                                <div class="u-stat"><div class="u-stat__k">From 0%</div><span class="u-stat__v u-stat__v--none">None</span></div>
-                                <div class="u-stat"><div class="u-stat__k">Best run</div><span class="u-stat__v u-stat__v--none">None</span></div>
+                        <div class="m2-sum__recs">
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">From 0%</div>
+                                <span class="m2-sum__v m2-sum__v--none">None</span>
+                            </div>
+                            <div class="m2-sum__rec">
+                                <div class="m2-sum__k">Best run</div>
+                                <span class="m2-sum__v m2-sum__v--none">None</span>
                             </div>
                         </div>
-
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Details</h3>
-                            <dl class="u-dl">
-                                <dt>Host</dt><dd>Duke</dd>
-                                <dt>Verifier</dt><dd>wPopoff</dd>
-                                <dt>Level ID</dt><dd>Private</dd>
-                                <dt>Length</dt><dd>2m 28s</dd>
-                                <dt>Updated</dt><dd>20.06.2026</dd>
-                            </dl>
-                        </div>
-
-                        <div class="u-card">
-                            <h3 class="u-eyebrow">Creators <span class="u-count">14</span></h3>
-                            <div class="u-chips">
-                                <span class="u-chip">RealVet</span><span class="u-chip">pla</span><span class="u-chip">maxfs</span>
-                                <span class="u-chip">Vanesa</span><span class="u-chip">Duke</span><span class="u-chip">Mercury</span>
-                                <span class="u-chip">arct</span><span class="u-chip">Hyperbola</span><span class="u-chip">function</span>
-                                <span class="u-chip">declan</span><span class="u-chip">rivver</span><span class="u-chip">Blitzer</span>
-                                <span class="u-chip">xol</span><span class="u-chip">Aris</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="m2-actions">
                         <a class="u-btn" href="#">Open level page</a>
-                        <a class="u-btn u-btn--ghost" href="#">Share level</a>
                     </div>
                 </div>
             </div>
@@ -147,8 +116,7 @@ change: The expanded row becomes the desktop level container, stacked: the thumb
     <nav class="m2-nav">
         <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.5l5.5 4.3V13a.9.9 0 0 1-.9.9H3.4a.9.9 0 0 1-.9-.9V6.8Z"/><path d="M6.4 13.9V9.2h3.2v4.7"/></svg></span>Home</button>
         <button class="m2-nav__item is-on" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5.5 4h8M5.5 8h8M5.5 12h8M2.5 4h.01M2.5 8h.01M2.5 12h.01"/></svg></span>Levels</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 11.4 5.6 7.6l2.6 2.6 5.9-6"/><path d="M10.6 4.2h3.5v3.5"/></svg></span>Upcoming</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.2h7v3.4a3.5 3.5 0 0 1-7 0V2.2Z"/><path d="M4.5 3.2H2.4v1a2.4 2.4 0 0 0 2.1 2.3M11.5 3.2h2.1v1a2.4 2.4 0 0 1-2.1 2.3"/><path d="M8 9.1v2.6M5.6 13.8h4.8"/></svg></span>Board</button>
-        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>More</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4M8 4.9h.01"/></svg></span>Information</button>
+        <button class="m2-nav__item" type="button"><span class="m2-nav__ic mk-ic"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3.2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="12.8" cy="8" r="1.3"/></svg></span>Other</button>
     </nav>
 </div>
