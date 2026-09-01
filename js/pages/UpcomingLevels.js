@@ -20,7 +20,6 @@ export default {
             </div>
             <div class="u-phero__side">
                 <div class="u-stat"><div class="u-stat__k">Levels</div><span class="u-stat__v">{{ list.length }}</span></div>
-                <div class="u-stat"><div class="u-stat__k">Past 50%</div><span class="u-stat__v">{{ pastHalfway }}</span></div>
             </div>
         </div>
         <div class="list-container-new surface">
@@ -148,9 +147,6 @@ export default {
         },
         allPaths() {
             return (this.list || []).map(([level]) => level?.path).filter(Boolean);
-        },
-        pastHalfway() {
-            return (this.list || []).filter(([level]) => level && verificationPercent(level) >= 50).length;
         },
     },
     watch: { search() { this.selected = 0; } },

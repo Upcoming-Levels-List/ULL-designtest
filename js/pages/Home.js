@@ -24,7 +24,8 @@ const roleLabelMap = {
 const roleGroups = [
     { label: 'Owner & admin', roles: ['owner', 'admin'] },
     { label: 'Senior moderators', roles: ['seniormod'] },
-    { label: 'Moderators & developers', roles: ['mod', 'dev'] },
+    { label: 'Moderators', roles: ['mod'] },
+    { label: 'Developers', roles: ['dev'] },
 ];
 
 // The landing page of a level list used to show no levels: a paragraph, three
@@ -121,16 +122,21 @@ export default {
                     <h2 class="u-eyebrow">List editors <span class="u-count">{{ editors.length }}</span></h2>
                 </div>
                 <p class="home-editors-desc">Trusted members responsible for maintaining the Upcoming Levels List &mdash; adding levels, updating placements, and keeping the list accurate.</p>
-                <div class="info-editors">
-                    <template v-for="group in editorGroups" :key="group.label">
-                        <div class="home-editors-group">{{ group.label }}</div>
-                        <div v-for="editor in group.editors" :key="editor.name" class="info-editor">
-                            <img :src="'/assets/' + (roleIconMap[editor.role] || 'user-lock') + (store.dark ? '' : '-dark') + '.svg'" :alt="editor.role" />
-                            <a v-if="editor.link && editor.link !== '#'" :href="editor.link" target="_blank">{{ editor.name }}</a>
-                            <span v-else class="info-editor__name">{{ editor.name }}</span>
-                            <span class="info-role" :class="'info-role-' + editor.role">{{ roleLabel(editor.role) }}</span>
+                <div class="home-editors">
+                    <!-- Each group gets its own .info-editors grid. Putting the
+                         headings straight into one shared grid made them take a
+                         cell of their own, which shuffled the names into it. -->
+                    <div v-for="group in editorGroups" :key="group.label" class="home-editors-group">
+                        <div class="home-editors-group__label">{{ group.label }}</div>
+                        <div class="info-editors">
+                            <div v-for="editor in group.editors" :key="editor.name" class="info-editor">
+                                <img :src="'/assets/' + (roleIconMap[editor.role] || 'user-lock') + (store.dark ? '' : '-dark') + '.svg'" :alt="editor.role" />
+                                <a v-if="editor.link && editor.link !== '#'" :href="editor.link" target="_blank">{{ editor.name }}</a>
+                                <span v-else class="info-editor__name">{{ editor.name }}</span>
+                                <span class="info-role" :class="'info-role-' + editor.role">{{ roleLabel(editor.role) }}</span>
+                            </div>
                         </div>
-                    </template>
+                    </div>
                 </div>
             </section>
 

@@ -72,12 +72,14 @@
 .events-feature--sm .u-hero__title { font-size: clamp(1.2rem, 2.4vw, 1.5rem); }
 
 /* What differs between the three features is the label and the date, which is
-   exactly what differs about them. */
+   exactly what differs about them — so they read as one line. Pushed apart with
+   space-between the date landed against the inner edge of the rank chip, adrift
+   in the middle of the card with nothing to align to. */
 .events-tag {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-bottom: 0.85rem;
 }
 .events-tag b {
@@ -88,7 +90,12 @@
     color: color-mix(in srgb, var(--color-primary) 45%, white);
 }
 .root.dark .events-tag b { color: color-mix(in srgb, var(--color-primary) 75%, black); }
-.events-tag span { font-size: 0.68rem; opacity: 0.45; font-variant-numeric: tabular-nums; }
+.events-tag span {
+    font-size: 0.68rem;
+    opacity: 0.45;
+    font-variant-numeric: tabular-nums;
+}
+.events-tag span::before { content: '·'; margin-right: 0.5rem; }
 
 .events-cols {
     display: grid;

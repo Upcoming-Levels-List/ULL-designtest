@@ -3,8 +3,8 @@
    Was a lilac #c084fc headline that matched nothing else on the site, one tall
    card beside a stack of three (which made placements look more important by
    accident of column width), and rows that lifted their neighbours on hover.
-   Now: theme-derived colour, four equal lanes tinted by what they mean, and
-   the pending placement spelled out beside each name. */
+   Now: theme-derived colour, four equal-width lanes tinted by what they mean,
+   and the pending placement spelled out beside each name. */
 
 .page-pending {
     display: block;
@@ -62,12 +62,21 @@
     margin: 0 auto;
     padding: 2rem 2.5rem 2.5rem;
 }
+/* Two independent stacks, not one grid: in a grid every lane shares a row with
+   the lane beside it, so Pending Movements (short) held Pending Removals below
+   it down to the bottom of Pending Placements. Each column now packs tight. */
 .pending-cards {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     width: 100%;
     align-items: start;
+}
+.pending-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
 }
 
 /* ── Lane ──
@@ -167,6 +176,7 @@ a.pending-row__name:hover { text-decoration: underline; }
     .pending-hero { padding: 2rem 1.5rem 1.5rem; }
     .pending-content { padding: 1.5rem 1.5rem 2rem; }
     .pending-cards { grid-template-columns: minmax(0, 1fr); }
+    .pending-col { gap: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

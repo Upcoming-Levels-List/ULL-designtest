@@ -7,8 +7,6 @@ import Spinner from '../components/Spinner.js';
 const TYPE_LABEL = {
     verification: 'Verification',
     layout: 'Layout completion',
-    run: 'Run',
-    record: 'Record',
 };
 
 // The tones are the status scale used everywhere else, borrowed here to
@@ -23,8 +21,8 @@ const TYPE_TONE = {
 // The player panel used to be a name, a "Total Score: 12.408" sentence and a
 // borrowed table held together by twenty-five inline styles, with nothing to
 // separate first place from two-hundredth. It is now a profile: the total as a
-// display figure, a breakdown of how it was earned, and the records as rows.
-// Every number comes from js/leaderboard.js exactly as before.
+// display figure and the records as rows, each with what it was worth and what
+// kind of record it was. Every number comes from js/leaderboard.js as before.
 export default {
     components: { Spinner },
     template: `
@@ -83,20 +81,9 @@ export default {
                     </div>
                     <div class="lb-total">
                         <b>{{ selectedPlayer.total.toFixed(3) }}</b>
-                        <span>Total score</span>
+                        <span>Total points</span>
                     </div>
                 </header>
-
-                <section v-if="breakdown.length">
-                    <h2 class="u-eyebrow">How it was earned</h2>
-                    <div class="u-stats">
-                        <div v-for="part in breakdown" :key="part.type" class="u-stat">
-                            <div class="u-stat__k">{{ part.label }}</div>
-                            <span class="u-stat__v">{{ part.count }}</span>
-                            <div class="u-stat__u">{{ part.score.toFixed(3) }} pts</div>
-                        </div>
-                    </div>
-                </section>
 
                 <section v-if="selectedPlayer.records.length">
                     <h2 class="u-eyebrow">Records <span class="u-count">{{ selectedPlayer.records.length }}</span></h2>
@@ -143,22 +130,6 @@ export default {
         podium() {
             const [first, second, third] = this.players;
             return [second, first, third].filter(Boolean).length === 3 ? [second, first, third] : [];
-        },
-        // Counts and sums per record type. Both are already on the records the
-        // leaderboard produced; nothing here is a new measure.
-        breakdown() {
-            const records = this.selectedPlayer?.records || [];
-            return ['verification', 'record', 'run', 'layout']
-                .map((type) => {
-                    const mine = records.filter((r) => r.type === type);
-                    return {
-                        type,
-                        label: TYPE_LABEL[type],
-                        count: mine.length,
-                        score: mine.reduce((sum, r) => sum + r.score, 0),
-                    };
-                })
-                .filter((part) => part.count);
         },
     },
     watch: {

@@ -1666,15 +1666,15 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
 .home-change strong { font-weight: 600; }
 
 /* ── EDITORS DESC ── */
-.home-editors-group {
+.home-editors { display: flex; flex-direction: column; gap: 0.9rem; }
+.home-editors-group__label {
     font-size: 0.58rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     opacity: 0.3;
-    margin: 0.9rem 0 0.3rem;
+    margin-bottom: 0.3rem;
 }
-.home-editors-group:first-child { margin-top: 0; }
 .home-editors-desc {
     font-size: 0.78rem;
     font-weight: 400;
@@ -1826,12 +1826,14 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
 .events-feature--sm .u-hero__title { font-size: clamp(1.2rem, 2.4vw, 1.5rem); }
 
 /* What differs between the three features is the label and the date, which is
-   exactly what differs about them. */
+   exactly what differs about them — so they read as one line. Pushed apart with
+   space-between the date landed against the inner edge of the rank chip, adrift
+   in the middle of the card with nothing to align to. */
 .events-tag {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-bottom: 0.85rem;
 }
 .events-tag b {
@@ -1842,7 +1844,12 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
     color: color-mix(in srgb, var(--color-primary) 45%, white);
 }
 .root.dark .events-tag b { color: color-mix(in srgb, var(--color-primary) 75%, black); }
-.events-tag span { font-size: 0.68rem; opacity: 0.45; font-variant-numeric: tabular-nums; }
+.events-tag span {
+    font-size: 0.68rem;
+    opacity: 0.45;
+    font-variant-numeric: tabular-nums;
+}
+.events-tag span::before { content: '·'; margin-right: 0.5rem; }
 
 .events-cols {
     display: grid;
@@ -1887,8 +1894,8 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
    Was a lilac #c084fc headline that matched nothing else on the site, one tall
    card beside a stack of three (which made placements look more important by
    accident of column width), and rows that lifted their neighbours on hover.
-   Now: theme-derived colour, four equal lanes tinted by what they mean, and
-   the pending placement spelled out beside each name. */
+   Now: theme-derived colour, four equal-width lanes tinted by what they mean,
+   and the pending placement spelled out beside each name. */
 
 .page-pending {
     display: block;
@@ -1946,12 +1953,21 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
     margin: 0 auto;
     padding: 2rem 2.5rem 2.5rem;
 }
+/* Two independent stacks, not one grid: in a grid every lane shares a row with
+   the lane beside it, so Pending Movements (short) held Pending Removals below
+   it down to the bottom of Pending Placements. Each column now packs tight. */
 .pending-cards {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     width: 100%;
     align-items: start;
+}
+.pending-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
 }
 
 /* ── Lane ──
@@ -2051,6 +2067,7 @@ a.pending-row__name:hover { text-decoration: underline; }
     .pending-hero { padding: 2rem 1.5rem 1.5rem; }
     .pending-content { padding: 1.5rem 1.5rem 2rem; }
     .pending-cards { grid-template-columns: minmax(0, 1fr); }
+    .pending-col { gap: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3054,11 +3071,15 @@ a.lvl-wr__v:hover { text-decoration: underline; }
     opacity: 0.35;
 }
 
+/* Cards stretch to their row rather than sitting at its top. That squares
+   Progress against World records beside it, and it closes the gap that opened
+   under a short card when the taller one beside it set the row height — the
+   next card down used to start level with the tall one's bottom edge. */
 .lp-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
     gap: 0.85rem;
-    align-items: start;
+    align-items: stretch;
 }
 /* The share control keeps its own pill shape (css/components/level-share.css);
    align it to the filled button beside it. */

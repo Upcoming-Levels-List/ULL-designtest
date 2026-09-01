@@ -89,11 +89,15 @@
     opacity: 0.35;
 }
 
+/* Cards stretch to their row rather than sitting at its top. That squares
+   Progress against World records beside it, and it closes the gap that opened
+   under a short card when the taller one beside it set the row height — the
+   next card down used to start level with the tall one's bottom edge. */
 .lp-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
     gap: 0.85rem;
-    align-items: start;
+    align-items: stretch;
 }
 /* The share control keeps its own pill shape (css/components/level-share.css);
    align it to the filled button beside it. */

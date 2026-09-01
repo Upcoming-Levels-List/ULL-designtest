@@ -235,15 +235,15 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
 .home-change strong { font-weight: 600; }
 
 /* ── EDITORS DESC ── */
-.home-editors-group {
+.home-editors { display: flex; flex-direction: column; gap: 0.9rem; }
+.home-editors-group__label {
     font-size: 0.58rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     opacity: 0.3;
-    margin: 0.9rem 0 0.3rem;
+    margin-bottom: 0.3rem;
 }
-.home-editors-group:first-child { margin-top: 0; }
 .home-editors-desc {
     font-size: 0.78rem;
     font-weight: 400;

@@ -16,9 +16,10 @@ change: Three features, one component. Level of the Day leads at full width with
 .mk-ev .ev-feat { border: 1px solid var(--u-line); border-radius: var(--u-r); overflow: hidden; background: var(--u-fill); }
 .mk-ev .ev-feat .u-hero { border: 0; border-radius: 0; border-bottom: 1px solid var(--u-line); }
 .mk-ev .ev-feat .u-hero__inner { padding: 1.4rem 1.5rem 1.2rem; }
-.mk-ev .ev-tag { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.85rem; }
+.mk-ev .ev-tag { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem; }
 .mk-ev .ev-tag b { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--u-accent); }
 .mk-ev .ev-tag span { font-size: 0.68rem; opacity: 0.45; font-variant-numeric: tabular-nums; }
+.mk-ev .ev-tag span::before { content: '·'; margin-right: 0.5rem; }
 .mk-ev .ev-cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 1rem; padding: 1.15rem 1.5rem 1.35rem; }
 .mk-ev .ev-single { padding: 1.15rem 1.5rem 1.35rem; display: flex; flex-direction: column; gap: 1rem; }
 .mk-ev .ev-feat--sm .u-hero__title { font-size: 1.35rem; }

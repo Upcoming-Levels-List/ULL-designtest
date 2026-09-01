@@ -3,7 +3,7 @@ title: Leaderboard
 route: /leaderboard
 files: js/pages/Leaderboard.js · css/pages/leaderboard.css
 problem: The player panel is one <h1>, a "Total Score: 12.408" sentence and a borrowed table, all styled by about twenty-five inline style attributes written into the template. Nothing distinguishes #1 from #240. The score column is the whole point of the page and it is set in the same weight and colour as the name beside it. css/pages/leaderboard.css still styles a .board / .player markup the page stopped rendering.
-change: Give the left column a podium for the top three and the shared row rhythm below it, with the score right-aligned and tabular so the columns line up. Turn the right panel into a profile: the total as a display figure, a derived breakdown of how it was earned, then records as rows carrying a score chip, the level rank, and a type pill. Counts and per-record scores are already computed in js/leaderboard.js.
+change: Give the left column a podium for the top three and the shared row rhythm below it, with the score right-aligned and tabular so the columns line up. Turn the right panel into a profile: the total as a display figure, then records as rows carrying a score chip, the level rank, and a type pill. Per-record scores are already computed in js/leaderboard.js.
 -->
 <style>
 .mk-lb { display: grid; grid-template-columns: 40% 60%; height: 100%; min-height: 0; }
@@ -78,18 +78,8 @@ change: Give the left column a podium for the top three and the shared row rhyth
                 <h1 class="lb-head__name">zLevii</h1>
                 <p class="lb-head__sub">Ranked 1st of 243 players</p>
             </div>
-            <div class="lb-total"><b>12.408</b><span>Total score</span></div>
+            <div class="lb-total"><b>12.408</b><span>Total points</span></div>
         </div>
-
-        <section>
-            <h2 class="u-eyebrow">How it was earned</h2>
-            <div class="u-stats">
-                <div class="u-stat"><div class="u-stat__k">Verifications</div><span class="u-stat__v">3</span></div>
-                <div class="u-stat"><div class="u-stat__k">Records</div><span class="u-stat__v">6</span></div>
-                <div class="u-stat"><div class="u-stat__k">Runs</div><span class="u-stat__v">4</span></div>
-                <div class="u-stat"><div class="u-stat__k">Layouts</div><span class="u-stat__v">2</span></div>
-            </div>
-        </section>
 
         <section>
             <h2 class="u-eyebrow">Records <span class="u-count">15</span></h2>
