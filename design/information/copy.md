@@ -1,7 +1,8 @@
 # /information — draft copy
 
-Sections 3 (what the list is, where is what) and 4 (FAQ) did not exist, so this
-is the first draft of both, plus the contact block section 5 needs. It is
+Sections 3 (what the list is, where is what), 4 (FAQ) and 6 (the API) did not
+exist, so this is the first draft of all three, plus the contact block section 5
+needs. It is
 separate from the templates on purpose: the four templates are four ways of
 *arranging* this text, and whichever one wins, this is what goes in it.
 
@@ -186,3 +187,70 @@ Where to take what:
   `#list-discussion` / `#level-update-reporting`.
 - **Something broken on the website** → the site's developer, not the mods.
 - **A complaint about a staff member** → an Admin, or the List Leader directly.
+
+---
+
+## 6. API documentation
+
+**Lead.** Everything this site shows comes from a public JSON API. It needs no
+key, no signup and no referrer, and it sends `Access-Control-Allow-Origin: *`,
+so a page or a bot can read the list straight from the browser.
+
+**Base URL:** `https://d1-wrkr.ullteam.workers.dev`
+
+### Endpoints
+
+| Method & path | Returns |
+|---|---|
+| `GET /api/list` | Every level, in rank order |
+| `GET /api/list/main` | The Main List |
+| `GET /api/list/future` | The Future List |
+| `GET /api/levels/{position}` | One level, by its 1-based rank |
+| `GET /api/pending` | Pending List entries |
+| `GET /api/editors` | The staff list, in the order staff arranged it (not alphabetical) |
+| `GET /api/level-month` | Level of the Month, or `null` |
+| `GET /api/level-verif` | Closest to verification, or `null` |
+| `GET /api/recent-changes` | The changes feed, grouped `{date, entries[]}` |
+
+Writing to the list needs a staff API key and is not part of the public API.
+
+### The level object
+
+The fields most callers want, from `parseLevel()` in `worker/worker.js`:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `path` | string | Slug; the level's page is `/level/{path}` |
+| `name`, `author` | string | Level name and host |
+| `creators` | string[] | Everyone credited |
+| `verifier` | string | Verifier, or `"Open Verification"` |
+| `percentFinished` | number | Decoration progress, 0–100 |
+| `records`, `run` | object[] | `{user, link, percent, hz}` |
+| `tags` | string[] | `Public`, `Layout`, `Rated`, … |
+| `isMain`, `isFuture`, `isVerified`, `benchmark` | boolean | Tiers and state |
+| `sort_order` | number | Rank in All Levels |
+
+Twelve further fields — `id`, `rating`, `length`, `percentToQualify`, `lastUpd`,
+`thumbnail`, `showcase`, `verification`, `frameCounter` — are already documented
+in the repository README, which the page should link to rather than repeat.
+
+### Fair use
+
+- cache what you fetch: the list changes a few times a day, not a few times a second;
+- identify your bot in the user agent if you are polling on a schedule;
+- the data is community work — credit the list and link back to it;
+- positions are estimates and change, so treat a stored rank as a snapshot.
+
+### Two things for the team to decide **[confirm]**
+
+1. `GET /api/leaderboard` and `GET /api/upcoming` also answer without a key, but
+   the site does not use either — it derives both from `/api/list`
+   (`js/leaderboard.js`, `js/pages/UpcomingLevels.js`). The templates therefore
+   document nine endpoints and say plainly that there is no public leaderboard
+   endpoint. If those two tables are in fact maintained, they should be
+   documented as well; if they are not, they are better removed from the worker
+   than left answering with stale rows.
+2. There is no rate limit on the public reads (the throttle in
+   `worker/worker.js` covers failed *auth* attempts only). The "fair use" list
+   above is a request, not a rule. If the team wants a real limit, the wording
+   here should change to state it.

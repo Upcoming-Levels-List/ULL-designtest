@@ -1,121 +1,72 @@
 <!--meta
 title: Shelf
-tag: blocks that open
+tag: weighted blocks, popup reader
 files: js/pages/Information.js · css/pages/information.css
-state: click a block — it opens in place
-idea: The page is a shelf of blocks sized by how much is behind them, and a block opens <em>in place</em> into the full width of the page. Closed, the whole page fits on one screen and every section states its size — &ldquo;13 sections&rdquo;, &ldquo;14 questions&rdquo;, &ldquo;10 colours&rdquo; — so you choose what to read before anything is read at you. Open, the block becomes the page: the guidelines get the full column width and one scroll, the two legends get a small panel, and nothing else moves except downwards. This is the block system you sketched, with the block sizes doing the arguing.
-weight: Column span is the hierarchy and it is set once: the guidelines take eight of twelve columns, the FAQ four, the two legends two each under a &ldquo;Reference&rdquo; label. A legend can no longer look like a peer of the rulebook because it is a sixth of its size on the shelf, and opened it fills the same width as everything else, so nothing is privileged on the way in.
-cost: The smallest of the four. One template, one stylesheet; each block is a native &lt;details&gt; so open/close, keyboard and Ctrl+F-into-a-closed-block are the browser's job, not state in Information.js. The guidelines keep their existing TOC markup, minus the fixed-height pane and the IntersectionObserver that patched it.
-watch: Closed blocks are a wall of invitations — someone who wants one fact still has to guess which block holds it, and a deep link has to open the right block on load. Two blocks open at once makes for a long page, so opening one may need to close the others, which is a decision to make before it is built.
+state: click any block
+idea: The whole page is a shelf of blocks sized by how much is behind them, and nothing else. Click one and it opens the reader over the page &mdash; the same window C and E open, so the three differ only in the surface in front of it. Closed, the seven blocks fit on one screen and each states its own size: &ldquo;5 groups &middot; 13 sections&rdquo;, &ldquo;14 questions&rdquo;, &ldquo;9 endpoints&rdquo;, &ldquo;10 colours&rdquo;. You choose what to read before anything is read at you, and you come back to exactly the shelf you left.
+weight: Column span, set once: the guidelines take eight of twelve, the FAQ four, the three middle blocks four each, and the two legends are small cards on a &ldquo;Reference&rdquo; row of their own beneath the shelf, sized to their contents. A legend cannot read as a peer of the rulebook when it is a sixth of its area and sitting under a different heading.
+cost: Small. One grid, one modal component reused seven times, and the modal is where every long read lives &mdash; so the page itself never grows past one screen no matter how much the guidelines gain. The nested scroll pane and the IntersectionObserver that patches it both go.
+watch: Everything is behind a click, so a reader who does not know which block holds their answer has to guess, and search has to cover the closed blocks or it is decoration. A modal also needs a URL of its own (?open=api) or a rule cannot be linked, and Back must close it rather than leave the page.
 -->
 <style>
-.mk-sh { display: block; overflow-y: auto; height: 100%; }
-.mk-sh .sh-hero { padding: 2.1rem 2.5rem 1.6rem; border-bottom: 1px solid var(--u-line); background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 60%); }
-.mk-sh .sh-hero h1 { margin: 0; font-family: inherit; font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
-.mk-sh .sh-hero p { margin: 0.7rem 0 0; max-width: 44rem; font-size: 0.85rem; line-height: 1.65; opacity: 0.5; }
-.mk-sh .sh-tools { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.25rem; }
-.mk-sh .sh-search { flex: 1; max-width: 22rem; display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.85rem; border-radius: var(--u-r-sm); background: var(--u-fill); border: 1px solid var(--u-line); font-size: 0.8rem; opacity: 0.55; }
+.mk-shelf { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.mk-shelf .sh-scroll { flex: 1; min-height: 0; overflow-y: auto; }
 
-.mk-sh .sh-shelf { display: grid; grid-auto-flow: dense; grid-template-columns: repeat(12, 1fr); gap: 0.85rem; padding: 1.6rem 2.5rem 2.5rem; align-items: start; }
-.mk-sh .sh-b { grid-column: span 4; border-radius: var(--u-r); background: var(--u-fill); border: 1px solid var(--u-line); overflow: hidden; }
-.mk-sh .sh-b--lg { grid-column: span 8; }
-.mk-sh .sh-b--sm { grid-column: span 2; }
-.mk-sh .sh-b[open] { grid-column: 1 / -1; background: transparent; border-color: var(--u-line-2); }
-.mk-sh .sh-b > summary { list-style: none; cursor: pointer; padding: 1.15rem 1.25rem; display: block; }
-.mk-sh .sh-b > summary::-webkit-details-marker { display: none; }
-.mk-sh .sh-b:not([open]) > summary:hover { background: var(--u-fill-2); }
-.mk-sh .sh-b[open] > summary { border-bottom: 1px solid var(--u-line); background: var(--u-fill); }
-.mk-sh .sh-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-.mk-sh .sh-b h2 { margin: 0.55rem 0 0; font-family: inherit; font-size: 1.15rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
-.mk-sh .sh-b--lg h2 { font-size: 1.5rem; }
-.mk-sh .sh-b--sm h2 { font-size: 0.95rem; }
-.mk-sh .sh-b p.sh-d { margin: 0.5rem 0 0; font-size: 0.78rem; line-height: 1.6; opacity: 0.5; }
-.mk-sh .sh-b--sm p.sh-d { display: none; }
-.mk-sh .sh-size { flex-shrink: 0; font-size: 0.66rem; font-weight: 600; opacity: 0.4; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.mk-sh .sh-b[open] .sh-size::after { content: ' — click to close'; opacity: 0.7; }
-.mk-sh .sh-peek { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.9rem; }
-.mk-sh .sh-b[open] .sh-peek { display: none; }
-.mk-sh .sh-swatches { display: flex; gap: 0.28rem; margin-top: 0.9rem; }
-.mk-sh .sh-swatches i { width: 0.65rem; height: 0.65rem; border-radius: 50%; display: block; }
-.mk-sh .sh-body { padding: 1.5rem 1.75rem 1.9rem; }
+.mk-shelf .sh-hero { padding: 2.1rem 2.5rem 1.6rem; border-bottom: 1px solid var(--u-line); background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 12%, transparent) 0%, transparent 60%); }
+.mk-shelf .sh-hero h1 { margin: 0; font-family: inherit; font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
+.mk-shelf .sh-hero p { margin: 0.7rem 0 0; max-width: 46rem; font-size: 0.85rem; line-height: 1.65; opacity: 0.5; }
+.mk-shelf .sh-tools { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.25rem; }
+.mk-shelf .sh-search { flex: 1; max-width: 24rem; display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.85rem; border-radius: var(--u-r-sm); background: var(--u-fill); border: 1px solid var(--u-line); font-size: 0.8rem; opacity: 0.55; }
+.mk-shelf .sh-search b { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; font-weight: 500; opacity: 0.7; }
 
-/* Guidelines, opened: a sticky index beside one column of text. No pane of its
-   own — the page is the only thing that scrolls. */
-.mk-sh .sh-gl { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 2.5rem; }
-.mk-sh .sh-toc { position: sticky; top: 0; align-self: start; }
-.mk-sh .sh-toc-g { margin: 1.1rem 0 0.35rem; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; }
-.mk-sh .sh-toc-g:first-child { margin-top: 0; }
-.mk-sh .sh-toc a { display: block; padding: 0.32rem 0.7rem; border-left: 2px solid var(--u-line); font-size: 0.78rem; line-height: 1.45; opacity: 0.5; }
-.mk-sh .sh-toc a.on { border-left-color: var(--color-primary); color: var(--u-accent); opacity: 1; font-weight: 600; }
-.mk-sh .sh-read { max-width: 44rem; }
-.mk-sh .sh-read h3 { margin: 0 0 0.9rem; font-family: inherit; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
-.mk-sh .sh-read h4 { margin: 1.6rem 0 0.6rem; font-family: inherit; font-size: 0.9rem; font-weight: 600; }
-.mk-sh .sh-read p, .mk-sh .sh-read li { font-size: 0.85rem; line-height: 1.75; opacity: 0.72; }
-.mk-sh .sh-read p { margin: 0 0 0.85rem; }
-.mk-sh .sh-read ul { margin: 0 0 0.85rem; padding-left: 1.1rem; }
-.mk-sh .sh-read li { margin-bottom: 0.45rem; }
-.mk-sh .sh-crumb { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.7rem; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--u-accent); }
-.mk-sh .sh-nextprev { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; padding-top: 1.1rem; border-top: 1px solid var(--u-line); font-size: 0.78rem; opacity: 0.55; }
+.mk-shelf .sh-shelf { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.85rem; padding: 1.6rem 2.5rem 0; align-items: stretch; }
+.mk-shelf .sh-b {
+    grid-column: span 4; display: flex; flex-direction: column; text-align: left; cursor: pointer;
+    padding: 1.2rem 1.3rem; border-radius: var(--u-r); background: var(--u-fill);
+    border: 1px solid var(--u-line); transition: border-color 120ms ease, background-color 120ms ease;
+}
+.mk-shelf .sh-b:hover { border-color: var(--u-line-2); background: var(--u-fill-2); }
+.mk-shelf .sh-b--lg { grid-column: span 8; }
+.mk-shelf .sh-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.mk-shelf .sh-b h2 { margin: 0.5rem 0 0; font-family: inherit; font-size: 1.15rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+.mk-shelf .sh-b--lg h2 { font-size: 1.6rem; }
+.mk-shelf .sh-b p { margin: 0.5rem 0 0; font-size: 0.78rem; line-height: 1.6; opacity: 0.5; }
+.mk-shelf .sh-b--lg p { font-size: 0.85rem; max-width: 34rem; }
+.mk-shelf .sh-size { flex-shrink: 0; font-size: 0.66rem; font-weight: 600; opacity: 0.4; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mk-shelf .sh-peek { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: auto; padding-top: 1rem; }
+.mk-shelf .sh-peek .u-chip { font-size: 0.68rem; padding: 0.22rem 0.55rem; }
 
-/* Opened-block content. Every block opens into the same reading column width,
-   so a legend and the rulebook are equals once you are inside them — the
-   difference is on the shelf, where it belongs. */
-.mk-sh .sh-lead { margin: 0 0 1.6rem; max-width: 46rem; font-size: 0.9rem; line-height: 1.75; opacity: 0.72; }
-.mk-sh .sh-lead--sm { font-size: 0.82rem; margin-bottom: 1.1rem; }
-
-.mk-sh .sh-faq-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
-.mk-sh .sh-q + .sh-q { margin-top: 1.15rem; }
-.mk-sh .sh-q b { display: block; font-size: 0.88rem; font-weight: 600; line-height: 1.45; }
-.mk-sh .sh-q p { margin: 0.4rem 0 0; font-size: 0.82rem; line-height: 1.7; opacity: 0.62; }
-.mk-sh .sh-q code { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; opacity: 0.85; }
-.mk-sh .sh-q a { color: var(--u-accent); text-decoration: underline; text-underline-offset: 0.15em; }
-.mk-sh .sh-points { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--u-line); }
-.mk-sh .sh-pnote { margin: 0 0 1rem; max-width: 44rem; font-size: 0.82rem; line-height: 1.7; opacity: 0.62; }
-.mk-sh .sh-tbl { border-collapse: collapse; margin-bottom: 1.1rem; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
-.mk-sh .sh-tbl th, .mk-sh .sh-tbl td { padding: 0.4rem 1.1rem 0.4rem 0; text-align: right; }
-.mk-sh .sh-tbl th:first-child, .mk-sh .sh-tbl td:first-child { text-align: left; opacity: 0.6; padding-right: 2rem; }
-.mk-sh .sh-tbl thead th { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.45; border-bottom: 1px solid var(--u-line); }
-.mk-sh .sh-tbl tbody td { border-bottom: 1px solid var(--u-line); }
-
-.mk-sh .sh-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
-.mk-sh .sh-mapc { padding: 0.9rem 1rem; }
-.mk-sh .sh-mapc b { display: block; font-size: 0.85rem; font-weight: 600; }
-.mk-sh .sh-mapc span { display: block; margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.55; opacity: 0.5; }
-
-.mk-sh .sh-staff { display: grid; grid-template-columns: 1.35fr 1fr; gap: 2.5rem; }
-.mk-sh .sh-people { display: grid; grid-template-columns: 1fr 1fr; gap: 0.15rem 1.5rem; }
-.mk-sh .sh-p { display: flex; align-items: center; gap: 0.55rem; padding: 0.35rem 0; font-size: 0.85rem; }
-.mk-sh .sh-p b { font-weight: 500; }
-.mk-sh .sh-p .u-chip { margin-left: auto; padding: 0.12rem 0.45rem; font-size: 0.62rem; opacity: 0.65; }
-.mk-sh .sh-where { margin-bottom: 1.25rem; }
-.mk-sh .sh-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-
-.mk-sh .sh-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem 2rem; max-width: 52rem; }
-.mk-sh .sh-legend > div { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; }
-.mk-sh .sh-legend > div > span:last-child { opacity: 0.5; }
-.mk-sh .sh-legend .u-pill { min-width: 8.5rem; justify-content: center; }
-.mk-sh .sh-legend--icons > div { gap: 0.6rem; }
+/* Reference: its own row under the shelf, cards sized to their contents rather
+   than to the grid, so the two legends cannot take a column's worth of weight. */
+.mk-shelf .sh-ref { padding: 1.6rem 2.5rem 2.5rem; }
+.mk-shelf .sh-refrow { display: flex; flex-wrap: wrap; gap: 0.85rem; }
+.mk-shelf .sh-rb { display: flex; align-items: center; gap: 0.9rem; padding: 0.75rem 1rem; border-radius: var(--u-r); background: var(--u-fill); border: 1px solid var(--u-line); cursor: pointer; transition: border-color 120ms ease; }
+.mk-shelf .sh-rb:hover { border-color: var(--u-line-2); }
+.mk-shelf .sh-rb b { font-size: 0.82rem; font-weight: 600; }
+.mk-shelf .sh-rb small { font-size: 0.66rem; opacity: 0.4; }
+.mk-shelf .sh-dots { display: flex; align-items: center; gap: 0.28rem; }
+.mk-shelf .sh-dots i { width: 0.62rem; height: 0.62rem; border-radius: 50%; display: block; }
 </style>
 
-<div class="mk-sh ull2">
-    <section class="sh-hero">
-        <h1>Information</h1>
-        <p>Everything about how this list is built, judged and maintained. Six blocks &mdash; open the one you need.</p>
-        <div class="sh-tools">
-            <div class="sh-search">Search every block on this page&hellip;</div>
-            <span class="u-btn u-btn--ghost">Expand all</span>
-        </div>
-    </section>
+<div class="mk-shelf ull2">
+    <!--__MODALS__-->
 
-    <div class="sh-shelf">
-        <!-- Guidelines: eight of twelve columns, and shown here opened. -->
-        <details class="sh-b sh-b--lg">
-            <summary>
+    <div class="sh-scroll">
+        <section class="sh-hero">
+            <h1>Information</h1>
+            <p>How this list is built, judged and maintained &mdash; and how to read it, ask about it, or build on it. Seven blocks; open the one you need.</p>
+            <div class="sh-tools">
+                <div class="sh-search">Search guidelines, questions, endpoints and legends<b>Ctrl K</b></div>
+            </div>
+        </section>
+
+        <div class="sh-shelf">
+            <label class="sh-b sh-b--lg" for="shelf-m-guidelines">
                 <div class="sh-top">
                     <div>
                         <div class="u-eyebrow" style="margin:0">The rules</div>
                         <h2>Guidelines</h2>
-                        <p class="sh-d">How records are accepted, how levels are chosen and positioned, what the staff may and may not do. The full rulebook.</p>
+                        <p>How records are accepted, how levels are chosen and positioned, and what the staff may and may not do. The rulebook, and the answer to most arguments.</p>
                     </div>
                     <span class="sh-size">5 groups &middot; 13 sections</span>
                 </div>
@@ -126,244 +77,88 @@ watch: Closed blocks are a wall of invitations — someone who wants one fact st
                     <span class="u-chip">Content Policy</span>
                     <span class="u-chip">Technical Support</span>
                 </div>
-            </summary>
-            <div class="sh-body sh-gl">
-                <nav class="sh-toc">
-                    <div class="sh-toc-g">General</div>
-                    <a href="#">Introduction</a>
-                    <a href="#">Glossary</a>
-                    <div class="sh-toc-g">Acceptance of Records</div>
-                    <a href="#">Definition of a World Record</a>
-                    <a href="#" class="on">Requirements for proof of legitimacy</a>
-                    <a href="#">Tolerance and leniency policy</a>
-                    <a href="#">Cheating and penalties</a>
-                    <div class="sh-toc-g">Level Placement</div>
-                    <a href="#">List structure</a>
-                    <a href="#">Level selection</a>
-                    <a href="#">Determining and adjusting positions</a>
-                    <div class="sh-toc-g">Content Policy</div>
-                    <a href="#">List records</a>
-                    <a href="#">Levels and thumbnails</a>
-                    <div class="sh-toc-g">Technical Support</div>
-                    <a href="#">Staff roles</a>
-                    <a href="#">Ethical standards</a>
-                </nav>
-                <div class="sh-read">
-                    <div class="sh-crumb">Acceptance of Records</div>
-                    <h3>Requirements for proof of legitimacy</h3>
-                    <p>Before submitting a record, you must familiarise yourself with the list of mandatory proof of legitimacy, as well as the requirements for it, to ensure that the record you are submitting complies with them &mdash; otherwise it will be rejected immediately, before the verification stage.</p>
-                    <h4>1. Video recording of the record</h4>
-                    <p>The recording must show the attempt in full, from the starting percentage to the point of death or to 100%. It may contain editing elements intended to conceal personal information, in which case the original recording must be linked in the notes field.</p>
-                    <ul>
-                        <li>the level must be the version listed on this site;</li>
-                        <li>the endscreen must be visible, or the recording must continue past the completion;</li>
-                        <li>cuts are permitted only where the raw footage is attached alongside.</li>
-                    </ul>
-                    <h4>2. Audio</h4>
-                    <p>In-game source audio or clicks. Either is accepted, both are strongly preferred; where neither is present, raw footage that has them must be attached.</p>
-                    <div class="sh-nextprev">
-                        <span>&larr; Definition of a World Record</span>
-                        <span>Tolerance and leniency policy &rarr;</span>
-                    </div>
-                </div>
-            </div>
-        </details>
+            </label>
 
-        <details class="sh-b">
-            <summary>
+            <label class="sh-b" for="shelf-m-faq">
                 <div class="sh-top">
                     <div>
                         <div class="u-eyebrow" style="margin:0">Answers</div>
                         <h2>FAQ</h2>
-                        <p class="sh-d">Submitting a record, getting a level listed, how leaderboard points are worked out, and what happens when a level moves.</p>
+                        <p>Submitting a record, getting a level listed, how leaderboard points are worked out.</p>
                     </div>
-                    <span class="sh-size">14 questions</span>
+                    <span class="sh-size">14</span>
                 </div>
                 <div class="sh-peek">
                     <span class="u-chip">How do I submit a record?</span>
                     <span class="u-chip">How are points calculated?</span>
                 </div>
-            </summary>
-            <div class="sh-body sh-faq">
-                <div class="sh-faq-groups">
-                    <div>
-                        <div class="u-eyebrow">Getting on the list</div>
-                        <div class="sh-q"><b>How does a level get on the list?</b><p>Staff select it. There is no queue a creator joins: moderators assess levels against the Level Selection criteria in the guidelines &mdash; classic gameplay, a public recording, an intended official-server release, and a credible chance of being rated &mdash; and place the ones that pass on the Pending List until an exact position is settled.</p></div>
-                        <div class="sh-q"><b>My level isn&rsquo;t listed. Can I put it forward?</b><p>Raise it in <code>#list-discussion</code> with a public recording of its current state. It is not a submission form, and it goes through the same criteria as everything else.</p></div>
-                        <div class="sh-q"><b>Why is a level on Pending and not on the list?</b><p>It passed selection but has no exact position yet. Pending shows the range it is expected to land in and whether it is moving up or down inside it.</p></div>
-                        <div class="sh-q"><b>A level&rsquo;s information is wrong.</b><p>Report it in <code>#level-update-reporting</code> with something to back it up &mdash; footage, a creator statement, tester feedback.</p></div>
-                    </div>
-                    <div>
-                        <div class="u-eyebrow">Records</div>
-                        <div class="sh-q"><b>How do I submit a record?</b><p>Through the Discord server. Read <a href="#">Acceptance of Records</a> first &mdash; a record without the required proof is rejected before it is assessed, not sent back for more.</p></div>
-                        <div class="sh-q"><b>What proof does a record need?</b><p>A complete uncut playthrough (raw footage attached if your video has cuts), source audio or clicks, and a cheat indicator and fps/tps display where your mod menu provides them &mdash; on the version of the level this site lists.</p></div>
-                        <div class="sh-q"><b>What counts as a world record here?</b><p>Two things, tracked separately: the best completion from 0%, and the longest single run on the current version of the level.</p></div>
-                    </div>
-                </div>
-                <div class="sh-points">
-                    <div class="u-eyebrow">How points are calculated</div>
-                    <p class="sh-pnote">From two things only: the level&rsquo;s rank in <b>All Levels</b>, and the percentage of the record. A verification is worth twice a 100% record on the same level; completing a level that isn&rsquo;t verified yet is worth 0.8 of a verification.</p>
-                    <table class="sh-tbl">
-                        <thead><tr><th></th><th>#1</th><th>#10</th><th>#50</th><th>#100</th></tr></thead>
-                        <tbody>
-                            <tr><td>100% record</td><td>1459</td><td>1196</td><td>663</td><td>425</td></tr>
-                            <tr><td>50% record</td><td>851</td><td>698</td><td>387</td><td>248</td></tr>
-                            <tr><td>Verification</td><td>2919</td><td>2392</td><td>1325</td><td>849</td></tr>
-                        </tbody>
-                    </table>
-                    <p class="sh-pnote">Position is worth far more than percentage: a 50% on #1 beats a 100% on #100. And because points follow a level&rsquo;s <em>current</em> rank, a total changes when levels move, without anyone submitting anything.</p>
-                </div>
-            </div>
-        </details>
+            </label>
 
-        <details class="sh-b">
-            <summary>
+            <label class="sh-b" for="shelf-m-about">
                 <div class="sh-top">
                     <div>
                         <div class="u-eyebrow" style="margin:0">Start here</div>
                         <h2>What this list is</h2>
-                        <p class="sh-d">What the list forecasts, what the three tiers mean, and which page holds what.</p>
+                        <p>What the list forecasts, what the three tiers mean, and which page holds what.</p>
                     </div>
-                    <span class="sh-size">4 min read</span>
+                    <span class="sh-size">4 min</span>
                 </div>
                 <div class="sh-peek">
-                    <span class="u-chip">All Levels</span>
-                    <span class="u-chip">Main</span>
-                    <span class="u-chip">Future</span>
-                    <span class="u-chip">Pending</span>
-                    <span class="u-chip">+4</span>
+                    <span class="u-chip">All Levels</span><span class="u-chip">Main</span><span class="u-chip">Future</span><span class="u-chip">Pending</span><span class="u-chip">+4</span>
                 </div>
-            </summary>
-            <div class="sh-body">
-                <p class="sh-lead">The Upcoming Levels List catalogues upcoming Top 1&ndash;100 Extreme Demons projected to be verified and placed on the Demonlist, along with unrated Extreme Demons that would have qualified for a rating when they were made. It is a forecast of what the Demonlist is about to look like &mdash; not a record of what has already happened. Positions are estimates made by staff against written criteria, and they move as levels progress.</p>
-                <div class="u-eyebrow">Where is what</div>
-                <div class="sh-map">
-                    <a class="u-card sh-mapc" href="#"><b>All Levels</b><span>Every level with a conceivable chance. A level&rsquo;s rank here is what leaderboard points are calculated from.</span></a>
-                    <a class="u-card sh-mapc" href="#"><b>Main List</b><span>Same order, higher bar: levels that meet the standards for an official rating.</span></a>
-                    <a class="u-card sh-mapc" href="#"><b>Future List</b><span>The highest bar of the three &mdash; levels very likely to be verified and published soon.</span></a>
-                    <a class="u-card sh-mapc" href="#"><b>Pending</b><span>Accepted, but not yet placed. Shows the expected range and the direction it is moving.</span></a>
-                    <a class="u-card sh-mapc" href="#"><b>Upcoming</b><span>The same levels ordered by how close they are to verification, not by difficulty.</span></a>
-                    <a class="u-card sh-mapc" href="#"><b>Leaderboard</b><span>Players ranked by what their records, runs and verifications are worth.</span></a>
-                    <a class="u-card sh-mapc" href="#"><b>Events</b><span>Level of the Day, Level of the Month, and the level closest to verification.</span></a>
-                    <a class="u-card sh-mapc" href="#"><b>A level&rsquo;s page</b><span>Status, decoration and verification progress, records, creators, and its rank in each tier.</span></a>
-                </div>
-            </div>
-        </details>
+            </label>
 
-        <details class="sh-b">
-            <summary>
+            <label class="sh-b" for="shelf-m-api">
+                <div class="sh-top">
+                    <div>
+                        <div class="u-eyebrow" style="margin:0">Build on it</div>
+                        <h2>API</h2>
+                        <p>The whole list as public JSON. No key, no signup, CORS open to everyone.</p>
+                    </div>
+                    <span class="sh-size">9 endpoints</span>
+                </div>
+                <div class="sh-peek">
+                    <span class="u-chip">/api/list</span><span class="u-chip">/api/pending</span><span class="u-chip">+7</span>
+                </div>
+            </label>
+
+            <label class="sh-b" for="shelf-m-staff">
                 <div class="sh-top">
                     <div>
                         <div class="u-eyebrow" style="margin:0">Who to talk to</div>
                         <h2>Staff &amp; contact</h2>
-                        <p class="sh-d">The people who maintain the list, and where to take a record, a correction or a bug.</p>
+                        <p>The people who maintain the list, and where to take a record, a correction or a bug.</p>
                     </div>
-                    <span class="sh-size">12 people</span>
+                    <span class="sh-size">12</span>
                 </div>
                 <div class="sh-peek">
                     <span class="u-chip"><img class="mk-inv" src="../../assets/crown.svg" alt="" width="12" height="12" />QwidziT</span>
                     <span class="u-chip"><img class="mk-inv" src="../../assets/user-gear.svg" alt="" width="12" height="12" />exiled_shade</span>
                     <span class="u-chip">+10</span>
                 </div>
-            </summary>
-            <div class="sh-body">
-                <div class="sh-staff">
-                    <div>
-                        <div class="u-eyebrow">The team <span class="u-count">12</span></div>
-                        <div class="sh-people">
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/crown.svg" alt="" width="15" height="15" /><b>QwidziT</b><span class="u-chip">List Leader</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-gear.svg" alt="" width="15" height="15" /><b>exiled_shade</b><span class="u-chip">Admin</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>niroi</b><span class="u-chip">Elder Mod</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>Keres</b><span class="u-chip">Elder Mod</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>LukeLGamer</b><span class="u-chip">Elder Mod</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-shield.svg" alt="" width="15" height="15" /><b>ItzDel1ghtfuL</b><span class="u-chip">Elder Mod</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-lock.svg" alt="" width="15" height="15" /><b>Terralith</b><span class="u-chip">Mod</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/user-lock.svg" alt="" width="15" height="15" /><b>TheCatAstronaut</b><span class="u-chip">Mod</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>Prometheus</b><span class="u-chip">Dev</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>NikoYakorem</b><span class="u-chip">Dev</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>ausansdev</b><span class="u-chip">Dev</span></div>
-                            <div class="sh-p"><img class="mk-inv" src="../../assets/code.svg" alt="" width="15" height="15" /><b>QwidziT</b><span class="u-chip">Dev</span></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="u-eyebrow">Where to take what</div>
-                        <dl class="u-dl sh-where">
-                            <dt>A record</dt><dd>The Discord server</dd>
-                            <dt>A level that should be listed</dt><dd>#list-discussion</dd>
-                            <dt>Information that is out of date</dt><dd>#level-update-reporting</dd>
-                            <dt>Something broken on the site</dt><dd>Prometheus</dd>
-                            <dt>A complaint about staff</dt><dd>An Admin, or the List Leader</dd>
-                        </dl>
-                        <div class="sh-links">
-                            <a class="u-btn" href="#"><img src="../../assets/discord.svg" alt="" width="14" height="14" />discord.gg/QRX47v2qyC</a>
-                            <a class="u-btn u-btn--ghost" href="#"><img class="mk-inv" src="../../assets/x.svg" alt="" width="12" height="12" />@ull_gd</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </details>
+            </label>
+        </div>
 
-        <details class="sh-b sh-b--sm">
-            <summary>
-                <div class="sh-top">
-                    <div>
-                        <div class="u-eyebrow" style="margin:0">Reference</div>
-                        <h2>Level colouring</h2>
+        <div class="sh-ref">
+            <div class="u-eyebrow">Reference</div>
+            <div class="sh-refrow">
+                <label class="sh-rb" for="shelf-m-colour">
+                    <div class="sh-dots">
+                        <i style="background:#5599ff"></i><i style="background:#33dddd"></i><i style="background:#55ee55"></i><i style="background:#ffee55"></i><i style="background:#ffaa44"></i><i style="background:#ff6622"></i><i style="background:#ff5555"></i><i style="background:#bbbbbb"></i>
                     </div>
-                </div>
-                <div class="sh-swatches">
-                    <i style="background:#5599ff"></i><i style="background:#33dddd"></i><i style="background:#55ee55"></i>
-                    <i style="background:#ffee55"></i><i style="background:#ffaa44"></i><i style="background:#ff6622"></i>
-                    <i style="background:#ff5555"></i><i style="background:#bbbbbb"></i>
-                </div>
-            </summary>
-            <div class="sh-body">
-                <p class="sh-lead sh-lead--sm">A level&rsquo;s name is coloured by its state when Level Coloring is on. It is the same scale as the status pill on the level&rsquo;s own page.</p>
-                <div class="sh-legend">
-                    <div><span class="u-pill u-pill--blue"><i></i>Layout</span><span>No decoration yet</span></div>
-                    <div><span class="u-pill u-pill--cyan"><i></i>Early deco</span><span>1&ndash;29% decorated</span></div>
-                    <div><span class="u-pill u-pill--green"><i></i>Mid deco</span><span>30&ndash;69% decorated</span></div>
-                    <div><span class="u-pill u-pill--yellow"><i></i>Late deco</span><span>70&ndash;99% decorated</span></div>
-                    <div><span class="u-pill u-pill--amber"><i></i>Deco done</span><span>Decoration finished, not in verification</span></div>
-                    <div><span class="u-pill u-pill--orange"><i></i>Early verify</span><span>Best run 30&ndash;59%</span></div>
-                    <div><span class="u-pill u-pill--red"><i></i>Late verify</span><span>Best run 60&ndash;99%</span></div>
-                    <div><span class="u-pill u-pill--done"><i></i>Verified</span><span>Beaten, not yet rated</span></div>
-                    <div><span class="u-pill"><i></i>Rated</span><span>Verified and rated in game</span></div>
-                    <div><span class="u-pill u-pill--done">&#128683; Pending removal</span><span>No longer meets the criteria it was added under</span></div>
-                </div>
-            </div>
-        </details>
-
-        <details class="sh-b sh-b--sm">
-            <summary>
-                <div class="sh-top">
-                    <div>
-                        <div class="u-eyebrow" style="margin:0">Reference</div>
-                        <h2>Pending icons</h2>
+                    <div><b>Level colouring</b> <small>10 states</small></div>
+                </label>
+                <label class="sh-rb" for="shelf-m-pending">
+                    <div class="sh-dots">
+                        <img src="../../assets/move-up.svg" alt="" width="15" height="15" />
+                        <img src="../../assets/move-down.svg" alt="" width="15" height="15" />
+                        <img src="../../assets/1.svg" alt="" width="15" height="15" />
+                        <img src="../../assets/10.svg" alt="" width="15" height="15" />
+                        <img src="../../assets/question.svg" alt="" width="15" height="15" />
                     </div>
-                </div>
-                <div class="sh-swatches">
-                    <img src="../../assets/move-up.svg" alt="" width="14" height="14" />
-                    <img src="../../assets/move-down.svg" alt="" width="14" height="14" />
-                    <img src="../../assets/1.svg" alt="" width="14" height="14" />
-                    <img src="../../assets/10.svg" alt="" width="14" height="14" />
-                    <img src="../../assets/question.svg" alt="" width="14" height="14" />
-                </div>
-            </summary>
-            <div class="sh-body">
-                <p class="sh-lead sh-lead--sm">Icons on the Pending List say where a level is expected to land and which way it is moving.</p>
-                <div class="sh-legend sh-legend--icons">
-                    <div><img src="../../assets/move-up.svg" alt="" width="18" height="18" /><span>Moving up</span></div>
-                    <div><img src="../../assets/move-down.svg" alt="" width="18" height="18" /><span>Moving down</span></div>
-                    <div><img src="../../assets/1.svg" alt="" width="18" height="18" /><span>Pending #1</span></div>
-                    <div><img src="../../assets/10.svg" alt="" width="18" height="18" /><span>Pending Top 10</span></div>
-                    <div><img src="../../assets/20.svg" alt="" width="18" height="18" /><span>Pending Top 20</span></div>
-                    <div><img src="../../assets/30.svg" alt="" width="18" height="18" /><span>Pending Top 30</span></div>
-                    <div><img src="../../assets/50.svg" alt="" width="18" height="18" /><span>Pending Top 50</span></div>
-                    <div><img src="../../assets/75.svg" alt="" width="18" height="18" /><span>Pending Top 75</span></div>
-                    <div><img src="../../assets/question.svg" alt="" width="18" height="18" /><span>Unknown placement</span></div>
-                </div>
+                    <div><b>Pending list icons</b> <small>9 icons</small></div>
+                </label>
             </div>
-        </details>
+        </div>
     </div>
 </div>

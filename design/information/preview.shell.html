@@ -1,4 +1,4 @@
-<title>ULL — /information, four approaches</title>
+<title>ULL — /information, three approaches</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
 <style>
@@ -151,7 +151,7 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     <aside class="rail">
         <div class="rail__brand">
             <b>/information</b>
-            <span>4 approaches &middot; desktop</span>
+            <span>3 approaches &middot; desktop</span>
         </div>
         <nav class="rail__nav">
         <!--__NAV__-->
@@ -160,39 +160,39 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
             <b>Mockup theme</b>
             <span id="theme-name">Dark</span>
         </button>
-        <p class="rail__hint">The mockups are live: blocks open, tabs switch, overlays close. Click inside them.</p>
+        <p class="rail__hint">The mockups are live &mdash; click a block, hover a tile, close a window. Each is also a standalone page under pages/.</p>
     </aside>
 
     <main>
         <div class="intro">
             <div class="intro__eyebrow">Design proposal</div>
-            <h1>One page, four ways to enter it</h1>
+            <h1>Three ways into one page</h1>
             <p class="intro__lead">
-                <b>/information holds five unrelated things</b> &mdash; what the list is, how to read it,
-                the guidelines, two legends, and who to talk to &mdash; and today it stacks them as cards of
-                roughly equal size. The Pending List legend, nine rows of icons, is given a full-width card;
-                the guidelines, thirteen sections across five groups, are given a 600&nbsp;px window to be read
-                through. Weight on the page is currently the opposite of weight in the content.
+                <b>/information holds six unrelated things</b> &mdash; what the list is, how to read it, the
+                guidelines, two legends, who to talk to, and now the API &mdash; and today it stacks the four
+                it has as cards of roughly equal size. The Pending List legend, nine rows of icons, is given a
+                full-width card; the guidelines, thirteen sections across five groups, are given a 600&nbsp;px
+                window to be read through. Weight on the page is the opposite of weight in the content.
             </p>
             <p class="intro__lead">
-                These four templates each fix that a different way, and they differ in one decision:
-                <b>how much of the page is visible before you ask for it</b>. A. Shelf hides everything behind
-                blocks you open. B. Manual keeps one index visible and one topic open. C. Hub answers the
-                common questions on the surface and puts the long reads behind doors. D. Document shows
-                everything at once, in reading order. The content is identical in all four; only the way in
-                changes.
+                All three templates below <b>open the same reader</b> &mdash; one window, shared markup, the
+                same typography &mdash; so what is actually being chosen between is the surface in front of
+                it. <b>A. Shelf</b> is nothing but blocks, sized by what is behind them. <b>C. Hub</b> answers
+                the easy questions on the page itself &mdash; the site map, and both legends in full &mdash;
+                and puts the four long reads behind doors. <b>E. Tiles</b> shows names and sizes only, fills a
+                tile in under the pointer, and opens it on click.
             </p>
             <p class="intro__lead">
-                All four are built from <b>css/ull-v2.css</b>, the component layer the rest of the site was
-                rebuilt on, so none of them introduces a new card, heading or button. Sections 3 and 4 do not
-                exist yet; the copy for them is drafted in <b>design/information/copy.md</b> and the templates
-                render that draft, not lorem.
+                They are built from <b>css/ull-v2.css</b>, the component layer the rest of the site was rebuilt
+                on, so none of them introduces a new card, heading or button. The copy for the three sections
+                that did not exist &mdash; what the list is, the FAQ, the API &mdash; is drafted in
+                <b>design/information/copy.md</b>, and the templates render that draft rather than lorem.
             </p>
             <dl class="rules">
                 <div><dt>Scope</dt><dd>Desktop only, as asked. The mobile route <code>/mobile/info</code> is untouched.</dd></div>
-                <div><dt>Sections</dt><dd>The five you listed. &ldquo;How to submit&rdquo; and &ldquo;how points work&rdquo; are FAQ entries; the glossary belongs to the guidelines.</dd></div>
-                <div><dt>New data</dt><dd>None. Editors come from <code>data/_editors.json</code>, guidelines from <code>js/_guidelines.js</code>, both already loaded.</dd></div>
-                <div><dt>Decided later</dt><dd>Which one ships. Nothing under <code>js/</code> or <code>css/</code> has been changed yet.</dd></div>
+                <div><dt>Sections</dt><dd>The five agreed, plus API documentation. Submitting and points are FAQ entries; the glossary belongs to the guidelines.</dd></div>
+                <div><dt>New data</dt><dd>None. Editors come from <code>data/_editors.json</code>, guidelines from <code>js/_guidelines.js</code>, endpoints from <code>worker/worker.js</code>.</dd></div>
+                <div><dt>Dropped</dt><dd>B. Manual and D. Document, from the first round. They are in git history if either is wanted back.</dd></div>
             </dl>
 
             <div class="sect">

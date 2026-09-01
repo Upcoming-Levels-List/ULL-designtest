@@ -1,19 +1,23 @@
-# /information — four approaches
+# /information — three approaches
 
 The one page the [main redesign](../README.md) skipped. This deck is not one
-template per page; it is **four templates of the same page**, to pick between.
+template per page; it is **three templates of the same page**, to pick between.
 
 ```
 design/information/
-  templates/*.html      four static mockups, each with a meta block saying what
-                        the idea is, how it settles the weighting, what it costs
-                        and what to watch for
-  copy.md               draft copy for the two sections that do not exist yet
-                        (what the list is / where is what, and the FAQ), plus
-                        the contact block
+  templates/*.html      three mockups — shelf, hub, tiles — each with a meta
+                        block saying what the idea is, how it settles the
+                        weighting, what it costs and what to watch for
+  templates/_modals.html  the reader all three open, shared so that what is
+                        being compared is the surface, not the contents
+  copy.md               draft copy for the three sections that do not exist yet
+                        (what the list is / where is what, the FAQ, the API),
+                        plus the contact block
+  page.shell.html       chrome-free wrapper: the page as the route renders it
   preview.shell.html    the review deck's chrome
-  build-preview.mjs     stitches the templates + css/ull-v2.css into preview.html
-  preview.html          GENERATED — open this in a browser
+  build-preview.mjs     builds both outputs from the templates + css/ull-v2.css
+  preview.html          GENERATED — all three side by side, with the notes
+  pages/*.html          GENERATED — one standalone page each, no deck around it
 ```
 
 Rebuild after editing anything:
@@ -22,9 +26,13 @@ Rebuild after editing anything:
 node design/information/build-preview.mjs
 ```
 
-The mockups are live: blocks open, the index switches topics, the overlay
-closes. Click inside them. The deck reads `css/ull-v2.css` directly, so nothing
-in a mockup can claim a component the site does not have.
+Open `pages/a-shelf.html`, `pages/c-hub.html` or `pages/e-tiles.html` to judge a
+design on its own; open `preview.html` to compare them with the argument written
+beside each. Both are self-contained — the icons are inlined — and both read
+`css/ull-v2.css` directly, so nothing in a mockup can claim a component the site
+does not have. Every mockup is live: blocks and doors and tiles open, tiles fill
+in on hover, windows close. The small `theme` button on a standalone page is a
+preview control, not part of the design.
 
 ## What is wrong with the page today
 
@@ -41,55 +49,62 @@ in a mockup can claim a component the site does not have.
 3. **The colouring legend redraws a component the site already has.** Ten
    swatches are written as inline `style="background:#5599ff"`, and those ten
    hex values are the same scale as `.u-pill--blue` … `.u-pill--done` in
-   `css/ull-v2.css`. All four templates draw the legend with the pills
-   themselves, so the legend cannot drift from the thing it explains.
+   `css/ull-v2.css`. All three templates draw the legend with the pills
+   themselves, so it cannot drift from the thing it explains.
 4. **Nothing tells a first-time visitor where anything is.** The hero defines
    the list in four lines and the next thing on the page is a list of editors.
-   There is no map of the site, and no answer to the two questions that bring
-   people here — how to submit, how points are earned — anywhere on it.
+   There is no map of the site, and no answer to the questions that bring people
+   here — how to submit, how points are earned — anywhere on it.
 5. **The card hover from the pending page is here too.** `.info-guidelines:hover`
    applies `transform: scale(1.006)`, which nudges the layout under the pointer.
    The same tic was removed from the other pages in the last pass.
 
-## The five sections, as agreed
+## The six sections
 
 1. Guidelines — exists, rebuilt.
 2. The two legends — exist, demoted to reference.
 3. What the list is and where is what — **new**, drafted in `copy.md`.
-4. FAQ — **new**, drafted in `copy.md`. "How do I submit" and "how are points
-   calculated" are questions here, not sections of their own.
-5. Staff and contact points — **new** as a proper block; the editor list exists.
+4. FAQ — **new**. "How do I submit" and "how are points calculated" are
+   questions here, not sections of their own.
+5. Staff and contact points — **new** as a block; the editor list exists.
+6. **API documentation** — new. Nine public endpoints, the level object, an
+   example, and what counts as fair use. Taken from `worker/worker.js` and the
+   repository README, not invented; `copy.md` flags the two undocumented routes
+   (`/api/leaderboard`, `/api/upcoming`) that answer but that the site never
+   calls.
 
 A glossary belongs inside the guidelines, as a section of *General*.
 
-## The four
+## The three
 
-They differ in exactly one decision: **how much of the page is visible before
-you ask for it.**
+They open the same reader. They differ in **what the page says before you open
+anything**.
 
-| | Visible on arrival | Guidelines are read | Cost | Best for |
-|---|---|---|---|---|
-| **A. Shelf** | Six block faces, one screen | Full page width, in place | Smallest | Someone who knows which of the five things they came for |
-| **B. Manual** | An index of everything, one topic | Full width, one topic at a time | Largest, needs routing | A reference people link into and search |
-| **C. Hub** | The answers, plus three doors | Full screen, over the page | Middling | A first-time visitor who needs the map, not the rules |
-| **D. Document** | The whole page, in order | In line, three quarters of the page | Smallest, deletes the most | Skimming, Ctrl+F, printing, deep links |
+| | The page at rest | Reference legends | Best for |
+|---|---|---|---|
+| **A. Shelf** | Seven blocks, each with a name, a sentence and its size | A small row of their own under the shelf | Someone who knows which of the six things they came for |
+| **C. Hub** | The site map, four doors, and both legends in full | Printed on the page — nineteen short rows | A first-time visitor who needs orientation, not rules |
+| **E. Tiles** | Seven names and seven counts. No prose at all | Two short strips along the bottom | A page that has to read as a menu in one glance |
 
 Each template's meta block argues its own case, including against itself; the
-deck renders those notes beside the mockup.
+deck renders those notes beside the mockup. In short:
 
-**A and D are near-opposite bets** — A assumes people arrive knowing what they
-want and should not be made to scroll past four other things to get it; D
-assumes they do not know, and that a page which hides itself cannot be skimmed.
-**B is D with the reading turned into navigation**, and is the only one that
-needs real routes. **C is the only one that treats the page's job as
-orientation** rather than reference, which is why it is the only one whose front
-screen is mostly the site map.
+- **A** is the plainest and the cheapest, and the page can never outgrow one
+  screen however much the guidelines gain — but everything is behind a click, so
+  search has to reach inside closed blocks or it is decoration.
+- **C** is the only one that treats the page's job as orientation. It is also
+  the longest first screen, and the only one where the legends are never hidden.
+- **E** is the same machinery as A with a third state in front of it. It reads
+  best and risks most: hover does not exist for touch or keyboard, so the
+  resting counts have to carry the page on their own.
 
-Two things every one of them does, whichever wins:
+What all three do, whichever wins:
 
-- the guidelines are read at the width of the page, with **one** scroll —
-  which removes the nested pane and the observer that patches it;
-- the legends are drawn with `.u-pill`, so they stay in step with the list.
+- the guidelines are read in a window at the width of the page, with **one**
+  scroll — which removes the nested pane and the observer that patches it;
+- the legends are drawn with `.u-pill`, so they stay in step with the list;
+- the reader is one component, so a section added later is a new entry, not a
+  new layout.
 
 ## Not covered
 
@@ -97,3 +112,5 @@ Two things every one of them does, whichever wins:
   is untouched here, as asked.
 - Any change to `js/` or `css/`. Nothing has been built yet — these are
   templates to choose from.
+- **B. Manual** (index + reader) and **D. Document** (one long scroll) from the
+  first round. Both are in git history if either is wanted back.

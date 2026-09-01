@@ -1,0 +1,172 @@
+<!--meta
+title: Tiles
+tag: names at rest, detail on hover, everything on click
+files: js/pages/Information.js · css/pages/information.css
+state: hover a tile, then click it
+idea: Three states instead of two. At rest a tile carries only its name and its size &mdash; &ldquo;Guidelines, 13 sections&rdquo;, &ldquo;API, 9 endpoints&rdquo; &mdash; so the whole page reads as a menu in one glance, with no paragraph competing with any other. Under the pointer the tile fills in: what is inside it, and a sample of the contents &mdash; the five guideline groups, the two questions people actually arrive with, the first endpoints. Clicked, it opens the same reader A and C open. A tile never changes size on hover and its name never shifts &mdash; the detail is printed into space the tile is already holding open beneath it &mdash; so nothing under the pointer moves.
+weight: Area, and it is the loudest of the three: the guidelines tile is four times any other and holds the only large type on the page, the four working tiles are equal quarters, and the two reference tiles are short wide strips along the bottom that cannot be mistaken for sections. Because the resting state carries no prose, size is the only signal left, which is exactly what was wrong before &mdash; only now it is set deliberately.
+cost: Small, and the same modal as A and C. The whole difference is one hover state per tile, in CSS. No new components, no routing beyond the one the modal needs anyway.
+watch: Hover is not available on touch and does not exist for a keyboard, so the resting state has to be sufficient on its own — the counts are doing real work, and the middle state must be treated as a bonus rather than as where the information lives. It is also the emptiest first screen: a visitor who wants to know what the list is sees seven names and no sentences until they move the mouse.
+-->
+<style>
+.mk-tiles { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.mk-tiles .ti-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+
+.mk-tiles .ti-hero { padding: 2rem 2.5rem 1.5rem; }
+.mk-tiles .ti-hero h1 { margin: 0; font-family: inherit; font-size: 1.9rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; }
+.mk-tiles .ti-hero p { margin: 0.65rem 0 0; max-width: 42rem; font-size: 0.84rem; line-height: 1.65; opacity: 0.45; }
+
+/* Two full rows for the working tiles and a short one for the reference
+   strips: a lookup table gets a strip's worth of height, not a tile's. */
+.mk-tiles .ti-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 8.5rem) 4.75rem; gap: 0.85rem; padding: 0 2.5rem 2.5rem; }
+.mk-tiles .ti {
+    position: relative; overflow: hidden; cursor: pointer;
+    display: flex; flex-direction: column; justify-content: flex-start;
+    padding: 1.15rem 1.25rem; border-radius: var(--u-r);
+    background: var(--u-fill); border: 1px solid var(--u-line);
+    transition: border-color 140ms ease, background-color 140ms ease;
+}
+.mk-tiles .ti:hover { border-color: var(--u-line-2); background: var(--u-fill-2); }
+.mk-tiles .ti--main { grid-column: span 2; grid-row: span 2; background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 11%, transparent) 0%, var(--u-fill) 60%); }
+.mk-tiles .ti--wide { grid-column: span 2; grid-row: 3; padding-block: 0.8rem; }
+
+.mk-tiles .ti__k { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.35; }
+.mk-tiles .ti__n { margin: 0.4rem 0 0; font-family: inherit; font-size: 1.2rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+.mk-tiles .ti--main .ti__n { font-size: 2.1rem; }
+.mk-tiles .ti__c { margin-top: 0.3rem; font-size: 0.72rem; opacity: 0.4; font-variant-numeric: tabular-nums; }
+
+/* The middle state. The tile does not resize — the detail is printed into space
+   the tile already holds, so a hovered tile never moves its neighbours. */
+.mk-tiles .ti__more {
+    max-height: 0; opacity: 0; overflow: hidden;
+    transform: translateY(0.4rem);
+    transition: max-height 180ms ease, opacity 140ms ease, transform 180ms ease;
+}
+.mk-tiles .ti:hover .ti__more { max-height: 11rem; opacity: 1; transform: none; }
+.mk-tiles .ti__more p { margin: 0.7rem 0 0; font-size: 0.78rem; line-height: 1.6; opacity: 0.6; }
+.mk-tiles .ti--main .ti__more p { font-size: 0.85rem; max-width: 26rem; }
+.mk-tiles .ti__peek { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.75rem; }
+.mk-tiles .ti__peek .u-chip { font-size: 0.66rem; padding: 0.18rem 0.5rem; }
+.mk-tiles .ti__go { display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.85rem; font-size: 0.72rem; font-weight: 600; color: var(--u-accent); }
+
+/* The reference strips carry their whole vocabulary at rest — nine icons and
+   ten dots are the shortest possible summary of themselves. */
+/* Top-anchored like the tiles, for the same reason: the strip's name must not
+   re-centre itself when its description appears. */
+.mk-tiles .ti--wide { flex-direction: row; align-items: flex-start; gap: 1.1rem; justify-content: flex-start; }
+.mk-tiles .ti--wide .ti__sw { padding-top: 0.9rem; }
+.mk-tiles .ti--wide .ti__body { min-width: 0; }
+.mk-tiles .ti--wide .ti__n { font-size: 0.95rem; margin-top: 0.25rem; }
+.mk-tiles .ti__sw { display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0; }
+.mk-tiles .ti__sw i { width: 0.7rem; height: 0.7rem; border-radius: 50%; display: block; }
+.mk-tiles .ti--wide .ti__more p { margin-top: 0.45rem; font-size: 0.74rem; }
+</style>
+
+<div class="mk-tiles ull2">
+    <!--__MODALS__-->
+
+    <div class="ti-scroll">
+        <section class="ti-hero">
+            <h1>Information</h1>
+            <p>Seven things. Point at one to see what is in it, click it to read it.</p>
+        </section>
+
+        <div class="ti-grid">
+            <label class="ti ti--main" for="tiles-m-guidelines">
+                <div class="ti__k">The rules</div>
+                <h2 class="ti__n">Guidelines</h2>
+                <div class="ti__c">5 groups &middot; 13 sections</div>
+                <div class="ti__more">
+                    <p>How records are accepted, how levels are chosen and positioned, and what the staff may and may not do. The answer to most arguments.</p>
+                    <div class="ti__peek">
+                        <span class="u-chip">General</span>
+                        <span class="u-chip">Acceptance of Records</span>
+                        <span class="u-chip">Level Placement</span>
+                        <span class="u-chip">Content Policy</span>
+                        <span class="u-chip">Technical Support</span>
+                    </div>
+                    <span class="ti__go">Open &rarr;</span>
+                </div>
+            </label>
+
+            <label class="ti" for="tiles-m-faq">
+                <div class="ti__k">Answers</div>
+                <h2 class="ti__n">FAQ</h2>
+                <div class="ti__c">14 questions</div>
+                <div class="ti__more">
+                    <p>The questions people arrive with.</p>
+                    <div class="ti__peek">
+                        <span class="u-chip">How do I submit a record?</span>
+                        <span class="u-chip">How are points calculated?</span>
+                    </div>
+                </div>
+            </label>
+
+            <label class="ti" for="tiles-m-api">
+                <div class="ti__k">Build on it</div>
+                <h2 class="ti__n">API</h2>
+                <div class="ti__c">9 endpoints &middot; no key</div>
+                <div class="ti__more">
+                    <p>The whole list as public JSON, CORS open to everyone.</p>
+                    <div class="ti__peek">
+                        <span class="u-chip">/api/list</span>
+                        <span class="u-chip">/api/pending</span>
+                        <span class="u-chip">+7</span>
+                    </div>
+                </div>
+            </label>
+
+            <label class="ti" for="tiles-m-about">
+                <div class="ti__k">Start here</div>
+                <h2 class="ti__n">What this list is</h2>
+                <div class="ti__c">4 min read</div>
+                <div class="ti__more">
+                    <p>What the list forecasts, what the three tiers mean, and which page holds what.</p>
+                    <div class="ti__peek">
+                        <span class="u-chip">All Levels</span><span class="u-chip">Main</span><span class="u-chip">Future</span><span class="u-chip">+5</span>
+                    </div>
+                </div>
+            </label>
+
+            <label class="ti" for="tiles-m-staff">
+                <div class="ti__k">Who to talk to</div>
+                <h2 class="ti__n">Staff &amp; contact</h2>
+                <div class="ti__c">12 people</div>
+                <div class="ti__more">
+                    <p>Where to take a record, a correction, a site bug or a complaint.</p>
+                    <div class="ti__peek">
+                        <span class="u-chip"><img class="mk-inv" src="../../assets/crown.svg" alt="" width="12" height="12" />QwidziT</span>
+                        <span class="u-chip">+11</span>
+                    </div>
+                </div>
+            </label>
+
+            <label class="ti ti--wide" for="tiles-m-colour">
+                <div class="ti__sw">
+                    <i style="background:#5599ff"></i><i style="background:#33dddd"></i><i style="background:#55ee55"></i><i style="background:#ffee55"></i><i style="background:#ffaa44"></i><i style="background:#ff6622"></i><i style="background:#ff5555"></i><i style="background:#bbbbbb"></i>
+                </div>
+                <div class="ti__body">
+                    <div class="ti__k">Reference</div>
+                    <h2 class="ti__n">Level colouring</h2>
+                    <div class="ti__more"><p>What each colour a level name can take actually means, from layout to rated.</p></div>
+                </div>
+            </label>
+
+            <label class="ti ti--wide" for="tiles-m-pending">
+                <div class="ti__sw">
+                    <img src="../../assets/move-up.svg" alt="" width="15" height="15" />
+                    <img src="../../assets/move-down.svg" alt="" width="15" height="15" />
+                    <img src="../../assets/1.svg" alt="" width="15" height="15" />
+                    <img src="../../assets/10.svg" alt="" width="15" height="15" />
+                    <img src="../../assets/20.svg" alt="" width="15" height="15" />
+                    <img src="../../assets/question.svg" alt="" width="15" height="15" />
+                </div>
+                <div class="ti__body">
+                    <div class="ti__k">Reference</div>
+                    <h2 class="ti__n">Pending list icons</h2>
+                    <div class="ti__more"><p>Expected placement and which way a pending level is moving.</p></div>
+                </div>
+            </label>
+        </div>
+    </div>
+</div>
