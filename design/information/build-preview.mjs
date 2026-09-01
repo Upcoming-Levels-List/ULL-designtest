@@ -22,9 +22,7 @@ const DIR = path.dirname(fileURLToPath(import.meta.url));
 // markup for a window nothing can reach is how a mockup starts lying.
 const ALL_MODALS = ['guidelines', 'faq', 'about', 'staff', 'api', 'colour', 'pending'];
 const ORDER = [
-    { name: 'shelf', letter: 'A', modals: ALL_MODALS },
     { name: 'hub', letter: 'C', modals: ['guidelines', 'faq', 'about', 'staff', 'api'] },
-    { name: 'tiles', letter: 'E', modals: ALL_MODALS },
 ];
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

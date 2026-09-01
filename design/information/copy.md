@@ -25,18 +25,41 @@ not a record of what has already happened.
 Nothing here is official. Positions are estimates made by the list staff against
 written criteria, and they move as levels progress.
 
-### Where is what
+### Navigation — what is on each page
 
-| Page | What it holds |
-|---|---|
-| **All Levels** `/list` | The widest tier: every level with a conceivable chance of being verified and published. A level's rank *here* is what its leaderboard points are calculated from. |
-| **Main List** `/listmain` | The same order, higher bar: levels that meet the standards required to be considered for an official rating. |
-| **Future List** `/listfuture` | The highest bar of the three: levels very likely to be verified and published soon. |
-| **Pending** `/pending` | Levels that passed selection but have no exact position yet, with the range they are expected to land in and whether they are moving up or down. |
-| **Upcoming** `/upcoming` | The same levels ordered by how close they are to being verified, rather than by how hard they are. |
-| **Leaderboard** `/leaderboard` | Players ranked by the points their records, runs and verifications are worth. |
-| **Events** `/events` | Level of the Day, Level of the Month, and the level closest to verification. |
-| **A level's own page** `/level/<name>` | One page per level: status, decoration and verification progress, records, creators, and its rank in each tier. |
+Grouped the way the sidebar groups them, so the block and the menu agree.
+
+**Lists**
+
+- **All Levels** `/list` — Every level with a conceivable chance of being
+  verified and published, hardest first. The widest of the three tiers, and the
+  one a level's leaderboard points are calculated from — a record is worth what
+  it is worth because of the level's rank *here*.
+- **Main List** `/listmain` — The same order with a higher bar: levels that
+  already meet the standards required to be considered for an official rating.
+  Shorter, and every entry is a serious candidate.
+- **Future List** `/listfuture` — The strictest tier: levels with a very high
+  likelihood of being verified and published soon. Read this one if you only
+  want what is about to happen.
+- **A level's page** `/level/<name>` — One page per level: its state, how much
+  of the decoration is done and how far the best run has got, every record and
+  run with proof, its creators, and its rank in each tier at once.
+
+**Other**
+
+- **Upcoming Levels** `/upcoming` — The same unverified levels, reordered by how
+  close they actually are to being verified rather than by how hard they are.
+  The list of what is about to fall.
+- **Pending List** `/pending` — Levels that passed selection but have no exact
+  position yet, with the range each is expected to land in and an arrow for
+  which way it is moving inside it.
+- **Leaderboard** `/leaderboard` — Players ranked by the verifications, records
+  and runs they hold on listed levels. Open a player to see every record behind
+  their total and what each one is worth.
+- **Events** `/events` — Three levels the list is pointing at right now: one
+  picked for the day, one for the month, and the one closest to being verified.
+- **Home** `/` — The size of each tier at a glance, the top of the list, the
+  recent changes feed and the staff team.
 
 ### How to read a level
 
