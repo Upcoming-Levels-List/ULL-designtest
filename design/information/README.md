@@ -65,19 +65,18 @@ every block opens the same reader over the page.
 
 | Block | On the page | Behind it |
 |---|---|---|
-| **FAQ** | Quarter width, first: it is what most visitors arrive wanting | 14 questions in four groups, with the points table |
-| **Navigation** | Guidelines width, with the page names as chips | Every page on the site with a paragraph on what is in it, grouped as the menu groups them |
-| **Guidelines** | Eight of twelve columns, three rows tall. Its five groups and their counts — the one thing nobody should have to open to size up | The thirteen sections, with their index |
+| **FAQ** | Five of twelve columns, first: it is what most visitors arrive wanting | 14 questions in four groups, with the points table |
+| **Navigation** | Seven columns, the page names as chips. Stretched to the FAQ's height so row one has one height, not two | Every page on the site with a paragraph on what is in it, grouped as the menu groups them |
+| **Guidelines** | Seven of twelve columns, three rows tall. Its five groups and their counts — the one thing nobody should have to open to size up | The thirteen sections, with their index |
 | **Reference** | A strip of eight colours and five icons, no labels | Both legends in full, side by side |
 | **Staff & contact** | One sentence | The team, and where to take a record, a correction or a bug |
 | **API documentation** | Two endpoint chips | Nine endpoints, the level object, an example, fair use |
 
-Row 1 is 4 + 8 and the rows under it are 8 + 4, so the navigation and the
-guidelines are the same width and the page's outer edges hold, while the FAQ
-sits top-left where reading starts. The internal column edge moves between row 1
+Row 1 is 5 + 7 and the rows under it are 7 + 5, so the page's outer edges hold
+while the FAQ sits top-left where reading starts. The internal column edge moves between row 1
 and row 2; that is deliberate, and it is the one thing to look at twice.
 
-At 1440 px the whole page is 935 px tall — one screen and a nudge — and the
+At 1440 px the whole page is 948 px tall — one screen and a nudge — and the
 guidelines block and the right-hand stack balance to within a pixel.
 
 ## The six sections
