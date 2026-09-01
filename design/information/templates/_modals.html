@@ -77,6 +77,12 @@
 .mk-__P__ .mkm__legend .u-pill { min-width: 9rem; justify-content: center; }
 .mk-__P__ .mkm__legend > div > span:last-child { opacity: 0.55; }
 
+.mk-__P__ .mkm__nav { display: block; padding: 0.6rem 0; border-top: 1px solid var(--u-line); }
+.mk-__P__ .mkm__nav:hover .mkm__navn { color: var(--u-accent); }
+.mk-__P__ .mkm__navn { display: flex; align-items: baseline; gap: 0.5rem; font-size: 0.86rem; font-weight: 600; line-height: 1.3; transition: color 120ms ease; }
+.mk-__P__ .mkm__navn code { font-size: 0.65rem; font-weight: 400; opacity: 0.35; }
+.mk-__P__ .mkm__navd { display: block; margin-top: 0.25rem; font-size: 0.78rem; line-height: 1.65; opacity: 0.55; }
+.mk-__P__ .mkm--reference .mkm__legend { margin-top: 0.9rem; }
 .mk-__P__ .mkm__people { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1rem 1.5rem; }
 .mk-__P__ .mkm__p { display: flex; align-items: center; gap: 0.55rem; padding: 0.35rem 0; font-size: 0.84rem; }
 .mk-__P__ .mkm__p .u-chip { margin-left: auto; padding: 0.1rem 0.45rem; font-size: 0.61rem; opacity: 0.6; }
@@ -333,53 +339,106 @@
 </div>
 <!--/m-->
 
-<!--m:colour-->
-<div class="mkm mkm--colour mkm--sm">
+<!--m:navigation-->
+<div class="mkm mkm--navigation">
     <label class="mkm__scrim" for="__P__-m-none"></label>
     <div class="mkm__win">
         <div class="mkm__bar">
-            <span class="mkm__k">Reference</span><b>Level colouring</b>
+            <span class="mkm__k">Navigation &middot; 9 pages</span><b>What is on each page</b>
             <label class="mkm__x" for="__P__-m-none" style="margin-left:auto">Close <span class="u-chip">Esc</span></label>
         </div>
         <div class="mkm__body">
-            <p style="font-size:0.82rem">A level&rsquo;s name is coloured by its state when Level Coloring is on &mdash; the same scale as the status pill on the level&rsquo;s own page.</p>
-            <div class="mkm__legend">
-                <div><span class="u-pill u-pill--blue"><i></i>Layout</span><span>No decoration yet</span></div>
-                <div><span class="u-pill u-pill--cyan"><i></i>Early deco</span><span>1&ndash;29% decorated</span></div>
-                <div><span class="u-pill u-pill--green"><i></i>Mid deco</span><span>30&ndash;69% decorated</span></div>
-                <div><span class="u-pill u-pill--yellow"><i></i>Late deco</span><span>70&ndash;99% decorated</span></div>
-                <div><span class="u-pill u-pill--amber"><i></i>Deco done</span><span>Decoration finished</span></div>
-                <div><span class="u-pill u-pill--orange"><i></i>Early verify</span><span>Best run 30&ndash;59%</span></div>
-                <div><span class="u-pill u-pill--red"><i></i>Late verify</span><span>Best run 60&ndash;99%</span></div>
-                <div><span class="u-pill u-pill--done"><i></i>Verified</span><span>Beaten, not yet rated</span></div>
-                <div><span class="u-pill"><i></i>Rated</span><span>Verified and rated in game</span></div>
-                <div><span class="u-pill u-pill--done">&#128683;</span><span>Pending removal</span></div>
+            <p class="mkm__lead">Every page on the site, grouped the way the menu groups them.</p>
+            <div class="mkm__cols">
+                <div>
+                    <div class="u-eyebrow">Lists</div>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">All Levels <code>/list</code></span>
+                        <span class="mkm__navd">Every level with a conceivable chance of being verified and published, hardest first. The widest of the three tiers, and the one a level&rsquo;s leaderboard points are calculated from &mdash; a record is worth what it is worth because of the level&rsquo;s rank <em>here</em>.</span>
+                    </a>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">Main List <code>/listmain</code></span>
+                        <span class="mkm__navd">The same order with a higher bar: levels that already meet the standards required to be considered for an official rating. Shorter, and every entry is a serious candidate.</span>
+                    </a>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">Future List <code>/listfuture</code></span>
+                        <span class="mkm__navd">The strictest tier &mdash; levels with a very high likelihood of being verified and published soon. Read this one if you only want what is about to happen.</span>
+                    </a>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">A level&rsquo;s page <code>/level/&hellip;</code></span>
+                        <span class="mkm__navd">One page per level: its state, how much of the decoration is done and how far the best run has got, every record and run with proof, its creators, and its rank in each tier at once.</span>
+                    </a>
+                </div>
+                <div>
+                    <div class="u-eyebrow">Other</div>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">Upcoming Levels <code>/upcoming</code></span>
+                        <span class="mkm__navd">The same unverified levels, reordered by how close they actually are to being verified rather than by how hard they are. The list of what is about to fall.</span>
+                    </a>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">Pending List <code>/pending</code></span>
+                        <span class="mkm__navd">Levels that passed selection but have no exact position yet, with the range each is expected to land in and an arrow for which way it is moving inside it.</span>
+                    </a>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">Leaderboard <code>/leaderboard</code></span>
+                        <span class="mkm__navd">Players ranked by the verifications, records and runs they hold on listed levels. Open a player to see every record behind their total and what each one is worth.</span>
+                    </a>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">Events <code>/events</code></span>
+                        <span class="mkm__navd">Three levels the list is pointing at right now: one picked for the day, one for the month, and the one closest to being verified.</span>
+                    </a>
+                    <a class="mkm__nav" href="#">
+                        <span class="mkm__navn">Home <code>/</code></span>
+                        <span class="mkm__navd">The size of each tier at a glance, the top of the list, the recent changes feed and the staff team.</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <!--/m-->
 
-<!--m:pending-->
-<div class="mkm mkm--pending mkm--sm">
+<!--m:reference-->
+<div class="mkm mkm--reference">
     <label class="mkm__scrim" for="__P__-m-none"></label>
     <div class="mkm__win">
         <div class="mkm__bar">
-            <span class="mkm__k">Reference</span><b>Pending list icons</b>
+            <span class="mkm__k">Reference &middot; 19 marks</span><b>What the marks mean</b>
             <label class="mkm__x" for="__P__-m-none" style="margin-left:auto">Close <span class="u-chip">Esc</span></label>
         </div>
         <div class="mkm__body">
-            <p style="font-size:0.82rem">Icons on the Pending List say where a level is expected to land and which way it is moving.</p>
-            <div class="mkm__legend">
-                <div><img src="../../assets/move-up.svg" alt="" width="18" height="18" /><span>Moving up</span></div>
-                <div><img src="../../assets/move-down.svg" alt="" width="18" height="18" /><span>Moving down</span></div>
-                <div><img src="../../assets/1.svg" alt="" width="18" height="18" /><span>Pending #1</span></div>
-                <div><img src="../../assets/10.svg" alt="" width="18" height="18" /><span>Pending Top 10</span></div>
-                <div><img src="../../assets/20.svg" alt="" width="18" height="18" /><span>Pending Top 20</span></div>
-                <div><img src="../../assets/30.svg" alt="" width="18" height="18" /><span>Pending Top 30</span></div>
-                <div><img src="../../assets/50.svg" alt="" width="18" height="18" /><span>Pending Top 50</span></div>
-                <div><img src="../../assets/75.svg" alt="" width="18" height="18" /><span>Pending Top 75</span></div>
-                <div><img src="../../assets/question.svg" alt="" width="18" height="18" /><span>Unknown placement</span></div>
+            <div class="mkm__cols">
+                <div>
+                    <div class="u-eyebrow">Level colouring</div>
+                    <p style="font-size:0.8rem">A level&rsquo;s name is coloured by its state when Level Coloring is on &mdash; the same scale as the status pill on the level&rsquo;s own page. If names look plain, turn the setting on.</p>
+                    <div class="mkm__legend">
+                        <div><span class="u-pill u-pill--blue"><i></i>Layout</span><span>No decoration yet</span></div>
+                        <div><span class="u-pill u-pill--cyan"><i></i>Early deco</span><span>1&ndash;29% decorated</span></div>
+                        <div><span class="u-pill u-pill--green"><i></i>Mid deco</span><span>30&ndash;69% decorated</span></div>
+                        <div><span class="u-pill u-pill--yellow"><i></i>Late deco</span><span>70&ndash;99% decorated</span></div>
+                        <div><span class="u-pill u-pill--amber"><i></i>Deco done</span><span>Decoration finished</span></div>
+                        <div><span class="u-pill u-pill--orange"><i></i>Early verify</span><span>Best run 30&ndash;59%</span></div>
+                        <div><span class="u-pill u-pill--red"><i></i>Late verify</span><span>Best run 60&ndash;99%</span></div>
+                        <div><span class="u-pill u-pill--done"><i></i>Verified</span><span>Beaten, not yet rated</span></div>
+                        <div><span class="u-pill"><i></i>Rated</span><span>Verified and rated in game</span></div>
+                        <div><span class="u-pill u-pill--done">&#128683;</span><span>Pending removal</span></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="u-eyebrow">Pending list icons</div>
+                    <p style="font-size:0.8rem">Icons on the Pending List say where a level is expected to land and which way it is moving inside that range.</p>
+                    <div class="mkm__legend">
+                        <div><img src="../../assets/move-up.svg" alt="" width="18" height="18" /><span>Moving up</span></div>
+                        <div><img src="../../assets/move-down.svg" alt="" width="18" height="18" /><span>Moving down</span></div>
+                        <div><img src="../../assets/1.svg" alt="" width="18" height="18" /><span>Pending #1</span></div>
+                        <div><img src="../../assets/10.svg" alt="" width="18" height="18" /><span>Pending Top 10</span></div>
+                        <div><img src="../../assets/20.svg" alt="" width="18" height="18" /><span>Pending Top 20</span></div>
+                        <div><img src="../../assets/30.svg" alt="" width="18" height="18" /><span>Pending Top 30</span></div>
+                        <div><img src="../../assets/50.svg" alt="" width="18" height="18" /><span>Pending Top 50</span></div>
+                        <div><img src="../../assets/75.svg" alt="" width="18" height="18" /><span>Pending Top 75</span></div>
+                        <div><img src="../../assets/question.svg" alt="" width="18" height="18" /><span>Unknown placement</span></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

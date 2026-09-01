@@ -17,12 +17,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
-// Which of the shared reader's windows each surface opens. C prints both
-// legends on the page itself, so it never opens those two — and shipping the
-// markup for a window nothing can reach is how a mockup starts lying.
-const ALL_MODALS = ['guidelines', 'faq', 'about', 'staff', 'api', 'colour', 'pending'];
+// Which of the shared reader's windows each surface opens. Shipping the markup
+// for a window nothing on the page can reach is how a mockup starts lying, so
+// the list is explicit rather than "all of them".
+const ALL_MODALS = ['guidelines', 'faq', 'about', 'navigation', 'reference', 'staff', 'api'];
 const ORDER = [
-    { name: 'hub', letter: 'C', modals: ['guidelines', 'faq', 'about', 'staff', 'api'] },
+    { name: 'hub', letter: 'C', modals: ALL_MODALS },
 ];
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

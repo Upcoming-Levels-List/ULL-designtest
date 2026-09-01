@@ -59,28 +59,31 @@ design.
 A hero — what the list is, the full version offered at the end of the sentence,
 and one search field over everything on the page — then six blocks:
 
-| | | Opens |
+Every one of them is a **face**, not a container: a label, a name, one sentence,
+and the size of what is behind it. Nothing on the page is the content itself —
+every block opens the same reader over the page.
+
+| Block | On the page | Behind it |
 |---|---|---|
-| **FAQ** | Quarter width, first: it is what most visitors arrive wanting | a reader |
-| **Navigation** | Guidelines width. Every page on the site with a paragraph on what is in it, grouped as the sidebar groups them | in place |
-| **Guidelines** | Eight of twelve columns, three rows tall. Carries its own contents — all thirteen sections | a reader |
-| **Reference** | Both legends in one block, two columns, small type | nothing — it is printed |
-| **Staff & contact** | The team, and where to take a record, a correction or a bug | a reader |
-| **API documentation** | Nine public endpoints, the level object, an example, fair use | a reader |
+| **FAQ** | Quarter width, first: it is what most visitors arrive wanting | 14 questions in four groups, with the points table |
+| **Navigation** | Guidelines width, with the page names as chips | Every page on the site with a paragraph on what is in it, grouped as the menu groups them |
+| **Guidelines** | Eight of twelve columns, three rows tall. Its five groups and their counts — the one thing nobody should have to open to size up | The thirteen sections, with their index |
+| **Reference** | A strip of eight colours and five icons, no labels | Both legends in full, side by side |
+| **Staff & contact** | One sentence | The team, and where to take a record, a correction or a bug |
+| **API documentation** | Two endpoint chips | Nine endpoints, the level object, an example, fair use |
 
 Row 1 is 4 + 8 and the rows under it are 8 + 4, so the navigation and the
 guidelines are the same width and the page's outer edges hold, while the FAQ
 sits top-left where reading starts. The internal column edge moves between row 1
 and row 2; that is deliberate, and it is the one thing to look at twice.
 
-The guidelines block and the right-hand stack are balanced to within a pixel at
-1440 px — the legends went to two columns for that reason, and the guidelines
-carry their contents rather than five group names spread over three rows' height.
+At 1440 px the whole page is 935 px tall — one screen and a nudge — and the
+guidelines block and the right-hand stack balance to within a pixel.
 
 ## The six sections
 
 1. Guidelines — exists, rebuilt.
-2. The two legends — exist, merged into one Reference block.
+2. The two legends — exist, merged into one Reference block that opens.
 3. What the list is — **new**, in the hero and its reader.
 4. FAQ — **new**. "How do I submit" and "how are points calculated" are
    questions here, not sections of their own.
