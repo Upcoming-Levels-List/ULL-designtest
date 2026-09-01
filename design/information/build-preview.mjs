@@ -29,6 +29,16 @@ const pages = ORDER.map((name, i) => {
 });
 
 const component = fs.readFileSync(path.join(DIR, '..', '..', 'css', 'ull-v2.css'), 'utf8');
+
+// The templates reference the site's own icons as ../../assets/<name>.svg, which
+// only resolves when preview.html is opened from this directory. Inlining them
+// makes the built deck a single self-contained file that can be sent anywhere.
+const inlineAssets = (html) =>
+    html.replace(/\.\.\/\.\.\/assets\/([\w-]+\.svg)/g, (whole, file) => {
+        const at = path.join(DIR, '..', '..', 'assets', file);
+        if (!fs.existsSync(at)) throw new Error(`template references a missing asset: ${file}`);
+        return `data:image/svg+xml;base64,${fs.readFileSync(at).toString('base64')}`;
+    });
 const shell = fs.readFileSync(path.join(DIR, 'preview.shell.html'), 'utf8');
 
 const nav = pages
@@ -63,7 +73,7 @@ const sections = pages
         <div class="frame">
             <div class="frame__bar"><span></span><span></span><span></span><code>ull.pages.dev/information</code><em>${esc(p.meta.state)}</em></div>
             <div class="frame__view root" data-mock>
-${p.body}
+${inlineAssets(p.body)}
             </div>
         </div>
     </section>`)
