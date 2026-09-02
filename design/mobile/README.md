@@ -38,8 +38,8 @@ tags and creators. The mobile tree speaks none of it — it still writes
 in a purple that appears nowhere else on the site.
 
 So these templates add very little CSS. Everything a phone shares with the
-desktop comes from `css/ull-v2.css` unchanged. `mob-v2.css` holds only what
-genuinely differs at 390px: one column, a detail that expands under its row
+desktop comes from `css/ull-v2.css` unchanged. `css/pages/mobile-v2.css` holds only
+what genuinely differs at 390px: one column, a detail that expands under its row
 rather than sitting beside it, controls within thumb reach, and a type scale one
 step down.
 
@@ -104,8 +104,8 @@ stylesheets, so what it renders is what the site renders:
 - **The level page keeps the page's own spacing.** `.m2 h1, .m2 h2, .m2 h3, .m2 p
   { margin: 0 }` scores (0,1,1) — inside the shell it flattened every (0,1,0)
   spacing class the level page brought with it, so the title ran into the byline
-  and every card heading sat on the line under it. `mob-v2.css` names them and
-  puts them back.
+  and every card heading sat on the line under it. `css/pages/mobile-v2.css` names
+  them and puts them back.
 - **Rank chips are all three tiers, in order, always.** A tier the level is not
   on reads N/A instead of vanishing, and only the list being read is
   highlighted, so the chips no longer reshuffle between lists.

@@ -45,11 +45,17 @@
 > `GET /api/recent-changes` to match the frontend. If you change the live Worker, update
 > this file too so they don't drift.
 >
-> **Deploying the 2026-08-24 revision — order matters:**
+> **Deploying — order matters:**
 > 1. Run `scripts/schema-migrations.sql` (adds `editor_keys.sort_order`, creates
->    `recent_changes` and `auth_throttle`).
+>    `recent_changes`, `auth_throttle`, `snapshots`, and the two `audit_log` undo
+>    columns).
 > 2. Paste `worker/worker.js` into Quick Edit → **Deploy**.
 > 3. Optionally seed the feed with `scripts/seed-recent-changes.sql`.
+>
+> **The 2026-09-02 revision is live.** `snapshots` and `audit_log.undo_data` /
+> `undone_at` exist on the D1 database and the Worker that reads them is deployed.
+> Whatever you paste next must keep `GET /api/audit-log` answering a plain array
+> when it is called with no query string — see §3 `audit_log`.
 >
 > ⚠️ **Never paste SQL comments into the D1 Console.** It strips `--` comments before
 > parsing, so a paste that contains only comments (a header block, say) fails with
@@ -506,18 +512,20 @@ missing.
 - `GET /api/audit-log` — the whole log, newest first, a page at a time:
   `?limit` (default 100, max 500), `?before=<id>`, `?editor=`, `?action=`.
   Returns `{ entries, total, hasMore }`; `undo_data` is stripped and replaced by
-  an `undoable` flag
+  an `undoable` flag. **Called with no query string at all it answers the plain
+  array of the newest 100 rows it always did** — the live admin panel reads that
+  shape, and one Worker serves both sites
 - `GET /api/admin/activity?days=30` — operations per editor over the window,
   `{ days, since, editors: [{ editor_name, changes, deletions, last_at }] }`
 - `GET /api/admin/snapshots` — restore points, without the blobs
-- `POST /api/admin/snapshots` — take one now (`{ label }`)
-- `POST /api/admin/snapshots/:id/restore` — put the list back to it; snapshots the
-  live state first, so the restore itself can be restored
-- `POST /api/admin/audit-log/:id/undo` — put back a deleted row
 - `GET /api/admin/changes` — flat `recent_changes` rows **with ids**, for the admin
   Recent Changes tab: `[{id, date, change, sort_order}]`
 
 **Auth writes (Bearer key required; each logs to `audit_log`):**
+- `POST /api/admin/snapshots` — take a snapshot now (`{ label }`)
+- `POST /api/admin/snapshots/:id/restore` — put the list back to it. Snapshots the
+  live state first, so the restore itself can be restored
+- `POST /api/admin/audit-log/:id/undo` — put back a row a deletion removed
 - `PUT /api/levels` — insert (with `insertAt`) or update (by `path`). 25 columns incl.
   `frameCounter` and `benchmark`.
 - `POST /api/levels/move` — body `{path, newPosition}`. Uses rank-lookup (fetch all
@@ -792,8 +800,18 @@ the real message reaches the panel. Never remove it.
   `<strong>` and dims the rest, via `v-html`. Everything outside the asterisks is
   HTML-escaped first, so stored text can't inject markup. Change lines and dates come
   straight from `recent_changes`; the admin tab previews with the same function.
-- **Version**: currently **v2.0.0** (shown in `index.html` sidebar and `js/pages/Mobile.js`).
-- **Partners section**: hidden with `v-if="false"` (kept in source) on Home and MobileHome.
+- **Version**: currently **v2.1.0**, written in two places — the sidebar in
+  `index.html` and the phone's top bar in `js/components/MobileShell.js`. The 489
+  static pages under `level/`, `list/`, … carry a copy of the `index.html` shell, so
+  re-run `node scripts/build-seo.mjs` after bumping it or they keep the old number.
+- **A list's "levels total"** is what the list holds, which is what its rank numbers
+  count: a row's rank is its index in the list, so the last row reads `#N` where `N`
+  is that figure. Levels flagged **Pending Removal** (`lastUpd` over a year old, not
+  verified) are hidden from the table but keep their placement, so the heading and
+  the last row disagreed until 2026-09-02 — Main List read 398 under a list ending
+  at #411. A search or a filter still narrows it, and then it reads `"398 of 411"`.
+- **Home's third credential** is `1k+ users` (`js/home-stats.js`). It replaced "Used
+  by the best players", which was the only one of the three a reader could not weigh.
 
 ### Routing & SEO (added 2026-07-08)
 - **History-mode routing**: the router uses `VueRouter.createWebHistory()` (in `js/main.js`),
@@ -837,9 +855,14 @@ the real message reaches the panel. Never remove it.
 > or paste the whole file into the D1 Console (it is deliberately comment-free — see the
 > warning in section 2).
 >
-> The three `ALTER TABLE`s error with **"duplicate column name"** on a database that
-> already has those columns. That is expected and harmless. If pasting the whole file
-> stops at one, paste the statements after it individually.
+> The `ALTER TABLE`s error with **"duplicate column name"** on a database that already
+> has those columns. That is expected and harmless — but the D1 Console can stop at the
+> first error and never reach the statements after it, so on a database that is already
+> migrated paste only the block you are adding, not the whole file.
+>
+> **Applied to the live database:** everything in the file, up to and including the
+> 2026-09-02 block (`snapshots`, `audit_log.undo_data`, `audit_log.undone_at` and their
+> indexes). Adding to the file? Append at the bottom and paste only the new statements.
 
 Idempotent-ish; check first with `PRAGMA table_info(<table>)` before ALTERs.
 ```sql
@@ -909,6 +932,11 @@ hash is stored; a **lost** key means delete + re-add. The **Audit Log** tab show
 - **Renaming**: **Edit** → change the Name field → **Save**. This is *not* a delete + re-add:
   the editor keeps their API key, role, link and position. Only rename via this button —
   deleting and re-adding is what forces a new key on them.
+- **Deleting by mistake**: the **Audit Log** tab has a **Put back** button on the
+  `EDITOR_DELETE` line, and it restores the row whole — including `key_hash`, so the
+  editor's original key works again. That is the difference between undoing a deletion
+  and re-adding them, and it is why the panel asks before doing it. Use it to reverse a
+  slip, not as a way to hand somebody access back after revoking it on purpose.
 
 ### Managing the Recent Changes feed
 Admin panel → **Recent Changes** tab. Each row is one change line.
@@ -989,6 +1017,9 @@ Gotchas learned the hard way:
    fix (add the `link` column, create/seed `config`, restore `/api/auth/validate`, etc.).
 4. Confirm the live Worker still has `/api/auth/validate` and `/api/recent-changes` — restore
    them if the reconstructed copy was deployed over the original.
+5. Before pasting a Worker: `node worker/worker.test.mjs`. And before changing what any
+   endpoint returns, remember that **one Worker serves this repo and the live site** —
+   a shape may be added to, never changed. `GET /api/audit-log` is the standing example.
 
 ---
 
@@ -1018,7 +1049,12 @@ Gotchas learned the hard way:
 - `.root.dark` is the **light** theme — the class names are inverted throughout the app
 - Component rules are scoped `.ull2 .u-thing`, or the link reset outranks them
 - `seniormod` displays as **Elder Mod**; the stored role key is unchanged
-- Current site version: **v2.0.0**
+- Current site version: **v2.1.0** (`index.html` + `js/components/MobileShell.js`,
+  then re-run `scripts/build-seo.mjs`)
+- The admin panel can read the **whole** audit log, put any deletion back, and
+  restore the list to a past midnight — see `audit_log` and `snapshots` in §3
+- `GET /api/audit-log` with **no query string** must keep answering a plain array:
+  one Worker serves this repo and the live site, and the live panel reads that shape
 - Tests: `node worker/worker.test.mjs` (Worker vs. real schema),
   `node worker/worker.unmigrated.test.mjs` (Worker vs. the PRE-migration schema),
   `node worker/worker.throttle.test.mjs` (the auth rate limiter),

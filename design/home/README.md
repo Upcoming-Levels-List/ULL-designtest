@@ -233,7 +233,7 @@ page is sorted by. The bar's width is still the number — only the words change
 
 ## Changes since that pass
 
-Three, and one bug they turned up. The templates and this deck have been kept in
+Four, and one bug they turned up. The templates and this deck have been kept in
 step with all of them, so what the deck renders is what the site renders.
 
 - **The hero's paragraph fills its column.** It was capped at 32rem with nothing
@@ -256,3 +256,19 @@ step with all of them, so what the deck renders is what the site renders.
   already three screens on a phone most of a fourth for a log nobody reads to the
   end. All three days are still in the DOM — the window scrolls, nothing is
   hidden behind a control.
+- **The third credential is a figure.** "Used by the best players" became
+  **1k+ users**. It was the only one of the three a reader could not weigh, sitting
+  between "479 levels total" and "3+ years".
+
+## What the deck cannot show
+
+Two things about the home page live outside these templates, and are worth knowing
+before reading them as the whole picture:
+
+- **The version in the phone's top bar** is chrome, not home: it comes from
+  `js/components/MobileShell.js`, and the copy in these mockups is kept in step by
+  hand. It reads v2.1.0.
+- **The spotlight is #1 and the lane is derived**, so both change as the list does.
+  The figures in these templates are the ones the repo's `/data` snapshot gives —
+  Aeternus at #1, GRIEF at 97% — and the live page will show whatever the list
+  holds today. The shapes are what the deck is for.

@@ -66,7 +66,8 @@ Cloudflare Pages serves **every file in the repo** at the URL root. That is exac
 database dump once leaked. So before pushing:
 
 ```bash
-# Stale data snapshots — not used by the site.
+# Stale copies of the /data directory — not used by the site, and nothing to do
+# with the `snapshots` D1 table, which lives in the database rather than the repo.
 git rm -r data.backup data.old 2>/dev/null
 
 # Never commit a DB dump: a full editor_keys export contains every key hash.
@@ -167,6 +168,12 @@ The D1 migration hasn't been run, or the Worker is an old build. This is a backe
 unrelated to the move — run `scripts/schema-migrations.sql` and redeploy `worker/worker.js`
 per the deploy box in `database.md` §2. (The current Worker degrades instead of erroring,
 so an empty list here means "migration not run," not "broken.")
+
+**The admin panel's Snapshots tab says the table does not exist.**
+Also a backend state, and also unrelated to the move: the `snapshots` table and the two
+`audit_log` undo columns come from the same `scripts/schema-migrations.sql`. Until it is
+run, the Worker keeps writing audit lines without undo data and takes no snapshots — it
+does not error.
 
 **Admin save says "Network error."**
 Almost always the Worker threw before it could send CORS headers — check the Worker logs

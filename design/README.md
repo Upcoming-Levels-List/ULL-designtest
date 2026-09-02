@@ -121,7 +121,9 @@ is what ships:
 - The **Pending List has a search** over all four lanes, and a leaderboard row
   shows how far the player got beside the level name.
 - Home's count strip is **three credentials, not five counts**: how much the
-  list holds, how long it has been running and who uses it, as an icon and a
-  line each. Five figures in five cells read as a dashboard, and four of them
+  list holds, how long it has been running and how many people use it, as an icon
+  and a line each. Five figures in five cells read as a dashboard, and four of them
   repeated what the sidebar already says. The component is `.u-cred`, shared
-  with the phone, which shows the first two.
+  with the phone, which shows the first two. The third read "Used by the best
+  players" until it became **1k+ users** — a figure beside two figures, and the
+  only one of the three a reader could not weigh.

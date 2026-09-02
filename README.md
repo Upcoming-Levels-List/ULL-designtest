@@ -457,10 +457,16 @@ Some class names in the mobile markup are test hooks rather than styling:
 The Worker and its D1 database are managed in the Cloudflare dashboard, not from this
 repo. In order:
 
-1. **D1 Console** → paste `scripts/schema-migrations.sql` (whole file).
-   `ALTER TABLE` steps may report "duplicate column name" — that just means the column
-   already exists.
+1. **D1 Console** → paste `scripts/schema-migrations.sql`. `ALTER TABLE` steps report
+   "duplicate column name" on a database that already has the column — harmless, but the
+   console can stop at the first error, so on an already-migrated database paste only the
+   block you are adding rather than the whole file. The live database is migrated through
+   the 2026-09-02 block (`snapshots`, `audit_log.undo_data`, `audit_log.undone_at`).
 2. **Workers & Pages → the worker → Edit code** → paste `worker/worker.js` → **Deploy**.
+   **One Worker serves this repo and the live site**, so a response shape may only be
+   added to, never changed: `GET /api/audit-log` still answers a plain array when called
+   with no query string, because the live admin panel reads it that way. Run
+   `node worker/worker.test.mjs` before pasting — it pins both shapes.
 3. *(optional)* **D1 Console** → paste `scripts/seed-recent-changes.sql` to seed the
    Recent Changes feed. It replaces every row, so only run it before staff start
    editing the feed in the admin panel.
@@ -491,6 +497,11 @@ node scripts/e2e-test.mjs               # home page + admin panel in Chromium
 node js/seo.test.mjs                    # per-URL metadata, crawler + no-JS behaviour
 node js/pending-ui.test.mjs             # Pending List links (desktop + mobile)
 ```
+
+`node worker/worker.test.mjs` is the one to run after any Worker change: it covers
+the audit log's paging and its bare-call shape, per-editor activity, snapshot
+retention, the restore round trip, and undoing each of the four deletions. The admin
+panel's side of all of that is in `scripts/e2e-test.mjs`.
 
 `js/list-ui.test.mjs` and `js/pending-ui.test.mjs` drive the mobile tree as well
 as the desktop one, so run both after touching either.
