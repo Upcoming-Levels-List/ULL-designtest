@@ -7,6 +7,12 @@ import {
 } from '../util.js';
 import Spinner from '../components/Spinner.js';
 import Footer from '../components/Footer.js';
+import MobileShell from '../components/MobileShell.js';
+
+// On a phone this page wears the mobile shell instead of the desktop chrome;
+// on the desktop the wrapper is a passthrough that renders nothing of its own,
+// so the page below is written once and reads the same on both.
+const Passthrough = { template: '<slot></slot>' };
 
 // The standalone page behind /level/<slug>. The same information the list's
 // detail panel shows, at a URL that can be linked, shared and indexed.
@@ -19,146 +25,149 @@ import Footer from '../components/Footer.js';
 // facts underneath. Every value comes from the list API's existing fields.
 
 export default {
-    components: { Spinner, Footer },
+    components: { Spinner, Footer, MobileShell, Passthrough },
     template: `
-<main v-if="loading" class="surface" style="display:flex;align-items:center;justify-content:center;">
-    <Spinner></Spinner>
-</main>
-<main v-else class="level-page surface">
-    <template v-if="level">
-        <header class="lvl-hero">
-            <div v-if="heroImage" class="lvl-hero__bg" :style="{ backgroundImage: 'url(' + heroImage + ')' }"></div>
-            <div class="lvl-hero__scrim"></div>
-            <div class="lvl-hero__inner">
-                <div class="lvl-hero__body">
-                    <nav class="lvl-crumbs">
-                        <router-link to="/">Upcoming Levels List</router-link>
-                        <span>/</span>
-                        <router-link to="/list">All Levels</router-link>
-                        <span>/</span>
-                        <b>{{ level.name }}</b>
-                    </nav>
-                    <h1 class="lvl-title">{{ level.name }}</h1>
-                    <p class="lvl-byline">
-                        by <b>{{ level.author }}</b>
-                        <template v-if="hasVerifier"> · {{ level.isVerified ? 'verified by' : 'to be verified by' }} <b>{{ level.verifier }}</b></template>
-                    </p>
-                    <div class="lvl-pills">
-                        <span class="lvl-status" :class="'lvl-status--' + status.tone"><i></i>{{ status.label }}</span>
-                        <span v-for="tag in tags" :key="tag" class="lvl-tag">{{ tag }}</span>
-                    </div>
-                </div>
-                <div class="lvl-ranks">
-                    <router-link class="lvl-rank lvl-rank--lead" to="/list">
-                        <span class="lvl-rank__n">#{{ level.allLevelsRank }}</span>
-                        <span class="lvl-rank__l">All Levels</span>
-                    </router-link>
-                    <router-link v-if="level.mainRank" class="lvl-rank" to="/listmain">
-                        <span class="lvl-rank__n">#{{ level.mainRank }}</span>
-                        <span class="lvl-rank__l">Main List</span>
-                    </router-link>
-                    <router-link v-if="level.futureRank" class="lvl-rank" to="/listfuture">
-                        <span class="lvl-rank__n">#{{ level.futureRank }}</span>
-                        <span class="lvl-rank__l">Future List</span>
-                    </router-link>
-                </div>
-            </div>
-        </header>
-
-        <div class="lvl-body">
-            <div class="lvl-main">
-                <div v-if="hasBothVideos" class="lvl-tabs">
-                    <button class="lvl-tab" :class="{ 'is-on': showcaseTab }" @click="showcaseTab = true">Showcase</button>
-                    <button class="lvl-tab" :class="{ 'is-on': !showcaseTab }" @click="showcaseTab = false">Verification</button>
-                </div>
-                <iframe v-if="videoSrc" class="lvl-video" :src="videoSrc" frameborder="0" allowfullscreen></iframe>
-                <div v-else class="lvl-video lvl-video--empty">No video yet</div>
-
-                <section v-if="level.creators && level.creators.length" class="lvl-section">
-                    <h2 class="lvl-h2">Creators <span class="lvl-count">{{ level.creators.length }}</span></h2>
-                    <div class="lvl-creators">
-                        <span v-for="(c, i) in level.creators" :key="i" class="lvl-creator">{{ c }}</span>
-                    </div>
-                </section>
-            </div>
-
-            <aside class="lvl-side">
-                <div class="lvl-card">
-                    <h3 class="lvl-h3">Progress</h3>
-                    <div class="lvl-meter">
-                        <div class="lvl-meter__top"><span>Decoration</span><b>{{ decoration }}%</b></div>
-                        <div class="lvl-bar"><i :style="{ width: decoration + '%' }"></i></div>
-                    </div>
-                    <div class="lvl-meter">
-                        <div class="lvl-meter__top"><span>Verification</span><b>{{ verification }}%</b></div>
-                        <div class="lvl-bar lvl-bar--alt"><i :style="{ width: verification + '%' }"></i></div>
-                    </div>
-                </div>
-
-                <div class="lvl-card">
-                    <h3 class="lvl-h3">World records</h3>
-                    <div class="lvl-wr">
-                        <div class="lvl-wr__card">
-                            <div class="lvl-wr__k">From 0%</div>
-                            <template v-if="record">
-                                <a v-if="recordLink" class="lvl-wr__v" :href="recordLink" target="_blank" rel="noopener">{{ record.percent }}%</a>
-                                <div v-else class="lvl-wr__v">{{ record.percent }}%</div>
-                                <div class="lvl-wr__u">{{ record.user }}<template v-if="record.hz"> · {{ record.hz }}Hz</template></div>
-                            </template>
-                            <div v-else class="lvl-wr__v lvl-wr__v--none">None</div>
-                        </div>
-                        <div class="lvl-wr__card">
-                            <div class="lvl-wr__k">Best run</div>
-                            <template v-if="run">
-                                <a v-if="runLink" class="lvl-wr__v" :href="runLink" target="_blank" rel="noopener">{{ run.percent }}%</a>
-                                <div v-else class="lvl-wr__v">{{ run.percent }}%</div>
-                                <div class="lvl-wr__u">{{ run.user }}<template v-if="run.hz"> · {{ run.hz }}Hz</template></div>
-                            </template>
-                            <div v-else class="lvl-wr__v lvl-wr__v--none">None</div>
+<component :is="store.mobile ? 'MobileShell' : 'Passthrough'">
+    <main v-if="loading" class="surface" style="display:flex;align-items:center;justify-content:center;">
+        <Spinner></Spinner>
+    </main>
+    <main v-else class="level-page surface">
+        <template v-if="level">
+            <header class="lvl-hero">
+                <div v-if="heroImage" class="lvl-hero__bg" :style="{ backgroundImage: 'url(' + heroImage + ')' }"></div>
+                <div class="lvl-hero__scrim"></div>
+                <div class="lvl-hero__inner">
+                    <div class="lvl-hero__body">
+                        <nav class="lvl-crumbs">
+                            <router-link to="/">Upcoming Levels List</router-link>
+                            <span>/</span>
+                            <router-link to="/list">All Levels</router-link>
+                            <span>/</span>
+                            <b>{{ level.name }}</b>
+                        </nav>
+                        <h1 class="lvl-title">{{ level.name }}</h1>
+                        <p class="lvl-byline">
+                            by <b>{{ level.author }}</b>
+                            <template v-if="hasVerifier"> · {{ level.isVerified ? 'verified by' : 'to be verified by' }} <b>{{ level.verifier }}</b></template>
+                        </p>
+                        <div class="lvl-pills">
+                            <span class="lvl-status" :class="'lvl-status--' + status.tone"><i></i>{{ status.label }}</span>
+                            <span v-for="tag in tags" :key="tag" class="lvl-tag">{{ tag }}</span>
                         </div>
                     </div>
+                    <div class="lvl-ranks">
+                        <router-link class="lvl-rank lvl-rank--lead" to="/list">
+                            <span class="lvl-rank__n">#{{ level.allLevelsRank }}</span>
+                            <span class="lvl-rank__l">All Levels</span>
+                        </router-link>
+                        <router-link v-if="level.mainRank" class="lvl-rank" to="/listmain">
+                            <span class="lvl-rank__n">#{{ level.mainRank }}</span>
+                            <span class="lvl-rank__l">Main List</span>
+                        </router-link>
+                        <router-link v-if="level.futureRank" class="lvl-rank" to="/listfuture">
+                            <span class="lvl-rank__n">#{{ level.futureRank }}</span>
+                            <span class="lvl-rank__l">Future List</span>
+                        </router-link>
+                    </div>
+                </div>
+            </header>
+
+            <div class="lvl-body">
+                <div class="lvl-main">
+                    <div v-if="hasBothVideos" class="lvl-tabs">
+                        <button class="lvl-tab" :class="{ 'is-on': showcaseTab }" @click="showcaseTab = true">Showcase</button>
+                        <button class="lvl-tab" :class="{ 'is-on': !showcaseTab }" @click="showcaseTab = false">Verification</button>
+                    </div>
+                    <iframe v-if="videoSrc" class="lvl-video" :src="videoSrc" frameborder="0" allowfullscreen></iframe>
+                    <div v-else class="lvl-video lvl-video--empty">No video yet</div>
+
+                    <section v-if="level.creators && level.creators.length" class="lvl-section">
+                        <h2 class="lvl-h2">Creators <span class="lvl-count">{{ level.creators.length }}</span></h2>
+                        <div class="lvl-creators">
+                            <span v-for="(c, i) in level.creators" :key="i" class="lvl-creator">{{ c }}</span>
+                        </div>
+                    </section>
                 </div>
 
-                <div class="lvl-card">
-                    <h3 class="lvl-h3">Details</h3>
-                    <dl class="lvl-dl">
-                        <template v-for="fact in facts" :key="fact[0]">
-                            <dt>{{ fact[0] }}</dt>
-                            <dd>
-                                <a v-if="fact[2]" class="lvl-dl__link" :href="fact[2]" target="_blank" rel="noopener">{{ fact[1] }}</a>
-                                <template v-else>{{ fact[1] }}</template>
-                            </dd>
-                        </template>
-                    </dl>
-                </div>
+                <aside class="lvl-side">
+                    <div class="lvl-card">
+                        <h3 class="lvl-h3">Progress</h3>
+                        <div class="lvl-meter">
+                            <div class="lvl-meter__top"><span>Decoration</span><b>{{ decoration }}%</b></div>
+                            <div class="lvl-bar"><i :style="{ width: decoration + '%' }"></i></div>
+                        </div>
+                        <div class="lvl-meter">
+                            <div class="lvl-meter__top"><span>Verification</span><b>{{ verification }}%</b></div>
+                            <div class="lvl-bar lvl-bar--alt"><i :style="{ width: verification + '%' }"></i></div>
+                        </div>
+                    </div>
 
-                <div class="lvl-links">
-                    <a v-if="level.showcase" class="lvl-link" :href="level.showcase" target="_blank" rel="noopener">Showcase video</a>
-                    <a v-if="level.verification" class="lvl-link" :class="{ 'lvl-link--ghost': level.showcase }" :href="level.verification" target="_blank" rel="noopener">Verification video</a>
-                    <button class="lvl-link lvl-link--ghost" :class="{ 'lvl-link--copied': copied }" @click="copyLink">
-                        {{ copied ? 'Link copied' : 'Copy link to this level' }}
-                    </button>
-                </div>
-            </aside>
+                    <div class="lvl-card">
+                        <h3 class="lvl-h3">World records</h3>
+                        <div class="lvl-wr">
+                            <div class="lvl-wr__card">
+                                <div class="lvl-wr__k">From 0%</div>
+                                <template v-if="record">
+                                    <a v-if="recordLink" class="lvl-wr__v" :href="recordLink" target="_blank" rel="noopener">{{ record.percent }}%</a>
+                                    <div v-else class="lvl-wr__v">{{ record.percent }}%</div>
+                                    <div class="lvl-wr__u">{{ record.user }}<template v-if="record.hz"> · {{ record.hz }}Hz</template></div>
+                                </template>
+                                <div v-else class="lvl-wr__v lvl-wr__v--none">None</div>
+                            </div>
+                            <div class="lvl-wr__card">
+                                <div class="lvl-wr__k">Best run</div>
+                                <template v-if="run">
+                                    <a v-if="runLink" class="lvl-wr__v" :href="runLink" target="_blank" rel="noopener">{{ run.percent }}%</a>
+                                    <div v-else class="lvl-wr__v">{{ run.percent }}%</div>
+                                    <div class="lvl-wr__u">{{ run.user }}<template v-if="run.hz"> · {{ run.hz }}Hz</template></div>
+                                </template>
+                                <div v-else class="lvl-wr__v lvl-wr__v--none">None</div>
+                            </div>
+                        </div>
+                    </div>
 
-            <p class="lvl-about">
-                The Upcoming Levels List catalogues Extreme Demons still in development, decoration or
-                verification, and forecasts where each will place on the Demonlist once released.
-                {{ level.name }}'s position is set by the staff team according to the
-                <router-link to="/information">list guidelines</router-link>, and moves as the level progresses.
-            </p>
+                    <div class="lvl-card">
+                        <h3 class="lvl-h3">Details</h3>
+                        <dl class="lvl-dl">
+                            <template v-for="fact in facts" :key="fact[0]">
+                                <dt>{{ fact[0] }}</dt>
+                                <dd>
+                                    <a v-if="fact[2]" class="lvl-dl__link" :href="fact[2]" target="_blank" rel="noopener">{{ fact[1] }}</a>
+                                    <template v-else>{{ fact[1] }}</template>
+                                </dd>
+                            </template>
+                        </dl>
+                    </div>
+
+                    <div class="lvl-links">
+                        <a v-if="level.showcase" class="lvl-link" :href="level.showcase" target="_blank" rel="noopener">Showcase video</a>
+                        <a v-if="level.verification" class="lvl-link" :class="{ 'lvl-link--ghost': level.showcase }" :href="level.verification" target="_blank" rel="noopener">Verification video</a>
+                        <button class="lvl-link lvl-link--ghost" :class="{ 'lvl-link--copied': copied }" @click="copyLink">
+                            {{ copied ? 'Link copied' : 'Copy link to this level' }}
+                        </button>
+                    </div>
+                </aside>
+
+                <p class="lvl-about">
+                    The Upcoming Levels List catalogues Extreme Demons still in development, decoration or
+                    verification, and forecasts where each will place on the Demonlist once released.
+                    {{ level.name }}'s position is set by the staff team according to the
+                    <router-link to="/information">list guidelines</router-link>, and moves as the level progresses.
+                </p>
+            </div>
+        </template>
+
+        <div v-else class="lvl-missing">
+            <h1>Level not found</h1>
+            <p>This level is not on the Upcoming Levels List right now. It may have been published and
+            moved to the Demonlist, or removed by the staff team.</p>
+            <router-link class="lvl-link" to="/list">Browse all levels</router-link>
         </div>
-    </template>
 
-    <div v-else class="lvl-missing">
-        <h1>Level not found</h1>
-        <p>This level is not on the Upcoming Levels List right now. It may have been published and
-        moved to the Demonlist, or removed by the staff team.</p>
-        <router-link class="lvl-link" to="/list">Browse all levels</router-link>
-    </div>
-
-    <Footer />
-</main>
+        <!-- The phone gets the shell's footer instead. -->
+        <Footer v-if="!store.mobile" />
+    </main>
+</component>
     `,
     data: () => ({ store, level: null, loading: true, showcaseTab: true, copied: false, copiedTimer: null }),
     computed: {

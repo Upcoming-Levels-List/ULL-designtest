@@ -480,13 +480,24 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
    it under its hero on both surfaces (the phone takes the first two of the
    three), which is why it lives here and not in either page's stylesheet.
    Each page adds only its own gutter and the rule under it. */
-.ull2 .u-cred { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem 2.75rem; }
-.ull2 .u-cred__item { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
-.ull2 .u-cred__ic { width: 1.15rem; height: 1.15rem; flex-shrink: 0; opacity: 0.45; }
-.ull2 .u-cred__t { font-size: 0.88rem; font-weight: 500; line-height: 1.35; opacity: 0.62; }
+.ull2 .u-cred { display: flex; flex-wrap: wrap; align-items: center; gap: 1.1rem 3rem; }
+.ull2 .u-cred__item { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
+/* The mark is a badge, not a bullet: at 1.15rem beside a line of body copy
+   these read as decoration, and each of the three is meant to land as
+   something the list has earned. */
+.ull2 .u-cred__ic {
+    width: 2.6rem;
+    height: 2.6rem;
+    flex-shrink: 0;
+    padding: 0.62rem;
+    border-radius: 0.8rem;
+    background: var(--u-fill);
+    color: var(--u-accent);
+}
+.ull2 .u-cred__t { font-size: 1.02rem; font-weight: 600; line-height: 1.3; opacity: 0.85; }
 .ull2 .u-cred__t b {
-    margin-right: 0.4em;
-    font-size: 1.2em;
+    margin-right: 0.35em;
+    font-size: 1.3em;
     font-weight: 700;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
@@ -665,6 +676,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
 /* Each page fills the shell's scroll container. */
 .m2-page-body { display: flex; flex-direction: column; }
+/* While the shell is waiting for the list, the spinner takes the space the
+   page will. */
+.mob-loading { flex: 1; display: flex; align-items: center; justify-content: center; }
 
 /* ── Body ─────────────────────────────────────────────────────────────── */
 .m2-body { flex: 1; padding: 1rem var(--m-pad) 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
@@ -684,11 +698,40 @@ button.m2-fig:active { background: var(--u-fill-2); }
     background: var(--color-background);
     border-bottom: 1px solid var(--u-line);
 }
+/* The glyph is drawn on the bar itself rather than added to each page's
+   markup, so every search field on the phone carries it — levels, upcoming,
+   leaderboard. Same construction as .info-mag on /information: a ring with the
+   handle hung off its corner, both in the text colour at low opacity. */
+.m2-search::before, .m2-search::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    opacity: 0.4;
+    pointer-events: none;
+}
+.m2-search::before {
+    left: calc(var(--m-pad) + 0.72rem);
+    margin-top: -0.42rem;
+    width: 0.62rem;
+    height: 0.62rem;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+}
+.m2-search::after {
+    left: calc(var(--m-pad) + 1.24rem);
+    margin-top: 0.16rem;
+    width: 0.4rem;
+    height: 1.5px;
+    border-radius: 1px;
+    background: currentColor;
+    transform: rotate(45deg);
+    transform-origin: left center;
+}
 .m2-search input {
     flex: 1;
     min-width: 0;
     height: var(--m-tap);
-    padding: 0 0.75rem;
+    padding: 0 0.75rem 0 2.15rem;
     border-radius: var(--m-r);
     border: 1px solid var(--u-line);
     background: var(--u-fill);
@@ -1190,26 +1233,54 @@ button.m2-fig:active { background: var(--u-fill-2); }
    air around it, and the counts replaced by the credentials bar the desktop
    carries (.u-cred in css/ull-v2.css), which is a row of icons and lines rather
    than a grid of cells. The phone takes the first two of its three. */
-.mob-home-page .m2-hero { padding: 2rem var(--m-pad) 1.6rem; }
+.mob-home-page .m2-hero { padding: 2rem var(--m-pad) 1.4rem; border-bottom: 0; }
 .mob-home-page .m2-hero__eyebrow { margin-bottom: 0.7rem; letter-spacing: 0.16em; }
 .mob-home-page .m2-hero h1 { font-size: 1.85rem; line-height: 1.05; letter-spacing: -0.035em; }
 .mob-home-page .m2-hero p { margin-top: 0.8rem; font-size: 0.82rem; line-height: 1.7; opacity: 0.55; }
 
 /* The bar itself is the desktop's; what differs at 390px is its gutter, its
    type size and the gap between two items rather than three. */
-.mob-home-page .u-cred {
-    gap: 0.6rem 1.5rem;
-    padding: 0.95rem var(--m-pad);
-    border-bottom: 1px solid var(--u-line);
-}
-.mob-home-page .u-cred__item { gap: 0.55rem; }
-.mob-home-page .u-cred__ic { width: 1.05rem; height: 1.05rem; }
-.mob-home-page .u-cred__t { font-size: 0.8rem; }
-.mob-home-page .u-cred__t b { margin-right: 0.35em; font-size: 1.15em; }
+.mob-home-page .u-cred { gap: 0.8rem 1.4rem; padding: 0.3rem var(--m-pad) 1.4rem; }
+.mob-home-page .u-cred__item { gap: 0.6rem; }
+.mob-home-page .u-cred__ic { width: 2.15rem; height: 2.15rem; padding: 0.5rem; border-radius: 0.65rem; }
+.mob-home-page .u-cred__t { font-size: 0.88rem; }
+.mob-home-page .u-cred__t b { font-size: 1.25em; }
 
 /* The sections below start a little further down, and stand a little further
    apart, than on the pages that are all rows. */
 .mob-home-page .m2-body { padding-top: 1.5rem; gap: 1.5rem; }
+
+/* ── /level/<slug> on a phone ─────────────────────────────────────────────
+   The one route that renders on both surfaces: it never redirects, because
+   every shared link and search result points at it. On a phone it wears the
+   mobile shell (js/components/MobileShell.js) instead of the desktop sidebar
+   and footer, and these are the differences that follow from that — the page
+   is no longer the thing that scrolls, and its hero no longer has to leave a
+   3.5rem gap for a sidebar toggle that is not there any more. The layout
+   itself is the page's own; it already stacks. */
+/* css/main.css gives every <main> `height: 0; flex: 1`, which the desktop
+   stretches back out; inside the shell the page is a plain block in a scroll
+   container, so it has to take its own height. Its children give up the
+   scrollbars that rule hands them for the same reason. */
+.mob-content .level-page { flex: none; height: auto; overflow: visible; }
+.mob-content .level-page > div { overflow-y: visible; }
+.mob-content .lvl-hero__inner { padding: 1.15rem var(--m-pad) 1.35rem; }
+.mob-content .lvl-crumbs { font-size: 0.68rem; }
+.mob-content .lvl-title { font-size: 1.85rem; line-height: 1.05; }
+.mob-content .lvl-byline { font-size: 0.82rem; }
+.mob-content .lvl-ranks { gap: 0.45rem; }
+.mob-content .lvl-rank { padding: 0.6rem 0.55rem; }
+.mob-content .lvl-body { padding: 1.35rem var(--m-pad) 2rem; gap: 1.35rem; }
+/* Two record cards side by side read as a pair; stacked they read as two
+   unrelated figures, and there is room for the pair at 390px. */
+.mob-content .lvl-wr { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.mob-content .lvl-links .lvl-link { min-height: var(--m-tap); }
+.mob-content .lvl-about { font-size: 0.78rem; }
+.mob-content .lvl-missing { padding: 3rem var(--m-pad); }
+/* css/pages/mobile.css holds the footer two level rows clear of the list above
+   it, which is right on a page of rows and reads as a hole under a page that
+   ends in a paragraph. */
+.mob-content .level-page + .mob-footer { margin-top: 2rem; }
 
 
 /* ── Mock stand-ins ──────────────────────────────────────────────────────

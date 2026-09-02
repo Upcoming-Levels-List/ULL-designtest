@@ -6,6 +6,11 @@ export const store = Vue.reactive({
     thumbnails: localStorage.getItem('thumbnails') === null ? true : JSON.parse(localStorage.getItem('thumbnails')),
     levelColoring: localStorage.getItem('levelColoring') === null ? true : JSON.parse(localStorage.getItem('levelColoring')),
     benchmarkMode: false,
+    // /level/<slug> is the one route that renders on both surfaces — it never
+    // redirects, because every shared link and search result points at it — so
+    // it has to know which chrome to wear. Set below, next to the redirect that
+    // asks the same question.
+    mobile: false,
     authKey: '',
     sidebarOpen: false,
     showSettings: false,
@@ -92,6 +97,8 @@ const isCrawler = () => BOT_UA.test(navigator.userAgent);
 
 // Auto-redirect mobile devices
 const isMobile = () => !isCrawler() && (window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent));
+store.mobile = isMobile();
+window.addEventListener('resize', () => { store.mobile = isMobile(); });
 router.beforeEach((to, from, next) => {
     const path = normalizePath(to.path);
     const standalone = path.startsWith('/level/') || path === '/generator' || path === '/admin';

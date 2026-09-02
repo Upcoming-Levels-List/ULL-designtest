@@ -54,17 +54,21 @@ row — see below.
 | Events | Thumbnail hero, status pill, tags, details, and the desktop's ordering |
 | `/level/<slug>` | Any mobile chrome at all — it is the one route that never redirects, so a shared link lands outside the app |
 
+All of it has shipped now, including the last row.
+
 Nothing was added that the desktop does not have. No new data fields, and no
 per-level prose.
 
-The `/level/<slug>` row is the exception: it was **not** implemented. The page
-already stacks correctly on a phone and its breadcrumbs lead back into the
-mobile tree (`/` and `/list` redirect on a phone), so what is left is the
-desktop sidebar toggle floating over its hero. Wrapping the route in the mobile
-shell would mean redirecting it to `/mobile/level/<slug>`, and that route is the
-one every shared link and search result points at — not worth the SEO risk for a
-floating button. The template stays here as the sketch of what it would look
-like.
+The `/level/<slug>` row was held back at first, because the obvious way to fix
+it — redirecting to `/mobile/level/<slug>` — would move the one URL every shared
+link and search result points at. It is done now without touching the URL: the
+chrome moved into a component (`js/components/MobileShell.js`) that the route
+wears on a phone and not on the desktop, decided by `store.mobile`. So the page
+keeps its own layout, which already stacked, and loses the desktop sidebar
+toggle floating over its hero, the desktop footer under it, and the sidebar that
+opened from that toggle with no way back out. The template here is the sketch
+that was drawn for it; what shipped keeps the page's own `lvl-*` markup inside
+the same shell rather than rebuilding it in `m2-*`.
 
 ## The two structural calls
 
@@ -93,6 +97,9 @@ deck renders is what the site renders:
   three lines of lead and five count chips wrapping onto two ragged rows, all
   inside 230px. The title and its lead got room around them, and the counts
   came out of the hero.
+- **Every search field carries a magnifying glass.** It is drawn on `.m2-search`
+  itself rather than added to each page's markup, so the levels, upcoming and
+  leaderboard fields all have it.
 - **The five counts became three credentials, and then two.** Tracked, main,
   future, verified and pending said the same thing five times, and four of them
   repeated the sidebar. In their place is `.u-cred` in `css/ull-v2.css` — an

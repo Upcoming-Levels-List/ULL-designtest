@@ -19,9 +19,8 @@
    was still not a level. Left-aligned and cut to the height of its own content;
    the count strip and the top of the list now sit in the space it gave back. */
 .home-hero {
-    padding: 3.5rem 2.5rem 2.5rem;
+    padding: 3.5rem 2.5rem 1.75rem;
     background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 60%);
-    border-bottom: 1px solid rgba(128,128,128,0.15);
 }
 .home-hero-content {
     display: flex;
@@ -95,8 +94,9 @@
 
    The component is .u-cred in css/ull-v2.css, shared with the phone, which
    takes the first two of the same three (js/home-stats.js). What the page adds
-   is the gutter it shares with the hero, and the rule under it. */
-.home-page .u-cred { padding: 1.15rem 2.5rem; border-bottom: 1px solid rgba(128,128,128,0.15); }
+   is the gutter it shares with the hero. Nothing is ruled off: the three sit in
+   the hero's own space rather than in a band of their own. */
+.home-page .u-cred { padding: 0.4rem 2.5rem 2rem; }
 
 /* ── SECTIONS ── */
 .home-section__head {

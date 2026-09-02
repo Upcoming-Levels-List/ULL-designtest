@@ -174,6 +174,14 @@ A, as `/mobile/info`:
 
 Three things worth knowing about the build:
 
+- **Two things differ from the desktop deliberately, both since shipping.** The
+  search field says *Search the page* rather than naming everything it covers —
+  the long placeholder is cut off at 390px anyway — and the guidelines face is
+  the same grey as the other five. On the desktop that face carries a wash of
+  the brand colour, which is how it holds the eye in a twelve-column grid; in
+  one phone column there is nothing to hold it against, so the wash only makes
+  one of six cards look like a different kind of thing.
+
 - **The endpoints and the level object are lists, not tables.** Both desktop
   tables are wider than the screen; each row is a line of its own instead. Same
   fields, same order, same source. The FAQ's points table stays a table — it is

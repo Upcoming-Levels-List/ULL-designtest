@@ -43,7 +43,7 @@ export default {
                 v-model="query"
                 type="search"
                 class="info-search__field"
-                placeholder="Search the guidelines, the FAQ, the endpoints and the legends"
+                placeholder="Search the page"
                 aria-label="Search this page"
                 @keydown.esc="query = ''"
             />

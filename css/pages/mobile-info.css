@@ -78,7 +78,12 @@
     gap: 0.65rem;
     padding: 1rem var(--m-pad) 1.5rem;
 }
-.mob-info .info-block--gl { padding: 1rem 1.1rem; }
+/* On the desktop the guidelines face carries a wash of the brand colour, which
+   is how it holds the eye in a twelve-column grid of six. In one phone column
+   there is nothing to hold it against, and the wash only makes one of six
+   cards look like a different kind of thing — so here it is the same grey as
+   the rest. */
+.mob-info .info-block--gl { padding: 1rem 1.1rem; background: var(--u-fill); }
 .mob-info .info-block--gl h2 { font-size: 1.25rem; }
 .mob-info .info-block--gl p { font-size: 0.78rem; }
 .mob-info .info-groups { margin: 0.85rem 0 0.9rem; }
