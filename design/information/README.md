@@ -121,7 +121,8 @@ Two things worth knowing about the build:
 
 ## Not covered
 
-- Mobile. `/mobile/info` has its own deck in [`design/mobile/`](../mobile/) and
-  is untouched.
+- Mobile. `/mobile/info` was untouched by this pass; it has three templates of
+  its own in [`design/mobile-information/`](../mobile-information/), which put
+  this page's content on a 390px screen.
 - The four approaches this was chosen from — A. Shelf, B. Manual, D. Document,
   E. Tiles. All are in git history.

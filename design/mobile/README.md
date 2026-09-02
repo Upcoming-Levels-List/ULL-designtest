@@ -99,6 +99,8 @@ on them.
 
 ## Not covered
 
-`/mobile/info`, which mirrors the Information page — the desktop side of that
-has not been reworked either, so the pair should move together. It is the one
-page in the mobile tree still on the old styling, and it shows.
+`/mobile/info`, which mirrors the Information page. The desktop side has since
+been rebuilt as a hub (`design/information/`), and the phone side now has three
+competing templates of its own in [`design/mobile-information/`](../mobile-information/).
+Until one of them is built, it is the one page in the mobile tree still on the
+old styling, and it shows.
