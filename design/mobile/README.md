@@ -82,6 +82,21 @@ Everything else was a restyle of what was already there. These two moved things:
 
 Both re-homed existing controls; neither added a feature.
 
+## Changes since the templates were drawn
+
+The templates and `mob-v2.css` are kept in step with what ships, so what the
+deck renders is what the site renders:
+
+- **Home opens wider than the rest of the tree.** Every other page drops
+  straight into rows, so its hero stays compact; home is the page a visitor
+  lands on, and there the same block read as cramped — an eyebrow, a title,
+  three lines of lead and five count chips wrapping onto two ragged rows, all
+  inside 230px. The counts moved out of the hero into a full-width strip, which
+  is the shape the desktop already gives them (`.home-pulse`), and the title and
+  its lead got room around them. Same five figures, same links, one calm row
+  instead of two ragged ones. The rules are scoped to `.mob-home-page`, so no
+  other page changed.
+
 ## The expanded row is a summary
 
 Tapping a level opens four short lines — where it stands, its two progress

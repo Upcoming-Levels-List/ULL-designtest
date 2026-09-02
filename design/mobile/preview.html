@@ -1158,6 +1158,58 @@ button.m2-fig:active { background: var(--u-fill-2); }
     white-space: nowrap;
 }
 
+/* ── Home: the first screen ───────────────────────────────────────────────
+   The rest of the mobile tree opens straight onto rows, so its hero is one
+   compact block. Home is the page a visitor lands on, and there the same block
+   read as cramped: an eyebrow, a title, three lines of lead and five count
+   chips wrapping onto two ragged rows, all inside 230px, with the first list
+   row starting immediately under it.
+
+   So these rules — and only these, scoped to the home page, since every other
+   page keeps the compact hero — give the opening room: a larger title with more
+   air around it, and the counts lifted out of the hero into a full-width strip,
+   which is the shape the desktop gives them (.home-pulse in css/pages/home.css).
+   Same five figures, same links, one calm row instead of two ragged ones. */
+.mob-home-page .m2-hero { padding: 2rem var(--m-pad) 1.6rem; }
+.mob-home-page .m2-hero__eyebrow { margin-bottom: 0.7rem; letter-spacing: 0.16em; }
+.mob-home-page .m2-hero h1 { font-size: 1.85rem; line-height: 1.05; letter-spacing: -0.035em; }
+.mob-home-page .m2-hero p { margin-top: 0.8rem; font-size: 0.82rem; line-height: 1.7; opacity: 0.55; }
+
+.mob-home-pulse {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid var(--u-line);
+}
+.mob-home-pulse__cell {
+    display: block;
+    padding: 0.9rem 0.2rem;
+    color: var(--color-on-background);
+    text-align: center;
+}
+.mob-home-pulse__cell + .mob-home-pulse__cell { border-left: 1px solid var(--u-line); }
+.mob-home-pulse__cell b {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+.mob-home-pulse__cell span {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.4;
+}
+.mob-home-pulse__cell--lead b { color: var(--u-accent); }
+
+/* The sections below start a little further down, and stand a little further
+   apart, than on the pages that are all rows. */
+.mob-home-page .m2-body { padding-top: 1.5rem; gap: 1.5rem; }
+
 
 /* ── Mock stand-ins ──────────────────────────────────────────────────────
    Level thumbnails are YouTube stills on the real site; the deck cannot load
@@ -1293,7 +1345,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
                 </div>
                 <div class="note note--change">
                     <div class="note__k">What the template changes</div>
-                    <p>The same four blocks as the desktop, stacked: hero with the count strip as chips, the top five levels as tap rows with their status pill, the timeline with its coloured dots, the editors grouped. The four navigation buttons go: those destinations are the tab bar at the bottom of every page now, so the hero keeps one primary action.</p>
+                    <p>The same four blocks as the desktop, stacked: hero, the count strip, the top five levels as tap rows with their status pill, the timeline with its coloured dots, the editors grouped. The four navigation buttons go: those destinations are the tab bar at the bottom of every page now. The counts are a full-width strip under the hero rather than chips inside it, which is the shape the desktop gives them and the one that leaves the opening room to breathe — home is the only page with a hero this size, so it is the only one that gets it.</p>
                 </div>
             </div>
             <div class="phone">
@@ -1307,19 +1359,20 @@ button.m2-fig:active { background: var(--u-fill-2); }
         </div>
     </header>
 
-    <div class="m2-scroll">
+    <div class="m2-scroll mob-home-page">
         <section class="m2-hero">
             <div class="m2-hero__eyebrow">Geometry Dash &middot; Extreme Demons</div>
             <h1>Upcoming Levels List</h1>
             <p>A community-maintained catalogue of upcoming Top 1&ndash;100 Extreme Demons, ranked by where the staff team projects each will land on the Demonlist.</p>
-            <div class="m2-figs">
-                <span class="m2-fig m2-fig--lead"><b>479</b><span>tracked</span></span>
-                <span class="m2-fig"><b>406</b><span>main</span></span>
-                <span class="m2-fig"><b>291</b><span>future</span></span>
-                <span class="m2-fig"><b>178</b><span>verified</span></span>
-                <span class="m2-fig"><b>32</b><span>pending</span></span>
-            </div>
         </section>
+
+        <div class="mob-home-pulse">
+            <div class="mob-home-pulse__cell mob-home-pulse__cell--lead"><b>479</b><span>Tracked</span></div>
+            <a class="mob-home-pulse__cell" href="#"><b>406</b><span>Main</span></a>
+            <a class="mob-home-pulse__cell" href="#"><b>291</b><span>Future</span></a>
+            <div class="mob-home-pulse__cell"><b>178</b><span>Verified</span></div>
+            <a class="mob-home-pulse__cell" href="#"><b>32</b><span>Pending</span></a>
+        </div>
 
         <div class="m2-body">
             <section>

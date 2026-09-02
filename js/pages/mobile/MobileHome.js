@@ -30,14 +30,18 @@ export default {
                 <div class="m2-hero__eyebrow">Geometry Dash · Extreme Demons</div>
                 <h1>Upcoming Levels List</h1>
                 <p>A community-maintained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash, ranked by where the staff team projects each will land on the Demonlist.</p>
-                <div v-if="counts" class="m2-figs">
-                    <span class="m2-fig m2-fig--lead"><b>{{ counts.all }}</b><span>tracked</span></span>
-                    <router-link class="m2-fig" to="/mobile/main"><b>{{ counts.main }}</b><span>main</span></router-link>
-                    <router-link class="m2-fig" to="/mobile/future"><b>{{ counts.future }}</b><span>future</span></router-link>
-                    <span class="m2-fig"><b>{{ counts.verified }}</b><span>verified</span></span>
-                    <router-link class="m2-fig" to="/mobile/pending"><b>{{ counts.pending }}</b><span>pending</span></router-link>
-                </div>
             </section>
+
+            <!-- The same five counts the desktop puts under its hero, and in
+                 the same shape: a full-width strip of cells rather than five
+                 chips wrapping onto two ragged rows inside the hero. -->
+            <div v-if="counts" class="mob-home-pulse">
+                <div class="mob-home-pulse__cell mob-home-pulse__cell--lead"><b>{{ counts.all }}</b><span>Tracked</span></div>
+                <router-link class="mob-home-pulse__cell" to="/mobile/main"><b>{{ counts.main }}</b><span>Main</span></router-link>
+                <router-link class="mob-home-pulse__cell" to="/mobile/future"><b>{{ counts.future }}</b><span>Future</span></router-link>
+                <div class="mob-home-pulse__cell"><b>{{ counts.verified }}</b><span>Verified</span></div>
+                <router-link class="mob-home-pulse__cell" to="/mobile/pending"><b>{{ counts.pending }}</b><span>Pending</span></router-link>
+            </div>
 
             <div class="m2-body">
 

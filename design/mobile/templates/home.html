@@ -3,7 +3,7 @@ title: Home
 route: /mobile/home
 files: js/pages/mobile/MobileHome.js · css/pages/mobile.css
 problem: A purple centred headline, four full-width stacked buttons and an "Other Pages ▼" accordion fill the whole first screen without showing a single level. Below that, Recent Changes is a flat run of em-dashes inside a bordered scroll box and the editors are one undifferentiated list. The desktop home gained a count strip, the top five levels, a dated timeline and editors grouped by role; none of it crossed over.
-change: The same four blocks as the desktop, stacked: hero with the count strip as chips, the top five levels as tap rows with their status pill, the timeline with its coloured dots, the editors grouped. The four navigation buttons go: those destinations are the tab bar at the bottom of every page now, so the hero keeps one primary action.
+change: The same four blocks as the desktop, stacked: hero, the count strip, the top five levels as tap rows with their status pill, the timeline with its coloured dots, the editors grouped. The four navigation buttons go: those destinations are the tab bar at the bottom of every page now. The counts are a full-width strip under the hero rather than chips inside it, which is the shape the desktop gives them and the one that leaves the opening room to breathe — home is the only page with a hero this size, so it is the only one that gets it.
 -->
 <div class="m2 ull2">
     <header class="m2-top">
@@ -14,19 +14,20 @@ change: The same four blocks as the desktop, stacked: hero with the count strip 
         </div>
     </header>
 
-    <div class="m2-scroll">
+    <div class="m2-scroll mob-home-page">
         <section class="m2-hero">
             <div class="m2-hero__eyebrow">Geometry Dash &middot; Extreme Demons</div>
             <h1>Upcoming Levels List</h1>
             <p>A community-maintained catalogue of upcoming Top 1&ndash;100 Extreme Demons, ranked by where the staff team projects each will land on the Demonlist.</p>
-            <div class="m2-figs">
-                <span class="m2-fig m2-fig--lead"><b>479</b><span>tracked</span></span>
-                <span class="m2-fig"><b>406</b><span>main</span></span>
-                <span class="m2-fig"><b>291</b><span>future</span></span>
-                <span class="m2-fig"><b>178</b><span>verified</span></span>
-                <span class="m2-fig"><b>32</b><span>pending</span></span>
-            </div>
         </section>
+
+        <div class="mob-home-pulse">
+            <div class="mob-home-pulse__cell mob-home-pulse__cell--lead"><b>479</b><span>Tracked</span></div>
+            <a class="mob-home-pulse__cell" href="#"><b>406</b><span>Main</span></a>
+            <a class="mob-home-pulse__cell" href="#"><b>291</b><span>Future</span></a>
+            <div class="mob-home-pulse__cell"><b>178</b><span>Verified</span></div>
+            <a class="mob-home-pulse__cell" href="#"><b>32</b><span>Pending</span></a>
+        </div>
 
         <div class="m2-body">
             <section>

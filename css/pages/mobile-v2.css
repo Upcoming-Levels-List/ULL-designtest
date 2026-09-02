@@ -669,3 +669,55 @@ button.m2-fig:active { background: var(--u-fill-2); }
     opacity: 0.55;
     white-space: nowrap;
 }
+
+/* ── Home: the first screen ───────────────────────────────────────────────
+   The rest of the mobile tree opens straight onto rows, so its hero is one
+   compact block. Home is the page a visitor lands on, and there the same block
+   read as cramped: an eyebrow, a title, three lines of lead and five count
+   chips wrapping onto two ragged rows, all inside 230px, with the first list
+   row starting immediately under it.
+
+   So these rules — and only these, scoped to the home page, since every other
+   page keeps the compact hero — give the opening room: a larger title with more
+   air around it, and the counts lifted out of the hero into a full-width strip,
+   which is the shape the desktop gives them (.home-pulse in css/pages/home.css).
+   Same five figures, same links, one calm row instead of two ragged ones. */
+.mob-home-page .m2-hero { padding: 2rem var(--m-pad) 1.6rem; }
+.mob-home-page .m2-hero__eyebrow { margin-bottom: 0.7rem; letter-spacing: 0.16em; }
+.mob-home-page .m2-hero h1 { font-size: 1.85rem; line-height: 1.05; letter-spacing: -0.035em; }
+.mob-home-page .m2-hero p { margin-top: 0.8rem; font-size: 0.82rem; line-height: 1.7; opacity: 0.55; }
+
+.mob-home-pulse {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid var(--u-line);
+}
+.mob-home-pulse__cell {
+    display: block;
+    padding: 0.9rem 0.2rem;
+    color: var(--color-on-background);
+    text-align: center;
+}
+.mob-home-pulse__cell + .mob-home-pulse__cell { border-left: 1px solid var(--u-line); }
+.mob-home-pulse__cell b {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+.mob-home-pulse__cell span {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.4;
+}
+.mob-home-pulse__cell--lead b { color: var(--u-accent); }
+
+/* The sections below start a little further down, and stand a little further
+   apart, than on the pages that are all rows. */
+.mob-home-page .m2-body { padding-top: 1.5rem; gap: 1.5rem; }
