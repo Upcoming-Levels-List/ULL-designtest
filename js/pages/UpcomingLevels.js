@@ -1,5 +1,5 @@
 ﻿import { store } from '../main.js';
-import { levelThumbnail, verificationPercent } from '../util.js';
+import { levelThumbnail, verificationPercent, verificationLabel } from '../util.js';
 import { fetchList } from '../content.js';
 import { upcomingRanking } from '../formulas.js';
 
@@ -42,7 +42,7 @@ export default {
                                 <span v-if="level" class="level-subinfo">WR: {{ getWR(level) }} | Run: {{ getRunString(level) }}</span>
                                 <span v-if="level" class="u-bar u-bar--thin up-row__bar"><i :style="{ width: progress(level) + '%' }"></i></span>
                             </div>
-                            <span v-if="level" class="up-row__pct">{{ progress(level) }}%</span>
+                            <span v-if="level" class="up-row__pct">{{ furthest(level) || 'None' }}</span>
                         </button>
                     </td>
                 </tr>
@@ -255,6 +255,12 @@ export default {
         // this shows it), so the column can be scanned as a race.
         progress(level) {
             return verificationPercent(level);
+        },
+        // The bar's width is the number the ordering is built from; the figure
+        // beside it is written the way the evidence reads, so a run from 19% to
+        // 91% says so rather than claiming 72% (js/util.js).
+        furthest(level) {
+            return verificationLabel(level);
         },
         getLevelNameStyle(level, isSelected) {
             if (!level) return {};

@@ -5,12 +5,16 @@ it: [the landing page of a level list now shows levels](../README.md). What it
 did not fix is **the geometry those levels sit on and the weight the page gives
 each block**, on either surface.
 
-These are **two ways to answer that on the desktop and two on the phone**. A and
-C are one idea on two surfaces; B and D are the other. A decision here is A+C or
-B+D, not four separate calls.
+These were **two ways to answer that on the desktop and two on the phone**. A and
+C are one idea on two surfaces; B and D are the other.
 
-Nothing is built yet. Open `preview.html` in a browser, or the standalone pages
-on a real screen. Rebuild after editing anything:
+**A and C were chosen and have been built into the site**, with three changes
+asked for on top of them — see [What shipped](#what-shipped) at the end. All four
+templates stay here: A and C as the reference the pages were made from, B and D
+as the alternatives they were picked over.
+
+Open `preview.html` in a browser, or the standalone pages on a real screen.
+Rebuild after editing anything:
 
 ```sh
 node design/home/build-preview.mjs
@@ -36,9 +40,9 @@ have, and every output inlines the site's own icons, so each file is
 self-contained. The `theme` button on a standalone page is a preview control, not
 part of the design.
 
-## What is wrong with the page today
+## What was wrong with the page
 
-Measured on the shipped page in Chromium against the live list — 479 levels, 12
+Measured on the page as it stood, in Chromium against the live list — 479 levels, 12
 editors, 42 changes over 3 days — at 1440×900, 1920×1080 and 390×844.
 
 | Reading | What it is |
@@ -64,16 +68,16 @@ Two smaller things the templates also settle:
 
 ## The four
 
-### A. Spotlight — the page it is, on one measure · desktop
+### A. Spotlight — the page it is, on one measure · desktop · **shipped**
 
 Keeps every block and fixes what carries them. One column runs the hero, the
 credentials, the rows and the feed, so there is a single left edge. The half of
 the hero that is empty at every width goes to the level the page is about: **#1
 drawn the way `/level/<slug>` draws it** — blurred thumbnail, status pill, both
-meters, one button. The remaining rows carry their pill beside the name and a
-meter under it, and the editors card becomes a line of names.
+meters, one button. The rows carry their pill beside the name and a meter under
+it, and the editors card becomes a line of names.
 
-Cheapest of the four. Page height at 1440×900 goes from **1665px to 1233px**.
+Cheapest of the four. Page height at 1440×900 goes from **1665px to 1252px**.
 
 ### B. Board — three lanes of the list's live state · desktop
 
@@ -87,16 +91,15 @@ computes. The editors become a credit line above the footer.
 The whole page fits **one screen at 1440×900**, and uses the width a 1920 window
 gives it.
 
-### C. Deck — A at 390px · phone
+### C. Deck — A at 390px · phone · **shipped**
 
-The hero keeps its eyebrow and title and loses two of its four lines of lead; the
-credentials bar moves to the bottom. The screen a visitor lands on opens on a
-level: the spotlight, then rows with their status beside the name and their
-decoration as a bar. The feed comes out of its scroll box, and the editors card
-becomes one 48px row.
+The hero keeps its eyebrow and title and loses two of its four lines of lead. The
+screen a visitor lands on opens on a level: the credentials bar, then the
+spotlight, then rows with their status beside the name and their decoration as a
+bar. The feed comes out of its scroll box.
 
-Page height goes from **2062px to 1149px**, and the first level starts at roughly
-200px instead of 321px.
+The first level is shown **in full** where 321px of the 792px window used to go
+by before a level appeared at all.
 
 ### D. Segments — B at 390px · phone
 
@@ -109,7 +112,7 @@ Each lane is **one screen** — 815px, 771px and 814px against a 741px window.
 
 ## What each pair costs, and what it risks
 
-|  | A + C | B + D |
+|  | A + C · **shipped** | B + D |
 | --- | --- | --- |
 | **Idea** | Same page, right geometry | Home is the state of the list |
 | **New readings of the data** | None | One — `upcomingRanking()`, already called by `/upcoming` |
@@ -117,16 +120,15 @@ Each lane is **one screen** — 815px, 771px and 814px against a 741px window.
 | **What a first-time visitor meets** | Three lines about the project and a level in full | One line about the project and three lanes of levels |
 | **Biggest risk** | The spotlight is always #1, which can sit unchanged for months | It reopens a decision this repo already made: [home is not a dashboard](../README.md) |
 
-Both pairs drop the same two things, and both are judgement calls worth arguing
-about before anything is built:
+Both pairs dropped the same two things, and both were judgement calls:
 
 1. **The editors card.** Twelve names in a bordered card become a line of chips
    (desktop) or one row (phone), linking to `/information`, which carries the
-   same twelve with their roles and contact routes. If the roster is meant to be
-   a credit the community reads on the landing page rather than a directory, this
-   is wrong and the card should stay.
-2. **Two of the three hero buttons**, on the desktop only. The phone keeps
-   everything it has, because it has no sidebar.
+   same twelve with their roles and contact routes. **Half of this was reversed
+   on the way in**: the desktop shipped the chip line, the phone kept its full
+   card.
+2. **Two of the three hero buttons**, on the desktop only. Shipped as drawn. The
+   phone keeps everything it has, because it has no sidebar.
 
 ## Constraints held
 
@@ -153,3 +155,75 @@ half of what these templates change follows from the fact that 180px of
 navigation is permanently on screen — the three hero buttons that repeat it, and
 the measure the body should be centred on. The sidebar in the mockups is a mock
 (`mk-side` in the kit), not the shipped component.
+
+
+## What shipped
+
+A and C, with three changes asked for on top of the templates. The templates
+above have been kept in step with all three, so what the deck renders is what the
+site renders.
+
+### 1. The desktop's lane is Upcoming Top 1, not the next five rows
+
+`Next on the list` — rows #2 to #6 — became **Upcoming Top 1 levels**: the five
+levels **placed above the hardest level on the list that is already verified**,
+ordered by how far anyone has got through them.
+
+A level projected to place above the hardest verified level is projected to be
+harder than it, so finishing it makes it the new Top 1. Which of them gets there
+first is a different question from where they sit in the list, and it is the one
+this lane answers — so it is sorted by progress, and its rank column does not
+count down. A note under the heading names the level the boundary is drawn at.
+
+The boundary is `levels.findIndex(l => l.isVerified)` over the list the page
+already holds; when nothing on the list is verified, every level is a candidate.
+No new field, and no second fetch.
+
+The phone kept `Next on the list`. **This is the one place the two surfaces no
+longer show the same section**, and it was asked for that way.
+
+### 2. The phone keeps its credentials at the top and its editors card whole
+
+Template C moved `479 levels · 3+ years` below the fold and compressed the twelve
+editors into a single tappable row. Both were reversed: the credentials bar sits
+under the hero where it always has, above the spotlight, and the editors are the
+full card again — grouped by role, with the role icon and the role tag on every
+line — at the foot of the page. The phone page is longer than the template for
+it (**3083px** rather than 1149px), which is the cost of keeping both.
+
+### 3. Furthest progress is written as the run it was, everywhere
+
+The furthest anyone has got is the highest record from 0% **or the longest span
+of a run**, whichever reaches further. When a run wins, the figure used to be
+written as the points that run is worth — a run from 72% to the end of the level
+read as **28%**, which is not what happened and not what anyone would say. It is
+now written as the span it covers: **72-100%**, the same way the level page's
+Best run card has always written it. A record still reads as the single figure it
+reached.
+
+The reading is computed once, in `js/util.js`:
+
+- `verificationEvidence(level)` — `{ kind, value, label, entry }`, the winning
+  reading and which kind it is.
+- `verificationPercent(level)` — the number, unchanged in behaviour. It drives
+  every meter, every status tone and the order of Upcoming Levels; checked
+  against the old implementation across all 479 levels, with no differences.
+- `verificationLabel(level)` — how that number is written. Empty when nobody has
+  got anywhere, so each caller can say `None` in its own voice.
+
+**57 of the 479 levels** on the list read differently now. Every surface that
+prints the figure was changed: home and `/mobile/home`, `/level/<slug>`, the
+level container on All Levels, Main List and Future List (`LevelPanel`), the
+phone's list pages, and both Upcoming Levels pages, where it is the column the
+page is sorted by. The bar's width is still the number — only the words changed.
+
+### Where the code is
+
+| | |
+| --- | --- |
+| `js/util.js` | `verificationEvidence`, `verificationLabel`, and `verificationPercent` refactored onto them |
+| `js/util.test.mjs` | 11 assertions covering the two readings and the tie |
+| `js/pages/Home.js` + `css/pages/home.css` | template A, with the Upcoming Top 1 lane |
+| `js/pages/mobile/MobileHome.js` | template C, with the credentials at the top and the editors card whole |
+| `css/pages/mobile-v2.css` | the spotlight, the re-measured row, and `.m2-changes` losing its `max-height`/`overflow` |
+| `js/pages/LevelPage.js`, `js/components/List/LevelPanel.js`, `js/pages/mobile/MobileList.js`, `js/pages/UpcomingLevels.js`, `js/pages/mobile/MobileUpcoming.js` | the run label |

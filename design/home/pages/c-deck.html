@@ -1084,19 +1084,31 @@ button.m2-fig:active { background: var(--u-fill-2); }
 }
 
 /* ── Timeline (home) ──────────────────────────────────────────────────────
-   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
-   the editors card off the end of a long scroll. */
-.m2-changes {
-    max-height: 18rem;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    padding: 0.75rem 0.85rem;
-    border: 1px solid var(--u-line);
+   In the card's own flow. It used to be a bounded window — max-height 18rem,
+   overflow-y auto — which meant 2513px of entries scrolling inside a 286px box
+   inside a page that also scrolls: on a touch screen a swipe that lands in the
+   box moves the wrong thing, and the frame around it doubled the card's own.
+   The latest day is open and the rest folds open under it (.mob-fold), which
+   keeps the editors card within reach without trapping a scroll. */
+.m2-changes { display: flex; flex-direction: column; }
+.m2-changes__more { display: contents; }
+.mob-fold {
+    align-self: flex-start;
+    margin-top: 0.85rem;
+    min-height: var(--m-tap);
+    padding: 0.4rem 0.8rem;
     border-radius: var(--m-r);
-    background: color-mix(in srgb, #808080 4%, var(--color-background));
+    border: 1px solid var(--u-line-2);
+    background: transparent;
+    color: var(--color-on-background);
+    font-family: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+    opacity: 0.7;
 }
+.mob-fold:active { opacity: 1; background: var(--u-fill-2); }
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
-.m2-tl-date:first-child { margin-top: 0; }
+.m2-changes > .m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }
 .m2-tl-item { display: grid; grid-template-columns: 0.5rem 1fr; gap: 0.6rem; padding: 0.25rem 0; font-size: 0.78rem; line-height: 1.5; }
 .m2-tl-dot { margin-top: 0.45rem; width: 0.32rem; height: 0.32rem; border-radius: 50%; background: currentColor; opacity: 0.3; }
@@ -1108,6 +1120,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
 /* ── Editors (home) ───────────────────────────────────────────────────── */
 .m2-eds { display: flex; flex-direction: column; gap: 0.75rem; }
+.m2-eds__note { margin-top: 0.9rem; font-size: 0.72rem; line-height: 1.6; opacity: 0.45; }
 .m2-eds__label { margin-bottom: 0.25rem; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.3; }
 .m2-ed { display: flex; align-items: center; gap: 0.5rem; min-height: 2.1rem; font-size: 0.82rem; font-weight: 500; }
 .m2-ed__ic { flex-shrink: 0; width: 1.05rem; height: 1.05rem; opacity: 0.7; }
@@ -1151,7 +1164,47 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
 /* The sections below start a little further down, and stand a little further
    apart, than on the pages that are all rows. */
-.mob-home-page .m2-body { padding-top: 1.5rem; gap: 1.5rem; }
+.mob-home-page .m2-body { padding-top: 1.25rem; gap: 1.35rem; }
+
+/* ── Home: the spotlight ──────────────────────────────────────────────────
+   41% of the window used to go by before the first level appeared, and what
+   appeared was a name in a row. #1 is introduced here the way /level/<slug>
+   introduces it — .u-hero from css/ull-v2.css with the two meters under it —
+   so the landing screen opens on a level rather than on an advert. The lead
+   above it is two lines rather than four to pay for the room. */
+.mob-home-page .m2-hero { padding: 1.5rem var(--m-pad) 1.1rem; }
+.mob-home-page .m2-hero__eyebrow { margin-bottom: 0.6rem; }
+.mob-home-page .m2-hero h1 { font-size: 1.75rem; }
+.mob-home-page .m2-hero p { margin-top: 0.6rem; font-size: 0.8rem; line-height: 1.6; }
+.mob-home-page .u-cred { padding-bottom: 1.1rem; }
+
+.mob-spot {
+    display: block;
+    margin: 0 var(--m-pad);
+    border-radius: var(--m-r);
+    border: 1px solid var(--u-line);
+    background: var(--u-fill);
+    overflow: hidden;
+}
+.mob-spot .u-hero { border: 0; border-radius: 0; border-bottom: 1px solid var(--u-line); }
+.mob-spot .u-hero__inner { padding: 1rem 0.9rem 0.85rem; align-items: flex-end; }
+.mob-spot .u-hero__title { font-size: 1.3rem; }
+.mob-spot .u-hero__by { margin-top: 0.35rem; font-size: 0.76rem; }
+.mob-spot__k { margin-bottom: 0.4rem; }
+.mob-spot__body { padding: 0.8rem 0.9rem 0.9rem; }
+.mob-spot__foot { margin-top: 0.85rem; }
+.mob-spot__foot .u-btn { min-height: var(--m-tap); }
+
+/* The status pill sits on the name's own line rather than at the end of the
+   row, which leaves the name the width it needs — it used to be a 135px column
+   with the verifier truncated under it — and the decoration reading is drawn
+   under both rather than written into the pill. */
+.mob-row__head { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
+.mob-row__head .m2-row__name { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mob-row__head .u-pill { flex-shrink: 0; }
+.mob-row__foot { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; }
+.mob-row__foot .u-bar { flex: 1; }
+.mob-row__pct { flex-shrink: 0; font-size: 0.62rem; font-weight: 700; opacity: 0.45; font-variant-numeric: tabular-nums; }
 
 /* ── /level/<slug> on a phone ─────────────────────────────────────────────
    The one route that renders on both surfaces: it never redirects, because
@@ -1393,7 +1446,6 @@ html.root.dark .mk-inv { filter: invert(1); }
 .mk-c .u-cred { gap: 0.7rem 1.2rem; }
 .mk-c .u-cred__ic { width: 2rem; height: 2rem; padding: 0.45rem; border-radius: 0.6rem; }
 .mk-c .u-cred__t { font-size: 0.82rem; }
-.mk-c .mh-about { padding: 0 var(--m-pad) 0.5rem; }
 </style>
 
 <div class="m2 ull2 mk-c">
@@ -1412,6 +1464,11 @@ html.root.dark .mk-inv { filter: invert(1); }
             <h1>Upcoming Levels List</h1>
             <p>Every upcoming Top 1&ndash;100 Extreme Demon, ranked by where it is projected to land on the Demonlist.</p>
         </section>
+
+        <div class="u-cred">
+    <div class="u-cred__item"><svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.2 13.5 5.2 8 8.2 2.5 5.2Z"/><path d="M2.5 8 8 11 13.5 8"/><path d="M2.5 10.6 8 13.6 13.5 10.6"/></svg><span class="u-cred__t"><b>479</b>levels total</span></div>
+    <div class="u-cred__item"><svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.2 8A6.2 6.2 0 1 1 1.8 8a6.2 6.2 0 0 1 12.4 0Z"/><path d="M8 4.6V8l2.4 1.4"/></svg><span class="u-cred__t"><b>3+</b>years</span></div>
+</div>
 
         <!-- #1, introduced the way /level/<slug> introduces it. -->
         <a class="mh-spot" href="#">
@@ -1433,7 +1490,7 @@ html.root.dark .mk-inv { filter: invert(1); }
                     <span class="u-bar"><i style="width:100%"></i></span>
                 </div>
                 <div class="u-meter">
-                    <div class="u-meter__top"><span>Furthest anyone has got</span><b>28%</b></div>
+                    <div class="u-meter__top"><span>Furthest anyone has got</span><b>72-100%</b></div>
                     <span class="u-bar u-bar--alt"><i style="width:28%"></i></span>
                 </div>
                 <div class="mh-spot__foot"><span class="u-btn u-btn--ghost">Open level page</span></div>
@@ -1469,7 +1526,7 @@ html.root.dark .mk-inv { filter: invert(1); }
                                 <span class="u-pill u-pill--cyan"><i></i>5%</span>
                             </span>
                             <span class="m2-row__sub">Silence &middot; zLevii</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:5%"></i></span><span class="mh-row__pct">6% furthest</span></span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:5%"></i></span><span class="mh-row__pct">49-55% furthest</span></span>
                         </span>
                     </a>
                     <a class="m2-row" href="#">
@@ -1505,7 +1562,7 @@ html.root.dark .mk-inv { filter: invert(1); }
                                 <span class="u-pill u-pill--red"><i></i>Verifying</span>
                             </span>
                             <span class="m2-row__sub">TBT &middot; verification race</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span><span class="mh-row__pct">60% furthest</span></span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span><span class="mh-row__pct">40-100% furthest</span></span>
                         </span>
                     </a>
                 </div>
@@ -1536,19 +1593,36 @@ html.root.dark .mk-inv { filter: invert(1); }
                 </div>
             </section>
 
-        </div>
+            <section class="u-card">
+                <h2 class="u-eyebrow">List editors <span class="u-count">12</span></h2>
+                <div class="m2-eds">
+                    <div>
+                        <div class="m2-eds__label">Owner &amp; admin</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1NzYgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNTc2IDEzNmMwIDIyLjA5LTE3LjkxIDQwLTQwIDQwYy0uMjQ4IDAtLjQ1NTEtLjEyNjYtLjcwMzEtLjEzMDVsLTUwLjUyIDI3Ny45QzQ4MiA0NjguOSA0NjguOCA0ODAgNDUzLjMgNDgwSDEyMi43Yy0xNS40NiAwLTI4LjcyLTExLjA2LTMxLjQ4LTI2LjI3TDQwLjcxIDE3NS45QzQwLjQ2IDE3NS45IDQwLjI1IDE3NiAzOS4xIDE3NmMtMjIuMDkgMC00MC0xNy45MS00MC00MFMxNy45MSA5NiAzOS4xIDk2czQwIDE3LjkxIDQwIDQwYzAgOC45OTgtMy41MjEgMTYuODktOC41MzcgMjMuNTdsODkuNjMgNzEuN2MxNS45MSAxMi43MyAzOS41IDcuNTQ0IDQ4LjYxLTEwLjY4bDU3LjYtMTE1LjJDMjU1LjEgOTguMzQgMjQ3LjEgODYuMzQgMjQ3LjEgNzJDMjQ3LjEgNDkuOTEgMjY1LjkgMzIgMjg4IDMyczM5LjEgMTcuOTEgMzkuMSA0MGMwIDE0LjM0LTcuOTYzIDI2LjM0LTE5LjMgMzMuNGw1Ny42IDExNS4yYzkuMTExIDE4LjIyIDMyLjcxIDIzLjQgNDguNjEgMTAuNjhsODkuNjMtNzEuN0M0OTkuNSAxNTIuOSA0OTYgMTQ0LjEgNDk2IDEzNkM0OTYgMTEzLjkgNTEzLjkgOTYgNTM2IDk2UzU3NiAxMTMuOSA1NzYgMTM2eiIvPjwvc3ZnPg==" alt="" />QwidziT<span class="m2-ed__role">Owner</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNDI1LjEgNDgyLjZjLTIuMzAzLTEuMjUtNC41NzItMi41NTktNi44MDktMy45M2wtNy44MTggNC40OTNjLTYuMDAyIDMuNTA0LTEyLjgzIDUuMzUyLTE5Ljc1IDUuMzUyYy0xMC43MSAwLTIxLjEzLTQuNDkyLTI4Ljk3LTEyLjc1Yy0xOC40MS0yMC4wOS0zMi4yOS00NC4xNS00MC4yMi02OS45Yy01LjM1Mi0xOC4wNiAyLjM0My0zNi44NyAxNy44My00NS4yNGw4LjAxOC00LjY2OWMtLjA2NjQtMi42MjEtLjA2NjQtNS4yNDIgMC03Ljg1OWwtNy42NTUtNC40NjFjLTEyLjMtNi45NTMtMTkuNC0xOS42Ni0xOS42NC0zMy4zOEMzMDUuNiAzMDYuMyAyOTAuNCAzMDQgMjc0LjcgMzA0SDE3My4zQzc3LjYxIDMwNCAwIDM4MS43IDAgNDc3LjRDMCA0OTYuNSAxNS41MiA1MTIgMzQuNjYgNTEySDQxMy4zYzUuNzI3IDAgMTAuOS0xLjcyNyAxNS42Ni00LjE4OGMtMi4yNzEtNC45ODQtMy44Ni0xMC4zLTMuODYtMTYuMDZWNDgyLjZ6TTIyNCAyNTZjNzAuNyAwIDEyOC01Ny4zMSAxMjgtMTI4UzI5NC43IDAgMjI0IDBDMTUzLjMgMCA5NiA1Ny4zMSA5NiAxMjhTMTUzLjMgMjU2IDIyNCAyNTZ6TTYxMC41IDM3My4zYzIuNjI1LTE0IDIuNjI1LTI4LjUgMC00Mi41bDI1Ljc1LTE1YzMtMS42MjUgNC4zNzUtNS4xMjUgMy4zNzUtOC41Yy02Ljc1LTIxLjUtMTguMjUtNDEuMTMtMzMuMjUtNTcuMzhjLTIuMjUtMi41LTYtMy4xMjUtOS0xLjM3NWwtMjUuNzUgMTQuODhjLTEwLjg4LTkuMjUtMjMuMzgtMTYuNS0zNi44OC0yMS4yNVYyMTIuM2MwLTMuMzc1LTIuNS02LjM3NS01Ljc1LTdjLTIyLjI1LTUtNDUtNC44NzUtNjYuMjUgMGMtMy4yNSAuNjI1LTUuNjI1IDMuNjI1LTUuNjI1IDd2MjkuODhjLTEzLjUgNC43NS0yNiAxMi0zNi44OCAyMS4yNUwzOTQuNCAyNDguNWMtMi44NzUtMS43NS02LjYyNS0xLjEyNS05IDEuMzc1Yy0xNSAxNi4yNS0yNi41IDM1Ljg4LTMzLjEzIDU3LjM4Yy0xIDMuMzc1IC4zNzUxIDYuODc1IDMuMjUgOC41bDI1Ljc1IDE1Yy0yLjUgMTQtMi41IDI4LjUgMCA0Mi41bC0yNS43NSAxNWMtMyAxLjYyNS00LjI1IDUuMTI1LTMuMjUgOC41YzYuNjI1IDIxLjUgMTguMTMgNDEgMzMuMTMgNTcuMzhjMi4zNzUgMi41IDYgMy4xMjUgOSAxLjM3NWwyNS44OC0xNC44OGMxMC44OCA5LjI1IDIzLjM4IDE2LjUgMzYuODggMjEuMjV2MjkuODhjMCAzLjM3NSAyLjM3NSA2LjM3NSA1LjYyNSA3YzIyLjM4IDUgNDUgNC44NzUgNjYuMjUgMGMzLjI1LS42MjUgNS43NS0zLjYyNSA1Ljc1LTd2LTI5Ljg4YzEzLjUtNC43NSAyNi0xMiAzNi44OC0yMS4yNWwyNS43NSAxNC44OGMyLjg3NSAxLjc1IDYuNzUgMS4xMjUgOS0xLjM3NWMxNS0xNi4yNSAyNi41LTM1Ljg4IDMzLjI1LTU3LjM4YzEtMy4zNzUtLjM3NTEtNi44NzUtMy4zNzUtOC41TDYxMC41IDM3My4zek00OTYgNDAwLjVjLTI2Ljc1IDAtNDguNS0yMS43NS00OC41LTQ4LjVzMjEuNzUtNDguNSA0OC41LTQ4LjVjMjYuNzUgMCA0OC41IDIxLjc1IDQ4LjUgNDguNVM1MjIuOCA0MDAuNSA0OTYgNDAwLjV6Ii8+PC9zdmc+" alt="" />exiled_shade<span class="m2-ed__role">Admin</span></div>
+                    </div>
+                    <div>
+                        <div class="m2-eds__label">Elder moderators</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNjIyLjMgMjcxLjFsLTExNS4xLTQ1LjAxYy00LjEyNS0xLjYyOS0xMi42Mi0zLjc1NC0yMi4yNSAwTDM2OS44IDI3MS4xQzM1OSAyNzUuMiAzNTIgMjg1LjEgMzUyIDI5NS4xYzAgMTExLjYgNjguNzUgMTg4LjggMTMyLjkgMjEzLjljOS42MjUgMy43NSAxOCAxLjYyNSAyMi4yNSAwQzU1OC40IDQ4OS45IDY0MCA0MjAuNSA2NDAgMjk1LjFDNjQwIDI4NS4xIDYzMyAyNzUuMiA2MjIuMyAyNzEuMXpNNDk2IDQ2Mi40VjI3My4ybDk1LjUgMzcuMzhDNTg1LjkgMzk3LjggNTMwLjYgNDQ2IDQ5NiA0NjIuNHpNMjI0IDI1NmM3MC43IDAgMTI4LTU3LjMxIDEyOC0xMjhTMjk0LjcgMCAyMjQgMEMxNTMuMyAwIDk2IDU3LjMxIDk2IDEyOFMxNTMuMyAyNTYgMjI0IDI1NnpNMzIwLjYgMzEwLjNDMzA1LjkgMzA2LjMgMjkwLjYgMzA0IDI3NC43IDMwNEgxNzMuM0M3Ny42MSAzMDQgMCAzODEuNyAwIDQ3Ny40QzAgNDk2LjUgMTUuNTIgNTEyIDM0LjY2IDUxMkg0MTMuM2MzLjE0MyAwIDUuOTY3LTEuMDA0IDguODYxLTEuNzg5QzM2OS43IDQ2OS44IDMyNC4xIDQwMC4zIDMyMC42IDMxMC4zeiIvPjwvc3ZnPg==" alt="" />niroi<span class="m2-ed__role">Elder Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNjIyLjMgMjcxLjFsLTExNS4xLTQ1LjAxYy00LjEyNS0xLjYyOS0xMi42Mi0zLjc1NC0yMi4yNSAwTDM2OS44IDI3MS4xQzM1OSAyNzUuMiAzNTIgMjg1LjEgMzUyIDI5NS4xYzAgMTExLjYgNjguNzUgMTg4LjggMTMyLjkgMjEzLjljOS42MjUgMy43NSAxOCAxLjYyNSAyMi4yNSAwQzU1OC40IDQ4OS45IDY0MCA0MjAuNSA2NDAgMjk1LjFDNjQwIDI4NS4xIDYzMyAyNzUuMiA2MjIuMyAyNzEuMXpNNDk2IDQ2Mi40VjI3My4ybDk1LjUgMzcuMzhDNTg1LjkgMzk3LjggNTMwLjYgNDQ2IDQ5NiA0NjIuNHpNMjI0IDI1NmM3MC43IDAgMTI4LTU3LjMxIDEyOC0xMjhTMjk0LjcgMCAyMjQgMEMxNTMuMyAwIDk2IDU3LjMxIDk2IDEyOFMxNTMuMyAyNTYgMjI0IDI1NnpNMzIwLjYgMzEwLjNDMzA1LjkgMzA2LjMgMjkwLjYgMzA0IDI3NC43IDMwNEgxNzMuM0M3Ny42MSAzMDQgMCAzODEuNyAwIDQ3Ny40QzAgNDk2LjUgMTUuNTIgNTEyIDM0LjY2IDUxMkg0MTMuM2MzLjE0MyAwIDUuOTY3LTEuMDA0IDguODYxLTEuNzg5QzM2OS43IDQ2OS44IDMyNC4xIDQwMC4zIDMyMC42IDMxMC4zeiIvPjwvc3ZnPg==" alt="" />Keres<span class="m2-ed__role">Elder Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNjIyLjMgMjcxLjFsLTExNS4xLTQ1LjAxYy00LjEyNS0xLjYyOS0xMi42Mi0zLjc1NC0yMi4yNSAwTDM2OS44IDI3MS4xQzM1OSAyNzUuMiAzNTIgMjg1LjEgMzUyIDI5NS4xYzAgMTExLjYgNjguNzUgMTg4LjggMTMyLjkgMjEzLjljOS42MjUgMy43NSAxOCAxLjYyNSAyMi4yNSAwQzU1OC40IDQ4OS45IDY0MCA0MjAuNSA2NDAgMjk1LjFDNjQwIDI4NS4xIDYzMyAyNzUuMiA2MjIuMyAyNzEuMXpNNDk2IDQ2Mi40VjI3My4ybDk1LjUgMzcuMzhDNTg1LjkgMzk3LjggNTMwLjYgNDQ2IDQ5NiA0NjIuNHpNMjI0IDI1NmM3MC43IDAgMTI4LTU3LjMxIDEyOC0xMjhTMjk0LjcgMCAyMjQgMEMxNTMuMyAwIDk2IDU3LjMxIDk2IDEyOFMxNTMuMyAyNTYgMjI0IDI1NnpNMzIwLjYgMzEwLjNDMzA1LjkgMzA2LjMgMjkwLjYgMzA0IDI3NC43IDMwNEgxNzMuM0M3Ny42MSAzMDQgMCAzODEuNyAwIDQ3Ny40QzAgNDk2LjUgMTUuNTIgNTEyIDM0LjY2IDUxMkg0MTMuM2MzLjE0MyAwIDUuOTY3LTEuMDA0IDguODYxLTEuNzg5QzM2OS43IDQ2OS44IDMyNC4xIDQwMC4zIDMyMC42IDMxMC4zeiIvPjwvc3ZnPg==" alt="" />LukeLGamer<span class="m2-ed__role">Elder Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNjIyLjMgMjcxLjFsLTExNS4xLTQ1LjAxYy00LjEyNS0xLjYyOS0xMi42Mi0zLjc1NC0yMi4yNSAwTDM2OS44IDI3MS4xQzM1OSAyNzUuMiAzNTIgMjg1LjEgMzUyIDI5NS4xYzAgMTExLjYgNjguNzUgMTg4LjggMTMyLjkgMjEzLjljOS42MjUgMy43NSAxOCAxLjYyNSAyMi4yNSAwQzU1OC40IDQ4OS45IDY0MCA0MjAuNSA2NDAgMjk1LjFDNjQwIDI4NS4xIDYzMyAyNzUuMiA2MjIuMyAyNzEuMXpNNDk2IDQ2Mi40VjI3My4ybDk1LjUgMzcuMzhDNTg1LjkgMzk3LjggNTMwLjYgNDQ2IDQ5NiA0NjIuNHpNMjI0IDI1NmM3MC43IDAgMTI4LTU3LjMxIDEyOC0xMjhTMjk0LjcgMCAyMjQgMEMxNTMuMyAwIDk2IDU3LjMxIDk2IDEyOFMxNTMuMyAyNTYgMjI0IDI1NnpNMzIwLjYgMzEwLjNDMzA1LjkgMzA2LjMgMjkwLjYgMzA0IDI3NC43IDMwNEgxNzMuM0M3Ny42MSAzMDQgMCAzODEuNyAwIDQ3Ny40QzAgNDk2LjUgMTUuNTIgNTEyIDM0LjY2IDUxMkg0MTMuM2MzLjE0MyAwIDUuOTY3LTEuMDA0IDguODYxLTEuNzg5QzM2OS43IDQ2OS44IDMyNC4xIDQwMC4zIDMyMC42IDMxMC4zeiIvPjwvc3ZnPg==" alt="" />ItzDel1ghtfuL<span class="m2-ed__role">Elder Mod</span></div>
+                    </div>
+                    <div>
+                        <div class="m2-eds__label">Moderators</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj4KCTwhLS0gISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT4KCTxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik01OTIgMjg4SDU3NlYyMTIuN2MwLTQxLjg0LTMwLjAzLTgwLjA0LTcxLjY2LTg0LjI3QzQ1Ni41IDEyMy42IDQxNiAxNjEuMSA0MTYgMjA4VjI4OGgtMTZDMzczLjYgMjg4IDM1MiAzMDkuNiAzNTIgMzM2djEyOGMwIDI2LjQgMjEuNiA0OCA0OCA0OGgxOTJjMjYuNCAwIDQ4LTIxLjYgNDgtNDh2LTEyOEM2NDAgMzA5LjYgNjE4LjQgMjg4IDU5MiAyODh6TTQ5NiA0MzJjLTE3LjYyIDAtMzItMTQuMzgtMzItMzJzMTQuMzgtMzIgMzItMzJzMzIgMTQuMzggMzIgMzJTNTEzLjYgNDMyIDQ5NiA0MzJ6TTUyOCAyODhoLTY0VjIwOGMwLTE3LjYyIDE0LjM4LTMyIDMyLTMyczMyIDE0LjM4IDMyIDMyVjI4OHpNMjI0IDI1NmM3MC43IDAgMTI4LTU3LjMxIDEyOC0xMjhTMjk0LjcgMCAyMjQgMEMxNTMuMyAwIDk2IDU3LjMxIDk2IDEyOFMxNTMuMyAyNTYgMjI0IDI1NnpNMzIwIDMzNmMwLTguNjcyIDEuNzM4LTE2Ljg3IDQuMzAzLTI0LjdDMzA4LjYgMzA2LjYgMjkxLjkgMzA0IDI3NC43IDMwNEgxNzMuM0M3Ny42MSAzMDQgMCAzODEuNyAwIDQ3Ny40QzAgNDk2LjUgMTUuNTIgNTEyIDM0LjY2IDUxMmgzMDEuN0MzMjYuMyA0OTguNiAzMjAgNDgyLjEgMzIwIDQ2NFYzMzZ6IiAvPgo8L3N2Zz4K" alt="" />Terralith<span class="m2-ed__role">Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj4KCTwhLS0gISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT4KCTxwYXRoIGZpbGw9IiNmZmZmZmYiIGQ9Ik01OTIgMjg4SDU3NlYyMTIuN2MwLTQxLjg0LTMwLjAzLTgwLjA0LTcxLjY2LTg0LjI3QzQ1Ni41IDEyMy42IDQxNiAxNjEuMSA0MTYgMjA4VjI4OGgtMTZDMzczLjYgMjg4IDM1MiAzMDkuNiAzNTIgMzM2djEyOGMwIDI2LjQgMjEuNiA0OCA0OCA0OGgxOTJjMjYuNCAwIDQ4LTIxLjYgNDgtNDh2LTEyOEM2NDAgMzA5LjYgNjE4LjQgMjg4IDU5MiAyODh6TTQ5NiA0MzJjLTE3LjYyIDAtMzItMTQuMzgtMzItMzJzMTQuMzgtMzIgMzItMzJzMzIgMTQuMzggMzIgMzJTNTEzLjYgNDMyIDQ5NiA0MzJ6TTUyOCAyODhoLTY0VjIwOGMwLTE3LjYyIDE0LjM4LTMyIDMyLTMyczMyIDE0LjM4IDMyIDMyVjI4OHpNMjI0IDI1NmM3MC43IDAgMTI4LTU3LjMxIDEyOC0xMjhTMjk0LjcgMCAyMjQgMEMxNTMuMyAwIDk2IDU3LjMxIDk2IDEyOFMxNTMuMyAyNTYgMjI0IDI1NnpNMzIwIDMzNmMwLTguNjcyIDEuNzM4LTE2Ljg3IDQuMzAzLTI0LjdDMzA4LjYgMzA2LjYgMjkxLjkgMzA0IDI3NC43IDMwNEgxNzMuM0M3Ny42MSAzMDQgMCAzODEuNyAwIDQ3Ny40QzAgNDk2LjUgMTUuNTIgNTEyIDM0LjY2IDUxMmgzMDEuN0MzMjYuMyA0OTguNiAzMjAgNDgyLjEgMzIwIDQ2NFYzMzZ6IiAvPgo8L3N2Zz4K" alt="" />TheCatAstronaut<span class="m2-ed__role">Mod</span></div>
+                    </div>
+                    <div>
+                        <div class="m2-eds__label">Developers</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNDE0LjggNDAuNzlMMjg2LjggNDg4LjhDMjgxLjkgNTA1LjggMjY0LjIgNTE1LjYgMjQ3LjIgNTEwLjhDMjMwLjIgNTA1LjkgMjIwLjQgNDg4LjIgMjI1LjIgNDcxLjJMMzUzLjIgMjMuMjFDMzU4LjEgNi4yMTYgMzc1LjgtMy42MjQgMzkyLjggMS4yMzJDNDA5LjggNi4wODcgNDE5LjYgMjMuOCA0MTQuOCA0MC43OUg0MTQuOHpNNTE4LjYgMTIxLjRMNjMwLjYgMjMzLjRDNjQzLjEgMjQ1LjkgNjQzLjEgMjY2LjEgNjMwLjYgMjc4LjZMNTE4LjYgMzkwLjZDNTA2LjEgNDAzLjEgNDg1LjkgNDAzLjEgNDczLjQgMzkwLjZDNDYwLjkgMzc4LjEgNDYwLjkgMzU3LjkgNDczLjQgMzQ1LjRMNTYyLjcgMjU2TDQ3My40IDE2Ni42QzQ2MC45IDE1NC4xIDQ2MC45IDEzMy45IDQ3My40IDEyMS40QzQ4NS45IDEwOC45IDUwNi4xIDEwOC45IDUxOC42IDEyMS40VjEyMS40ek0xNjYuNiAxNjYuNkw3Ny4yNSAyNTZMMTY2LjYgMzQ1LjRDMTc5LjEgMzU3LjkgMTc5LjEgMzc4LjEgMTY2LjYgMzkwLjZDMTU0LjEgNDAzLjEgMTMzLjkgNDAzLjEgMTIxLjQgMzkwLjZMOS4zNzIgMjc4LjZDLTMuMTI0IDI2Ni4xLTMuMTI0IDI0NS45IDkuMzcyIDIzMy40TDEyMS40IDEyMS40QzEzMy45IDEwOC45IDE1NC4xIDEwOC45IDE2Ni42IDEyMS40QzE3OS4xIDEzMy45IDE3OS4xIDE1NC4xIDE2Ni42IDE2Ni42VjE2Ni42eiIvPjwvc3ZnPg==" alt="" />Prometheus<span class="m2-ed__role">Dev</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIiBmaWxsPSIjZmZmZmZmIj48IS0tISBGb250IEF3ZXNvbWUgUHJvIDYuMS4xIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlIChDb21tZXJjaWFsIExpY2Vuc2UpIENvcHlyaWdodCAyMDIyIEZvbnRpY29ucywgSW5jLiAtLT48cGF0aCBkPSJNNDE0LjggNDAuNzlMMjg2LjggNDg4LjhDMjgxLjkgNTA1LjggMjY0LjIgNTE1LjYgMjQ3LjIgNTEwLjhDMjMwLjIgNTA1LjkgMjIwLjQgNDg4LjIgMjI1LjIgNDcxLjJMMzUzLjIgMjMuMjFDMzU4LjEgNi4yMTYgMzc1LjgtMy42MjQgMzkyLjggMS4yMzJDNDA5LjggNi4wODcgNDE5LjYgMjMuOCA0MTQuOCA0MC43OUg0MTQuOHpNNTE4LjYgMTIxLjRMNjMwLjYgMjMzLjRDNjQzLjEgMjQ1LjkgNjQzLjEgMjY2LjEgNjMwLjYgMjc4LjZMNTE4LjYgMzkwLjZDNTA2LjEgNDAzLjEgNDg1LjkgNDAzLjEgNDczLjQgMzkwLjZDNDYwLjkgMzc4LjEgNDYwLjkgMzU3LjkgNDczLjQgMzQ1LjRMNTYyLjcgMjU2TDQ3My40IDE2Ni42QzQ2MC45IDE1NC4xIDQ2MC45IDEzMy45IDQ3My40IDEyMS40QzQ4NS45IDEwOC45IDUwNi4xIDEwOC45IDUxOC42IDEyMS40VjEyMS40ek0xNjYuNiAxNjYuNkw3Ny4yNSAyNTZMMTY2LjYgMzQ1LjRDMTc5LjEgMzU3LjkgMTc5LjEgMzc4LjEgMTY2LjYgMzkwLjZDMTU0LjEgNDAzLjEgMTMzLjkgNDAzLjEgMTIxLjQgMzkwLjZMOS4zNzIgMjc4LjZDLTMuMTI0IDI2Ni4xLTMuMTI0IDI0NS45IDkuMzcyIDIzMy40TDEyMS40IDEyMS40QzEzMy45IDEwOC45IDE1NC4xIDEwOC45IDE2Ni42IDEyMS40QzE3OS4xIDEzMy45IDE3OS4xIDE1NC4xIDE2Ni42IDE2Ni42VjE2Ni42eiIvPjwvc3ZnPg==" alt="" />NikoYakorem<span class="m2-ed__role">Dev</span></div>
+                    </div>
+                </div>
+                <p class="m2-eds__note">Trusted members who add levels, update placements and keep the list accurate.</p>
+            </section>
 
-        <div class="mh-credit">
-            <a class="mh-credit__row" href="#">
-                <span class="mh-credit__t"><b>12</b> list editors keep this accurate</span>
-                <span class="mh-credit__go">Meet them &rarr;</span>
-            </a>
         </div>
-
-        <div class="mh-about"><div class="u-cred">
-    <div class="u-cred__item"><svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.2 13.5 5.2 8 8.2 2.5 5.2Z"/><path d="M2.5 8 8 11 13.5 8"/><path d="M2.5 10.6 8 13.6 13.5 10.6"/></svg><span class="u-cred__t"><b>479</b>levels total</span></div>
-    <div class="u-cred__item"><svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.2 8A6.2 6.2 0 1 1 1.8 8a6.2 6.2 0 0 1 12.4 0Z"/><path d="M8 4.6V8l2.4 1.4"/></svg><span class="u-cred__t"><b>3+</b>years</span></div>
-</div></div>
 
     </div>
 

@@ -1,7 +1,7 @@
 import { store } from '../../main.js';
 import {
     passesBenchmark, levelThumbnail, levelSlug,
-    decorationPercent, verificationPercent, levelStatus,
+    decorationPercent, verificationPercent, verificationLabel, levelStatus,
     bestRecord, bestRun, recordLink, hasVerifier, verifierLine, levelRanks,
 } from '../../util.js';
 import { mobileStore, applyFilters } from './mobileStore.js';
@@ -92,7 +92,7 @@ export default {
                                         <div class="u-bar"><i :style="{ width: decoration(level) + '%' }"></i></div>
                                     </div>
                                     <div class="u-meter">
-                                        <div class="u-meter__top"><span>Verification</span><b>{{ verification(level) }}%</b></div>
+                                        <div class="u-meter__top"><span>Verification</span><b>{{ furthest(level) || 'None' }}</b></div>
                                         <div class="u-bar u-bar--alt"><i :style="{ width: verification(level) + '%' }"></i></div>
                                     </div>
                                 </div>
@@ -207,6 +207,9 @@ export default {
         },
         decoration: decorationPercent,
         verification: verificationPercent,
+        // The bar is the number, the reading is how it is written: a run says
+        // the span it covers rather than the points it is worth.
+        furthest: verificationLabel,
         status: levelStatus,
         record: bestRecord,
         run: bestRun,

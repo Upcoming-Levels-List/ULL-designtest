@@ -227,18 +227,48 @@ export function decorationPercent(level) {
     return Math.max(0, Math.min(100, Number(level?.percentFinished) || 0));
 }
 
-// The furthest anyone has got: the highest record set from 0%, or the longest
-// span of a run, whichever reaches further. A verified level is 100 by
-// definition. This is the number the Upcoming Levels page orders by.
-export function verificationPercent(level) {
-    if (!level) return 0;
-    if (level.isVerified) return 100;
-    const records = (level.records || []).map((r) => Number(r.percent) || 0);
-    const runs = (level.run || []).map((r) => {
+// The furthest anyone has got, and what it was: the highest record set from 0%,
+// or the longest span of a run, whichever reaches further. A verified level is
+// 100 by definition.
+//
+// Two things read this. `verificationPercent` is the number — it drives the
+// meters, the status tones and the order of the Upcoming Levels page.
+// `verificationLabel` is how that number is written, and the two disagree on
+// purpose: a run that covers 72% to 100% of a level reaches 28 percentage
+// points, but nobody describes it that way. It is written as the span it
+// covers, the same way the Best run card writes it, because "28%" beside a
+// level that has been played from 72% to the end is misleading. A record is
+// written as the single figure it reached.
+export function verificationEvidence(level) {
+    if (!level) return null;
+    if (level.isVerified) return { kind: 'verified', value: 100, label: '100%', entry: null };
+
+    let best = null;
+    // Records first, so a record and a run that reach equally far read as the
+    // record — the simpler of the two statements.
+    for (const r of level.records || []) {
+        const p = Number(r.percent) || 0;
+        if (p > 0 && (!best || p > best.value)) best = { kind: 'record', value: p, label: `${p}%`, entry: r };
+    }
+    for (const r of level.run || []) {
         const parts = String(r.percent).split('-').map(Number);
-        return parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) ? Math.abs(parts[1] - parts[0]) : 0;
-    });
-    return Math.max(0, Math.min(100, Math.max(0, ...records, ...runs)));
+        if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) continue;
+        const span = Math.abs(parts[1] - parts[0]);
+        if (span > 0 && (!best || span > best.value)) best = { kind: 'run', value: span, label: `${r.percent}%`, entry: r };
+    }
+    return best;
+}
+
+export function verificationPercent(level) {
+    const best = verificationEvidence(level);
+    return best ? Math.max(0, Math.min(100, best.value)) : 0;
+}
+
+// The same reading, written rather than measured. Empty where nobody has got
+// anywhere yet, so a caller can fall back to its own "None".
+export function verificationLabel(level) {
+    const best = verificationEvidence(level);
+    return best ? best.label : '';
 }
 
 // { label, tone } for the status pill. The tones are the same progression the

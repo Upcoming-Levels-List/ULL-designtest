@@ -1,5 +1,5 @@
 import {
-    levelThumbnail, levelSlug, verificationPercent, levelStatus,
+    levelThumbnail, levelSlug, verificationPercent, verificationLabel, levelStatus,
     bestRecord, bestRun, recordLink, hasVerifier, verifierLine, levelRanks,
 } from '../../util.js';
 import { upcomingRanking } from '../../formulas.js';
@@ -43,7 +43,7 @@ export default {
                             <!-- The bar the ordering is built from. -->
                             <span v-if="level" class="u-bar u-bar--thin m2-row__bar"><i :style="{ width: progress(level) + '%' }"></i></span>
                         </span>
-                        <span v-if="level" class="m2-row__end">{{ progress(level) }}%</span>
+                        <span v-if="level" class="m2-row__end">{{ furthest(level) || 'None' }}</span>
                     </button>
 
                     <div v-if="lbSelected === i && level" class="m2-detail">
@@ -72,7 +72,7 @@ export default {
                             <div class="m2-sum">
                                 <div class="u-card">
                                     <div class="m2-total">
-                                        <div><b>{{ progress(level) }}%</b><span>Furthest progress</span></div>
+                                        <div><b>{{ furthest(level) || 'None' }}</b><span>Furthest progress</span></div>
                                     </div>
                                     <div class="u-bar u-bar--alt m2-total__bar"><i :style="{ width: progress(level) + '%' }"></i></div>
                                 </div>
@@ -147,6 +147,8 @@ export default {
         },
         levelThumbnail,
         progress: verificationPercent,
+        // The bar is the number; the figure is how it reads (js/util.js).
+        furthest: verificationLabel,
         status: levelStatus,
         record: bestRecord,
         run: bestRun,

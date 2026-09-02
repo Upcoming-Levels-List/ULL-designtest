@@ -1484,21 +1484,34 @@ main.page-list--pending .list-container {
 .home-page h3::before, .home-page h3::after,
 .home-page h4::before, .home-page h4::after { display: none; }
 
+/* ── ONE MEASURE ──
+   The page used to have two. `.home-hero` padded 2.5rem off the main region's
+   left edge while `.home-content` was a 1100px column centred in whatever was
+   left, so the hero's left edge and the body's were 72px apart at 1440 and
+   312px apart at 1920 — the wider the window, the more the page read as two
+   documents stacked. Everything now sits on `.home-col`, and a band that wants
+   to run the full width does it behind that column rather than instead of it. */
+.home-col {
+    max-width: 76rem;
+    margin: 0 auto;
+    padding-inline: 2.5rem;
+}
+.home-band {
+    background: linear-gradient(150deg, color-mix(in srgb, var(--color-primary) 13%, transparent) 0%, transparent 62%);
+}
+
 /* ── HERO ──
-   Was a 75vh centred block, so the first thing below the fold on a level list
-   was still not a level. Left-aligned and cut to the height of its own content;
-   the count strip and the top of the list now sit in the space it gave back. */
+   Copy on the left, the level the copy is about on the right. The lead is
+   capped at 40rem and nothing used to sit beside it, so at 1920 the hero used
+   736px of the 1740px band it was drawn on and the rest was tinted nothing. */
 .home-hero {
-    padding: 3.5rem 2.5rem 1.75rem;
-    background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 14%, transparent) 0%, transparent 60%);
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 3rem;
+    align-items: center;
+    padding: 2.75rem 0 2.25rem;
 }
-.home-hero-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-    max-width: 46rem;
-}
+.home-hero__body { min-width: 0; }
 .home-hero-eyebrow {
     font-size: 0.62rem;
     font-weight: 700;
@@ -1508,41 +1521,40 @@ main.page-list--pending .list-container {
 }
 .home-hero-title {
     margin-top: 0.7rem !important;
-    font-size: clamp(2rem, 4.2vw, 3.1rem);
+    font-size: clamp(1.9rem, 3.2vw, 2.7rem);
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.02;
     letter-spacing: -0.035em;
     color: var(--color-on-background);
 }
 .home-hero-desc {
-    margin-top: 1rem !important;
-    max-width: 40rem;
-    font-size: 0.92rem;
+    margin-top: 0.9rem !important;
+    max-width: 32rem;
+    font-size: 0.88rem;
     font-weight: 500;
     line-height: 1.65;
     color: var(--color-on-background);
-    opacity: 0.6;
+    opacity: 0.58;
 }
 .home-hero-actions {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-top: 1.6rem;
+    margin-top: 1.4rem;
 }
-
 .home-hero-social {
     display: flex;
     gap: 0.45rem;
-    margin-top: 1.1rem;
+    margin-top: 1rem;
 }
 .home-social-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.4rem 0.8rem;
+    padding: 0.35rem 0.75rem;
     border-radius: 2rem;
     font-family: "Lexend Deca", sans-serif;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 500;
     text-decoration: none;
     color: var(--color-on-background);
@@ -1553,20 +1565,43 @@ main.page-list--pending .list-container {
 .home-social-btn:hover { opacity: 1; border-color: rgba(128,128,128,0.38); }
 .home-social-btn img { width: 0.95rem; height: 0.95rem; }
 
-/* ── COUNT STRIP ──
-   Five readings of the list as it stands, each one a length of an array the
-   page already holds. Three of them are the pages they count. */
-/* ── The credentials bar ──
-   Three things about the list rather than five counts of it: how much it holds,
-   how long it has been running, and who uses it. The five-cell grid it replaces
-   read as a dashboard — five figures in five boxes, four of which repeated what
-   the sidebar already says — on a page nobody arrives at to read a dashboard.
+/* ── SPOTLIGHT ──
+   `.u-hero` from css/ull-v2.css — the level page's blurred-thumbnail header —
+   with the two meters under it. No new component: the level page and the events
+   feature cards already introduce a level exactly this way. */
+.home-spot {
+    display: block;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(128,128,128,0.22);
+    background: rgba(128,128,128,0.09);
+    overflow: hidden;
+    transition: border-color 120ms ease;
+}
+.home-spot:hover { border-color: rgba(128,128,128,0.38); }
+.home-page .home-spot .u-hero { border: 0; border-radius: 0; border-bottom: 1px solid rgba(128,128,128,0.22); }
+.home-page .home-spot .u-hero__inner { padding: 1.35rem 1.25rem 1.15rem; }
+.home-page .home-spot .u-hero__title { font-size: 1.5rem; }
+.home-spot__k { margin-bottom: 0.5rem !important; }
+.home-spot__body { padding: 1rem 1.25rem 1.15rem; }
+.home-spot__foot { margin-top: 1.1rem; }
 
-   The component is .u-cred in css/ull-v2.css, shared with the phone, which
-   takes the first two of the same three (js/home-stats.js). What the page adds
-   is the gutter it shares with the hero. Nothing is ruled off: the three sit in
-   the hero's own space rather than in a band of their own. */
-.home-page .u-cred { padding: 0.4rem 2.5rem 2rem; }
+/* ── CREDENTIALS ──
+   Three things about the list rather than five counts of it: how much it holds,
+   how long it has been running, and who uses it. The component is `.u-cred` in
+   css/ull-v2.css, shared with the phone, which takes the first two. What the
+   page adds is the measure it sits on and the rule under it. */
+.home-cred {
+    padding-top: 1.15rem;
+    padding-bottom: 1.15rem;
+}
+.home-cred .u-cred {
+    padding-top: 1.15rem;
+    border-top: 1px solid rgba(128,128,128,0.22);
+}
+
+/* ── CONTENT ── */
+/* The gutter comes from .home-col; only the block padding is the section's. */
+.home-content { padding-block: 1.75rem 2.5rem; }
 
 /* ── SECTIONS ── */
 .home-section__head {
@@ -1574,9 +1609,17 @@ main.page-list--pending .list-container {
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.5rem;
 }
 .home-section__head .u-eyebrow { margin-bottom: 0; }
+.home-section__note {
+    margin-bottom: 0.9rem !important;
+    max-width: 46rem;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    opacity: 0.45;
+}
+.home-section__note b { font-weight: 600; opacity: 0.85; }
 .home-more {
     font-size: 0.72rem;
     font-weight: 600;
@@ -1587,84 +1630,77 @@ main.page-list--pending .list-container {
 }
 .home-more:hover { opacity: 1; text-decoration: underline; }
 
-/* ── TOP OF THE LIST ── */
-.home-top { display: flex; flex-direction: column; gap: 0.2rem; }
-.home-top__row { border: 1px solid transparent; }
-.home-top__row:hover { border-color: rgba(128,128,128,0.22); }
+/* ── THE ROW, RE-MEASURED ──
+   `.u-row` pushes its trailing element to the far right with margin-left:auto.
+   That is right in a 360px phone row and wrong in a 1036px desktop one: the
+   status pill used to end up 907px from the name it describes at 1440, and
+   1007px at 1920. The pill now sits on the name's own line; the trailing slot
+   carries the one figure worth aligning down a column, which is how far anyone
+   has got. The meter fills the width on purpose — a long bar is the one thing a
+   wide row does better than a narrow one, and it makes the five comparable. */
+.home-top { display: flex; flex-direction: column; gap: 0.15rem; }
+.home-row {
+    display: grid;
+    grid-template-columns: 2rem 4.6rem minmax(0, 1fr) 6.75rem;
+    align-items: center;
+    gap: 0.85rem;
+    border: 1px solid transparent;
+    padding-block: 0.6rem;
+}
+.home-row:hover { border-color: rgba(128,128,128,0.22); }
+.home-row__head { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+.home-row__head .u-row__name { flex: 0 1 auto; }
+.home-page .home-row__head .u-pill { flex-shrink: 0; padding: 0.18rem 0.55rem; font-size: 0.62rem; }
+.home-row__meter { margin-top: 0.4rem; }
+.home-row__fig {
+    text-align: right;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.home-row__fig span {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.4;
+}
+.home-row__fig--none { opacity: 0.3; font-weight: 500; }
 
-/* ── CONTENT ── */
-.home-content {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2rem 2rem 2.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+/* ── TWO COLUMNS UNDER THE ROWS ── */
+.home-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    gap: 3rem;
+    align-items: start;
+    margin-top: 2.25rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(128,128,128,0.22);
 }
 
-/* ── CARD ── */
-.home-card {
-    background: var(--color-background-hover);
-    border: 1px solid rgba(128,128,128,0.15);
-    border-radius: 0.75rem;
-    padding: 1.5rem 1.6rem;
-    transition: border-color 150ms ease;
-}
-.home-card:hover { border-color: rgba(128,128,128,0.32); }
-
-/* ── 2-COL GRID ── */
-.home-grid-2col {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    align-items: stretch;
-}
-.home-grid-2col > .home-card {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
-/* ── RECENT CHANGES ── */
-.home-card--scroll {
-    min-height: 20rem;
-    overflow: hidden;
-}
-/* A framed scroll window the height of the card, the way the mobile one works.
-   The wrapper takes the row's leftover height and the window fills it
-   absolutely, so the feed contributes nothing to the card's intrinsic height:
-   however long it runs, the row is sized by the editors card beside it and the
-   feed scrolls inside. Left in flow it did the opposite — the card grew to fit
-   every entry, the window never scrolled, and the editors card was stretched to
-   match with a screen of empty space under it. */
-.home-changes-wrap {
-    position: relative;
-    flex: 1;
-    min-height: 0;
-}
-.home-changes {
-    position: absolute;
-    inset: 0;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    padding: 0.85rem 1rem;
-    border: 1px solid rgba(128, 128, 128, 0.18);
-    border-radius: 0.5rem;
-    background: rgba(128, 128, 128, 0.04);
-}
+/* ── RECENT CHANGES ──
+   In the page's own flow. It used to be 2162px of entries inside a 387px
+   window that scrolled inside a page that scrolls — 5.6 screens of nested
+   scroll — and there is no changelog route to send a reader to, so the older
+   days fold open here instead. They are rendered and hidden rather than
+   absent, so a date is still on the page for a search or a link. */
+.home-feed { display: flex; flex-direction: column; }
+.home-feed__more { display: contents; }
 .home-changes-date {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 0.62rem;
+    gap: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--color-on-background);
     opacity: 0.35;
-    margin: 0.9rem 0 0.45rem;
+    margin: 1rem 0 0.45rem;
 }
-.home-changes-date:first-child { margin-top: 0; }
+.home-feed > .home-changes-date:first-child { margin-top: 0; }
 .home-changes-date::after {
     content: '';
     flex: 1;
@@ -1673,9 +1709,9 @@ main.page-list--pending .list-container {
 }
 .home-change {
     display: grid;
-    grid-template-columns: 0.55rem 1fr;
+    grid-template-columns: 0.5rem 1fr;
     gap: 0.7rem;
-    font-size: 0.8rem;
+    font-size: 0.79rem;
     line-height: 1.55;
     padding: 0.3rem 0;
     color: var(--color-on-background);
@@ -1688,84 +1724,72 @@ main.page-list--pending .list-container {
     background: currentColor;
     opacity: 0.3;
 }
-.home-change__dot.is-up { background: #55ee55; opacity: 0.85; }
-.home-change__dot.is-down { background: #ff6622; opacity: 0.85; }
-.home-change__dot.is-new { background: var(--color-primary); opacity: 1; }
-.root.dark .home-change__dot.is-up { background: #2f9c2f; }
-.root.dark .home-change__dot.is-down { background: #cc511b; }
+.home-change.is-up .home-change__dot { background: #55ee55; opacity: 0.85; }
+.home-change.is-down .home-change__dot { background: #ff6622; opacity: 0.85; }
+.home-change.is-new .home-change__dot { background: var(--color-primary); opacity: 1; }
+.root.dark .home-change.is-up .home-change__dot { background: #2f9c2f; }
+.root.dark .home-change.is-down .home-change__dot { background: #cc511b; }
 .home-change .dim { opacity: 0.45; }
 .home-change strong { font-weight: 600; }
+.home-fold {
+    align-self: flex-start;
+    margin-top: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(128,128,128,0.38);
+    background: transparent;
+    color: var(--color-on-background);
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 120ms ease, background-color 120ms ease;
+}
+.home-fold:hover { opacity: 1; background: rgba(128,128,128,0.13); }
 
-/* ── EDITORS DESC ── */
-.home-editors { display: flex; flex-direction: column; gap: 0.9rem; }
+/* ── EDITORS ──
+   Twelve names in a bordered card was 465px of the page and half its
+   below-fold weight, for a roster that is also on /information. They are a
+   line of names now, still grouped by seniority and still in the order the
+   database returns them. */
+.home-editors { display: flex; flex-direction: column; gap: 0.85rem; }
 .home-editors-group__label {
     font-size: 0.58rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     opacity: 0.3;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
 }
-.home-editors-desc {
-    font-size: 0.78rem;
-    font-weight: 400;
-    color: var(--color-on-background);
-    opacity: 0.5;
-    line-height: 1.6;
-    margin-bottom: 1rem !important;
-}
-
-/* ── PARTNERS (hidden for now) ── */
-.home-partners-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-}
-.home-partner {
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid rgba(128,128,128,0.12);
-    text-decoration: none;
-    transition: border-color 150ms ease, background 150ms ease;
-    background: rgba(128,128,128,0.03);
-}
-.home-partner:hover {
-    border-color: rgba(128,128,128,0.25);
-    background: rgba(128,128,128,0.06);
-}
-.home-partner-logo {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 0.4rem;
-    background: rgba(128,128,128,0.08);
-    border: 1px solid rgba(128,128,128,0.1);
-    display: flex;
+.home-editors-line { display: flex; flex-wrap: wrap; gap: 0.3rem 0.35rem; }
+.home-editor {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-}
-.home-partner-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 0.4rem; }
-.home-partner-logo-placeholder {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.35rem;
-    background: rgba(128,128,128,0.2);
-}
-.home-partner-name {
-    font-size: 0.82rem;
-    font-weight: 700;
+    gap: 0.4rem;
+    padding: 0.28rem 0.6rem;
+    border-radius: 2rem;
+    background: rgba(128,128,128,0.09);
+    border: 1px solid rgba(128,128,128,0.22);
     color: var(--color-on-background);
+    text-decoration: none;
+    font-size: 0.74rem;
+    font-weight: 500;
     line-height: 1.3;
+    transition: border-color 100ms ease;
 }
-.home-partner-desc {
-    font-size: 0.72rem;
+.home-editor:hover { border-color: rgba(128,128,128,0.38); }
+.home-editor--lead { background: rgba(128,128,128,0.13); font-weight: 600; }
+.home-editor img { width: 0.85rem; height: 0.85rem; opacity: 0.7; flex-shrink: 0; }
+.home-editors-desc {
+    margin-top: 1rem !important;
+    font-size: 0.74rem;
     font-weight: 400;
     color: var(--color-on-background);
-    opacity: 0.42;
-    line-height: 1.55;
+    opacity: 0.45;
+    line-height: 1.6;
 }
+.home-editors-desc a { color: inherit; text-decoration: underline; }
 
 /* ── FOOTER ── */
 .home-page .site-footer { margin-top: 50px; }
@@ -1773,67 +1797,12 @@ main.page-list--pending .list-container {
 /* ── NARROW ──
    The desktop pages are only served above 900px (below it the router sends
    visitors to /mobile), but the window can still be dragged narrower. */
-@media (max-width: 1000px) {
-    .home-hero { padding: 2.5rem 1.5rem 2rem; }
-    /* The bar wraps on its own; it only needs the narrower gutter. */
-    .home-page .u-cred { padding-inline: 1.5rem; gap: 0.7rem 2rem; }
-    .home-content { padding-inline: 1.5rem; }
-    .home-grid-2col { grid-template-columns: 1fr; }
+@media (max-width: 1100px) {
+    .home-col { padding-inline: 1.5rem; }
+    .home-hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 2.25rem; }
+    .home-cols { grid-template-columns: 1fr; gap: 2rem; }
+    .home-page .u-cred { gap: 0.7rem 2rem; }
 }
-
-/* ── The editors card ──
-   These rules used to live in css/pages/information.css, which is where the
-   class names came from: both pages listed the editors the same way. The
-   information page now draws its team inside its own reader, so home is the
-   only page using them and they belong here, under home's own prefix. */
-.home-editors-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-}
-.home-editor {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.4rem 0.5rem;
-    border-radius: 0.35rem;
-    transition: background-color 100ms ease;
-}
-.home-editor:hover { background: rgba(128,128,128,0.08); }
-.home-editor img {
-    width: 1.1rem;
-    height: 1.1rem;
-    opacity: 0.7;
-}
-.home-editor a, .home-editor span.home-editor__name {
-    color: var(--color-on-background);
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    line-height: 1.6;
-}
-.home-editor a:hover { text-decoration: underline; }
-.home-role {
-    font-size: 0.6rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.15rem 0.4rem;
-    border-radius: 0.25rem;
-    background: rgba(128,128,128,0.15);
-    color: var(--color-on-background);
-    opacity: 0.5;
-    margin-left: auto;
-    white-space: nowrap;
-}
-.home-role-owner  { background: rgba(255,180,50,0.15); color: #ffcc55; opacity:1; }
-.home-role-admin  { background: rgba(100,180,255,0.15); color: #77bbff; opacity:1; }
-.home-role-seniormod { background: rgba(100,220,180,0.15); color: #66ddaa; opacity:1; }
-.home-role-dev    { background: rgba(200,100,255,0.15); color: #cc88ff; opacity:1; }
-.root.dark .home-role-owner  { background: rgba(200,140,0,0.15); color: #b38800; }
-.root.dark .home-role-admin  { background: rgba(30,100,200,0.15); color: #2266bb; }
-.root.dark .home-role-seniormod { background: rgba(30,160,100,0.15); color: #1a8855; }
-.root.dark .home-role-dev    { background: rgba(130,40,200,0.15); color: #7722bb; }
 
 /* ── css/pages/events.css ── */
 /* Events — js/pages/Events.js.
@@ -4188,19 +4157,31 @@ button.m2-fig:active { background: var(--u-fill-2); }
 }
 
 /* ── Timeline (home) ──────────────────────────────────────────────────────
-   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
-   the editors card off the end of a long scroll. */
-.m2-changes {
-    max-height: 18rem;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    padding: 0.75rem 0.85rem;
-    border: 1px solid var(--u-line);
+   In the card's own flow. It used to be a bounded window — max-height 18rem,
+   overflow-y auto — which meant 2513px of entries scrolling inside a 286px box
+   inside a page that also scrolls: on a touch screen a swipe that lands in the
+   box moves the wrong thing, and the frame around it doubled the card's own.
+   The latest day is open and the rest folds open under it (.mob-fold), which
+   keeps the editors card within reach without trapping a scroll. */
+.m2-changes { display: flex; flex-direction: column; }
+.m2-changes__more { display: contents; }
+.mob-fold {
+    align-self: flex-start;
+    margin-top: 0.85rem;
+    min-height: var(--m-tap);
+    padding: 0.4rem 0.8rem;
     border-radius: var(--m-r);
-    background: color-mix(in srgb, #808080 4%, var(--color-background));
+    border: 1px solid var(--u-line-2);
+    background: transparent;
+    color: var(--color-on-background);
+    font-family: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+    opacity: 0.7;
 }
+.mob-fold:active { opacity: 1; background: var(--u-fill-2); }
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
-.m2-tl-date:first-child { margin-top: 0; }
+.m2-changes > .m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }
 .m2-tl-item { display: grid; grid-template-columns: 0.5rem 1fr; gap: 0.6rem; padding: 0.25rem 0; font-size: 0.78rem; line-height: 1.5; }
 .m2-tl-dot { margin-top: 0.45rem; width: 0.32rem; height: 0.32rem; border-radius: 50%; background: currentColor; opacity: 0.3; }
@@ -4212,6 +4193,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
 /* ── Editors (home) ───────────────────────────────────────────────────── */
 .m2-eds { display: flex; flex-direction: column; gap: 0.75rem; }
+.m2-eds__note { margin-top: 0.9rem; font-size: 0.72rem; line-height: 1.6; opacity: 0.45; }
 .m2-eds__label { margin-bottom: 0.25rem; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.3; }
 .m2-ed { display: flex; align-items: center; gap: 0.5rem; min-height: 2.1rem; font-size: 0.82rem; font-weight: 500; }
 .m2-ed__ic { flex-shrink: 0; width: 1.05rem; height: 1.05rem; opacity: 0.7; }
@@ -4255,7 +4237,47 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
 /* The sections below start a little further down, and stand a little further
    apart, than on the pages that are all rows. */
-.mob-home-page .m2-body { padding-top: 1.5rem; gap: 1.5rem; }
+.mob-home-page .m2-body { padding-top: 1.25rem; gap: 1.35rem; }
+
+/* ── Home: the spotlight ──────────────────────────────────────────────────
+   41% of the window used to go by before the first level appeared, and what
+   appeared was a name in a row. #1 is introduced here the way /level/<slug>
+   introduces it — .u-hero from css/ull-v2.css with the two meters under it —
+   so the landing screen opens on a level rather than on an advert. The lead
+   above it is two lines rather than four to pay for the room. */
+.mob-home-page .m2-hero { padding: 1.5rem var(--m-pad) 1.1rem; }
+.mob-home-page .m2-hero__eyebrow { margin-bottom: 0.6rem; }
+.mob-home-page .m2-hero h1 { font-size: 1.75rem; }
+.mob-home-page .m2-hero p { margin-top: 0.6rem; font-size: 0.8rem; line-height: 1.6; }
+.mob-home-page .u-cred { padding-bottom: 1.1rem; }
+
+.mob-spot {
+    display: block;
+    margin: 0 var(--m-pad);
+    border-radius: var(--m-r);
+    border: 1px solid var(--u-line);
+    background: var(--u-fill);
+    overflow: hidden;
+}
+.mob-spot .u-hero { border: 0; border-radius: 0; border-bottom: 1px solid var(--u-line); }
+.mob-spot .u-hero__inner { padding: 1rem 0.9rem 0.85rem; align-items: flex-end; }
+.mob-spot .u-hero__title { font-size: 1.3rem; }
+.mob-spot .u-hero__by { margin-top: 0.35rem; font-size: 0.76rem; }
+.mob-spot__k { margin-bottom: 0.4rem; }
+.mob-spot__body { padding: 0.8rem 0.9rem 0.9rem; }
+.mob-spot__foot { margin-top: 0.85rem; }
+.mob-spot__foot .u-btn { min-height: var(--m-tap); }
+
+/* The status pill sits on the name's own line rather than at the end of the
+   row, which leaves the name the width it needs — it used to be a 135px column
+   with the verifier truncated under it — and the decoration reading is drawn
+   under both rather than written into the pill. */
+.mob-row__head { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
+.mob-row__head .m2-row__name { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mob-row__head .u-pill { flex-shrink: 0; }
+.mob-row__foot { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; }
+.mob-row__foot .u-bar { flex: 1; }
+.mob-row__pct { flex-shrink: 0; font-size: 0.62rem; font-weight: 700; opacity: 0.45; font-variant-numeric: tabular-nums; }
 
 /* ── /level/<slug> on a phone ─────────────────────────────────────────────
    The one route that renders on both surfaces: it never redirects, because

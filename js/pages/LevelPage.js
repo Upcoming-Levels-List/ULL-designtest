@@ -2,7 +2,7 @@ import { store } from '../main.js';
 import { fetchList } from '../content.js';
 import {
     embed, levelThumbnail, levelForSlug,
-    decorationPercent, verificationPercent, levelStatus,
+    decorationPercent, verificationPercent, verificationLabel, levelStatus,
     bestRecord, bestRun, recordLink, levelLength, levelId, hasVerifier,
     verifierLabel, verifierLine, levelRanks,
 } from '../util.js';
@@ -92,7 +92,7 @@ export default {
                             <div class="lvl-bar"><i :style="{ width: decoration + '%' }"></i></div>
                         </div>
                         <div class="lvl-meter">
-                            <div class="lvl-meter__top"><span>Verification</span><b>{{ verification }}%</b></div>
+                            <div class="lvl-meter__top"><span>Verification</span><b>{{ furthest || 'None' }}</b></div>
                             <div class="lvl-bar lvl-bar--alt"><i :style="{ width: verification + '%' }"></i></div>
                         </div>
                     </div>
@@ -194,6 +194,12 @@ export default {
         },
         verification() {
             return verificationPercent(this.level);
+        },
+        // The meter is drawn from the number; the reading beside it is written
+        // the way the evidence reads, so a run from 72% to the end says
+        // "72-100%" rather than the 28 points it is worth (js/util.js).
+        furthest() {
+            return verificationLabel(this.level);
         },
         status() {
             return levelStatus(this.level);

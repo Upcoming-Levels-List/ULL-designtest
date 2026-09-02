@@ -1,6 +1,6 @@
 import {
     embed, levelThumbnail, levelSlug,
-    decorationPercent, verificationPercent, levelStatus,
+    decorationPercent, verificationPercent, verificationLabel, levelStatus,
     bestRecord, bestRun, recordLink, levelLength, levelId, hasVerifier,
     verifierLabel, verifierLine, levelRanks,
 } from '../../util.js';
@@ -65,7 +65,7 @@ export default {
         <div v-if="leadProgress" class="u-card lp-lead">
             <div class="lp-lead__top">
                 <div>
-                    <b>{{ verification }}%</b>
+                    <b>{{ furthest || 'None' }}</b>
                     <span>Furthest progress</span>
                 </div>
                 <span class="u-pill" :class="'u-pill--' + status.tone"><i></i>{{ status.label }}</span>
@@ -92,7 +92,7 @@ export default {
                         <div class="u-bar"><i :style="{ width: decoration + '%' }"></i></div>
                     </div>
                     <div class="u-meter">
-                        <div class="u-meter__top"><span>Verification</span><b>{{ verification }}%</b></div>
+                        <div class="u-meter__top"><span>Verification</span><b>{{ furthest || 'None' }}</b></div>
                         <div class="u-bar u-bar--alt"><i :style="{ width: verification + '%' }"></i></div>
                     </div>
                 </div>
@@ -169,6 +169,9 @@ export default {
         verifierKnown() { return hasVerifier(this.level); },
         decoration() { return decorationPercent(this.level); },
         verification() { return verificationPercent(this.level); },
+        // The meter's width is the number; the reading is how it is written
+        // — a run says the span it covers, not the points it is worth.
+        furthest() { return verificationLabel(this.level); },
         status() { return levelStatus(this.level); },
         record() { return bestRecord(this.level); },
         run() { return bestRun(this.level); },

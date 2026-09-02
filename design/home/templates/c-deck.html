@@ -3,10 +3,10 @@ title: Deck
 tag: phone · C
 surface: mobile
 files: js/pages/mobile/MobileHome.js · css/pages/mobile-v2.css
-idea: The desktop template A, at 390px. The hero keeps its eyebrow and title but loses two of its four lines of lead, and the credentials bar comes out from under it, so the screen a visitor lands on opens on a level instead of on an advert: #1 with its blurred thumbnail, its status pill and both meters, then the next four as rows carrying their status beside the name and their decoration as a bar. Recent Changes comes out of its nested scroll box and shows the latest day in the page's own flow, with the rest folding open in place. The editors card becomes one tappable line, and the credentials bar lands beside it at the bottom, where "what this project is" belongs once the list itself has been seen.
-weight: 321px of the 792px window — 41% — currently goes by before the first level. Here the first level starts at roughly 200px and is shown in full. The nested feed goes: today it is 2513px of entries inside a 286px box inside a page that scrolls, which on a touch screen means a swipe that lands inside the box scrolls the wrong thing. And the 499px editors card, a quarter of the whole page, becomes a 48px row.
+idea: The desktop template A, at 390px. The hero keeps its eyebrow and title but loses two of its four lines of lead, so the screen a visitor lands on opens on a level instead of on an advert: the credentials bar, then #1 with its blurred thumbnail, its status pill and both meters, then the next five as rows carrying their status beside the name and their decoration as a bar. Recent Changes comes out of its nested scroll box and shows the latest day in the page's own flow, with the rest folding open in place. The editors keep the full card they have, grouped by role, at the foot of the page.
+weight: 321px of the 792px window — 41% — used to go by before the first level, and what appeared was a name in a row. Here the first level starts at roughly 320px and is shown in full: where it stands, how far the decoration got and how far anyone has got through it. The nested feed goes: it was 2513px of entries inside a 286px box inside a page that scrolls, which on a touch screen means a swipe that lands inside the box moves the wrong thing.
 cost: The same shape as the desktop template, so both can be built from one pass. The spotlight is .u-hero plus two .u-meter, all shipped; the row modifier is a .u-bar--thin under the existing .m2-row body. Deleting .m2-changes's max-height and overflow is a two-line change in css/pages/mobile-v2.css.
-watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3+ years" is the line that tells a first-time visitor this is not somebody's weekend project, and it now arrives after two screens. And the spotlight costs a full thumbnail load on the first paint of the phone's landing page.
+watch: The spotlight costs a full thumbnail load on the first paint of the phone's landing page, and it pushes the row list further down than the credentials bar above it does. And the phone's list section is still the next five rows of the list, where the desktop's is the five levels closest to taking Top 1 — the two surfaces no longer show the same section under the spotlight.
 -->
 <style>
 .mk-c .m2-hero { padding: 1.5rem var(--m-pad) 1.1rem; border-bottom: 0; }
@@ -19,7 +19,6 @@ watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3
 .mk-c .u-cred { gap: 0.7rem 1.2rem; }
 .mk-c .u-cred__ic { width: 2rem; height: 2rem; padding: 0.45rem; border-radius: 0.6rem; }
 .mk-c .u-cred__t { font-size: 0.82rem; }
-.mk-c .mh-about { padding: 0 var(--m-pad) 0.5rem; }
 </style>
 
 <div class="m2 ull2 mk-c">
@@ -32,6 +31,8 @@ watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3
             <h1>Upcoming Levels List</h1>
             <p>Every upcoming Top 1&ndash;100 Extreme Demon, ranked by where it is projected to land on the Demonlist.</p>
         </section>
+
+        <!--__B:cred2__-->
 
         <!-- #1, introduced the way /level/<slug> introduces it. -->
         <a class="mh-spot" href="#">
@@ -53,7 +54,7 @@ watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3
                     <span class="u-bar"><i style="width:100%"></i></span>
                 </div>
                 <div class="u-meter">
-                    <div class="u-meter__top"><span>Furthest anyone has got</span><b>28%</b></div>
+                    <div class="u-meter__top"><span>Furthest anyone has got</span><b>72-100%</b></div>
                     <span class="u-bar u-bar--alt"><i style="width:28%"></i></span>
                 </div>
                 <div class="mh-spot__foot"><span class="u-btn u-btn--ghost">Open level page</span></div>
@@ -89,7 +90,7 @@ watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3
                                 <span class="u-pill u-pill--cyan"><i></i>5%</span>
                             </span>
                             <span class="m2-row__sub">Silence &middot; zLevii</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:5%"></i></span><span class="mh-row__pct">6% furthest</span></span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:5%"></i></span><span class="mh-row__pct">49-55% furthest</span></span>
                         </span>
                     </a>
                     <a class="m2-row" href="#">
@@ -125,7 +126,7 @@ watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3
                                 <span class="u-pill u-pill--red"><i></i>Verifying</span>
                             </span>
                             <span class="m2-row__sub">TBT &middot; verification race</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span><span class="mh-row__pct">60% furthest</span></span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span><span class="mh-row__pct">40-100% furthest</span></span>
                         </span>
                     </a>
                 </div>
@@ -156,16 +157,36 @@ watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3
                 </div>
             </section>
 
-        </div>
+            <section class="u-card">
+                <h2 class="u-eyebrow">List editors <span class="u-count">12</span></h2>
+                <div class="m2-eds">
+                    <div>
+                        <div class="m2-eds__label">Owner &amp; admin</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/crown-dark.svg" alt="" />QwidziT<span class="m2-ed__role">Owner</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/user-gear-dark.svg" alt="" />exiled_shade<span class="m2-ed__role">Admin</span></div>
+                    </div>
+                    <div>
+                        <div class="m2-eds__label">Elder moderators</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/user-shield-dark.svg" alt="" />niroi<span class="m2-ed__role">Elder Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/user-shield-dark.svg" alt="" />Keres<span class="m2-ed__role">Elder Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/user-shield-dark.svg" alt="" />LukeLGamer<span class="m2-ed__role">Elder Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/user-shield-dark.svg" alt="" />ItzDel1ghtfuL<span class="m2-ed__role">Elder Mod</span></div>
+                    </div>
+                    <div>
+                        <div class="m2-eds__label">Moderators</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/user-lock-dark.svg" alt="" />Terralith<span class="m2-ed__role">Mod</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/user-lock-dark.svg" alt="" />TheCatAstronaut<span class="m2-ed__role">Mod</span></div>
+                    </div>
+                    <div>
+                        <div class="m2-eds__label">Developers</div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/code-dark.svg" alt="" />Prometheus<span class="m2-ed__role">Dev</span></div>
+                        <div class="m2-ed"><img class="m2-ed__ic mk-inv" src="../../assets/code-dark.svg" alt="" />NikoYakorem<span class="m2-ed__role">Dev</span></div>
+                    </div>
+                </div>
+                <p class="m2-eds__note">Trusted members who add levels, update placements and keep the list accurate.</p>
+            </section>
 
-        <div class="mh-credit">
-            <a class="mh-credit__row" href="#">
-                <span class="mh-credit__t"><b>12</b> list editors keep this accurate</span>
-                <span class="mh-credit__go">Meet them &rarr;</span>
-            </a>
         </div>
-
-        <div class="mh-about"><!--__B:cred2__--></div>
 
     </div>
 
