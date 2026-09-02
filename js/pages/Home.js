@@ -32,10 +32,8 @@ const roleGroups = [
     { label: 'Developers', roles: ['dev'] },
 ];
 
-// How many levels the Upcoming Top 1 lane shows, and how many days of the
-// change feed are open before the fold.
+// How many levels the Upcoming Top 1 lane shows.
 const TOP1_ROWS = 5;
-const FEED_DAYS_OPEN = 1;
 
 // The landing page of a level list used to show no levels. It now opens on one:
 // #1 introduced the way /level/<slug> introduces it, with its blurred
@@ -51,7 +49,7 @@ export default {
 <main class="home-page surface ull2">
 
     <div class="home-band">
-        <div class="home-col home-hero">
+        <div class="home-col home-hero" :class="{ 'home-hero--solo': !spotlight }">
             <div class="home-hero__body">
                 <div class="home-hero-eyebrow">Geometry Dash &middot; Extreme Demons</div>
                 <h1 class="home-hero-title">Upcoming Levels List</h1>
@@ -161,36 +159,19 @@ export default {
             <section>
                 <div class="home-section__head">
                     <h2 class="u-eyebrow">Recent changes</h2>
-                    <span v-if="openChanges" class="home-more">{{ openChanges }} on the latest day</span>
                 </div>
-                <!-- In the page's own flow. It used to be 2162px of entries
-                     inside a 387px window that scrolled inside a page that
-                     scrolls, and there is no changelog route to send a reader
-                     to, so the rest folds open here instead. -->
+                <!-- A framed window the feed scrolls inside, rather than the
+                     whole feed in the page's flow: there is no changelog route
+                     to send a reader to, and unrolled it pushed the editors
+                     beside it off the end of a long page. -->
                 <div v-if="recentChanges.length" class="home-feed">
-                    <template v-for="group in openGroups" :key="group.date">
+                    <template v-for="group in recentChanges" :key="group.date">
                         <div class="home-changes-date">{{ group.date }}</div>
                         <div v-for="entry in group.entries" :key="entry" class="home-change" :class="changeTone(entry)">
                             <span class="home-change__dot"></span>
                             <span class="home-change__text" v-html="formatChange(entry)"></span>
                         </div>
                     </template>
-                    <!-- Rendered and hidden rather than absent: the older days
-                         stay on the page for a search, a link and the e2e
-                         check that every date is here. -->
-                    <div v-show="feedOpen" class="home-feed__more">
-                        <template v-for="group in foldedGroups" :key="group.date">
-                            <div class="home-changes-date">{{ group.date }}</div>
-                            <div v-for="entry in group.entries" :key="entry" class="home-change" :class="changeTone(entry)">
-                                <span class="home-change__dot"></span>
-                                <span class="home-change__text" v-html="formatChange(entry)"></span>
-                            </div>
-                        </template>
-                    </div>
-                    <button v-if="foldedChanges" class="home-fold" type="button" @click="feedOpen = !feedOpen">
-                        <template v-if="feedOpen">Show fewer &uarr;</template>
-                        <template v-else>Show {{ foldedChanges }} older changes &darr;</template>
-                    </button>
                 </div>
                 <div v-else class="u-empty">
                     <div class="u-empty__t">Nothing logged yet</div>
@@ -236,7 +217,6 @@ export default {
         spotlight: null,
         top1: [],
         hardestVerified: null,
-        feedOpen: false,
         roleIconMap,
     }),
     computed: {
@@ -249,10 +229,6 @@ export default {
                 .map((g) => ({ label: g.label, lead: !!g.lead, editors: this.editors.filter((e) => g.roles.includes(e.role)) }))
                 .filter((g) => g.editors.length);
         },
-        openGroups() { return this.recentChanges.slice(0, FEED_DAYS_OPEN); },
-        foldedGroups() { return this.recentChanges.slice(FEED_DAYS_OPEN); },
-        openChanges() { return this.openGroups.reduce((n, g) => n + (g.entries || []).length, 0); },
-        foldedChanges() { return this.foldedGroups.reduce((n, g) => n + (g.entries || []).length, 0); },
     },
     async mounted() {
         const [editors, recentChanges, list] = await Promise.all([

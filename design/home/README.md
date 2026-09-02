@@ -163,7 +163,7 @@ A and C, with three changes asked for on top of the templates. The templates
 above have been kept in step with all three, so what the deck renders is what the
 site renders.
 
-### 1. The desktop's lane is Upcoming Top 1, not the next five rows
+### 1. The lane is Upcoming Top 1, not the next five rows
 
 `Next on the list` — rows #2 to #6 — became **Upcoming Top 1 levels**: the five
 levels **placed above the hardest level on the list that is already verified**,
@@ -179,8 +179,10 @@ The boundary is `levels.findIndex(l => l.isVerified)` over the list the page
 already holds; when nothing on the list is verified, every level is a candidate.
 No new field, and no second fetch.
 
-The phone kept `Next on the list`. **This is the one place the two surfaces no
-longer show the same section**, and it was asked for that way.
+**Both surfaces carry it.** The phone shows the same five levels in the same
+order under the same heading, with the same note under it — the desktop's
+trailing figure column becomes the reading beside the bar, which is how the
+phone's rows already carry a percentage.
 
 ### 2. The phone keeps its credentials at the top and its editors card whole
 
@@ -227,3 +229,31 @@ page is sorted by. The bar's width is still the number — only the words change
 | `js/pages/mobile/MobileHome.js` | template C, with the credentials at the top and the editors card whole |
 | `css/pages/mobile-v2.css` | the spotlight, the re-measured row, and `.m2-changes` losing its `max-height`/`overflow` |
 | `js/pages/LevelPage.js`, `js/components/List/LevelPanel.js`, `js/pages/mobile/MobileList.js`, `js/pages/UpcomingLevels.js`, `js/pages/mobile/MobileUpcoming.js` | the run label |
+
+
+## Changes since that pass
+
+Three, and one bug they turned up. The templates and this deck have been kept in
+step with all of them, so what the deck renders is what the site renders.
+
+- **The hero swapped sides.** The level is on the left and the copy on the
+  right. The spotlight's left edge is the page's left edge — the one the
+  credentials bar and every row below it are also drawn from — so the first
+  screen has one alignment rather than a card floating off to one side. The copy
+  keeps the first position in the DOM, so the `h1` is still the first thing in
+  the source; only the column order is CSS. Its paragraph lost its 32rem cap and
+  fills the column, which is what left a ragged band of nothing beside the card.
+- **`padding` was resetting the column's gutter.** `.home-hero { padding: 2.75rem
+  0 2.25rem }` is a shorthand, so it set `padding-inline: 0` and beat the
+  `padding-inline: 2.5rem` on `.home-col`. **The hero was drawn 40px to the left
+  of every other row on the page**, which is what "their spacing looks ugly" was
+  pointing at. Every such block is `padding-block` now, on the site and in the
+  three templates here that had copied the same shape. Measured after: the
+  spotlight, the credentials bar, the section heading and every row share one
+  left edge (242px at 1440, 482px at 1920) and one right edge.
+- **Recent Changes is a framed scroll window again**, on both surfaces, and the
+  "18 on the latest day" count beside its heading is gone. The fold that replaced
+  the window kept every entry in the page's flow, which made a page that is
+  already three screens on a phone most of a fourth for a log nobody reads to the
+  end. All three days are still in the DOM — the window scrolls, nothing is
+  hidden behind a control.

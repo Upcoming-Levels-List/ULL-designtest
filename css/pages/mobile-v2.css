@@ -164,6 +164,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
 /* ── Body ─────────────────────────────────────────────────────────────── */
 .m2-body { flex: 1; padding: 1rem var(--m-pad) 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
 .m2-sec__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.7rem; }
+/* One line under a section heading saying what the rows below are picked by. */
+.m2-sec__note { margin: -0.3rem 0 0.75rem; font-size: 0.72rem; line-height: 1.55; opacity: 0.45; }
+.m2-sec__note b { font-weight: 600; opacity: 0.85; }
 .m2-sec__head .u-eyebrow { margin-bottom: 0; }
 .m2-more { font-size: 0.68rem; font-weight: 600; opacity: 0.5; white-space: nowrap; }
 
@@ -663,31 +666,19 @@ button.m2-fig:active { background: var(--u-fill-2); }
 }
 
 /* ── Timeline (home) ──────────────────────────────────────────────────────
-   In the card's own flow. It used to be a bounded window — max-height 18rem,
-   overflow-y auto — which meant 2513px of entries scrolling inside a 286px box
-   inside a page that also scrolls: on a touch screen a swipe that lands in the
-   box moves the wrong thing, and the frame around it doubled the card's own.
-   The latest day is open and the rest folds open under it (.mob-fold), which
-   keeps the editors card within reach without trapping a scroll. */
-.m2-changes { display: flex; flex-direction: column; }
-.m2-changes__more { display: contents; }
-.mob-fold {
-    align-self: flex-start;
-    margin-top: 0.85rem;
-    min-height: var(--m-tap);
-    padding: 0.4rem 0.8rem;
+   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
+   the editors card off the end of a long scroll. */
+.m2-changes {
+    max-height: 18rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--u-line);
     border-radius: var(--m-r);
-    border: 1px solid var(--u-line-2);
-    background: transparent;
-    color: var(--color-on-background);
-    font-family: inherit;
-    font-size: 0.74rem;
-    font-weight: 600;
-    opacity: 0.7;
+    background: color-mix(in srgb, #808080 4%, var(--color-background));
 }
-.mob-fold:active { opacity: 1; background: var(--u-fill-2); }
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
-.m2-changes > .m2-tl-date:first-child { margin-top: 0; }
+.m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }
 .m2-tl-item { display: grid; grid-template-columns: 0.5rem 1fr; gap: 0.6rem; padding: 0.25rem 0; font-size: 0.78rem; line-height: 1.5; }
 .m2-tl-dot { margin-top: 0.45rem; width: 0.32rem; height: 0.32rem; border-radius: 50%; background: currentColor; opacity: 0.3; }

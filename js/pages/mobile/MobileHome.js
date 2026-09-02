@@ -26,8 +26,8 @@ const roleGroups = [
     { label: 'Developers', roles: ['dev'] },
 ];
 
-// How many days of the change feed are open before the fold.
-const FEED_DAYS_OPEN = 1;
+// How many levels the Upcoming Top 1 lane shows, matching the desktop.
+const TOP1_ROWS = 5;
 
 export default {
     template: `
@@ -84,13 +84,19 @@ export default {
 
             <div class="m2-body">
 
-                <section v-if="nextLevels.length">
+                <!-- The desktop's lane, at 390px: not the next rows of the
+                     list but the five levels above the hardest verified level,
+                     ordered by how far anyone has got through them. -->
+                <section v-if="top1.length">
                     <div class="m2-sec__head">
-                        <h2 class="u-eyebrow">Next on the list</h2>
-                        <router-link class="m2-more" to="/mobile/all">All {{ counts ? counts.all : '' }} →</router-link>
+                        <h2 class="u-eyebrow">Upcoming Top 1 levels</h2>
+                        <router-link class="m2-more" to="/mobile/upcoming">Upcoming →</router-link>
                     </div>
+                    <p v-if="hardestVerified" class="m2-sec__note">
+                        Above <b>{{ hardestVerified.name }}</b>, the hardest level on the list that is verified, and closest to being verified themselves.
+                    </p>
                     <div class="m2-rows m2-rows--flush">
-                        <router-link v-for="entry in nextLevels" :key="entry.slug" class="m2-row" :to="'/level/' + entry.slug">
+                        <router-link v-for="entry in top1" :key="entry.slug" class="m2-row" :to="'/level/' + entry.slug">
                             <span class="m2-row__rank">#{{ entry.rank }}</span>
                             <img class="m2-row__thumb" :src="entry.thumbnail" alt="" loading="lazy" />
                             <span class="m2-row__body">
@@ -100,7 +106,7 @@ export default {
                                 </span>
                                 <span class="m2-row__sub">{{ entry.level.author }}<template v-if="entry.verifier"> · {{ entry.verifier.name }}</template></span>
                                 <span class="mob-row__foot">
-                                    <span class="u-bar u-bar--thin"><i :style="{ width: entry.decoration + '%' }"></i></span>
+                                    <span class="u-bar u-bar--alt u-bar--thin"><i :style="{ width: entry.progress + '%' }"></i></span>
                                     <span v-if="entry.furthest" class="mob-row__pct">{{ entry.furthest }} furthest</span>
                                 </span>
                             </span>
@@ -108,37 +114,19 @@ export default {
                     </div>
                 </section>
 
-                <!-- No max-height and no overflow: the feed is part of the page,
-                     and the page is the only thing that scrolls. It used to be
-                     2513px of entries inside a 286px box inside a scrolling
-                     page, which on a touch screen means a swipe that lands
-                     inside the box moves the wrong thing. -->
+                <!-- A framed window the feed scrolls inside. Unrolled it ran
+                     past the editors card under it and made a page that is
+                     already three screens most of a fourth. -->
                 <section class="u-card">
-                    <div class="m2-sec__head">
-                        <h2 class="u-eyebrow">Recent changes</h2>
-                        <span v-if="openChanges" class="m2-more">{{ openChanges }} on the latest day</span>
-                    </div>
+                    <h2 class="u-eyebrow">Recent changes</h2>
                     <div v-if="recentChanges.length" class="m2-changes">
-                        <template v-for="group in openGroups" :key="group.date">
+                        <template v-for="group in recentChanges" :key="group.date">
                             <div class="m2-tl-date">{{ group.date }}</div>
                             <div v-for="entry in group.entries" :key="entry" class="m2-tl-item" :class="changeTone(entry)">
                                 <span class="m2-tl-dot"></span>
                                 <div v-html="formatChange(entry)"></div>
                             </div>
                         </template>
-                        <div v-show="feedOpen" class="m2-changes__more">
-                            <template v-for="group in foldedGroups" :key="group.date">
-                                <div class="m2-tl-date">{{ group.date }}</div>
-                                <div v-for="entry in group.entries" :key="entry" class="m2-tl-item" :class="changeTone(entry)">
-                                    <span class="m2-tl-dot"></span>
-                                    <div v-html="formatChange(entry)"></div>
-                                </div>
-                            </template>
-                        </div>
-                        <button v-if="foldedChanges" class="mob-fold" type="button" @click="feedOpen = !feedOpen">
-                            <template v-if="feedOpen">Show fewer ↑</template>
-                            <template v-else>Show {{ foldedChanges }} older changes ↓</template>
-                        </button>
                     </div>
                     <div v-else class="u-empty">
                         <div class="u-empty__t">Nothing logged yet</div>
@@ -171,7 +159,6 @@ export default {
         roleIconMap,
         roleLabelMap,
         recentChanges: [],
-        feedOpen: false,
     }),
     computed: {
         levels() {
@@ -185,31 +172,28 @@ export default {
         entries() {
             const levels = this.levels;
             const paths = levels.map((l) => l.path);
-            return levels.slice(0, 6).map((level, i) => {
-                const status = levelStatus(level);
-                const pf = decorationPercent(level);
-                return {
-                    level,
-                    rank: i + 1,
-                    slug: levelSlug(level.path, paths),
-                    thumbnail: levelThumbnail(level),
-                    status,
-                    verifier: verifierLine(level),
-                    decoration: pf,
-                    progress: verificationPercent(level),
-                    furthest: verificationLabel(level),
-                    // The row has no room for "Decoration 80% done".
-                    short: status.label.startsWith('Decoration') ? pf + '%'
-                        : status.label === 'Being verified' ? 'Verifying' : status.label,
-                };
-            });
+            return levels.slice(0, 1).map((level, i) => this.entry(level, i, paths));
         },
         spotlight() { return this.entries[0] || null; },
-        nextLevels() { return this.entries.slice(1); },
-        openGroups() { return this.recentChanges.slice(0, FEED_DAYS_OPEN); },
-        foldedGroups() { return this.recentChanges.slice(FEED_DAYS_OPEN); },
-        openChanges() { return this.openGroups.reduce((n, g) => n + (g.entries || []).length, 0); },
-        foldedChanges() { return this.foldedGroups.reduce((n, g) => n + (g.entries || []).length, 0); },
+        // A level placed above the hardest verified level is projected to be
+        // harder than it, so finishing it makes it the new Top 1. Which of them
+        // gets there first is the question this lane answers, so they are
+        // ordered by how far anyone has got rather than by placement.
+        verifiedAt() { return this.levels.findIndex((l) => l.isVerified); },
+        hardestVerified() {
+            return this.verifiedAt === -1 ? null : this.levels[this.verifiedAt];
+        },
+        top1() {
+            const levels = this.levels;
+            if (!levels.length) return [];
+            const paths = levels.map((l) => l.path);
+            const above = this.verifiedAt === -1 ? levels : levels.slice(0, this.verifiedAt);
+            return above
+                .map((level, i) => this.entry(level, i, paths))
+                .filter((e) => !e.level.isVerified)
+                .sort((a, b) => b.progress - a.progress)
+                .slice(0, TOP1_ROWS);
+        },
         // Grouped for the sub-headings, never reordered inside a group.
         editorGroups() {
             return roleGroups
@@ -221,6 +205,24 @@ export default {
         this.recentChanges = await fetchRecentChanges() || [];
     },
     methods: {
+        entry(level, i, paths) {
+            const status = levelStatus(level);
+            const pf = decorationPercent(level);
+            return {
+                level,
+                rank: i + 1,
+                slug: levelSlug(level.path, paths),
+                thumbnail: levelThumbnail(level),
+                status,
+                verifier: verifierLine(level),
+                decoration: pf,
+                progress: verificationPercent(level),
+                furthest: verificationLabel(level),
+                // The row has no room for "Decoration 80% done".
+                short: status.label.startsWith('Decoration') ? pf + '%'
+                    : status.label === 'Being verified' ? 'Verifying' : status.label,
+            };
+        },
         // A change line already says which way a level moved; the dot only
         // repeats it in colour so the feed can be scanned without reading.
         changeTone(text) {

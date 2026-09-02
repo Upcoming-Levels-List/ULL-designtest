@@ -31,17 +31,30 @@
 }
 
 /* ── HERO ──
-   Copy on the left, the level the copy is about on the right. The lead is
-   capped at 40rem and nothing used to sit beside it, so at 1920 the hero used
-   736px of the 1740px band it was drawn on and the rest was tinted nothing. */
+   The level on the left, the copy about the list on the right. The spotlight
+   leads because its left edge is the page's left edge — the one the
+   credentials bar and every row below it are also drawn from — so the first
+   screen has one alignment rather than a card floating off to one side.
+
+   The copy keeps the DOM's first position, so the h1 is still the first thing
+   in the source; only the column order is CSS. And the paragraph fills its
+   column rather than stopping at a 32rem cap, which is what left a ragged
+   band of nothing between the text and the card beside it. */
 .home-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
     gap: 3rem;
     align-items: center;
-    padding: 2.75rem 0 2.25rem;
+    /* Block only. A `padding` shorthand here would reset the inline padding
+       .home-col sets, which is what put the hero 40px to the left of every
+       other row on the page. */
+    padding-block: 2.75rem 2.25rem;
 }
-.home-hero__body { min-width: 0; }
+.home-hero__body { min-width: 0; order: 2; }
+.home-spot { order: 1; }
+/* Before the list arrives there is no spotlight, so the hero is one column
+   rather than one column and an empty gap. */
+.home-hero--solo { grid-template-columns: minmax(0, 1fr); }
 .home-hero-eyebrow {
     font-size: 0.62rem;
     font-weight: 700;
@@ -59,7 +72,6 @@
 }
 .home-hero-desc {
     margin-top: 0.9rem !important;
-    max-width: 32rem;
     font-size: 0.88rem;
     font-weight: 500;
     line-height: 1.65;
@@ -211,13 +223,21 @@
 }
 
 /* ── RECENT CHANGES ──
-   In the page's own flow. It used to be 2162px of entries inside a 387px
-   window that scrolled inside a page that scrolls — 5.6 screens of nested
-   scroll — and there is no changelog route to send a reader to, so the older
-   days fold open here instead. They are rendered and hidden rather than
-   absent, so a date is still on the page for a search or a link. */
-.home-feed { display: flex; flex-direction: column; }
-.home-feed__more { display: contents; }
+   A framed window the feed scrolls inside. There is no changelog route to send
+   a reader to, so every entry is here; unrolled into the page's own flow it ran
+   past the editors beside it and made the page most of a screen longer for a
+   log nobody reads to the end. */
+.home-feed {
+    display: flex;
+    flex-direction: column;
+    max-height: 26rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(128, 128, 128, 0.18);
+    border-radius: 0.5rem;
+    background: rgba(128, 128, 128, 0.04);
+}
 .home-changes-date {
     display: flex;
     align-items: center;
@@ -261,22 +281,6 @@
 .root.dark .home-change.is-down .home-change__dot { background: #cc511b; }
 .home-change .dim { opacity: 0.45; }
 .home-change strong { font-weight: 600; }
-.home-fold {
-    align-self: flex-start;
-    margin-top: 0.9rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 0.5rem;
-    border: 1px solid rgba(128,128,128,0.38);
-    background: transparent;
-    color: var(--color-on-background);
-    font-family: "Lexend Deca", sans-serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 120ms ease, background-color 120ms ease;
-}
-.home-fold:hover { opacity: 1; background: rgba(128,128,128,0.13); }
 
 /* ── EDITORS ──
    Twelve names in a bordered card was 465px of the page and half its

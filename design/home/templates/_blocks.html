@@ -21,6 +21,9 @@
    hero, the credentials bar, the sections and the footer on the same column,
    so there is one left edge on the page and one right edge. */
 .hm { display: block; height: 100%; overflow-y: auto; scrollbar-width: thin; }
+/* Set block padding on anything that also carries .hm-col with `padding-block`,
+   never the `padding` shorthand: the shorthand resets padding-inline to 0 and
+   drops that block 40px to the left of every other row on the page. */
 .hm-col { max-width: 76rem; margin: 0 auto; padding-inline: 2.5rem; }
 
 /* A band is full-bleed; the column inside it is not. This is how a tint or a

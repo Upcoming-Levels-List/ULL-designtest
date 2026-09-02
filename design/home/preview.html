@@ -682,6 +682,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
 /* ── Body ─────────────────────────────────────────────────────────────── */
 .m2-body { flex: 1; padding: 1rem var(--m-pad) 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
 .m2-sec__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.7rem; }
+/* One line under a section heading saying what the rows below are picked by. */
+.m2-sec__note { margin: -0.3rem 0 0.75rem; font-size: 0.72rem; line-height: 1.55; opacity: 0.45; }
+.m2-sec__note b { font-weight: 600; opacity: 0.85; }
 .m2-sec__head .u-eyebrow { margin-bottom: 0; }
 .m2-more { font-size: 0.68rem; font-weight: 600; opacity: 0.5; white-space: nowrap; }
 
@@ -1181,31 +1184,19 @@ button.m2-fig:active { background: var(--u-fill-2); }
 }
 
 /* ── Timeline (home) ──────────────────────────────────────────────────────
-   In the card's own flow. It used to be a bounded window — max-height 18rem,
-   overflow-y auto — which meant 2513px of entries scrolling inside a 286px box
-   inside a page that also scrolls: on a touch screen a swipe that lands in the
-   box moves the wrong thing, and the frame around it doubled the card's own.
-   The latest day is open and the rest folds open under it (.mob-fold), which
-   keeps the editors card within reach without trapping a scroll. */
-.m2-changes { display: flex; flex-direction: column; }
-.m2-changes__more { display: contents; }
-.mob-fold {
-    align-self: flex-start;
-    margin-top: 0.85rem;
-    min-height: var(--m-tap);
-    padding: 0.4rem 0.8rem;
+   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
+   the editors card off the end of a long scroll. */
+.m2-changes {
+    max-height: 18rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--u-line);
     border-radius: var(--m-r);
-    border: 1px solid var(--u-line-2);
-    background: transparent;
-    color: var(--color-on-background);
-    font-family: inherit;
-    font-size: 0.74rem;
-    font-weight: 600;
-    opacity: 0.7;
+    background: color-mix(in srgb, #808080 4%, var(--color-background));
 }
-.mob-fold:active { opacity: 1; background: var(--u-fill-2); }
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
-.m2-changes > .m2-tl-date:first-child { margin-top: 0; }
+.m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }
 .m2-tl-item { display: grid; grid-template-columns: 0.5rem 1fr; gap: 0.6rem; padding: 0.25rem 0; font-size: 0.78rem; line-height: 1.5; }
 .m2-tl-dot { margin-top: 0.45rem; width: 0.32rem; height: 0.32rem; border-radius: 50%; background: currentColor; opacity: 0.3; }
@@ -1358,6 +1349,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
    hero, the credentials bar, the sections and the footer on the same column,
    so there is one left edge on the page and one right edge. */
 .hm { display: block; height: 100%; overflow-y: auto; scrollbar-width: thin; }
+/* Set block padding on anything that also carries .hm-col with `padding-block`,
+   never the `padding` shorthand: the shorthand resets padding-inline to 0 and
+   drops that block 40px to the left of every other row on the page. */
 .hm-col { max-width: 76rem; margin: 0 auto; padding-inline: 2.5rem; }
 
 /* A band is full-bleed; the column inside it is not. This is how a tint or a
@@ -1620,12 +1614,12 @@ button.m2-fig:active { background: var(--u-fill-2); }
             </div>
             <code class="pg__files">pages/a-spotlight.html &middot; js/pages/Home.js · css/pages/home.css</code>
         </div>
-        <p class="pg__idea">Keep every block the page has and fix the geometry it sits on. One column carries the hero, the credentials, the rows and the feed, so the page has a single left edge instead of the two it had — 72px apart at 1440, 312px apart at 1920. The half of the hero that was empty at every width goes to the level the page is about: #1 drawn the way /level/&lt;slug&gt; draws it, with its blurred thumbnail, its status pill and both progress meters. Under it, not the next five rows of the list but the five levels above the hardest verified level that have got furthest through verification — the ones that would take the Top 1 spot if they were finished today, in the order they are likely to do it. The feed comes out of its nested scroll window and the editors card becomes a line of names.</p>
+        <p class="pg__idea">Keep every block the page has and fix the geometry it sits on. One column carries the hero, the credentials, the rows and the feed, so the page has a single left edge instead of the two it had — 72px apart at 1440, 312px apart at 1920 — and the level leads it, on the left, where that edge is. The half of the hero that was empty at every width goes to #1, drawn the way /level/&lt;slug&gt; draws it, with its blurred thumbnail, its status pill and both progress meters, and the copy fills the column beside it. Under it, not the next five rows of the list but the five levels above the hardest verified level that have got furthest through verification — the ones that would take the Top 1 spot if they were finished today, in the order they are likely to do it. The feed keeps its scroll window, and the editors card becomes a line of names.</p>
 
             <div class="pg__notes">
                 <div class="note note--weight">
                     <div class="note__k">What it fixes</div>
-                    <p>The first screen stops being an advert and starts being the list. A visitor sees one level in full — where it stands, how far the decoration got, how far anyone has got through it — plus four more with the same numbers drawn rather than written. The staff roster drops from 465px of card to one wrapped line, and Recent Changes stops being a 2162px feed inside a 387px box inside a scrolling page.</p>
+                    <p>The first screen stops being an advert and starts being the list. A visitor sees one level in full — where it stands, how far the decoration got, how far anyone has got through it — plus four more with the same numbers drawn rather than written. The staff roster drops from 465px of card to one wrapped line, and every row on the page — the spotlight, the credentials, the lane, the feed — is drawn from one left edge and one right edge.</p>
                 </div>
                 <div class="note note--cost">
                     <div class="note__k">What it costs to build</div>
@@ -1633,21 +1627,34 @@ button.m2-fig:active { background: var(--u-fill-2); }
                 </div>
                 <div class="note note--watch">
                     <div class="note__k">What to watch for</div>
-                    <p>The spotlight is only ever #1, so the page leads with a level that may sit at 100% decoration for months — it is the top of the list, not news. The Top 1 lane is ordered by progress rather than by placement, so its rank column does not count down, which reads as a mistake until the note under the heading is read. And the feed shows the newest day with the rest folded, because there is no changelog route to send a reader to.</p>
+                    <p>The spotlight is only ever #1, so the page leads with a level that may sit at 100% decoration for months — it is the top of the list, not news. The Top 1 lane is ordered by progress rather than by placement, so its rank column does not count down, which reads as a mistake until the note under the heading is read.</p>
                 </div>
             </div>
         <div class="frame">
             <div class="frame__bar"><span></span><span></span><span></span><code>ull.pages.dev/</code></div>
             <div class="frame__view root" data-mock>
 <style>
-.mk-a .hm-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 3rem; align-items: center; padding: 2.75rem 0 2.25rem; }
-.mk-a .hm-lead { max-width: 32rem; }
+/* The level on the left, the copy on the right: the spotlight's left edge is
+   the page's left edge, the one the credentials bar and every row below are
+   also drawn from. The copy keeps the DOM's first position — only the column
+   order is CSS — and the paragraph fills its column rather than stopping at a
+   cap, which is what left a ragged band of nothing beside the card.
+   `padding-block`, not `padding`: a shorthand here resets the inline padding
+   the column sets, which is what put the hero 40px left of everything else. */
+.mk-a .hm-hero { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 3rem; align-items: center; padding-block: 2.75rem 2.25rem; }
+.mk-a .hm-hero > div:first-child { order: 2; min-width: 0; }
+.mk-a .hm-spot { order: 1; }
 .mk-a .u-cred { padding: 1.15rem 0; border-top: 1px solid var(--u-line); }
-.mk-a .hm-body { padding: 1.75rem 0 2.5rem; }
+.mk-a .hm-body { padding-block: 1.75rem 2.5rem; }
 .mk-a .hm-top { display: flex; flex-direction: column; gap: 0.15rem; }
 .mk-a .hm-top .u-row { border: 1px solid transparent; padding-block: 0.6rem; }
 .mk-a .hm-top .u-row:hover { border-color: var(--u-line); }
 .mk-a .hm-cols { display: grid; grid-template-columns: minmax(0, 1fr) 17rem; gap: 3rem; align-items: start; margin-top: 2.25rem; padding-top: 2rem; border-top: 1px solid var(--u-line); }
+/* A framed window the feed scrolls inside. There is no changelog route to send
+   a reader to, so every entry is here; unrolled it ran past the editors beside
+   it and made the page most of a screen longer for a log nobody reads to the
+   end. */
+.mk-a .hm-feed { max-height: 26rem; overflow-y: auto; scrollbar-width: thin; padding: 0.85rem 1rem; border: 1px solid var(--u-line); border-radius: var(--u-r-sm); background: var(--u-fill); }
 .mk-a .hm-note--lane { margin: 0 0 0.9rem; max-width: 46rem; }
 .mk-a .hm-note { margin: 0.75rem 0 0; font-size: 0.74rem; line-height: 1.6; opacity: 0.45; }
 </style>
@@ -1807,7 +1814,6 @@ button.m2-fig:active { background: var(--u-fill-2); }
             <section>
                 <div class="hm-sec__head">
                     <h2 class="u-eyebrow">Recent changes</h2>
-                    <span class="hm-more">18 changes on the latest day</span>
                 </div>
                 <div class="hm-feed">
                     <div class="hm-feed__date">23 August 2026</div>
@@ -1816,17 +1822,14 @@ button.m2-fig:active { background: var(--u-fill-2); }
                     <div class="hm-change is-up"><span class="hm-change__dot"></span><div><b>Ex Vacuo</b> <span class="dim">has been moved up from #233 to #113, above</span> <b>ANGELBURN</b> <span class="dim">and below</span> <b>BOOBAWAMBA</b></div></div>
                     <div class="hm-change is-up"><span class="hm-change__dot"></span><div><b>ARE</b> <span class="dim">has been moved up from #257 to #142, above</span> <b>Thibkign Soace III</b> <span class="dim">and below</span> <b>RONALDO CIRCLES</b></div></div>
                     <div class="hm-change is-down"><span class="hm-change__dot"></span><div><b>AICHMIRA</b> <span class="dim">has been moved down from #261 to #476, above</span> <b>Critical Heat</b> <span class="dim">and below</span> <b>Checked Steam</b></div></div>
-                    <details class="hm-fold">
-                        <summary><span class="hm-fold__more">Show 37 older changes &darr;</span><span class="hm-fold__less">Show fewer &uarr;</span></summary>
-                        <div class="hm-change is-up"><span class="hm-change__dot"></span><div><b>Silentman Adventures</b> <span class="dim">has been moved up from #185 to #157, above</span> <b>Spammer</b> <span class="dim">and below</span> <b>Lirile</b></div></div>
-                        <div class="hm-change is-up"><span class="hm-change__dot"></span><div><b>The Lightning Rod</b> <span class="dim">has been moved up from #253 to #237, above</span> <b>Pigstep</b> <span class="dim">and below</span> <b>Suppression</b></div></div>
-                        <div class="hm-feed__date">22 August 2026</div>
-                        <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>Cyberpsychosis (Karma)</b> <span class="dim">has been placed at #88, above</span> <b>GREEN BULLET</b> <span class="dim">and below</span> <b>Chaoz Devotion</b></div></div>
-                        <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>Control Nexus</b> <span class="dim">has been placed at #168, above</span> <b>Bonfire</b> <span class="dim">and below</span> <b>The National Anthem</b></div></div>
-                        <div class="hm-feed__date">21 August 2026</div>
-                        <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>Rebirth The End</b> <span class="dim">has been placed at #3, above</span> <b>M A N R A Y</b> <span class="dim">and below</span> <b>Kingdom of Miracalis</b></div></div>
-                        <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>FUKOUNA GIRL</b> <span class="dim">has been placed at #139, above</span> <b>Ashley Wave Trials</b> <span class="dim">and below</span> <b>Silent clubstep</b></div></div>
-                    </details>
+                    <div class="hm-change is-up"><span class="hm-change__dot"></span><div><b>Silentman Adventures</b> <span class="dim">has been moved up from #185 to #157, above</span> <b>Spammer</b> <span class="dim">and below</span> <b>Lirile</b></div></div>
+                    <div class="hm-change is-up"><span class="hm-change__dot"></span><div><b>The Lightning Rod</b> <span class="dim">has been moved up from #253 to #237, above</span> <b>Pigstep</b> <span class="dim">and below</span> <b>Suppression</b></div></div>
+                    <div class="hm-feed__date">22 August 2026</div>
+                    <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>Cyberpsychosis (Karma)</b> <span class="dim">has been placed at #88, above</span> <b>GREEN BULLET</b> <span class="dim">and below</span> <b>Chaoz Devotion</b></div></div>
+                    <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>Control Nexus</b> <span class="dim">has been placed at #168, above</span> <b>Bonfire</b> <span class="dim">and below</span> <b>The National Anthem</b></div></div>
+                    <div class="hm-feed__date">21 August 2026</div>
+                    <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>Rebirth The End</b> <span class="dim">has been placed at #3, above</span> <b>M A N R A Y</b> <span class="dim">and below</span> <b>Kingdom of Miracalis</b></div></div>
+                    <div class="hm-change is-new"><span class="hm-change__dot"></span><div><b>FUKOUNA GIRL</b> <span class="dim">has been placed at #139, above</span> <b>Ashley Wave Trials</b> <span class="dim">and below</span> <b>Silent clubstep</b></div></div>
                 </div>
             </section>
 
@@ -1885,7 +1888,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
             <div class="frame__bar"><span></span><span></span><span></span><code>ull.pages.dev/</code></div>
             <div class="frame__view root" data-mock>
 <style>
-.mk-b .hm-hero { display: flex; align-items: center; justify-content: space-between; gap: 3rem; padding: 1.9rem 0 1.7rem; }
+.mk-b .hm-hero { display: flex; align-items: center; justify-content: space-between; gap: 3rem; padding-block: 1.9rem 1.7rem; }
 .mk-b .hm-hero__body { max-width: 42rem; }
 .mk-b .hm-title { margin: 0.5rem 0 0; font-size: clamp(1.6rem, 2.4vw, 2.1rem); }
 .mk-b .hm-lead { margin-top: 0.6rem; font-size: 0.84rem; }
@@ -1895,7 +1898,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 .mk-b .u-cred__ic { width: 2.1rem; height: 2.1rem; padding: 0.5rem; border-radius: 0.65rem; }
 .mk-b .u-cred__t { font-size: 0.9rem; }
 
-.mk-b .hm-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding: 0 0 2rem; }
+.mk-b .hm-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding-block: 0 2rem; }
 .mk-b .hm-lane { padding: 1.5rem 1.6rem 1.5rem 0; }
 .mk-b .hm-lane + .hm-lane { padding-left: 1.6rem; border-left: 1px solid var(--u-line); }
 .mk-b .hm-lane:last-child { padding-right: 0; }
@@ -1910,7 +1913,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 .mk-b .hm-lane__note { margin: 0 0 0.9rem; font-size: 0.72rem; line-height: 1.55; opacity: 0.42; }
 .mk-b .hm-lane--race .u-row { display: grid; grid-template-columns: 1fr 3.2rem; align-items: center; gap: 0.75rem; }
 .mk-b .hm-lane--race .hm-row__fig { font-size: 0.95rem; font-weight: 700; color: var(--u-accent); }
-.mk-b .hm-credit { display: flex; align-items: flex-start; justify-content: space-between; gap: 3rem; padding: 1.5rem 0 2.25rem; border-top: 1px solid var(--u-line); }
+.mk-b .hm-credit { display: flex; align-items: flex-start; justify-content: space-between; gap: 3rem; padding-block: 1.5rem 2.25rem; border-top: 1px solid var(--u-line); }
 .mk-b .hm-credit__k { flex-shrink: 0; width: 11rem; }
 .mk-b .hm-credit__k p { margin: 0.5rem 0 0; font-size: 0.72rem; line-height: 1.6; opacity: 0.42; }
 @media (max-width: 1250px) {
@@ -2145,21 +2148,21 @@ button.m2-fig:active { background: var(--u-fill-2); }
             </div>
             <code class="pg__files">pages/c-deck.html &middot; js/pages/mobile/MobileHome.js · css/pages/mobile-v2.css</code>
         </div>
-        <p class="pg__idea">The desktop template A, at 390px. The hero keeps its eyebrow and title but loses two of its four lines of lead, so the screen a visitor lands on opens on a level instead of on an advert: the credentials bar, then #1 with its blurred thumbnail, its status pill and both meters, then the next five as rows carrying their status beside the name and their decoration as a bar. Recent Changes comes out of its nested scroll box and shows the latest day in the page's own flow, with the rest folding open in place. The editors keep the full card they have, grouped by role, at the foot of the page.</p>
+        <p class="pg__idea">The desktop template A, at 390px. The hero keeps its eyebrow and title but loses two of its four lines of lead, so the screen a visitor lands on opens on a level instead of on an advert: the credentials bar, then #1 with its blurred thumbnail, its status pill and both meters, then the next five as rows carrying their status beside the name and their decoration as a bar. Recent Changes keeps the bounded window it scrolls inside, and the editors keep the full card they have, grouped by role, at the foot of the page.</p>
         <div class="pg__cols">
 
             <div class="pg__notes">
                 <div class="note note--weight">
                     <div class="note__k">What it fixes</div>
-                    <p>321px of the 792px window — 41% — used to go by before the first level, and what appeared was a name in a row. Here the first level starts at roughly 320px and is shown in full: where it stands, how far the decoration got and how far anyone has got through it. The nested feed goes: it was 2513px of entries inside a 286px box inside a page that scrolls, which on a touch screen means a swipe that lands inside the box moves the wrong thing.</p>
+                    <p>321px of the 792px window — 41% — used to go by before the first level, and what appeared was a name in a row. Here the first level starts at roughly 320px and is shown in full: where it stands, how far the decoration got and how far anyone has got through it. And the lane under it is the desktop's, so the two surfaces show the same section under the spotlight.</p>
                 </div>
                 <div class="note note--cost">
                     <div class="note__k">What it costs to build</div>
-                    <p>The same shape as the desktop template, so both can be built from one pass. The spotlight is .u-hero plus two .u-meter, all shipped; the row modifier is a .u-bar--thin under the existing .m2-row body. Deleting .m2-changes's max-height and overflow is a two-line change in css/pages/mobile-v2.css.</p>
+                    <p>The same shape as the desktop template, so both can be built from one pass. The spotlight is .u-hero plus two .u-meter, all shipped; the row modifier is a .u-bar--thin under the existing .m2-row body; the lane is the same slice of the same list the desktop takes.</p>
                 </div>
                 <div class="note note--watch">
                     <div class="note__k">What to watch for</div>
-                    <p>The spotlight costs a full thumbnail load on the first paint of the phone's landing page, and it pushes the row list further down than the credentials bar above it does. And the phone's list section is still the next five rows of the list, where the desktop's is the five levels closest to taking Top 1 — the two surfaces no longer show the same section under the spotlight.</p>
+                    <p>The spotlight costs a full thumbnail load on the first paint of the phone's landing page, and it pushes the row list further down than the credentials bar above it does. And the lane is ordered by progress rather than by placement, so its rank column does not count down, which reads as a mistake until the note under the heading is read.</p>
                 </div>
             </div>
             <div class="phone">
@@ -2228,97 +2231,93 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
         <div class="m2-body">
 
+            <!-- The desktop's lane, at 390px: not the next rows of the list
+                 but the five levels above the hardest verified level, ordered
+                 by how far anyone has got through them. -->
             <section>
                 <div class="m2-sec__head">
-                    <h2 class="u-eyebrow">Next on the list</h2>
-                    <a class="m2-more" href="#">All 479 &rarr;</a>
+                    <h2 class="u-eyebrow">Upcoming Top 1 levels</h2>
+                    <a class="m2-more" href="#">Upcoming &rarr;</a>
                 </div>
+                <p class="m2-sec__note">Above <b>Society</b>, the hardest level on the list that is verified, and closest to being verified themselves.</p>
                 <div class="m2-rows m2-rows--flush">
                     <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#2</span>
+                        <span class="m2-row__rank">#26</span>
                         <span class="m2-row__thumb mk-thumb mk-thumb--b"></span>
                         <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Kingdom of Miracalis</span>
-                                <span class="u-pill u-pill--yellow"><i></i>80%</span>
-                            </span>
-                            <span class="m2-row__sub">Duke &middot; wPopoff</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:80%"></i></span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#3</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--c"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Rebirth The End</span>
-                                <span class="u-pill u-pill--cyan"><i></i>5%</span>
-                            </span>
-                            <span class="m2-row__sub">Silence &middot; zLevii</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:5%"></i></span><span class="mh-row__pct">49-55% furthest</span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#4</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--d"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">M A N R A Y</span>
-                                <span class="u-pill u-pill--blue"><i></i>Layout</span>
-                            </span>
-                            <span class="m2-row__sub">akunakunn &middot; unknown</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:0%"></i></span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#5</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--e"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Cyanical</span>
-                                <span class="u-pill u-pill--amber"><i></i>Verifying</span>
-                            </span>
-                            <span class="m2-row__sub">qponn &middot; open verification</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#6</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--f"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Vehemence</span>
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">GRIEF</span>
                                 <span class="u-pill u-pill--red"><i></i>Verifying</span>
                             </span>
-                            <span class="m2-row__sub">TBT &middot; verification race</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span><span class="mh-row__pct">40-100% furthest</span></span>
+                            <span class="m2-row__sub">IcedCave &middot; Doggie</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:97%"></i></span><span class="mob-row__pct">97% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#27</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--c"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">Sweeping Demon 2</span>
+                                <span class="u-pill u-pill--red"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">Temp &middot; Taiago</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:86%"></i></span><span class="mob-row__pct">86% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#25</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--d"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">KOCMOC UNLEASHED</span>
+                                <span class="u-pill u-pill--red"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">[cherry] team | Vernam &middot; Arshadow</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:72%"></i></span><span class="mob-row__pct">19-91% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#37</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--e"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">Artemis 13</span>
+                                <span class="u-pill u-pill--red"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">nxhtrise &middot; Zoink</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:72%"></i></span><span class="mob-row__pct">72% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#24</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--f"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">EXASPERATION</span>
+                                <span class="u-pill u-pill--yellow"><i></i>95%</span>
+                            </span>
+                            <span class="m2-row__sub">Thycket &middot; Zoink</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:67%"></i></span><span class="mob-row__pct">67% furthest</span></span>
                         </span>
                     </a>
                 </div>
             </section>
 
-            <!-- No max-height, no overflow: the feed is part of the page, and
-                 the page is the only thing that scrolls. -->
-            <section>
-                <div class="m2-sec__head">
-                    <h2 class="u-eyebrow">Recent changes</h2>
-                    <span class="m2-more">18 on 23 Aug</span>
-                </div>
-                <div class="mh-feed">
-                    <div class="mh-feed__date">23 August 2026</div>
-                    <div class="mh-change is-down"><span class="mh-change__dot"></span><div><b>Tunnel of Serpent</b> <span class="dim">moved down, #54 &rarr; #59</span></div></div>
-                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Cyberpsychosis (Sobeann)</b> <span class="dim">moved up, #97 &rarr; #91</span></div></div>
-                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Ex Vacuo</b> <span class="dim">moved up, #233 &rarr; #113</span></div></div>
-                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>ARE</b> <span class="dim">moved up, #257 &rarr; #142</span></div></div>
-                    <div class="mh-change is-down"><span class="mh-change__dot"></span><div><b>AICHMIRA</b> <span class="dim">moved down, #261 &rarr; #476</span></div></div>
-                    <details class="hm-fold">
-                        <summary><span class="hm-fold__more">Show 37 older changes &darr;</span><span class="hm-fold__less">Show fewer &uarr;</span></summary>
-                        <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Silentman Adventures</b> <span class="dim">moved up, #185 &rarr; #157</span></div></div>
-                        <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>The Lightning Rod</b> <span class="dim">moved up, #253 &rarr; #237</span></div></div>
-                        <div class="mh-feed__date">22 August 2026</div>
-                        <div class="mh-change is-new"><span class="mh-change__dot"></span><div><b>Cyberpsychosis (Karma)</b> <span class="dim">placed at #88</span></div></div>
-                        <div class="mh-change is-new"><span class="mh-change__dot"></span><div><b>Control Nexus</b> <span class="dim">placed at #168</span></div></div>
-                    </details>
+            <!-- A bounded window rather than the whole feed: unrolled, Recent
+                 Changes pushed the editors card off the end of a long scroll. -->
+            <section class="u-card">
+                <h2 class="u-eyebrow">Recent changes</h2>
+                <div class="m2-changes">
+                    <div class="m2-tl-date">23 August 2026</div>
+                    <div class="m2-tl-item is-down"><span class="m2-tl-dot"></span><div><b>Tunnel of Serpent</b> <span class="dim">has been moved down from #54 to #59, above</span> <b>Remorse</b> <span class="dim">and below</span> <b>Amethyst</b></div></div>
+                    <div class="m2-tl-item is-up"><span class="m2-tl-dot"></span><div><b>Cyberpsychosis (Sobeann)</b> <span class="dim">has been moved up from #97 to #91, above</span> <b>ORBIT</b> <span class="dim">and below</span> <b>Energy Wave</b></div></div>
+                    <div class="m2-tl-item is-up"><span class="m2-tl-dot"></span><div><b>Ex Vacuo</b> <span class="dim">has been moved up from #233 to #113, above</span> <b>ANGELBURN</b> <span class="dim">and below</span> <b>BOOBAWAMBA</b></div></div>
+                    <div class="m2-tl-item is-up"><span class="m2-tl-dot"></span><div><b>ARE</b> <span class="dim">has been moved up from #257 to #142, above</span> <b>Thibkign Soace III</b> <span class="dim">and below</span> <b>RONALDO CIRCLES</b></div></div>
+                    <div class="m2-tl-item is-down"><span class="m2-tl-dot"></span><div><b>AICHMIRA</b> <span class="dim">has been moved down from #261 to #476</span></div></div>
+                    <div class="m2-tl-date">22 August 2026</div>
+                    <div class="m2-tl-item is-new"><span class="m2-tl-dot"></span><div><b>Cyberpsychosis (Karma)</b> <span class="dim">has been placed at #88</span></div></div>
+                    <div class="m2-tl-item is-new"><span class="m2-tl-dot"></span><div><b>Control Nexus</b> <span class="dim">has been placed at #168</span></div></div>
                 </div>
             </section>
 

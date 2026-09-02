@@ -585,6 +585,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
 /* ── Body ─────────────────────────────────────────────────────────────── */
 .m2-body { flex: 1; padding: 1rem var(--m-pad) 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
 .m2-sec__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.7rem; }
+/* One line under a section heading saying what the rows below are picked by. */
+.m2-sec__note { margin: -0.3rem 0 0.75rem; font-size: 0.72rem; line-height: 1.55; opacity: 0.45; }
+.m2-sec__note b { font-weight: 600; opacity: 0.85; }
 .m2-sec__head .u-eyebrow { margin-bottom: 0; }
 .m2-more { font-size: 0.68rem; font-weight: 600; opacity: 0.5; white-space: nowrap; }
 
@@ -1084,31 +1087,19 @@ button.m2-fig:active { background: var(--u-fill-2); }
 }
 
 /* ── Timeline (home) ──────────────────────────────────────────────────────
-   In the card's own flow. It used to be a bounded window — max-height 18rem,
-   overflow-y auto — which meant 2513px of entries scrolling inside a 286px box
-   inside a page that also scrolls: on a touch screen a swipe that lands in the
-   box moves the wrong thing, and the frame around it doubled the card's own.
-   The latest day is open and the rest folds open under it (.mob-fold), which
-   keeps the editors card within reach without trapping a scroll. */
-.m2-changes { display: flex; flex-direction: column; }
-.m2-changes__more { display: contents; }
-.mob-fold {
-    align-self: flex-start;
-    margin-top: 0.85rem;
-    min-height: var(--m-tap);
-    padding: 0.4rem 0.8rem;
+   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
+   the editors card off the end of a long scroll. */
+.m2-changes {
+    max-height: 18rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--u-line);
     border-radius: var(--m-r);
-    border: 1px solid var(--u-line-2);
-    background: transparent;
-    color: var(--color-on-background);
-    font-family: inherit;
-    font-size: 0.74rem;
-    font-weight: 600;
-    opacity: 0.7;
+    background: color-mix(in srgb, #808080 4%, var(--color-background));
 }
-.mob-fold:active { opacity: 1; background: var(--u-fill-2); }
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
-.m2-changes > .m2-tl-date:first-child { margin-top: 0; }
+.m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }
 .m2-tl-item { display: grid; grid-template-columns: 0.5rem 1fr; gap: 0.6rem; padding: 0.25rem 0; font-size: 0.78rem; line-height: 1.5; }
 .m2-tl-dot { margin-top: 0.45rem; width: 0.32rem; height: 0.32rem; border-radius: 50%; background: currentColor; opacity: 0.3; }
@@ -1261,6 +1252,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
    hero, the credentials bar, the sections and the footer on the same column,
    so there is one left edge on the page and one right edge. */
 .hm { display: block; height: 100%; overflow-y: auto; scrollbar-width: thin; }
+/* Set block padding on anything that also carries .hm-col with `padding-block`,
+   never the `padding` shorthand: the shorthand resets padding-inline to 0 and
+   drops that block 40px to the left of every other row on the page. */
 .hm-col { max-width: 76rem; margin: 0 auto; padding-inline: 2.5rem; }
 
 /* A band is full-bleed; the column inside it is not. This is how a tint or a
@@ -1436,7 +1430,7 @@ html.root.dark .mk-inv { filter: invert(1); }
 </head>
 <body>
 <style>
-.mk-b .hm-hero { display: flex; align-items: center; justify-content: space-between; gap: 3rem; padding: 1.9rem 0 1.7rem; }
+.mk-b .hm-hero { display: flex; align-items: center; justify-content: space-between; gap: 3rem; padding-block: 1.9rem 1.7rem; }
 .mk-b .hm-hero__body { max-width: 42rem; }
 .mk-b .hm-title { margin: 0.5rem 0 0; font-size: clamp(1.6rem, 2.4vw, 2.1rem); }
 .mk-b .hm-lead { margin-top: 0.6rem; font-size: 0.84rem; }
@@ -1446,7 +1440,7 @@ html.root.dark .mk-inv { filter: invert(1); }
 .mk-b .u-cred__ic { width: 2.1rem; height: 2.1rem; padding: 0.5rem; border-radius: 0.65rem; }
 .mk-b .u-cred__t { font-size: 0.9rem; }
 
-.mk-b .hm-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding: 0 0 2rem; }
+.mk-b .hm-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding-block: 0 2rem; }
 .mk-b .hm-lane { padding: 1.5rem 1.6rem 1.5rem 0; }
 .mk-b .hm-lane + .hm-lane { padding-left: 1.6rem; border-left: 1px solid var(--u-line); }
 .mk-b .hm-lane:last-child { padding-right: 0; }
@@ -1461,7 +1455,7 @@ html.root.dark .mk-inv { filter: invert(1); }
 .mk-b .hm-lane__note { margin: 0 0 0.9rem; font-size: 0.72rem; line-height: 1.55; opacity: 0.42; }
 .mk-b .hm-lane--race .u-row { display: grid; grid-template-columns: 1fr 3.2rem; align-items: center; gap: 0.75rem; }
 .mk-b .hm-lane--race .hm-row__fig { font-size: 0.95rem; font-weight: 700; color: var(--u-accent); }
-.mk-b .hm-credit { display: flex; align-items: flex-start; justify-content: space-between; gap: 3rem; padding: 1.5rem 0 2.25rem; border-top: 1px solid var(--u-line); }
+.mk-b .hm-credit { display: flex; align-items: flex-start; justify-content: space-between; gap: 3rem; padding-block: 1.5rem 2.25rem; border-top: 1px solid var(--u-line); }
 .mk-b .hm-credit__k { flex-shrink: 0; width: 11rem; }
 .mk-b .hm-credit__k p { margin: 0.5rem 0 0; font-size: 0.72rem; line-height: 1.6; opacity: 0.42; }
 @media (max-width: 1250px) {

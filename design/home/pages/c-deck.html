@@ -585,6 +585,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
 /* ── Body ─────────────────────────────────────────────────────────────── */
 .m2-body { flex: 1; padding: 1rem var(--m-pad) 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
 .m2-sec__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.7rem; }
+/* One line under a section heading saying what the rows below are picked by. */
+.m2-sec__note { margin: -0.3rem 0 0.75rem; font-size: 0.72rem; line-height: 1.55; opacity: 0.45; }
+.m2-sec__note b { font-weight: 600; opacity: 0.85; }
 .m2-sec__head .u-eyebrow { margin-bottom: 0; }
 .m2-more { font-size: 0.68rem; font-weight: 600; opacity: 0.5; white-space: nowrap; }
 
@@ -1084,31 +1087,19 @@ button.m2-fig:active { background: var(--u-fill-2); }
 }
 
 /* ── Timeline (home) ──────────────────────────────────────────────────────
-   In the card's own flow. It used to be a bounded window — max-height 18rem,
-   overflow-y auto — which meant 2513px of entries scrolling inside a 286px box
-   inside a page that also scrolls: on a touch screen a swipe that lands in the
-   box moves the wrong thing, and the frame around it doubled the card's own.
-   The latest day is open and the rest folds open under it (.mob-fold), which
-   keeps the editors card within reach without trapping a scroll. */
-.m2-changes { display: flex; flex-direction: column; }
-.m2-changes__more { display: contents; }
-.mob-fold {
-    align-self: flex-start;
-    margin-top: 0.85rem;
-    min-height: var(--m-tap);
-    padding: 0.4rem 0.8rem;
+   A bounded window rather than the whole feed: unrolled, Recent Changes pushed
+   the editors card off the end of a long scroll. */
+.m2-changes {
+    max-height: 18rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--u-line);
     border-radius: var(--m-r);
-    border: 1px solid var(--u-line-2);
-    background: transparent;
-    color: var(--color-on-background);
-    font-family: inherit;
-    font-size: 0.74rem;
-    font-weight: 600;
-    opacity: 0.7;
+    background: color-mix(in srgb, #808080 4%, var(--color-background));
 }
-.mob-fold:active { opacity: 1; background: var(--u-fill-2); }
 .m2-tl-date { display: flex; align-items: center; gap: 0.6rem; margin: 0.8rem 0 0.35rem; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.35; }
-.m2-changes > .m2-tl-date:first-child { margin-top: 0; }
+.m2-tl-date:first-child { margin-top: 0; }
 .m2-tl-date::after { content: ''; flex: 1; height: 1px; background: var(--u-line); }
 .m2-tl-item { display: grid; grid-template-columns: 0.5rem 1fr; gap: 0.6rem; padding: 0.25rem 0; font-size: 0.78rem; line-height: 1.5; }
 .m2-tl-dot { margin-top: 0.45rem; width: 0.32rem; height: 0.32rem; border-radius: 50%; background: currentColor; opacity: 0.3; }
@@ -1261,6 +1252,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
    hero, the credentials bar, the sections and the footer on the same column,
    so there is one left edge on the page and one right edge. */
 .hm { display: block; height: 100%; overflow-y: auto; scrollbar-width: thin; }
+/* Set block padding on anything that also carries .hm-col with `padding-block`,
+   never the `padding` shorthand: the shorthand resets padding-inline to 0 and
+   drops that block 40px to the left of every other row on the page. */
 .hm-col { max-width: 76rem; margin: 0 auto; padding-inline: 2.5rem; }
 
 /* A band is full-bleed; the column inside it is not. This is how a tint or a
@@ -1499,97 +1493,93 @@ html.root.dark .mk-inv { filter: invert(1); }
 
         <div class="m2-body">
 
+            <!-- The desktop's lane, at 390px: not the next rows of the list
+                 but the five levels above the hardest verified level, ordered
+                 by how far anyone has got through them. -->
             <section>
                 <div class="m2-sec__head">
-                    <h2 class="u-eyebrow">Next on the list</h2>
-                    <a class="m2-more" href="#">All 479 &rarr;</a>
+                    <h2 class="u-eyebrow">Upcoming Top 1 levels</h2>
+                    <a class="m2-more" href="#">Upcoming &rarr;</a>
                 </div>
+                <p class="m2-sec__note">Above <b>Society</b>, the hardest level on the list that is verified, and closest to being verified themselves.</p>
                 <div class="m2-rows m2-rows--flush">
                     <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#2</span>
+                        <span class="m2-row__rank">#26</span>
                         <span class="m2-row__thumb mk-thumb mk-thumb--b"></span>
                         <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Kingdom of Miracalis</span>
-                                <span class="u-pill u-pill--yellow"><i></i>80%</span>
-                            </span>
-                            <span class="m2-row__sub">Duke &middot; wPopoff</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:80%"></i></span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#3</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--c"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Rebirth The End</span>
-                                <span class="u-pill u-pill--cyan"><i></i>5%</span>
-                            </span>
-                            <span class="m2-row__sub">Silence &middot; zLevii</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:5%"></i></span><span class="mh-row__pct">49-55% furthest</span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#4</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--d"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">M A N R A Y</span>
-                                <span class="u-pill u-pill--blue"><i></i>Layout</span>
-                            </span>
-                            <span class="m2-row__sub">akunakunn &middot; unknown</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:0%"></i></span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#5</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--e"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Cyanical</span>
-                                <span class="u-pill u-pill--amber"><i></i>Verifying</span>
-                            </span>
-                            <span class="m2-row__sub">qponn &middot; open verification</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span></span>
-                        </span>
-                    </a>
-                    <a class="m2-row" href="#">
-                        <span class="m2-row__rank">#6</span>
-                        <span class="m2-row__thumb mk-thumb mk-thumb--f"></span>
-                        <span class="m2-row__body">
-                            <span class="mh-row__head">
-                                <span class="m2-row__name">Vehemence</span>
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">GRIEF</span>
                                 <span class="u-pill u-pill--red"><i></i>Verifying</span>
                             </span>
-                            <span class="m2-row__sub">TBT &middot; verification race</span>
-                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span><span class="mh-row__pct">40-100% furthest</span></span>
+                            <span class="m2-row__sub">IcedCave &middot; Doggie</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:97%"></i></span><span class="mob-row__pct">97% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#27</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--c"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">Sweeping Demon 2</span>
+                                <span class="u-pill u-pill--red"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">Temp &middot; Taiago</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:86%"></i></span><span class="mob-row__pct">86% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#25</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--d"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">KOCMOC UNLEASHED</span>
+                                <span class="u-pill u-pill--red"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">[cherry] team | Vernam &middot; Arshadow</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:72%"></i></span><span class="mob-row__pct">19-91% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#37</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--e"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">Artemis 13</span>
+                                <span class="u-pill u-pill--red"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">nxhtrise &middot; Zoink</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:72%"></i></span><span class="mob-row__pct">72% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#24</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--f"></span>
+                        <span class="m2-row__body">
+                            <span class="mob-row__head">
+                                <span class="m2-row__name">EXASPERATION</span>
+                                <span class="u-pill u-pill--yellow"><i></i>95%</span>
+                            </span>
+                            <span class="m2-row__sub">Thycket &middot; Zoink</span>
+                            <span class="mob-row__foot"><span class="u-bar u-bar--alt u-bar--thin"><i style="width:67%"></i></span><span class="mob-row__pct">67% furthest</span></span>
                         </span>
                     </a>
                 </div>
             </section>
 
-            <!-- No max-height, no overflow: the feed is part of the page, and
-                 the page is the only thing that scrolls. -->
-            <section>
-                <div class="m2-sec__head">
-                    <h2 class="u-eyebrow">Recent changes</h2>
-                    <span class="m2-more">18 on 23 Aug</span>
-                </div>
-                <div class="mh-feed">
-                    <div class="mh-feed__date">23 August 2026</div>
-                    <div class="mh-change is-down"><span class="mh-change__dot"></span><div><b>Tunnel of Serpent</b> <span class="dim">moved down, #54 &rarr; #59</span></div></div>
-                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Cyberpsychosis (Sobeann)</b> <span class="dim">moved up, #97 &rarr; #91</span></div></div>
-                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Ex Vacuo</b> <span class="dim">moved up, #233 &rarr; #113</span></div></div>
-                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>ARE</b> <span class="dim">moved up, #257 &rarr; #142</span></div></div>
-                    <div class="mh-change is-down"><span class="mh-change__dot"></span><div><b>AICHMIRA</b> <span class="dim">moved down, #261 &rarr; #476</span></div></div>
-                    <details class="hm-fold">
-                        <summary><span class="hm-fold__more">Show 37 older changes &darr;</span><span class="hm-fold__less">Show fewer &uarr;</span></summary>
-                        <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Silentman Adventures</b> <span class="dim">moved up, #185 &rarr; #157</span></div></div>
-                        <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>The Lightning Rod</b> <span class="dim">moved up, #253 &rarr; #237</span></div></div>
-                        <div class="mh-feed__date">22 August 2026</div>
-                        <div class="mh-change is-new"><span class="mh-change__dot"></span><div><b>Cyberpsychosis (Karma)</b> <span class="dim">placed at #88</span></div></div>
-                        <div class="mh-change is-new"><span class="mh-change__dot"></span><div><b>Control Nexus</b> <span class="dim">placed at #168</span></div></div>
-                    </details>
+            <!-- A bounded window rather than the whole feed: unrolled, Recent
+                 Changes pushed the editors card off the end of a long scroll. -->
+            <section class="u-card">
+                <h2 class="u-eyebrow">Recent changes</h2>
+                <div class="m2-changes">
+                    <div class="m2-tl-date">23 August 2026</div>
+                    <div class="m2-tl-item is-down"><span class="m2-tl-dot"></span><div><b>Tunnel of Serpent</b> <span class="dim">has been moved down from #54 to #59, above</span> <b>Remorse</b> <span class="dim">and below</span> <b>Amethyst</b></div></div>
+                    <div class="m2-tl-item is-up"><span class="m2-tl-dot"></span><div><b>Cyberpsychosis (Sobeann)</b> <span class="dim">has been moved up from #97 to #91, above</span> <b>ORBIT</b> <span class="dim">and below</span> <b>Energy Wave</b></div></div>
+                    <div class="m2-tl-item is-up"><span class="m2-tl-dot"></span><div><b>Ex Vacuo</b> <span class="dim">has been moved up from #233 to #113, above</span> <b>ANGELBURN</b> <span class="dim">and below</span> <b>BOOBAWAMBA</b></div></div>
+                    <div class="m2-tl-item is-up"><span class="m2-tl-dot"></span><div><b>ARE</b> <span class="dim">has been moved up from #257 to #142, above</span> <b>Thibkign Soace III</b> <span class="dim">and below</span> <b>RONALDO CIRCLES</b></div></div>
+                    <div class="m2-tl-item is-down"><span class="m2-tl-dot"></span><div><b>AICHMIRA</b> <span class="dim">has been moved down from #261 to #476</span></div></div>
+                    <div class="m2-tl-date">22 August 2026</div>
+                    <div class="m2-tl-item is-new"><span class="m2-tl-dot"></span><div><b>Cyberpsychosis (Karma)</b> <span class="dim">has been placed at #88</span></div></div>
+                    <div class="m2-tl-item is-new"><span class="m2-tl-dot"></span><div><b>Control Nexus</b> <span class="dim">has been placed at #168</span></div></div>
                 </div>
             </section>
 
