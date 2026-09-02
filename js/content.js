@@ -35,10 +35,6 @@ export async function fetchEditors() {
     }
 }
 
-export async function fetchUnlisted() {
-    return null;
-}
-
 export async function fetchPending() {
     try {
         const res = await fetch(`${api}/api/pending`);
@@ -73,26 +69,6 @@ export async function fetchLevelVerif() {
     } catch {
         return null;
     }
-}
-
-export async function fetchUnlistedPairs() {
-    const unlisted = await fetchUnlisted();
-    if (unlisted === null){
-        return null;
-    }
-    var pairs = [];
-    var pair = [];
-    for (var i=0; i<unlisted.length; i++){
-        if (i%2===1){
-            pair = [unlisted[i-1], unlisted[i]];
-            pairs.push(pair);
-          }
-        if (i === unlisted.length-1 && unlisted.length%2===1){
-            pair = [unlisted[i], null];
-            pairs.push(pair);
-        }
-    }
-    return pairs;
 }
 
 
@@ -172,7 +148,6 @@ export async function fetchLeaderboard() {
     // Sort by total score
     return [res.sort((a, b) => b.total - a.total), errs];
 }
-
 
 // export async function fetchLeaderboard() {
 //     const list = await fetchList();

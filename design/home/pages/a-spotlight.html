@@ -1430,16 +1430,14 @@ html.root.dark .mk-inv { filter: invert(1); }
 </head>
 <body>
 <style>
-/* The level on the left, the copy on the right: the spotlight's left edge is
-   the page's left edge, the one the credentials bar and every row below are
-   also drawn from. The copy keeps the DOM's first position — only the column
-   order is CSS — and the paragraph fills its column rather than stopping at a
-   cap, which is what left a ragged band of nothing beside the card.
+/* The copy on the left, the level it is about on the right, and the paragraph
+   fills its column rather than stopping at a cap — that cap is what left a
+   ragged band of nothing beside the card. Both edges are the page's: the copy
+   starts where every row below it starts, the card ends where they end.
    `padding-block`, not `padding`: a shorthand here resets the inline padding
    the column sets, which is what put the hero 40px left of everything else. */
-.mk-a .hm-hero { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 3rem; align-items: center; padding-block: 2.75rem 2.25rem; }
-.mk-a .hm-hero > div:first-child { order: 2; min-width: 0; }
-.mk-a .hm-spot { order: 1; }
+.mk-a .hm-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 3rem; align-items: center; padding-block: 2.75rem 2.25rem; }
+.mk-a .hm-hero > div:first-child { min-width: 0; }
 .mk-a .u-cred { padding: 1.15rem 0; border-top: 1px solid var(--u-line); }
 .mk-a .hm-body { padding-block: 1.75rem 2.5rem; }
 .mk-a .hm-top { display: flex; flex-direction: column; gap: 0.15rem; }

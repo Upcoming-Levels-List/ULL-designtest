@@ -321,7 +321,7 @@ Every page is built from one set of components rather than its own styling.
 | `css/pages/mobile-v2.css` | Only what differs at 390px: one column, a detail that expands under its row, the tab bar, the bottom sheet, and a type scale one step down. Everything else on mobile comes from `ull-v2.css` unchanged. |
 | `js/components/List/LevelPanel.js` | The level container, rendered by All Levels, Main List, Future List and Upcoming Levels. |
 | `css/pages/mobile-info.css` | The phone's Information page. It carries `.info-page` as well as `.mob-info`, so the prose, legends, tables and people rows come from `css/pages/information.css` unchanged and this file holds only the 390px differences. |
-| `js/util.js` | The shared readings a level page and a list row both need: `levelStatus`, `decorationPercent`, `verificationPercent`, `bestRecord`, `bestRun`, `recordLink`, `levelLength`, `levelId`, `hasVerifier`, `isOpenVerification`, `verifierLabel`, `verifierLine`, `levelRanks`. Derive nothing twice. |
+| `js/util.js` | The shared readings a level page and a list row both need: `levelStatus`, `decorationPercent`, `verificationEvidence`, `verificationPercent`, `verificationLabel`, `bestRecord`, `bestRun`, `recordLink`, `levelLength`, `levelId`, `hasVerifier`, `isOpenVerification`, `verifierLabel`, `verifierLine`, `levelRanks`. Derive nothing twice. |
 | `js/info-windows.js` | The Information page's seven windows, their counts and the one search index over the guidelines, the FAQ, the endpoints, the level fields and both legends. Read by the desktop page and the phone. |
 | `js/home-stats.js` | The three things the home page says about the list, their icons and their copy. The desktop shows all three, the phone the first two. |
 | `js/leaderboard.js` | Scoring, plus `recordProgress` and `recordTypeLabel` — how far a record got and what kind of record it is, on both surfaces. |
@@ -340,6 +340,26 @@ wherever it appears — the list panel, its own page, the phone's rows, Events:
   order — All Levels, Main List, Future List — so they do not reshuffle as you
   move between lists. A tier the level is not on reads **N/A** rather than
   disappearing, and only the list you are reading is highlighted.
+- **How far anyone has got** is measured once and written twice.
+  `verificationEvidence` picks the winning reading — the highest record from 0%,
+  or the longest span of a run, whichever reaches further — and says which kind
+  it is. `verificationPercent` is the number it is worth: it sets every meter's
+  width, the status tones, and the order of Upcoming Levels. `verificationLabel`
+  is how it reads, and the two disagree on purpose. **A run from 72% to the end
+  of a level is worth 28 points and is written `72-100%`**, the way the Best run
+  card has always written it, because "28%" beside a level somebody has played
+  from 72% to the finish is not what happened. A record reads as the single
+  figure it reached. Empty when nobody has got anywhere, so each caller says
+  `None` in its own voice.
+
+**Search fields are one component.** The box is a `<label class="search-field">`,
+the input inside it is borderless, and the glyph is `.info-mag` — a ring and a
+handle drawn in CSS in `css/pages/information.css`, not an asset. All Levels,
+Main List, Future List, Upcoming Levels, the Leaderboard and the admin toolbar
+share it; `/information` and `/pending` carry the same mark on their own boxes,
+and the phone draws it on `.m2-search` itself so every field in the mobile tree
+has one without asking for it. The input keeps `.search-new` — `js/list-ui.test.mjs`
+types into that selector.
 
 Two rules worth knowing before editing:
 
@@ -353,20 +373,21 @@ Two rules worth knowing before editing:
 ### Design decks
 
 `design/` holds the static templates the pages were built from, plus the review
-decks that render them. There are four:
+decks that render them. There are five:
 
 ```bash
 node design/build-preview.mjs                     # the desktop pages
 node design/mobile/build-preview.mjs              # the /mobile/* tree
 node design/information/build-preview.mjs         # /information
 node design/mobile-information/build-preview.mjs  # /mobile/info — three templates, A shipped
+node design/home/build-preview.mjs                # home, both surfaces — four templates, A and C shipped
 ```
 
-Every deck reads `css/ull-v2.css` directly, so the shared components render
-exactly as they ship. The mobile decks also need the phone layer, which
-`design/mobile/` keeps as a copy at `design/mobile/mob-v2.css` — re-copy it from
-`css/pages/mobile-v2.css` after changing that file. Each deck has its own
-README with the argument behind it.
+**Every deck reads the shipped stylesheets directly** — `css/ull-v2.css`, and
+`css/pages/mobile-v2.css` where a phone is drawn — so a mockup cannot claim a
+component the site does not have. None of them keeps a copy: `design/mobile/`
+did, as `mob-v2.css`, and it drifted. Each deck has its own README with the
+argument behind it.
 
 ### The mobile shell
 

@@ -24,7 +24,10 @@ export default {
         </div>
         <div class="list-container-new surface">
             <div class="search-row">
-                <input v-model="search" class="search-new" type="text" placeholder="Search levels..." />
+                <label class="search-field">
+                    <span class="info-mag" aria-hidden="true"></span>
+                    <input v-model="search" class="search-new" type="text" placeholder="Search levels..." />
+                </label>
                 <button class="filters-btn" @click="showFilters = true" title="Filters">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/></svg>
                 </button>

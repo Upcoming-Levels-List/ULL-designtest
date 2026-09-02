@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-// Assembles design/mobile/preview.html from the shipped component layer
-// (css/ull-v2.css), the proposed phone layer (design/mobile/mob-v2.css) and
-// the fragments in design/mobile/templates/.
+// Assembles design/mobile/preview.html from the shipped stylesheets
+// (css/ull-v2.css and css/pages/mobile-v2.css) and the fragments in
+// design/mobile/templates/. It reads the real files rather than copies, the
+// way design/ and design/home/ do, so the deck cannot drift from the site —
+// the copy that used to sit here as mob-v2.css had.
 //
 //   node design/mobile/build-preview.mjs
 
@@ -30,7 +32,7 @@ const pages = ORDER.map((name) => {
 const shell = fs.readFileSync(path.join(DIR, 'preview.shell.html'), 'utf8');
 const out = shell
     .replace('/*__SHARED_CSS__*/', fs.readFileSync(path.join(ROOT, 'css', 'ull-v2.css'), 'utf8'))
-    .replace('/*__MOBILE_CSS__*/', fs.readFileSync(path.join(DIR, 'mob-v2.css'), 'utf8'))
+    .replace('/*__MOBILE_CSS__*/', fs.readFileSync(path.join(ROOT, 'css', 'pages', 'mobile-v2.css'), 'utf8'))
     .replace('<!--__NAV__-->', pages
         .map((p, i) => `<a class="rail__item${i === 0 ? ' is-on' : ''}" href="#${p.name}"><b>${esc(p.meta.title)}</b><code>${esc(p.meta.route)}</code></a>`)
         .join('\n        '))

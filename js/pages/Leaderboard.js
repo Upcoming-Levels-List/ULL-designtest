@@ -37,7 +37,10 @@ export default {
 
         <div class="list-container-new surface">
             <div class="search-row search-row--leaderboard">
-                <input v-model="search" class="search-new" type="text" placeholder="Search players..." />
+                <label class="search-field">
+                    <span class="info-mag" aria-hidden="true"></span>
+                    <input v-model="search" class="search-new" type="text" placeholder="Search players..." />
+                </label>
             </div>
 
             <div v-if="podium.length === 3 && !search.trim()" class="lb-podium">

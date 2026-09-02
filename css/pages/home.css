@@ -31,18 +31,17 @@
 }
 
 /* ── HERO ──
-   The level on the left, the copy about the list on the right. The spotlight
-   leads because its left edge is the page's left edge — the one the
-   credentials bar and every row below it are also drawn from — so the first
-   screen has one alignment rather than a card floating off to one side.
+   The copy about the list on the left, the level it is about on the right —
+   source order and column order agree, so the h1 is the first thing in the
+   markup and the first thing on the screen.
 
-   The copy keeps the DOM's first position, so the h1 is still the first thing
-   in the source; only the column order is CSS. And the paragraph fills its
-   column rather than stopping at a 32rem cap, which is what left a ragged
-   band of nothing between the text and the card beside it. */
+   The paragraph fills its column rather than stopping at a 32rem cap, which is
+   what left a ragged band of nothing between the text and the card beside it,
+   and both edges are the page's: the copy starts where every row below it
+   starts, and the card ends where they end. */
 .home-hero {
     display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
     gap: 3rem;
     align-items: center;
     /* Block only. A `padding` shorthand here would reset the inline padding
@@ -50,8 +49,7 @@
        other row on the page. */
     padding-block: 2.75rem 2.25rem;
 }
-.home-hero__body { min-width: 0; order: 2; }
-.home-spot { order: 1; }
+.home-hero__body { min-width: 0; }
 /* Before the list arrives there is no spotlight, so the hero is one column
    rather than one column and an empty gap. */
 .home-hero--solo { grid-template-columns: minmax(0, 1fr); }

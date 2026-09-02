@@ -236,13 +236,12 @@ page is sorted by. The bar's width is still the number — only the words change
 Three, and one bug they turned up. The templates and this deck have been kept in
 step with all of them, so what the deck renders is what the site renders.
 
-- **The hero swapped sides.** The level is on the left and the copy on the
-  right. The spotlight's left edge is the page's left edge — the one the
-  credentials bar and every row below it are also drawn from — so the first
-  screen has one alignment rather than a card floating off to one side. The copy
-  keeps the first position in the DOM, so the `h1` is still the first thing in
-  the source; only the column order is CSS. Its paragraph lost its 32rem cap and
-  fills the column, which is what left a ragged band of nothing beside the card.
+- **The hero's paragraph fills its column.** It was capped at 32rem with nothing
+  beside it, which left a ragged band of whitespace between the text and the
+  card. The copy stays on the left and the level on the right — source order and
+  column order agree — and both edges are the page's: the copy starts where
+  every row below it starts, the card ends where they end. (The two were briefly
+  swapped and swapped back; what actually fixed the spacing was the bug below.)
 - **`padding` was resetting the column's gutter.** `.home-hero { padding: 2.75rem
   0 2.25rem }` is a shorthand, so it set `padding-inline: 0` and beat the
   `padding-inline: 2.5rem` on `.home-col`. **The hero was drawn 40px to the left

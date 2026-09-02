@@ -142,7 +142,10 @@ export default {
         <template v-if="activeTab === 'levels'">
             <div class="admin-toolbar">
                 <button class="admin-btn admin-btn--new" @click="openNewLevel()">+ New Level</button>
-                <input v-model="search" class="admin-search" placeholder="Search by name or author…" />
+                <label class="search-field admin-search">
+                    <span class="info-mag" aria-hidden="true"></span>
+                    <input v-model="search" class="search-new" placeholder="Search by name or author…" />
+                </label>
                 <span class="admin-count">{{ filteredLevels.length }} levels</span>
             </div>
             <div v-if="levelNotice" class="admin-notice">{{ levelNotice }}</div>

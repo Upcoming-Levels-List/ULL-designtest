@@ -4,9 +4,8 @@ Eight templates that rebuild the `/mobile/*` tree on the vocabulary the desktop
 pages use, plus the phone-only layer they need.
 
 These have been built into the site. The templates stay here as the reference
-the pages were made from; the shipped layer is `css/pages/mobile-v2.css`, and
-`mob-v2.css` beside these templates is a copy of it kept in step so the deck
-renders what the site renders.
+the pages were made from; the shipped layer is `css/pages/mobile-v2.css`, which
+the deck now reads directly, so it renders whatever that file currently says.
 
 `/mobile/home` has since had a second pass, beside a matching one for the
 desktop, in [`design/home/`](../home/): the spotlight that opens the page on a
@@ -21,11 +20,11 @@ node design/mobile/build-preview.mjs
 
 ```
 design/mobile/
-  mob-v2.css            a copy of the shipped css/pages/mobile-v2.css
   templates/*.html      one mockup per page, with a meta block saying what was
                         wrong and what the template changed
   preview.shell.html    the review deck's chrome
-  build-preview.mjs     stitches the templates + css/ull-v2.css + mob-v2.css
+  build-preview.mjs     stitches the templates + css/ull-v2.css +
+                        css/pages/mobile-v2.css, both read as they ship
   preview.html          GENERATED — open this
 ```
 
@@ -93,8 +92,8 @@ Both re-homed existing controls; neither added a feature.
 
 ## Changes since the templates were drawn
 
-The templates and `mob-v2.css` are kept in step with what ships, so what the
-deck renders is what the site renders:
+The templates are kept in step with what ships, and the deck reads the shipped
+stylesheets, so what it renders is what the site renders:
 
 - **Home opens wider than the rest of the tree.** Every other page drops
   straight into rows, so its hero stays compact; home is the page a visitor

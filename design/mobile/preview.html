@@ -688,6 +688,9 @@ button.m2-fig:active { background: var(--u-fill-2); }
 /* ── Body ─────────────────────────────────────────────────────────────── */
 .m2-body { flex: 1; padding: 1rem var(--m-pad) 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
 .m2-sec__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.7rem; }
+/* One line under a section heading saying what the rows below are picked by. */
+.m2-sec__note { margin: -0.3rem 0 0.75rem; font-size: 0.72rem; line-height: 1.55; opacity: 0.45; }
+.m2-sec__note b { font-weight: 600; opacity: 0.85; }
 .m2-sec__head .u-eyebrow { margin-bottom: 0; }
 .m2-more { font-size: 0.68rem; font-weight: 600; opacity: 0.5; white-space: nowrap; }
 
@@ -1211,6 +1214,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
 /* ── Editors (home) ───────────────────────────────────────────────────── */
 .m2-eds { display: flex; flex-direction: column; gap: 0.75rem; }
+.m2-eds__note { margin-top: 0.9rem; font-size: 0.72rem; line-height: 1.6; opacity: 0.45; }
 .m2-eds__label { margin-bottom: 0.25rem; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.3; }
 .m2-ed { display: flex; align-items: center; gap: 0.5rem; min-height: 2.1rem; font-size: 0.82rem; font-weight: 500; }
 .m2-ed__ic { flex-shrink: 0; width: 1.05rem; height: 1.05rem; opacity: 0.7; }
@@ -1254,7 +1258,47 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
 /* The sections below start a little further down, and stand a little further
    apart, than on the pages that are all rows. */
-.mob-home-page .m2-body { padding-top: 1.5rem; gap: 1.5rem; }
+.mob-home-page .m2-body { padding-top: 1.25rem; gap: 1.35rem; }
+
+/* ── Home: the spotlight ──────────────────────────────────────────────────
+   41% of the window used to go by before the first level appeared, and what
+   appeared was a name in a row. #1 is introduced here the way /level/<slug>
+   introduces it — .u-hero from css/ull-v2.css with the two meters under it —
+   so the landing screen opens on a level rather than on an advert. The lead
+   above it is two lines rather than four to pay for the room. */
+.mob-home-page .m2-hero { padding: 1.5rem var(--m-pad) 1.1rem; }
+.mob-home-page .m2-hero__eyebrow { margin-bottom: 0.6rem; }
+.mob-home-page .m2-hero h1 { font-size: 1.75rem; }
+.mob-home-page .m2-hero p { margin-top: 0.6rem; font-size: 0.8rem; line-height: 1.6; }
+.mob-home-page .u-cred { padding-bottom: 1.1rem; }
+
+.mob-spot {
+    display: block;
+    margin: 0 var(--m-pad);
+    border-radius: var(--m-r);
+    border: 1px solid var(--u-line);
+    background: var(--u-fill);
+    overflow: hidden;
+}
+.mob-spot .u-hero { border: 0; border-radius: 0; border-bottom: 1px solid var(--u-line); }
+.mob-spot .u-hero__inner { padding: 1rem 0.9rem 0.85rem; align-items: flex-end; }
+.mob-spot .u-hero__title { font-size: 1.3rem; }
+.mob-spot .u-hero__by { margin-top: 0.35rem; font-size: 0.76rem; }
+.mob-spot__k { margin-bottom: 0.4rem; }
+.mob-spot__body { padding: 0.8rem 0.9rem 0.9rem; }
+.mob-spot__foot { margin-top: 0.85rem; }
+.mob-spot__foot .u-btn { min-height: var(--m-tap); }
+
+/* The status pill sits on the name's own line rather than at the end of the
+   row, which leaves the name the width it needs — it used to be a 135px column
+   with the verifier truncated under it — and the decoration reading is drawn
+   under both rather than written into the pill. */
+.mob-row__head { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
+.mob-row__head .m2-row__name { flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mob-row__head .u-pill { flex-shrink: 0; }
+.mob-row__foot { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; }
+.mob-row__foot .u-bar { flex: 1; }
+.mob-row__pct { flex-shrink: 0; font-size: 0.62rem; font-weight: 700; opacity: 0.45; font-variant-numeric: tabular-nums; }
 
 /* ── /level/<slug> on a phone ─────────────────────────────────────────────
    The one route that renders on both surfaces: it never redirects, because
