@@ -217,9 +217,89 @@ CREATE TABLE IF NOT EXISTS audit_log (
     action TEXT,       -- INSERT/UPDATE/MOVE/DELETE/CONFIG_UPDATE/EDITOR_ADD/...
     target TEXT,        -- e.g. the level path or editor name
     details TEXT,       -- freeform
-    timestamp TEXT DEFAULT CURRENT_TIMESTAMP
+    timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
+    undo_data TEXT,     -- the deleted row, as JSON, on deletions only
+    undone_at TEXT      -- ISO-8601 UTC once somebody put it back
 );
 ```
+
+`GET /api/audit-log` reads it a page at a time — `?limit` (max 500), `?before=<id>`
+to continue, `?editor=` and `?action=` to filter — and answers
+`{ entries, total, hasMore }`. It used to be a bare `LIMIT 100` with no way past
+it, so anything older than the last hundred operations could not be read at all.
+
+**`undo_data` never leaves the Worker.** A deleted level row is a quarter of a
+megabyte and an `editor_keys` row carries a key hash, so the endpoint strips the
+column and sends `undoable: true` in its place. `POST /api/admin/audit-log/:id/undo`
+is what reads it.
+
+Four actions carry it, and each knows where its row goes back:
+
+| Action | Table | Note |
+|--------|-------|------|
+| `DELETE` | `levels` | re-opens the `sort_order` gap the delete closed, so the level lands where it was |
+| `PENDING_DELETE` | `pending` | |
+| `CHANGE_DELETE` | `recent_changes` | |
+| `EDITOR_DELETE` | `editor_keys` | **restores `key_hash` too** — undoing this gives the editor their API key back, not just their name. The panel says so before it asks. |
+
+An undo refuses rather than overwrites if a row with that key exists again, and
+refuses a second time on the same entry (`undone_at` is set). Undoing is itself
+logged, as `UNDO`.
+
+`GET /api/admin/activity?days=30` groups the same table by editor — how many
+operations each made in the window, how many of them were deletions, and when they
+last wrote. It counts audit lines, so a level edited twice counts twice.
+
+### `snapshots`
+Backs **restoring the list to an earlier state**, from the admin panel's Snapshots
+tab.
+
+```sql
+CREATE TABLE IF NOT EXISTS snapshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    taken_at TEXT NOT NULL,               -- ISO-8601 UTC, when it was taken
+    day TEXT NOT NULL,                    -- YYYY-MM-DD (UTC) it is the midnight state of
+    kind TEXT NOT NULL DEFAULT 'auto',    -- auto | restore | manual
+    label TEXT DEFAULT '',
+    format TEXT NOT NULL DEFAULT 'gzip',  -- gzip (base64) | json
+    levels_count INTEGER DEFAULT 0,
+    bytes INTEGER DEFAULT 0,              -- uncompressed size, for the panel
+    data TEXT NOT NULL
+);
+```
+
+**There is no cron, and none is needed.** A snapshot is taken lazily, on the first
+write of each UTC day, from the one place in the Worker every authenticated write
+passes through. At that moment the state *is* the midnight state — that is exactly
+what "no snapshot for today yet" means. A day nobody edited gets no snapshot and
+needs none: the previous one is still the state that day began and ended in.
+
+`data` holds `levels`, `pending`, `recent_changes` and the `levelMonth` /
+`levelVerif` config rows, serialised to JSON and gzipped. The levels table alone is
+~270 KB of JSON today and D1 caps one value at 1 MB, so it is stored compressed
+(~55 KB) rather than growing into that limit. A table that does not exist yet is
+recorded as `null` and left alone on restore rather than emptied.
+
+**`editor_keys` is never captured.** A restore must not resurrect a revoked API key
+nor drop one issued since.
+
+**Retention** — thinned after every snapshot:
+
+| Age | Kept |
+|-----|------|
+| under 7 days | every snapshot |
+| 7–31 days | the earliest of each seven-day bucket |
+| over 31 days | the earliest of each calendar month |
+
+The *earliest* rather than the latest, so "restore to that week" means the state
+the week began in.
+
+**Restoring is never a one-way door.** `POST /api/admin/snapshots/:id/restore`
+snapshots what is live *first*, as `kind = 'restore'`, then applies the chosen one
+in a single `db.batch()` — so it is all-or-nothing, and going back a month and then
+restoring that new "Before restoring to…" point returns everything, including
+whatever was done today after midnight. That is why the guarantee holds without a
+separate undo stack.
 
 ### `auth_throttle`
 Backs the auth brute-force limiter (`authed()` in the Worker). One row per client IP.
@@ -418,7 +498,17 @@ missing.
   if the caller's IP is rate-limited** (10 wrong keys in 15 min → 15-min block; see
   `auth_throttle` in section 3). The 429 carries a `Retry-After` header and applies to
   every authed endpoint, not just this one.
-- `GET /api/audit-log` — last 100 audit rows, newest first
+- `GET /api/audit-log` — the whole log, newest first, a page at a time:
+  `?limit` (default 100, max 500), `?before=<id>`, `?editor=`, `?action=`.
+  Returns `{ entries, total, hasMore }`; `undo_data` is stripped and replaced by
+  an `undoable` flag
+- `GET /api/admin/activity?days=30` — operations per editor over the window,
+  `{ days, since, editors: [{ editor_name, changes, deletions, last_at }] }`
+- `GET /api/admin/snapshots` — restore points, without the blobs
+- `POST /api/admin/snapshots` — take one now (`{ label }`)
+- `POST /api/admin/snapshots/:id/restore` — put the list back to it; snapshots the
+  live state first, so the restore itself can be restored
+- `POST /api/admin/audit-log/:id/undo` — put back a deleted row
 - `GET /api/admin/changes` — flat `recent_changes` rows **with ids**, for the admin
   Recent Changes tab: `[{id, date, change, sort_order}]`
 
@@ -470,7 +560,7 @@ the real message reaches the panel. Never remove it.
 |------|-------|
 | `js/content.js` | `/api/list`, `/api/editors`, `/api/pending`, `/api/recent-changes`, `/api/level-month`, `/api/level-verif` |
 | `js/components/AdminLogin.js` | `/api/auth/validate` |
-| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/editors/reorder` (POST), `/api/admin/add-key`, `/api/pending` (GET), `/api/admin/pending` (POST/PUT), `/api/pending/:id` (DELETE), `/api/admin/changes` (GET/POST/PUT), `/api/admin/changes/reorder` (POST), `/api/admin/changes/:id` (DELETE), `/api/audit-log` |
+| `js/pages/Admin.js` | `/api/list`, `/api/levels` (PUT/DELETE), `/api/levels/move`, `/api/level-month`, `/api/level-verif`, `/api/config` (PUT), `/api/editors` (GET/PATCH/DELETE), `/api/editors/reorder` (POST), `/api/admin/add-key`, `/api/pending` (GET), `/api/admin/pending` (POST/PUT), `/api/pending/:id` (DELETE), `/api/admin/changes` (GET/POST/PUT), `/api/admin/changes/reorder` (POST), `/api/admin/changes/:id` (DELETE), `/api/audit-log`, `/api/admin/activity`, `/api/admin/snapshots` (GET/POST), `/api/admin/snapshots/:id/restore`, `/api/admin/audit-log/:id/undo` |
 | `js/pages/LevelGenerator.js` | `/api/levels` (PUT) |
 | `js/pages/Events.js` | via `content.js`: `/api/level-month`, `/api/level-verif`, `/api/list` |
 

@@ -326,6 +326,29 @@ Every page is built from one set of components rather than its own styling.
 | `js/home-stats.js` | The three things the home page says about the list, their icons and their copy. The desktop shows all three, the phone the first two. |
 | `js/leaderboard.js` | Scoring, plus `recordProgress` and `recordTypeLabel` — how far a record got and what kind of record it is, on both surfaces. |
 
+### The admin panel remembers everything
+
+Three things the panel does that are worth knowing before editing the Worker:
+
+- **The audit log has no ceiling.** `GET /api/audit-log` is paged — `?limit`,
+  `?before=<id>`, `?editor=`, `?action=` — and returns `{ entries, total, hasMore }`.
+  It used to be a bare `LIMIT 100`, so anything older than the last hundred
+  operations could not be read at all. Beside it, `GET /api/admin/activity` groups
+  the same table by editor over a window (30 days by default): how much each of them
+  did, and how much of that was deletions.
+- **Deletions are reversible.** Every `DELETE` handler stores the row it removed on
+  its own audit line, and `POST /api/admin/audit-log/:id/undo` puts it back — a
+  level lands at the `sort_order` it had, and undoing an editor deletion restores
+  their API key, which the panel warns about before it asks. The row itself never
+  crosses the wire.
+- **The list can be put back to a past midnight.** A snapshot is taken lazily on the
+  first write of each UTC day, so no cron is needed: at that moment the state *is*
+  the midnight state. Restoring snapshots what is live first, which is what makes
+  going back a month and then forward again lossless. Retention thins to one a week
+  after a week and one a month after a month. See
+  [database.md](database.md#snapshots) for the whole design — including why
+  `editor_keys` is never captured.
+
 Three readings are written once and shared, so a level says the same thing
 wherever it appears — the list panel, its own page, the phone's rows, Events:
 
