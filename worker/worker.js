@@ -518,9 +518,17 @@ async function handle(req, env) {
     // `LIMIT 100` with no way past it, so anything older than the last hundred
     // operations was simply unreachable. `before` is the id to continue from, so
     // paging is stable while new entries land at the top.
+    //
+    // ONE WORKER SERVES TWO SITES. A bare call with no query string answers
+    // exactly what it always did — a plain array of the newest 100 rows — so an
+    // admin panel deployed before this change keeps working against it. Asking
+    // for anything (`?limit`, `?before`, `?editor`, `?action`) opts into the
+    // paged shape `{ entries, total, hasMore }`. Do not remove this: dropping it
+    // breaks the other site's Audit Log tab the moment this worker deploys.
     if (method === 'GET' && path === '/api/audit-log') {
       const editor = await authed(req, db);
       if (!editor) return err('Unauthorized', 401);
+      const paged = [...url.searchParams.keys()].length > 0;
 
       const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '100', 10) || 100, 1), 500);
       const before = parseInt(url.searchParams.get('before') || '0', 10) || 0;
@@ -556,7 +564,7 @@ async function handle(req, env) {
         if (row) total = row.n;
       } catch { /* keep the page count */ }
 
-      return json({ entries, total, hasMore });
+      return paged ? json({ entries, total, hasMore }) : json(entries);
     }
 
     // ── GET /api/admin/activity ────────────────────────────────

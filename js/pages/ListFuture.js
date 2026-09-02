@@ -27,7 +27,7 @@ export default {
                 <p>This tier functions as a focused preview, listing only levels with a very high likelihood of soon verification and publication. It represents the most immediate and probable future additions to the Demonlist.</p>
             </div>
             <div class="u-phero__side">
-                <div class="u-stat"><div class="u-stat__k">levels total</div><span class="u-stat__v">{{ visibleCount }}</span></div>
+                <div class="u-stat"><div class="u-stat__k">levels total</div><span class="u-stat__v">{{ heroCount }}</span></div>
             </div>
         </div>
         <div class="list-container-new surface">
@@ -196,6 +196,26 @@ export default {
         },
         visibleCount() {
             return (this.list || []).filter(([level]) => level && !level.isHidden).length;
+        },
+        // What the list holds, which is what its rank numbers count: a row's
+        // rank is its index in this list, so the last row reads #N where N is
+        // this. The hero used to print visibleCount instead, and the two
+        // disagreed by however many levels were hidden — the ones flagged
+        // Pending Removal are hidden from the table but keep their placement,
+        // so the heading said 398 while the last row read #411.
+        listedCount() {
+            return (this.list || []).filter(([level]) => level).length;
+        },
+        // Whether the reader has narrowed the view themselves. Levels hidden
+        // because they are pending removal are not a narrowing — they are the
+        // page's normal state — so they must not turn the count into "N of M".
+        isNarrowed() {
+            if (this.search.trim()) return true;
+            if (this.minDecoration > 0 || this.minVerification > 0) return true;
+            return [...this.statusFilters, ...this.lengthFilters, ...this.otherFilters].some((f) => f.active);
+        },
+        heroCount() {
+            return this.isNarrowed ? `${this.visibleCount} of ${this.listedCount}` : this.listedCount;
         },
         level() {
             return this.list[this.selected]?.[0];

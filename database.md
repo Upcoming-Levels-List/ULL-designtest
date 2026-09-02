@@ -228,6 +228,11 @@ to continue, `?editor=` and `?action=` to filter — and answers
 `{ entries, total, hasMore }`. It used to be a bare `LIMIT 100` with no way past
 it, so anything older than the last hundred operations could not be read at all.
 
+**A bare call with no query string still answers a plain array of the newest 100
+rows.** One Worker serves this repo and the live site, and the live admin panel
+reads that array directly — removing the fallback breaks its Audit Log tab as soon
+as this Worker deploys. `worker/worker.test.mjs` pins both shapes.
+
 **`undo_data` never leaves the Worker.** A deleted level row is a quarter of a
 megabyte and an `editor_keys` row carries a key hash, so the endpoint strips the
 column and sends `undoable: true` in its place. `POST /api/admin/audit-log/:id/undo`

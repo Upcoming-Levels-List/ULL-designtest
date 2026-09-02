@@ -175,7 +175,7 @@ await call('POST', '/api/admin/pending', { name: 'ZOINK', placement: '1', link: 
 check('pending add', (await call('GET', '/api/pending')).body.length === 1);
 await call('PUT', '/api/config', { levelMonth: { name: 'Aeternus' } }, KEY);
 check('config save', (await call('GET', '/api/level-month')).body.name === 'Aeternus');
-check('audit log records writes', (await call('GET', '/api/audit-log', null, KEY)).body.entries.length > 0);
+check('audit log records writes', (await call('GET', '/api/audit-log', null, KEY)).body.length > 0);
 
 // ── The whole log, not the last hundred ────────────────────────────────────
 console.log('\n── audit log: every entry, a page at a time ──');
@@ -204,6 +204,14 @@ check('filtering by editor works', (await call(`GET`, `/api/audit-log?editor=${e
 check('filtering by action works', (await call('GET', '/api/audit-log?action=DELETE', null, KEY)).body.entries
   .every(e => e.action === 'DELETE'));
 check('audit log rejects anon', (await call('GET', '/api/audit-log')).status === 401);
+// One worker serves this repo and the live site. A bare call must keep
+// answering what it always did, or the other site's Audit Log tab breaks the
+// moment this worker deploys.
+const bare = await call('GET', '/api/audit-log', null, KEY);
+check('a call with no query string still answers a plain array', Array.isArray(bare.body), JSON.stringify(bare.body).slice(0, 80));
+check('and still caps at the 100 it always returned', bare.body.length === 100, String(bare.body.length));
+check('asking for anything opts into the paged shape',
+  !Array.isArray((await call('GET', '/api/audit-log?limit=5', null, KEY)).body));
 
 console.log('\n── how much each editor did ──');
 await call('POST', '/api/admin/pending', { name: 'BY-KERES', placement: '9', link: '' }, 'k-Keres');

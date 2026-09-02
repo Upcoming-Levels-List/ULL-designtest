@@ -333,7 +333,10 @@ Three things the panel does that are worth knowing before editing the Worker:
 - **The audit log has no ceiling.** `GET /api/audit-log` is paged — `?limit`,
   `?before=<id>`, `?editor=`, `?action=` — and returns `{ entries, total, hasMore }`.
   It used to be a bare `LIMIT 100`, so anything older than the last hundred
-  operations could not be read at all. Beside it, `GET /api/admin/activity` groups
+  operations could not be read at all. **A call with no query string still answers
+  the plain array it always did**, because one Worker serves this repo and the live
+  site: dropping that fallback breaks the other site's Audit Log tab the moment this
+  Worker deploys. Beside it, `GET /api/admin/activity` groups
   the same table by editor over a window (30 days by default): how much each of them
   did, and how much of that was deletions.
 - **Deletions are reversible.** Every `DELETE` handler stores the row it removed on
@@ -363,6 +366,14 @@ wherever it appears — the list panel, its own page, the phone's rows, Events:
   order — All Levels, Main List, Future List — so they do not reshuffle as you
   move between lists. A tier the level is not on reads **N/A** rather than
   disappearing, and only the list you are reading is highlighted.
+- **A list's "levels total"** is what the list holds, not what is on screen. A
+  row's rank is its index in the list, so the last row reads `#N` where `N` is that
+  total — and the heading used to print the *visible* count instead, which is
+  smaller by however many levels are hidden. Levels flagged **Pending Removal**
+  (untouched for a year) are hidden from the table but keep their placement, so
+  Main List read 398 under a list whose last row said #411. When a search or a
+  filter narrows the view the heading says `"398 of 411"`; the always-hidden ones
+  are the page's normal state, not a narrowing, so they do not trigger that.
 - **How far anyone has got** is measured once and written twice.
   `verificationEvidence` picks the winning reading — the highest record from 0%,
   or the longest span of a run, whichever reaches further — and says which kind

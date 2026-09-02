@@ -24,7 +24,7 @@ const ICONS = {
         'M14.2 8A6.2 6.2 0 1 1 1.8 8a6.2 6.2 0 0 1 12.4 0Z',
         'M8 4.6V8l2.4 1.4',
     ],
-    // A trophy: who uses it.
+    // A trophy: how many people use it.
     players: [
         'M4.8 2.8h6.4v3.1a3.2 3.2 0 0 1-6.4 0V2.8Z',
         'M4.8 3.8H3.2v.9a2.1 2.1 0 0 0 2 2.1',
@@ -38,6 +38,6 @@ export function homeStats(levelCount) {
     return [
         { key: 'levels', value: levelCount ? String(levelCount) : '', label: 'levels total', paths: ICONS.levels },
         { key: 'years', value: '3+', label: 'years', paths: ICONS.years },
-        { key: 'players', value: '', label: 'Used by the best players', paths: ICONS.players },
+        { key: 'players', value: '1k+', label: 'users', paths: ICONS.players },
     ];
 }
