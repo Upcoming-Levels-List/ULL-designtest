@@ -6,8 +6,8 @@ already established, plus the shared layer they are built from.
 Not covered: `/admin` and `/generator` (staff tools). The `/mobile/*` routes
 have their own deck in `design/mobile/`, `/information` — held back from this
 pass — now has four competing templates of its own in `design/information/`,
-and `/mobile/info`, the last page on the phone still on the old styling, has
-three in `design/mobile-information/`.
+and `/mobile/info` has three in `design/mobile-information/`, of which A
+shipped.
 
 These templates have since been built into the site. They stay here as the
 reference the pages were made from, and the deck now reads the shipped

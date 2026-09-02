@@ -9,8 +9,11 @@ own "not covered" note: `/mobile/info` is the one route left on the old
 styling.
 
 These are **three ways to put the same content on a 390px screen**. All three
-carry everything the desktop page has and nothing it does not. Nothing here has
-been built into the site yet — this deck is the choice, not the change.
+carry everything the desktop page has and nothing it does not.
+
+**A was chosen and has been built into the site.** All three templates stay here
+— A as the reference the page was made from, B and C as the alternatives it was
+picked over. What shipped is at the bottom of this file.
 
 Open `preview.html` in a browser, or the standalone pages on an actual phone.
 Rebuild after editing anything:
@@ -89,7 +92,7 @@ not have.
 
 ## The three
 
-### A. Doors — the desktop hub, stacked
+### A. Doors — the desktop hub, stacked · **shipped**
 
 The hero, the search, then the six faces in one column in the desktop's own
 order. A face is still a face: a label, a name, one sentence and the size of
@@ -148,3 +151,35 @@ route, a query key and component state.
 As in the desktop deck, only the first guideline section is typeset in full.
 The rest are their real titles under their real groups; B's four other groups
 and C's thirteen other rows say in one line what stands behind them.
+
+## What shipped
+
+A, as `/mobile/info`:
+
+- `js/info-windows.js` — the seven windows, the counts behind each and the one
+  search index over the guidelines, the FAQ, the endpoints, the level fields and
+  both legends. **Both** surfaces read it now: `js/pages/Information.js` lost its
+  own copy of all of that, so the desktop and the phone cannot disagree about
+  what a window is called or what the search finds.
+- `js/pages/mobile/MobileInfo.js` — the hero, the search, the six faces and the
+  reader, on the same `?open=` keys as the desktop, so a rule can be linked to
+  and Back closes what it opened. The guidelines open on their index and push a
+  section over it, with its own back control.
+- `css/pages/mobile-info.css`, rewritten. The page carries **both**
+  `.info-page` and `.mob-info`, and the reader is the desktop's own `.info-win`:
+  the prose, FAQ rows, legends, people, site map, tables and code chips come
+  from `css/pages/information.css` unchanged, and this file holds only what
+  differs at 390px — a type scale one step down, controls at tap size, one
+  column instead of two, and a reader that fills the screen.
+
+Three things worth knowing about the build:
+
+- **The endpoints and the level object are lists, not tables.** Both desktop
+  tables are wider than the screen; each row is a line of its own instead. Same
+  fields, same order, same source. The FAQ's points table stays a table — it is
+  authored as markup in `js/_info.js`, so it can only be made to fit, and it
+  does, at 361px of the 390.
+- **The `Ctrl K` hint is gone**, as the parity table above says. It is the only
+  thing on the desktop page the built phone page does not carry.
+- **The old page's "Return to top" button went with it.** The desktop
+  `/information` has no such control, and the doors are one and a half screens.

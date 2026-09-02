@@ -4,42 +4,11 @@ import { guidelinesData } from '../_guidelines.js';
 import {
     navigationData, faqData, apiData, coloringLegend, pendingLegend, contactRouting,
 } from '../_info.js';
+import {
+    WINDOWS, WINDOW_TITLES, WINDOW_EYEBROWS, flatSections, searchInformation,
+    sectionCount, faqCount, pageCount, markCount, roleIconMap, roleLabel,
+} from '../info-windows.js';
 import Footer from '../components/Footer.js';
-
-const roleIconMap = {
-    owner: 'crown',
-    admin: 'user-gear',
-    seniormod: 'user-shield',
-    mod: 'user-lock',
-    dev: 'code',
-};
-
-const roleLabelMap = {
-    owner: 'List Leader',
-    admin: 'Admin',
-    seniormod: 'Elder Mod',
-    mod: 'Mod',
-    dev: 'Dev',
-};
-
-// The six windows the page can open. The key is also the ?open= value, so a
-// window is a URL and a rule can be linked to.
-const WINDOWS = ['about', 'faq', 'navigation', 'guidelines', 'reference', 'staff', 'api'];
-
-// Search runs over prose that is authored as HTML. Strip it once per string
-// rather than on every keystroke.
-const plainCache = new Map();
-function plain(html) {
-    let text = plainCache.get(html);
-    if (text === undefined) {
-        text = String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
-        plainCache.set(html, text);
-    }
-    return text;
-}
-
-const flatSections = guidelinesData.flatMap((group) =>
-    group.sections.map((section) => ({ ...section, group: group.group })));
 
 export default {
     components: { Footer },
@@ -395,6 +364,12 @@ export default {
         coloringLegend,
         pendingLegend,
         contactRouting,
+        // Constants, not state: every count is the length of the array behind
+        // it, computed once in js/info-windows.js.
+        sectionCount,
+        faqCount,
+        pageCount,
+        markCount,
         editors: [],
         query: '',
         // Whether this component pushed the ?open= entry, so closing can go back
@@ -418,85 +393,17 @@ export default {
         },
         prevSection() { return flatSections[this.sectionIndex - 1] || null; },
         nextSection() { return flatSections[this.sectionIndex + 1] || null; },
-        sectionCount() { return flatSections.length; },
-        faqCount() { return faqData.reduce((n, g) => n + g.questions.length, 0); },
-        pageCount() { return navigationData.reduce((n, g) => n + g.pages.length, 0); },
-        markCount() { return coloringLegend.length + pendingLegend.length; },
         navPreview() {
             return navigationData.flatMap((g) => g.pages.map((p) => p.name)).slice(0, 7);
         },
-        winTitle() {
-            return {
-                about: 'What this list is',
-                faq: 'FAQ',
-                navigation: 'What is on each page',
-                guidelines: 'Guidelines',
-                reference: 'What the marks mean',
-                staff: 'Staff & contact',
-                api: 'API documentation',
-            }[this.openKey] || '';
-        },
-        winEyebrow() {
-            return {
-                about: 'Start here',
-                faq: 'Answers · ' + this.faqCount + ' questions',
-                navigation: 'Navigation · ' + this.pageCount + ' pages',
-                guidelines: 'The rules',
-                reference: 'Reference · ' + this.markCount + ' marks',
-                staff: 'Who to talk to',
-                api: 'Build on it · ' + this.apiData.endpoints.length + ' endpoints',
-            }[this.openKey] || '';
-        },
-        // One index over everything on the page, so the field in the hero means
-        // what it says rather than searching the guidelines alone.
-        results() {
-            const q = this.query.trim().toLowerCase();
-            if (!q) return [];
-            const hits = [];
-            for (const section of flatSections) {
-                if (section.title.toLowerCase().includes(q) || plain(section.content).includes(q)) {
-                    hits.push({ kind: 'guidelines', where: section.group, label: section.title, section: section.id });
-                }
-            }
-            for (const group of faqData) {
-                for (const item of group.questions) {
-                    if (item.q.toLowerCase().includes(q) || plain(item.a).includes(q)) {
-                        hits.push({ kind: 'faq', where: 'FAQ · ' + group.group, label: item.q });
-                    }
-                }
-            }
-            for (const group of navigationData) {
-                for (const page of group.pages) {
-                    if (page.name.toLowerCase().includes(q) || page.desc.toLowerCase().includes(q)) {
-                        hits.push({ kind: 'navigation', where: 'Page', label: page.name, sub: page.path || page.to });
-                    }
-                }
-            }
-            for (const row of apiData.endpoints) {
-                if (row.path.toLowerCase().includes(q) || row.returns.toLowerCase().includes(q)) {
-                    hits.push({ kind: 'api', where: 'Endpoint', label: row.path, sub: row.returns });
-                }
-            }
-            for (const row of apiData.fields) {
-                if (row.name.toLowerCase().includes(q) || row.meaning.toLowerCase().includes(q)) {
-                    hits.push({ kind: 'api', where: 'Level field', label: row.name, sub: row.meaning });
-                }
-            }
-            for (const row of coloringLegend) {
-                if (row.label.toLowerCase().includes(q) || row.meaning.toLowerCase().includes(q)) {
-                    hits.push({ kind: 'reference', where: 'Level colouring', label: row.label, sub: row.meaning });
-                }
-            }
-            for (const row of pendingLegend) {
-                if (row.label.toLowerCase().includes(q)) {
-                    hits.push({ kind: 'reference', where: 'Pending icon', label: row.label });
-                }
-            }
-            return hits.slice(0, 12);
-        },
+        winTitle() { return WINDOW_TITLES[this.openKey] || ''; },
+        winEyebrow() { return WINDOW_EYEBROWS[this.openKey] || ''; },
+        // The index runs over the guidelines, the FAQ, the endpoints, the level
+        // fields and both legends; it is shared with /mobile/info.
+        results() { return searchInformation(this.query); },
     },
     methods: {
-        roleLabel(role) { return roleLabelMap[role] || role; },
+        roleLabel,
         open(key, section) {
             const query = { ...this.$route.query, open: key };
             if (section) query.section = section; else delete query.section;

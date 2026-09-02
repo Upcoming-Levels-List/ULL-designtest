@@ -99,8 +99,7 @@ on them.
 
 ## Not covered
 
-`/mobile/info`, which mirrors the Information page. The desktop side has since
-been rebuilt as a hub (`design/information/`), and the phone side now has three
-competing templates of its own in [`design/mobile-information/`](../mobile-information/).
-Until one of them is built, it is the one page in the mobile tree still on the
-old styling, and it shows.
+`/mobile/info`, which mirrors the Information page. It has since been rebuilt
+too: the desktop side as a hub (`design/information/`), and the phone side from
+the three templates in [`design/mobile-information/`](../mobile-information/),
+of which A shipped. Nothing in the mobile tree is on the old styling any more.
