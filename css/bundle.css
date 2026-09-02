@@ -673,6 +673,11 @@ header.new {
     color: var(--color-on-primary);
 }
 .ull2 .u-rank--lead:hover { border-color: transparent; }
+/* A tier the level is not on still gets a chip, so "not on it" reads as an
+   answer rather than as an omission — dimmed, and not a link to a list the
+   level is not in. */
+.ull2 .u-rank--off { opacity: 0.4; }
+.ull2 .u-rank--off:hover { border-color: var(--u-line); transform: none; }
 .ull2 .u-rank__n { font-size: 1.35rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .ull2 .u-rank__l { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; white-space: nowrap; }
 .ull2 .u-rank--lead .u-rank__l { opacity: 0.85; }
@@ -2012,6 +2017,36 @@ main.page-list--pending .list-container {
     opacity: 0.5;
     line-height: 1.65;
 }
+/* ── Search ──
+   One field over all four lanes. The glyph is .info-mag from
+   css/pages/information.css, which draws it in CSS rather than as an asset. */
+.pending-search {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: min(26rem, 100%);
+    margin-top: 1.1rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--u-r-sm);
+    background: rgba(128, 128, 128, 0.09);
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    transition: border-color 120ms ease;
+}
+.pending-search:focus-within { border-color: var(--color-primary); }
+.pending-search__field {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--color-on-background);
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+.pending-search__field::placeholder { color: var(--color-on-background); opacity: 0.42; }
+.pending-search__field::-webkit-search-cancel-button { -webkit-appearance: none; }
+
 .pending-counts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.35rem; }
 /* Each count jumps to the lane it counts. */
 .pending-count {
@@ -2795,6 +2830,9 @@ a.pending-row__name:hover { text-decoration: underline; }
     color: var(--color-on-primary);
 }
 .lvl-rank--lead:hover { border-color: transparent; }
+/* Same as .u-rank--off in css/ull-v2.css: a tier the level is not on says so. */
+.lvl-rank--off { opacity: 0.4; }
+.lvl-rank--off:hover { border-color: var(--lvl-line); transform: none; }
 .lvl-rank__n { font-size: 1.5rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
 .lvl-rank__l {
     font-size: 0.58rem;
@@ -3382,6 +3420,9 @@ a.lvl-wr__v:hover { text-decoration: underline; }
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+/* How far the player got, right after the level name — the name alone does not
+   say whether the score came from a completion or a run. */
+.lb-rec__pct { margin-left: 0.45rem; font-size: 0.74rem; font-weight: 600; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .page-leaderboard .lb-rec__rank {
     margin-left: 0.4rem;
     font-size: 0.72rem;
@@ -3400,14 +3441,26 @@ a.lvl-wr__v:hover { text-decoration: underline; }
    and the return-to-top button. Everything the pages themselves draw now lives
    in css/pages/mobile-v2.css; the Information page keeps css/pages/mobile-info.css. */
 
-.mob, .mob * { font-family: "Lexend Deca", sans-serif; } .mob { display: flex; flex-direction: column; height: 100%; background-color: var(--color-background); color: var(--color-on-background); }
+.mob, .mob * { font-family: "Lexend Deca", sans-serif; }
+.mob {
+    display: flex;
+    flex-direction: column;
+    /* 100% of a viewport a mobile browser measures with its own bars showing
+       leaves the last rows of every page under them; dvh is the height that is
+       actually visible, and shrinks and grows with the address bar. */
+    height: 100%;
+    height: 100dvh;
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+}
 
 /* ── Page content ── */
-.mob-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
+.mob-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; overscroll-behavior-y: contain; }
 /* Never let a short page get squashed by the footer's gap. */
 .mob-content > * { flex-shrink: 0; }
-.mob-content-home { overflow: hidden; }
-.mob-content-home .mob-home-page { height: 100%; overflow-y: auto; }
+/* Home used to be its own scroll container inside this one, which cut its last
+   screen off and put the footer somewhere you could never reach. It scrolls
+   with every other page now. */
 
 /* List page */
 .mob-list { display: flex; flex-direction: column; }
@@ -4004,6 +4057,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 .m2-rec + .m2-rec { border-top: 1px solid var(--u-line); }
 .m2-rec__score { text-align: right; font-size: 0.72rem; font-weight: 700; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .m2-rec__lvl { min-width: 0; font-size: 0.8rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m2-rec__pct { margin-left: 0.35rem; font-size: 0.7rem; font-weight: 600; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .m2-rec__rank { margin-left: 0.3rem; font-size: 0.66rem; font-weight: 700; opacity: 0.35; }
 .m2-rec__type { font-size: 0.66rem; font-weight: 600; opacity: 0.55; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
@@ -4217,6 +4271,19 @@ button.m2-fig:active { background: var(--u-fill-2); }
    scrollbars that rule hands them for the same reason. */
 .mob-content .level-page { flex: none; height: auto; overflow: visible; }
 .mob-content .level-page > div { overflow-y: visible; }
+/* .m2 zeroes the margin on every h1, h2, h3 and p, because the phone's own
+   components space themselves. The level page brings its spacing with it, and
+   that reset (0,1,1) flattens every one of its (0,1,0) classes — the title ran
+   into the byline and every card heading sat on the line under it. Naming them
+   here puts the page's own rhythm back, with a little more room under the
+   title, which carries more weight at this size. */
+.mob-content .lvl-title { margin: 0; }
+.mob-content .lvl-byline { margin: 1rem 0 0; }
+.mob-content .lvl-h2, .mob-content .lvl-h3 { margin: 0 0 0.9rem; }
+.mob-content .lvl-about { margin: 0; }
+.mob-content .lvl-missing h1 { margin: 0 0 0.75rem; }
+.mob-content .lvl-missing p { margin: 0 0 1.25rem; }
+
 .mob-content .lvl-hero__inner { padding: 1.15rem var(--m-pad) 1.35rem; }
 .mob-content .lvl-crumbs { font-size: 0.68rem; }
 .mob-content .lvl-title { font-size: 1.85rem; line-height: 1.05; }
@@ -4224,6 +4291,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 .mob-content .lvl-ranks { gap: 0.45rem; }
 .mob-content .lvl-rank { padding: 0.6rem 0.55rem; }
 .mob-content .lvl-body { padding: 1.35rem var(--m-pad) 2rem; gap: 1.35rem; }
+.mob-content .lvl-section { margin-top: 1.75rem; }
 /* Two record cards side by side read as a pair; stacked they read as two
    unrelated figures, and there is room for the pair at 390px. */
 .mob-content .lvl-wr { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
@@ -4944,6 +5012,15 @@ html.desktop {
     .page-with-sidebar {
         margin-left: 0;
     }
+}
+
+/* The button that opens the sidebar is hidden on a phone by store.mobile (see
+   index.html), which reads the user agent as well as the width. This is the
+   same answer in CSS, so a viewport this narrow never gets the desktop menu
+   even if the app has not decided yet. */
+@media (max-width: 768px) {
+    .sidebar-toggle, .sidebar-backdrop { display: none !important; }
+    .sidebar { display: none; }
 }
 
 /* ── css/components/filters-popup.css ── */

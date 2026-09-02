@@ -32,7 +32,7 @@ export default {
     </header>
 
     <!-- The page itself, then the footer every mobile page carries. -->
-    <div class="mob-content" :class="{ 'mob-content-home': $route.path === '/mobile/home' }" ref="mobContent">
+    <div class="mob-content" ref="mobContent">
         <slot></slot>
         <div class="mob-footer">
             <h3>Upcoming Levels List</h3>

@@ -106,6 +106,16 @@ is what ships:
   figure is centred in its own box.
 - **Senior moderators are Elder moderators**, matching `js/_guidelines.js`.
 - An empty list says so whether a search or a **filter** emptied it.
+- A level's **rank chips are all three tiers, in a fixed order** — All Levels,
+  Main List, Future List — with only the list being read highlighted, and N/A
+  where the level is not on a tier. They used to reorder around the current list
+  and drop the tiers a level was missing, which made two levels' chips
+  impossible to compare.
+- The **verifier line** is written once in `js/util.js`: "on open verification"
+  where nobody has claimed the level, "verified by X" once it is done, and a
+  lowercase "unknown" in the facts list where there is nobody yet.
+- The **Pending List has a search** over all four lanes, and a leaderboard row
+  shows how far the player got beside the level name.
 - Home's count strip is **three credentials, not five counts**: how much the
   list holds, how long it has been running and who uses it, as an icon and a
   line each. Five figures in five cells read as a dashboard, and four of them

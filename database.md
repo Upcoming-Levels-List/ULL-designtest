@@ -494,11 +494,20 @@ the real message reaches the panel. Never remove it.
   — the exact condition that colors a level's name orange (≥30) or red (≥60).
   `verifyProgress` = max of best record % and best run span. Fully automatic (removed from the
   admin/generator tag pickers); the frontend adds/removes it on load.
-- **Cross-list position** (`js/components/List/LevelPanel.js`, mobile `MobileList.js`):
-  every level shows its rank in each list it appears on as a rank chip, the one for the
-  page you are on leading. Computed as `allLevelsRank` / `mainRank` / `futureRank` on
-  mount (desktop pages) or in `Mobile.js` (mobile), mirroring Upcoming Levels. A level
-  absent from a list gets no chip for it.
+- **Cross-list position** (`levelRanks` in `js/util.js`, used by
+  `js/components/List/LevelPanel.js`, `js/pages/LevelPage.js`, mobile `MobileList.js` and
+  `MobileUpcoming.js`): every level shows three rank chips — All Levels, Main List, Future
+  List — **always all three and always in that order**, so they do not reshuffle as you
+  move between lists. Only the list you are reading is highlighted. A level that is not on
+  a tier reads **N/A** there, dimmed and not a link, rather than dropping the chip: "not on
+  it" is an answer, an absent chip is a silence. Computed as `allLevelsRank` / `mainRank` /
+  `futureRank` on mount (desktop pages) or in `Mobile.js` (mobile), mirroring Upcoming
+  Levels.
+- **Leaderboard record rows** (`recordProgress` / `recordTypeLabel` in `js/leaderboard.js`,
+  used by `js/pages/Leaderboard.js` and `MobileLeaderboard.js`): a row reads *score →
+  level name and how far the player got → what kind of record it is* — e.g.
+  `+548.8  EXASPERATION 67-100%  Run`. The progress is the record's `percent`, or the
+  `run[].percent` span verbatim for a run; the type comes from how the score was earned.
 - **Design system** (`css/ull-v2.css`, `css/pages/mobile-v2.css`): every page is built
   from one set of components — eyebrow headings, cards, the status pill, chips, rank chips,
   meters, stat cards, definition lists, buttons, the page hero, the thumbnail hero, rows and
@@ -506,13 +515,15 @@ the real message reaches the panel. Never remove it.
   layer adds only what differs at 390px. Two rules: components are written `.ull2 .u-thing`
   so the link reset (`.ull2 a { color: inherit }`, 0,1,1) cannot outrank them, and
   **`.root.dark` is the light theme** — the class names are inverted throughout the app.
-  The static templates the pages were built from live in `design/` and `design/mobile/`.
+  The static templates the pages were built from live in `design/`, `design/mobile/`,
+  `design/information/` and `design/mobile-information/`, each with its own review deck.
 - **Level page** (`js/pages/LevelPage.js`, `css/pages/level-page.css`): the standalone
   `/level/<slug>` page renders from the same `/api/list` payload as the list panels and adds
   **no fields of its own**. Every reading below is computed once, in `js/util.js`
   (`decorationPercent`, `verificationPercent`, `levelStatus`, `bestRecord`, `bestRun`,
-  `recordLink`, `levelLength`, `levelId`, `hasVerifier`), and shared with the level
-  container and the mobile pages so nothing is derived twice:
+  `recordLink`, `levelLength`, `levelId`, `hasVerifier`, `isOpenVerification`,
+  `verifierLabel`, `verifierLine`, `levelRanks`), and shared with the level container and
+  the mobile pages so nothing is derived twice:
   - **Progress bars.** Decoration is `percentFinished`. Verification is `100` when
     `isVerified`, otherwise the same `verifyProgress` the lists use — `max(best record %,
     widest run span)`, where a run span is `|b − a|` parsed out of a `"a-b"` `run[].percent`.
@@ -522,9 +533,13 @@ the real message reaches the panel. Never remove it.
     green ≥30, cyan ≥1, blue at 0), so a level reads the same in both places.
   - **Tag row** drops `Verified`, `Verifying`, `Being Verified` and `Layout` — the pill
     already says them.
-  - **Byline** reads `verified by X` only when `isVerified`; otherwise **`to be verified by
-    X`**, matching `MobileList.js`'s author block. Hidden entirely when `verifier` is empty,
-    `none` or `unknown`.
+  - **Byline** (`verifierLine` in `js/util.js`, shared with the list panel, the phone's
+    rows and Events) reads `verified by X` when `isVerified`, `to be verified by X` while
+    somebody is on it, and **`on open verification`** when the `verifier` field says Open
+    Verification in any case — nobody has claimed the level, so it is not a person's name.
+    Hidden entirely when `verifier` is empty, `none` or `unknown`.
+  - **Verifier row** in the Details card (`verifierLabel`) says **`unknown`**, lowercase,
+    when there is nobody yet — the same value the list panel and Events show.
   - **`frameCounter`** renders as a `Frame Windows Counter → Watch here` row in the Details
     card, linking the stored URL. The admin panel stores `null` for a blank field
     (`Admin.js`), so the row is skipped when the value is null, undefined or whitespace.

@@ -2,7 +2,7 @@ import { store } from '../../main.js';
 import {
     passesBenchmark, levelThumbnail, levelSlug,
     decorationPercent, verificationPercent, levelStatus,
-    bestRecord, bestRun, recordLink, hasVerifier,
+    bestRecord, bestRun, recordLink, hasVerifier, verifierLine, levelRanks,
 } from '../../util.js';
 import { mobileStore, applyFilters } from './mobileStore.js';
 
@@ -68,18 +68,19 @@ export default {
                             <div class="m2-detail__head">
                                 <p class="m2-detail__by">
                                     by <b>{{ level.author }}</b>
-                                    <template v-if="verifierKnown(level)"> · {{ level.isVerified ? 'verified by' : 'to be verified by' }} <b>{{ level.verifier }}</b></template>
+                                    <template v-if="verifierLine(level)"> · {{ verifierLine(level).lead }} <b>{{ verifierLine(level).name }}</b></template>
                                 </p>
                                 <div class="m2-detail__pills">
                                     <span class="u-pill" :class="'u-pill--' + status(level).tone"><i></i>{{ status(level).label }}</span>
                                     <span v-for="tag in tags(level)" :key="tag" class="u-chip u-chip--round">{{ tag }}</span>
                                 </div>
                                 <div v-if="ranks(level).length" class="m2-ranks">
-                                    <router-link v-for="rank in ranks(level)" :key="rank.to" class="u-rank"
-                                                 :class="{ 'u-rank--lead': rank.lead }" :to="rank.to">
-                                        <span class="u-rank__n">#{{ rank.n }}</span>
+                                    <component v-for="rank in ranks(level)" :is="rank.n ? 'router-link' : 'span'" :key="rank.key"
+                                               class="u-rank" :class="{ 'u-rank--lead': rank.lead, 'u-rank--off': !rank.n }"
+                                               :to="rank.n ? rank.to : undefined">
+                                        <span class="u-rank__n">{{ rank.n ? '#' + rank.n : 'N/A' }}</span>
                                         <span class="u-rank__l">{{ rank.label }}</span>
-                                    </router-link>
+                                    </component>
                                 </div>
                             </div>
                         </div>
@@ -198,17 +199,9 @@ export default {
             if (this._scrollEl) this._scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
         },
         // The list this row belongs to leads; the others follow.
-        ranks(level) {
-            if (!level) return [];
-            return [
-                { key: 'all', n: level.allLevelsRank, label: 'All Levels', to: '/mobile/all' },
-                { key: 'main', n: level.mainRank, label: 'Main List', to: '/mobile/main' },
-                { key: 'future', n: level.futureRank, label: 'Future List', to: '/mobile/future' },
-            ]
-                .filter((r) => r.n)
-                .map((r) => ({ ...r, lead: r.key === this.pageType }))
-                .sort((a, b) => Number(b.lead) - Number(a.lead));
-        },
+        // The same three chips in the same order on every list; only the list
+        // being read is highlighted (js/util.js).
+        ranks(level) { return levelRanks(level, this.pageType, true); },
         slug(level) {
             return levelSlug(level.path, this.allPaths);
         },
@@ -219,6 +212,7 @@ export default {
         run: bestRun,
         recordHref: recordLink,
         verifierKnown: hasVerifier,
+        verifierLine,
         // The row has no room for "Decoration 80% done"; the panel spells it out.
         shortStatus(level) {
             const s = levelStatus(level);

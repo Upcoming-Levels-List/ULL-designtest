@@ -315,6 +315,11 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     color: var(--color-on-primary);
 }
 .ull2 .u-rank--lead:hover { border-color: transparent; }
+/* A tier the level is not on still gets a chip, so "not on it" reads as an
+   answer rather than as an omission — dimmed, and not a link to a list the
+   level is not in. */
+.ull2 .u-rank--off { opacity: 0.4; }
+.ull2 .u-rank--off:hover { border-color: var(--u-line); transform: none; }
 .ull2 .u-rank__n { font-size: 1.35rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .ull2 .u-rank__l { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; white-space: nowrap; }
 .ull2 .u-rank--lead .u-rank__l { opacity: 0.85; }
@@ -1051,6 +1056,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 .m2-rec + .m2-rec { border-top: 1px solid var(--u-line); }
 .m2-rec__score { text-align: right; font-size: 0.72rem; font-weight: 700; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .m2-rec__lvl { min-width: 0; font-size: 0.8rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m2-rec__pct { margin-left: 0.35rem; font-size: 0.7rem; font-weight: 600; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .m2-rec__rank { margin-left: 0.3rem; font-size: 0.66rem; font-weight: 700; opacity: 0.35; }
 .m2-rec__type { font-size: 0.66rem; font-weight: 600; opacity: 0.55; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
@@ -1264,6 +1270,19 @@ button.m2-fig:active { background: var(--u-fill-2); }
    scrollbars that rule hands them for the same reason. */
 .mob-content .level-page { flex: none; height: auto; overflow: visible; }
 .mob-content .level-page > div { overflow-y: visible; }
+/* .m2 zeroes the margin on every h1, h2, h3 and p, because the phone's own
+   components space themselves. The level page brings its spacing with it, and
+   that reset (0,1,1) flattens every one of its (0,1,0) classes — the title ran
+   into the byline and every card heading sat on the line under it. Naming them
+   here puts the page's own rhythm back, with a little more room under the
+   title, which carries more weight at this size. */
+.mob-content .lvl-title { margin: 0; }
+.mob-content .lvl-byline { margin: 1rem 0 0; }
+.mob-content .lvl-h2, .mob-content .lvl-h3 { margin: 0 0 0.9rem; }
+.mob-content .lvl-about { margin: 0; }
+.mob-content .lvl-missing h1 { margin: 0 0 0.75rem; }
+.mob-content .lvl-missing p { margin: 0 0 1.25rem; }
+
 .mob-content .lvl-hero__inner { padding: 1.15rem var(--m-pad) 1.35rem; }
 .mob-content .lvl-crumbs { font-size: 0.68rem; }
 .mob-content .lvl-title { font-size: 1.85rem; line-height: 1.05; }
@@ -1271,6 +1290,7 @@ button.m2-fig:active { background: var(--u-fill-2); }
 .mob-content .lvl-ranks { gap: 0.45rem; }
 .mob-content .lvl-rank { padding: 0.6rem 0.55rem; }
 .mob-content .lvl-body { padding: 1.35rem var(--m-pad) 2rem; gap: 1.35rem; }
+.mob-content .lvl-section { margin-top: 1.75rem; }
 /* Two record cards side by side read as a pair; stacked they read as two
    unrelated figures, and there is room for the pair at 390px. */
 .mob-content .lvl-wr { grid-template-columns: 1fr 1fr; gap: 0.5rem; }

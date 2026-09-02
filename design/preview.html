@@ -290,6 +290,11 @@ body { background: var(--ground); color: var(--ink); font-family: var(--sans); }
     color: var(--color-on-primary);
 }
 .ull2 .u-rank--lead:hover { border-color: transparent; }
+/* A tier the level is not on still gets a chip, so "not on it" reads as an
+   answer rather than as an omission — dimmed, and not a link to a list the
+   level is not in. */
+.ull2 .u-rank--off { opacity: 0.4; }
+.ull2 .u-rank--off:hover { border-color: var(--u-line); transform: none; }
 .ull2 .u-rank__n { font-size: 1.35rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .ull2 .u-rank__l { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; white-space: nowrap; }
 .ull2 .u-rank--lead .u-rank__l { opacity: 0.85; }

@@ -79,8 +79,8 @@ adds anything the desktop does not have.
 Two notes on the edges of "and nothing else":
 
 - **The footer.** The desktop page renders `js/components/Footer.js`. The mobile
-  shell already draws a footer under every page (`js/pages/Mobile.js`), so none
-  of the three repeats it.
+  shell already draws a footer under every page
+  (`js/components/MobileShell.js`), so none of the three repeats it.
 - **The `Ctrl K` hint** on the search field is dropped in all three. There is no
   Ctrl key on a phone. It is the only thing on the desktop page that none of
   these carries.

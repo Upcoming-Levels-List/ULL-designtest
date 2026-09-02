@@ -290,3 +290,44 @@ export function hasVerifier(level) {
     const v = level?.verifier;
     return !!v && v !== 'none' && String(v).toLowerCase() !== 'unknown';
 }
+
+// Open Verification is not a person: nobody has claimed the level yet. The
+// staff type it in whatever case they like, so match it in any.
+export function isOpenVerification(level) {
+    return String(level?.verifier || '').trim().toLowerCase() === 'open verification';
+}
+
+// What the Verifier row of a facts list says. An undecided verifier reads
+// "unknown", lowercase, the same as every other value in those lists.
+export function verifierLabel(level) {
+    return hasVerifier(level) ? level.verifier : 'unknown';
+}
+
+// How the verifier reads in a byline, as { lead, name } so the name can carry
+// its own weight in the markup. Null when there is nothing to say.
+//
+//   nobody has claimed it   →  on open verification
+//   somebody is on it       →  to be verified by wPopoff
+//   it is done              →  verified by wPopoff
+export function verifierLine(level) {
+    if (!level) return null;
+    if (isOpenVerification(level) && !level.isVerified) return { lead: 'on', name: 'open verification' };
+    if (!hasVerifier(level)) return null;
+    return { lead: level.isVerified ? 'verified by' : 'to be verified by', name: level.verifier };
+}
+
+// A level's placement in each of the three tiers, always all three and always
+// in the same order, so the chips do not reshuffle as you move between lists.
+// `n` is null where the level is not on that tier — the chip says so rather
+// than disappearing, which is the only way to tell "not on it" from "we did not
+// mention it". `current` is the tier the reader is looking at, and the only one
+// highlighted.
+export function levelRanks(level, current = 'all', mobile = false) {
+    if (!level) return [];
+    const to = (desktop, phone) => (mobile ? phone : desktop);
+    return [
+        { key: 'all', n: level.allLevelsRank || null, label: 'All Levels', to: to('/list', '/mobile/all') },
+        { key: 'main', n: level.mainRank || null, label: 'Main List', to: to('/listmain', '/mobile/main') },
+        { key: 'future', n: level.futureRank || null, label: 'Future List', to: to('/listfuture', '/mobile/future') },
+    ].map((r) => ({ ...r, lead: r.key === current }));
+}

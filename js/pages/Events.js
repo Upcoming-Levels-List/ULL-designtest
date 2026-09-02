@@ -2,6 +2,7 @@ import { store } from '../main.js';
 import {
     levelThumbnail, thumbnailUrl, levelStatus,
     bestRecord, bestRun, recordLink, levelLength, levelId, hasVerifier,
+    verifierLabel, verifierLine,
 } from '../util.js';
 import { fetchLevelMonth, fetchLevelVerif, fetchList } from '../content.js';
 import Footer from '../components/Footer.js';
@@ -50,7 +51,7 @@ export default {
                         <h2 class="u-hero__title">{{ levelDay.name }}</h2>
                         <p class="u-hero__by">
                             by <b>{{ levelDay.author }}</b>
-                            <template v-if="dayVerifier"> &middot; to be verified by <b>{{ levelDay.verifier }}</b></template>
+                            <template v-if="dayLine"> &middot; {{ dayLine.lead }} <b>{{ dayLine.name }}</b></template>
                         </p>
                     </div>
                     <div v-if="levelDay.rankNum" class="u-ranks">
@@ -93,7 +94,7 @@ export default {
                     <h3 class="u-eyebrow">Details</h3>
                     <dl class="u-dl">
                         <dt>Host</dt><dd>{{ levelDay.author }}</dd>
-                        <dt>Verifier</dt><dd>{{ dayVerifier ? levelDay.verifier : 'Unknown' }}</dd>
+                        <dt>Verifier</dt><dd>{{ dayVerifierLabel }}</dd>
                         <dt>Level ID</dt><dd>{{ dayId }}</dd>
                         <dt>Length</dt><dd>{{ dayLength }}</dd>
                         <dt>Updated</dt><dd>{{ levelDay.lastUpd }}</dd>
@@ -150,7 +151,7 @@ export default {
                         <div class="u-hero__body">
                             <div class="events-tag"><b>Closest to Verification</b><span>{{ levelVerif.record.percent }}</span></div>
                             <h2 class="u-hero__title">{{ levelVerif.name }}</h2>
-                            <p class="u-hero__by">by <b>{{ levelVerif.author }}</b> &middot; to be verified by <b>{{ levelVerif.verifier }}</b></p>
+                            <p class="u-hero__by">by <b>{{ levelVerif.author }}</b><template v-if="verifLine"> &middot; {{ verifLine.lead }} <b>{{ verifLine.name }}</b></template></p>
                         </div>
                         <div v-if="levelVerif.rank" class="u-ranks">
                             <router-link class="u-rank u-rank--lead" to="/list">
@@ -195,6 +196,9 @@ export default {
         monthThumb() { return thumbnailUrl(this.levelMonth?.thumbnail); },
         verifThumb() { return thumbnailUrl(this.levelVerif?.thumbnail); },
         dayVerifier() { return hasVerifier(this.levelDay); },
+        dayLine() { return verifierLine(this.levelDay); },
+        dayVerifierLabel() { return verifierLabel(this.levelDay); },
+        verifLine() { return verifierLine(this.levelVerif); },
         dayStatus() { return levelStatus(this.levelDay); },
         dayRecord() { return bestRecord(this.levelDay); },
         dayRun() { return bestRun(this.levelDay); },

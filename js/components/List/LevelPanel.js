@@ -2,6 +2,7 @@ import {
     embed, levelThumbnail, levelSlug,
     decorationPercent, verificationPercent, levelStatus,
     bestRecord, bestRun, recordLink, levelLength, levelId, hasVerifier,
+    verifierLabel, verifierLine, levelRanks,
 } from '../../util.js';
 
 // The detail panel beside a list. /level/<slug> already presented exactly this
@@ -43,7 +44,7 @@ export default {
                 <h1 class="u-hero__title">{{ level.name }}</h1>
                 <p class="u-hero__by">
                     by <b>{{ level.author }}</b>
-                    <template v-if="verifierKnown"> &middot; {{ level.isVerified ? 'verified by' : 'to be verified by' }} <b>{{ level.verifier }}</b></template>
+                    <template v-if="verifierLine"> &middot; {{ verifierLine.lead }} <b>{{ verifierLine.name }}</b></template>
                 </p>
                 <div class="lp-pills">
                     <span class="u-pill" :class="'u-pill--' + status.tone"><i></i>{{ status.label }}</span>
@@ -51,11 +52,11 @@ export default {
                 </div>
             </div>
             <div v-if="ranks.length" class="u-ranks">
-                <router-link v-for="rank in ranks" :key="rank.to" class="u-rank"
-                             :class="{ 'u-rank--lead': rank.lead }" :to="rank.to">
-                    <span class="u-rank__n">#{{ rank.n }}</span>
+                <component v-for="rank in ranks" :is="rank.n ? 'router-link' : 'span'" :key="rank.key" class="u-rank"
+                           :class="{ 'u-rank--lead': rank.lead, 'u-rank--off': !rank.n }" :to="rank.n ? rank.to : undefined">
+                    <span class="u-rank__n">{{ rank.n ? '#' + rank.n : 'N/A' }}</span>
                     <span class="u-rank__l">{{ rank.label }}</span>
-                </router-link>
+                </component>
             </div>
         </div>
     </header>
@@ -192,20 +193,10 @@ export default {
             const covered = ['verified', 'verifying', 'being verified', 'layout'];
             return (this.level?.tags || []).filter((t) => !covered.includes(String(t).toLowerCase()));
         },
-        // The list this panel belongs to leads; the others follow, and a level
-        // that is not on a list has no chip for it.
-        ranks() {
-            const l = this.level;
-            if (!l) return [];
-            return [
-                { key: 'all', n: l.allLevelsRank, label: 'All Levels', to: '/list' },
-                { key: 'main', n: l.mainRank, label: 'Main List', to: '/listmain' },
-                { key: 'future', n: l.futureRank, label: 'Future List', to: '/listfuture' },
-            ]
-                .filter((r) => r.n)
-                .map((r) => ({ ...r, lead: r.key === this.current }))
-                .sort((a, b) => Number(b.lead) - Number(a.lead));
-        },
+        // Always the same three, always in the same order; the list being read
+        // is the one highlighted, and a tier the level is not on says so.
+        ranks() { return levelRanks(this.level, this.current); },
+        verifierLine() { return verifierLine(this.level); },
         // [label, text, href?] — a third entry turns the value into a link.
         facts() {
             const l = this.level;
@@ -213,7 +204,7 @@ export default {
             const frames = typeof l.frameCounter === 'string' ? l.frameCounter.trim() : '';
             return [
                 ['Host', l.author],
-                ['Verifier', this.verifierKnown ? l.verifier : 'Unknown'],
+                ['Verifier', verifierLabel(l)],
                 ['Level ID', levelId(l)],
                 l.length ? ['Length', levelLength(l)] : null,
                 l.lastUpd ? ['Updated', l.lastUpd] : null,

@@ -320,7 +320,26 @@ Every page is built from one set of components rather than its own styling.
 | `css/ull-v2.css` | The shared layer. Eyebrow headings, cards, the status pill, chips, rank chips, meters, stat cards, definition lists, buttons, the page hero, the thumbnail hero, rows and empty states. Scoped to `.ull2`, which every page carries on its `<main>`. |
 | `css/pages/mobile-v2.css` | Only what differs at 390px: one column, a detail that expands under its row, the tab bar, the bottom sheet, and a type scale one step down. Everything else on mobile comes from `ull-v2.css` unchanged. |
 | `js/components/List/LevelPanel.js` | The level container, rendered by All Levels, Main List, Future List and Upcoming Levels. |
-| `js/util.js` | The shared readings a level page and a list row both need: `levelStatus`, `decorationPercent`, `verificationPercent`, `bestRecord`, `bestRun`, `recordLink`, `levelLength`, `levelId`, `hasVerifier`. Derive nothing twice. |
+| `css/pages/mobile-info.css` | The phone's Information page. It carries `.info-page` as well as `.mob-info`, so the prose, legends, tables and people rows come from `css/pages/information.css` unchanged and this file holds only the 390px differences. |
+| `js/util.js` | The shared readings a level page and a list row both need: `levelStatus`, `decorationPercent`, `verificationPercent`, `bestRecord`, `bestRun`, `recordLink`, `levelLength`, `levelId`, `hasVerifier`, `isOpenVerification`, `verifierLabel`, `verifierLine`, `levelRanks`. Derive nothing twice. |
+| `js/info-windows.js` | The Information page's seven windows, their counts and the one search index over the guidelines, the FAQ, the endpoints, the level fields and both legends. Read by the desktop page and the phone. |
+| `js/home-stats.js` | The three things the home page says about the list, their icons and their copy. The desktop shows all three, the phone the first two. |
+| `js/leaderboard.js` | Scoring, plus `recordProgress` and `recordTypeLabel` — how far a record got and what kind of record it is, on both surfaces. |
+
+Three readings are written once and shared, so a level says the same thing
+wherever it appears — the list panel, its own page, the phone's rows, Events:
+
+- **The verifier line** (`verifierLine`). Nobody has claimed an open
+  verification, so it reads **on open verification**, not "to be verified by
+  Open Verification" — matched case-insensitively, since the field is typed by
+  hand. A finished level is "verified by X"; one in progress, "to be verified by
+  X"; an undecided verifier has no line at all.
+- **The verifier row** in a facts list (`verifierLabel`) says **unknown**,
+  lowercase, when there is nobody yet — `none` and `unknown` both mean that.
+- **The rank chips** (`levelRanks`). Always all three tiers, always in the same
+  order — All Levels, Main List, Future List — so they do not reshuffle as you
+  move between lists. A tier the level is not on reads **N/A** rather than
+  disappearing, and only the list you are reading is highlighted.
 
 Two rules worth knowing before editing:
 
@@ -333,27 +352,42 @@ Two rules worth knowing before editing:
 
 ### Design decks
 
-`design/` and `design/mobile/` hold the static templates the pages were built
-from, plus the review deck that renders them:
+`design/` holds the static templates the pages were built from, plus the review
+decks that render them. There are four:
 
 ```bash
-node design/build-preview.mjs          # desktop → design/preview.html
-node design/mobile/build-preview.mjs   # mobile  → design/mobile/preview.html
+node design/build-preview.mjs                     # the desktop pages
+node design/mobile/build-preview.mjs              # the /mobile/* tree
+node design/information/build-preview.mjs         # /information
+node design/mobile-information/build-preview.mjs  # /mobile/info — three templates, A shipped
 ```
 
-Both decks read `css/ull-v2.css` directly, so the shared components render
-exactly as they ship. The mobile deck also needs the phone layer, which it keeps
-as a copy at `design/mobile/mob-v2.css` — re-copy it from
-`css/pages/mobile-v2.css` after changing that file. See `design/README.md` and
-`design/mobile/README.md`.
+Every deck reads `css/ull-v2.css` directly, so the shared components render
+exactly as they ship. The mobile decks also need the phone layer, which
+`design/mobile/` keeps as a copy at `design/mobile/mob-v2.css` — re-copy it from
+`css/pages/mobile-v2.css` after changing that file. Each deck has its own
+README with the argument behind it.
 
 ### The mobile shell
 
-`js/pages/Mobile.js` wraps every `/mobile/*` route: a top bar with Settings and
-Discord, a four-tab bar along the bottom (Home, Levels, Information, Other), and
-one bottom sheet used for Other pages, Filters and Settings. `/mobile/info` is
-the one page still on the old styling — it moves when the desktop Information
-page does.
+`js/components/MobileShell.js` is the chrome every phone screen wears: a top bar
+with Settings and Discord, a four-tab bar along the bottom (Home, Levels,
+Information, Other), one bottom sheet used for Other pages, Filters and
+Settings, and the footer. Whatever the route draws goes in its slot.
+
+Two components use it. `js/pages/Mobile.js` loads the data for the whole
+`/mobile/*` tree and passes its `<router-view>` through the shell.
+`js/pages/LevelPage.js` wears the same shell on a phone and a passthrough
+wrapper on the desktop, decided by `store.mobile` — `/level/<slug>` is the one
+route that renders on both surfaces, because it never redirects: every shared
+link and search result points at it, so its URL must not change. On a phone it
+gets the shell rather than the desktop sidebar and footer; the page's own layout
+is untouched.
+
+Watch the specificity when a desktop page is rendered inside the shell:
+`.m2 h1, .m2 h2, .m2 h3, .m2 p { margin: 0 }` scores (0,1,1) and flattens every
+(0,1,0) spacing class the page brings with it. `css/pages/mobile-v2.css` names
+the ones the level page needs and puts them back.
 
 Some class names in the mobile markup are test hooks rather than styling:
 `.mob-level-row`, `.mob-rank`, `.mob-pending-card`, `.mob-pending-row`,

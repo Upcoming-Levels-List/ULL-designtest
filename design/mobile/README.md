@@ -97,6 +97,20 @@ deck renders is what the site renders:
   three lines of lead and five count chips wrapping onto two ragged rows, all
   inside 230px. The title and its lead got room around them, and the counts
   came out of the hero.
+- **The level page keeps the page's own spacing.** `.m2 h1, .m2 h2, .m2 h3, .m2 p
+  { margin: 0 }` scores (0,1,1) — inside the shell it flattened every (0,1,0)
+  spacing class the level page brought with it, so the title ran into the byline
+  and every card heading sat on the line under it. `mob-v2.css` names them and
+  puts them back.
+- **Rank chips are all three tiers, in order, always.** A tier the level is not
+  on reads N/A instead of vanishing, and only the list being read is
+  highlighted, so the chips no longer reshuffle between lists.
+- **The Pending List has a search**, over all four lanes at once; the counts in
+  the hero follow it.
+- **Home reaches its own bottom.** It used to be a scroll container inside the
+  shell's scroll container, which cut off its last screen and put the footer out
+  of reach. The shell is also measured in `dvh` now, so a mobile browser's own
+  bars do not sit over the last rows of any page.
 - **Every search field carries a magnifying glass.** It is drawn on `.m2-search`
   itself rather than added to each page's markup, so the levels, upcoming and
   leaderboard fields all have it.

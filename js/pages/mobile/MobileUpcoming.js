@@ -1,6 +1,6 @@
 import {
     levelThumbnail, levelSlug, verificationPercent, levelStatus,
-    bestRecord, bestRun, recordLink, hasVerifier,
+    bestRecord, bestRun, recordLink, hasVerifier, verifierLine, levelRanks,
 } from '../../util.js';
 import { upcomingRanking } from '../../formulas.js';
 import { mobileStore } from './mobileStore.js';
@@ -53,17 +53,18 @@ export default {
                             <div class="m2-detail__head">
                                 <p class="m2-detail__by">
                                     by <b>{{ level.author }}</b>
-                                    <template v-if="verifierKnown(level)"> · {{ level.isVerified ? 'verified by' : 'to be verified by' }} <b>{{ level.verifier }}</b></template>
+                                    <template v-if="verifierLine(level)"> · {{ verifierLine(level).lead }} <b>{{ verifierLine(level).name }}</b></template>
                                 </p>
                                 <div class="m2-detail__pills">
                                     <span class="u-pill" :class="'u-pill--' + status(level).tone"><i></i>{{ status(level).label }}</span>
                                 </div>
                                 <div v-if="ranks(level).length" class="m2-ranks">
-                                    <router-link v-for="rank in ranks(level)" :key="rank.to" class="u-rank"
-                                                 :class="{ 'u-rank--lead': rank.lead }" :to="rank.to">
-                                        <span class="u-rank__n">#{{ rank.n }}</span>
+                                    <component v-for="rank in ranks(level)" :is="rank.n ? 'router-link' : 'span'" :key="rank.key"
+                                               class="u-rank" :class="{ 'u-rank--lead': rank.lead, 'u-rank--off': !rank.n }"
+                                               :to="rank.n ? rank.to : undefined">
+                                        <span class="u-rank__n">{{ rank.n ? '#' + rank.n : 'N/A' }}</span>
                                         <span class="u-rank__l">{{ rank.label }}</span>
-                                    </router-link>
+                                    </component>
                                 </div>
                             </div>
                         </div>
@@ -151,6 +152,7 @@ export default {
         run: bestRun,
         recordHref: recordLink,
         verifierKnown: hasVerifier,
+        verifierLine,
         slug(level) {
             return levelSlug(level.path, this.allPaths);
         },
@@ -163,13 +165,6 @@ export default {
             if (rec) return `from 0% — ${rec.percent}% by ${rec.user}`;
             return 'no progress recorded';
         },
-        ranks(level) {
-            if (!level) return [];
-            return [
-                { key: 'all', n: level.allLevelsRank, label: 'All Levels', to: '/mobile/all' },
-                { key: 'main', n: level.mainRank, label: 'Main List', to: '/mobile/main' },
-                { key: 'future', n: level.futureRank, label: 'Future List', to: '/mobile/future' },
-            ].filter((r) => r.n).map((r) => ({ ...r, lead: r.key === 'all' }));
-        },
+        ranks(level) { return levelRanks(level, 'all', true); },
     },
 };

@@ -159,6 +159,9 @@
     color: var(--color-on-primary);
 }
 .lvl-rank--lead:hover { border-color: transparent; }
+/* Same as .u-rank--off in css/ull-v2.css: a tier the level is not on says so. */
+.lvl-rank--off { opacity: 0.4; }
+.lvl-rank--off:hover { border-color: var(--lvl-line); transform: none; }
 .lvl-rank__n { font-size: 1.5rem; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
 .lvl-rank__l {
     font-size: 0.58rem;

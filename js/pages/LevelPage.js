@@ -4,6 +4,7 @@ import {
     embed, levelThumbnail, levelForSlug,
     decorationPercent, verificationPercent, levelStatus,
     bestRecord, bestRun, recordLink, levelLength, levelId, hasVerifier,
+    verifierLabel, verifierLine, levelRanks,
 } from '../util.js';
 import Spinner from '../components/Spinner.js';
 import Footer from '../components/Footer.js';
@@ -48,7 +49,7 @@ export default {
                         <h1 class="lvl-title">{{ level.name }}</h1>
                         <p class="lvl-byline">
                             by <b>{{ level.author }}</b>
-                            <template v-if="hasVerifier"> · {{ level.isVerified ? 'verified by' : 'to be verified by' }} <b>{{ level.verifier }}</b></template>
+                            <template v-if="verifierLine"> · {{ verifierLine.lead }} <b>{{ verifierLine.name }}</b></template>
                         </p>
                         <div class="lvl-pills">
                             <span class="lvl-status" :class="'lvl-status--' + status.tone"><i></i>{{ status.label }}</span>
@@ -56,18 +57,12 @@ export default {
                         </div>
                     </div>
                     <div class="lvl-ranks">
-                        <router-link class="lvl-rank lvl-rank--lead" to="/list">
-                            <span class="lvl-rank__n">#{{ level.allLevelsRank }}</span>
-                            <span class="lvl-rank__l">All Levels</span>
-                        </router-link>
-                        <router-link v-if="level.mainRank" class="lvl-rank" to="/listmain">
-                            <span class="lvl-rank__n">#{{ level.mainRank }}</span>
-                            <span class="lvl-rank__l">Main List</span>
-                        </router-link>
-                        <router-link v-if="level.futureRank" class="lvl-rank" to="/listfuture">
-                            <span class="lvl-rank__n">#{{ level.futureRank }}</span>
-                            <span class="lvl-rank__l">Future List</span>
-                        </router-link>
+                        <component v-for="rank in ranks" :is="rank.n ? 'router-link' : 'span'" :key="rank.key"
+                                   class="lvl-rank" :class="{ 'lvl-rank--lead': rank.lead, 'lvl-rank--off': !rank.n }"
+                                   :to="rank.n ? rank.to : undefined">
+                            <span class="lvl-rank__n">{{ rank.n ? '#' + rank.n : 'N/A' }}</span>
+                            <span class="lvl-rank__l">{{ rank.label }}</span>
+                        </component>
                     </div>
                 </div>
             </header>
@@ -190,6 +185,10 @@ export default {
         hasVerifier() {
             return hasVerifier(this.level);
         },
+        verifierLine() { return verifierLine(this.level); },
+        // All three tiers, in order. All Levels leads here: there is no "current
+        // list" on a level's own page, and that is the tier its points come from.
+        ranks() { return levelRanks(this.level); },
         decoration() {
             return decorationPercent(this.level);
         },
@@ -223,7 +222,7 @@ export default {
             const frames = typeof l.frameCounter === 'string' ? l.frameCounter.trim() : '';
             return [
                 ['Host', l.author],
-                ['Verifier', this.hasVerifier ? l.verifier : 'Unknown'],
+                ['Verifier', verifierLabel(l)],
                 ['Level ID', levelId(l)],
                 l.length ? ['Length', levelLength(l)] : null,
                 l.lastUpd ? ['Updated', l.lastUpd] : null,

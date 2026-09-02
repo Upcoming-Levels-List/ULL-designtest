@@ -207,6 +207,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+/* How far the player got, right after the level name — the name alone does not
+   say whether the score came from a completion or a run. */
+.lb-rec__pct { margin-left: 0.45rem; font-size: 0.74rem; font-weight: 600; color: var(--u-accent); font-variant-numeric: tabular-nums; }
 .page-leaderboard .lb-rec__rank {
     margin-left: 0.4rem;
     font-size: 0.72rem;

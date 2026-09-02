@@ -123,6 +123,9 @@ Two things worth knowing about the build:
 
 - Mobile. `/mobile/info` was untouched by this pass; it has three templates of
   its own in [`design/mobile-information/`](../mobile-information/), which put
-  this page's content on a 390px screen.
+  this page's content on a 390px screen. A. Doors shipped. Two details differ
+  there on purpose: the search field says *Search the page*, and the guidelines
+  face is the same grey as the other five — the brand wash only reads as a
+  hierarchy in a twelve-column grid.
 - The four approaches this was chosen from — A. Shelf, B. Manual, D. Document,
   E. Tiles. All are in git history.

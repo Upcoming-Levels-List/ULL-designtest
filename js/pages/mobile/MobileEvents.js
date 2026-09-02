@@ -2,6 +2,7 @@ import { store } from '../../main.js';
 import {
     levelThumbnail, thumbnailUrl, levelStatus,
     bestRecord, bestRun, recordLink, levelLength, levelId, hasVerifier,
+    verifierLabel, verifierLine,
 } from '../../util.js';
 import { mobileStore } from './mobileStore.js';
 
@@ -35,7 +36,7 @@ export default {
                                 <h2 class="u-hero__title">{{ levelDay.name }}</h2>
                                 <p class="u-hero__by">
                                     by <b>{{ levelDay.author }}</b>
-                                    <template v-if="dayVerifier"> · to be verified by <b>{{ levelDay.verifier }}</b></template>
+                                    <template v-if="dayLine"> · {{ dayLine.lead }} <b>{{ dayLine.name }}</b></template>
                                 </p>
                                 <div v-if="levelDay.rankNum" class="m2-ranks">
                                     <router-link class="u-rank u-rank--lead" to="/mobile/all">
@@ -75,7 +76,7 @@ export default {
                             <h3 class="u-eyebrow">Details</h3>
                             <dl class="u-dl">
                                 <dt>Host</dt><dd>{{ levelDay.author }}</dd>
-                                <dt>Verifier</dt><dd>{{ dayVerifier ? levelDay.verifier : 'Unknown' }}</dd>
+                                <dt>Verifier</dt><dd>{{ dayVerifierLabel }}</dd>
                                 <dt>Level ID</dt><dd>{{ dayId }}</dd>
                                 <dt>Length</dt><dd>{{ dayLength }}</dd>
                                 <dt>Updated</dt><dd>{{ levelDay.lastUpd }}</dd>
@@ -129,7 +130,7 @@ export default {
                             <div class="u-hero__body">
                                 <div class="m2-tag"><b>Closest to Verification</b><span>{{ mobileStore.levelVerif.record.percent }}</span></div>
                                 <h2 class="u-hero__title">{{ mobileStore.levelVerif.name }}</h2>
-                                <p class="u-hero__by">by <b>{{ mobileStore.levelVerif.author }}</b> · to be verified by <b>{{ mobileStore.levelVerif.verifier }}</b></p>
+                                <p class="u-hero__by">by <b>{{ mobileStore.levelVerif.author }}</b><template v-if="verifLine"> · {{ verifLine.lead }} <b>{{ verifLine.name }}</b></template></p>
                                 <div v-if="mobileStore.levelVerif.rank" class="m2-ranks">
                                     <router-link class="u-rank u-rank--lead" to="/mobile/all">
                                         <span class="u-rank__n">#{{ mobileStore.levelVerif.rank }}</span>
@@ -169,6 +170,9 @@ export default {
         levelDay() { return mobileStore.rawList.length ? pickDailyLevel(mobileStore.rawList) : null; },
         lotdThumb() { return levelThumbnail(this.levelDay); },
         dayVerifier() { return hasVerifier(this.levelDay); },
+        dayLine() { return verifierLine(this.levelDay); },
+        dayVerifierLabel() { return verifierLabel(this.levelDay); },
+        verifLine() { return verifierLine(mobileStore.levelVerif); },
         dayStatus() { return levelStatus(this.levelDay); },
         dayRecord() { return bestRecord(this.levelDay); },
         dayRun() { return bestRun(this.levelDay); },

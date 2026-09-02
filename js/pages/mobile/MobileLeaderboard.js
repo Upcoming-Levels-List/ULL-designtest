@@ -1,4 +1,5 @@
 import { mobileStore } from './mobileStore.js';
+import { recordProgress, recordTypeLabel } from '../../leaderboard.js';
 
 export default {
     template: `
@@ -48,7 +49,7 @@ export default {
                             <div>
                                 <div v-for="rec in player.records" :key="rec.levelName + rec.percent + rec.type" class="m2-rec">
                                     <span class="m2-rec__score">+{{ rec.score.toFixed(1) }}</span>
-                                    <span class="m2-rec__lvl">{{ rec.levelName }}<span class="m2-rec__rank">#{{ rec.levelRank }}</span></span>
+                                    <span class="m2-rec__lvl">{{ rec.levelName }}<span class="m2-rec__pct">{{ recordProgress(rec) }}</span><span class="m2-rec__rank">#{{ rec.levelRank }}</span></span>
                                     <span class="m2-rec__type">{{ recordLabel(rec) }}</span>
                                 </div>
                             </div>
@@ -101,12 +102,10 @@ export default {
         },
         // A verification and a layout completion say what they are; a record and
         // a run say how far the player got.
-        recordLabel(rec) {
-            if (rec.type === 'verification') return 'Verification';
-            if (rec.type === 'layout') return 'Layout completion';
-            if (rec.type === 'run') return `${rec.displayPercent}%`;
-            return `${rec.percent}%`;
-        },
+        recordProgress,
+        // The progress moved next to the level name, so this says what kind of
+        // record earned the score (js/leaderboard.js).
+        recordLabel: recordTypeLabel,
         selectByName(name) {
             const at = this.filteredPlayers.findIndex((p) => p.name === name);
             if (at >= 0) this.playerSelected = at;

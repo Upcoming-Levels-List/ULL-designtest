@@ -42,6 +42,36 @@
     opacity: 0.5;
     line-height: 1.65;
 }
+/* ── Search ──
+   One field over all four lanes. The glyph is .info-mag from
+   css/pages/information.css, which draws it in CSS rather than as an asset. */
+.pending-search {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: min(26rem, 100%);
+    margin-top: 1.1rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--u-r-sm);
+    background: rgba(128, 128, 128, 0.09);
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    transition: border-color 120ms ease;
+}
+.pending-search:focus-within { border-color: var(--color-primary); }
+.pending-search__field {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--color-on-background);
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+.pending-search__field::placeholder { color: var(--color-on-background); opacity: 0.42; }
+.pending-search__field::-webkit-search-cancel-button { -webkit-appearance: none; }
+
 .pending-counts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.35rem; }
 /* Each count jumps to the lane it counts. */
 .pending-count {

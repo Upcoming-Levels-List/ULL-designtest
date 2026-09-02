@@ -2,14 +2,26 @@
    and the return-to-top button. Everything the pages themselves draw now lives
    in css/pages/mobile-v2.css; the Information page keeps css/pages/mobile-info.css. */
 
-.mob, .mob * { font-family: "Lexend Deca", sans-serif; } .mob { display: flex; flex-direction: column; height: 100%; background-color: var(--color-background); color: var(--color-on-background); }
+.mob, .mob * { font-family: "Lexend Deca", sans-serif; }
+.mob {
+    display: flex;
+    flex-direction: column;
+    /* 100% of a viewport a mobile browser measures with its own bars showing
+       leaves the last rows of every page under them; dvh is the height that is
+       actually visible, and shrinks and grows with the address bar. */
+    height: 100%;
+    height: 100dvh;
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+}
 
 /* ── Page content ── */
-.mob-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
+.mob-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; overscroll-behavior-y: contain; }
 /* Never let a short page get squashed by the footer's gap. */
 .mob-content > * { flex-shrink: 0; }
-.mob-content-home { overflow: hidden; }
-.mob-content-home .mob-home-page { height: 100%; overflow-y: auto; }
+/* Home used to be its own scroll container inside this one, which cut its last
+   screen off and put the footer somewhere you could never reach. It scrolls
+   with every other page now. */
 
 /* List page */
 .mob-list { display: flex; flex-direction: column; }

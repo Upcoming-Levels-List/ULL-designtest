@@ -1,13 +1,8 @@
 import { store } from '../main.js';
 import { fetchList } from '../content.js';
-import { buildLeaderboard } from '../leaderboard.js';
+import { buildLeaderboard, recordProgress, recordTypeLabel } from '../leaderboard.js';
 
 import Spinner from '../components/Spinner.js';
-
-const TYPE_LABEL = {
-    verification: 'Verification',
-    layout: 'Layout completion',
-};
 
 // The tones are the status scale used everywhere else, borrowed here to
 // separate the four ways a score can be earned at a glance.
@@ -97,7 +92,7 @@ export default {
                         <div v-for="rec in selectedPlayer.records" :key="rec.levelName + rec.percent + rec.type" class="lb-rec">
                             <span class="lb-rec__score">+{{ rec.score.toFixed(3) }}</span>
                             <span class="lb-rec__lvl">
-                                {{ rec.levelName }}<span class="lb-rec__rank">#{{ rec.levelRank }}</span>
+                                {{ rec.levelName }}<span class="lb-rec__pct">{{ recordProgress(rec) }}</span><span class="lb-rec__rank">#{{ rec.levelRank }}</span>
                             </span>
                             <span class="u-pill" :class="'u-pill--' + tone(rec.type)"><i></i>{{ recordLabel(rec) }}</span>
                         </div>
@@ -184,13 +179,10 @@ export default {
             if (tens >= 11 && tens <= 13) return `${n}th`;
             return `${n}${['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
         },
-        // A verification and a layout completion say what they are; a record and
-        // a run say how far the player got.
-        recordLabel(rec) {
-            if (rec.type === 'verification' || rec.type === 'layout') return TYPE_LABEL[rec.type];
-            if (rec.type === 'run') return `${rec.displayPercent}%`;
-            return `${rec.percent}%`;
-        },
+        recordProgress,
+        // How far the player got sits next to the level name now, so the pill
+        // at the end of the row says what kind of record it is.
+        recordLabel: recordTypeLabel,
         selectByName(name) {
             const at = this.filteredPlayers.findIndex((p) => p.name === name);
             if (at >= 0) this.selected = at;
