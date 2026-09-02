@@ -8,6 +8,10 @@ the pages were made from; the shipped layer is `css/pages/mobile-v2.css`, and
 `mob-v2.css` beside these templates is a copy of it kept in step so the deck
 renders what the site renders.
 
+`/mobile/home` has since had a second pass proposed on top of what shipped —
+two phone templates, beside two desktop ones, in [`design/home/`](../home/).
+Nothing from that pass is built.
+
 Open `preview.html` in a browser, or rebuild it after editing anything:
 
 ```sh

@@ -1,0 +1,173 @@
+<!--meta
+title: Deck
+tag: phone · C
+surface: mobile
+files: js/pages/mobile/MobileHome.js · css/pages/mobile-v2.css
+idea: The desktop template A, at 390px. The hero keeps its eyebrow and title but loses two of its four lines of lead, and the credentials bar comes out from under it, so the screen a visitor lands on opens on a level instead of on an advert: #1 with its blurred thumbnail, its status pill and both meters, then the next four as rows carrying their status beside the name and their decoration as a bar. Recent Changes comes out of its nested scroll box and shows the latest day in the page's own flow, with the rest folding open in place. The editors card becomes one tappable line, and the credentials bar lands beside it at the bottom, where "what this project is" belongs once the list itself has been seen.
+weight: 321px of the 792px window — 41% — currently goes by before the first level. Here the first level starts at roughly 200px and is shown in full. The nested feed goes: today it is 2513px of entries inside a 286px box inside a page that scrolls, which on a touch screen means a swipe that lands inside the box scrolls the wrong thing. And the 499px editors card, a quarter of the whole page, becomes a 48px row.
+cost: The same shape as the desktop template, so both can be built from one pass. The spotlight is .u-hero plus two .u-meter, all shipped; the row modifier is a .u-bar--thin under the existing .m2-row body. Deleting .m2-changes's max-height and overflow is a two-line change in css/pages/mobile-v2.css.
+watch: Moving the credentials bar below the fold is a real trade: "479 levels, 3+ years" is the line that tells a first-time visitor this is not somebody's weekend project, and it now arrives after two screens. And the spotlight costs a full thumbnail load on the first paint of the phone's landing page.
+-->
+<style>
+.mk-c .m2-hero { padding: 1.5rem var(--m-pad) 1.1rem; border-bottom: 0; }
+.mk-c .m2-hero__eyebrow { margin-bottom: 0.6rem; letter-spacing: 0.16em; }
+.mk-c .m2-hero h1 { font-size: 1.75rem; line-height: 1.05; letter-spacing: -0.035em; }
+.mk-c .m2-hero p { margin-top: 0.6rem; font-size: 0.8rem; line-height: 1.6; opacity: 0.55; }
+.mk-c .m2-body { padding-top: 1.25rem; gap: 1.35rem; }
+.mk-c .m2-rows--flush .m2-row { padding-block: 0.55rem; }
+.mk-c .m2-row__body { min-width: 0; }
+.mk-c .u-cred { gap: 0.7rem 1.2rem; }
+.mk-c .u-cred__ic { width: 2rem; height: 2rem; padding: 0.45rem; border-radius: 0.6rem; }
+.mk-c .u-cred__t { font-size: 0.82rem; }
+.mk-c .mh-about { padding: 0 var(--m-pad) 0.5rem; }
+</style>
+
+<div class="m2 ull2 mk-c">
+<!--__B:topbar__-->
+
+    <div class="m2-scroll mob-home-page">
+
+        <section class="m2-hero">
+            <div class="m2-hero__eyebrow">Geometry Dash &middot; Extreme Demons</div>
+            <h1>Upcoming Levels List</h1>
+            <p>Every upcoming Top 1&ndash;100 Extreme Demon, ranked by where it is projected to land on the Demonlist.</p>
+        </section>
+
+        <!-- #1, introduced the way /level/<slug> introduces it. -->
+        <a class="mh-spot" href="#">
+            <div class="u-hero">
+                <div class="u-hero__bg mk-thumb mk-thumb--a"></div>
+                <div class="u-hero__scrim"></div>
+                <div class="u-hero__inner">
+                    <div class="u-hero__body">
+                        <div class="u-eyebrow" style="margin-bottom:0.4rem">Top of the list &middot; #1</div>
+                        <h2 class="u-hero__title">Aeternus</h2>
+                        <p class="u-hero__by">by <b>Riot</b> &middot; on open verification</p>
+                    </div>
+                    <span class="u-pill u-pill--amber"><i></i>Verifying</span>
+                </div>
+            </div>
+            <div class="mh-spot__body">
+                <div class="u-meter">
+                    <div class="u-meter__top"><span>Decoration</span><b>100%</b></div>
+                    <span class="u-bar"><i style="width:100%"></i></span>
+                </div>
+                <div class="u-meter">
+                    <div class="u-meter__top"><span>Furthest anyone has got</span><b>28%</b></div>
+                    <span class="u-bar u-bar--alt"><i style="width:28%"></i></span>
+                </div>
+                <div class="mh-spot__foot"><span class="u-btn u-btn--ghost">Open level page</span></div>
+            </div>
+        </a>
+
+        <div class="m2-body">
+
+            <section>
+                <div class="m2-sec__head">
+                    <h2 class="u-eyebrow">Next on the list</h2>
+                    <a class="m2-more" href="#">All 479 &rarr;</a>
+                </div>
+                <div class="m2-rows m2-rows--flush">
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#2</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--b"></span>
+                        <span class="m2-row__body">
+                            <span class="mh-row__head">
+                                <span class="m2-row__name">Kingdom of Miracalis</span>
+                                <span class="u-pill u-pill--yellow"><i></i>80%</span>
+                            </span>
+                            <span class="m2-row__sub">Duke &middot; wPopoff</span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:80%"></i></span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#3</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--c"></span>
+                        <span class="m2-row__body">
+                            <span class="mh-row__head">
+                                <span class="m2-row__name">Rebirth The End</span>
+                                <span class="u-pill u-pill--cyan"><i></i>5%</span>
+                            </span>
+                            <span class="m2-row__sub">Silence &middot; zLevii</span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:5%"></i></span><span class="mh-row__pct">6% furthest</span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#4</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--d"></span>
+                        <span class="m2-row__body">
+                            <span class="mh-row__head">
+                                <span class="m2-row__name">M A N R A Y</span>
+                                <span class="u-pill u-pill--blue"><i></i>Layout</span>
+                            </span>
+                            <span class="m2-row__sub">akunakunn &middot; unknown</span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:0%"></i></span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#5</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--e"></span>
+                        <span class="m2-row__body">
+                            <span class="mh-row__head">
+                                <span class="m2-row__name">Cyanical</span>
+                                <span class="u-pill u-pill--amber"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">qponn &middot; open verification</span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span></span>
+                        </span>
+                    </a>
+                    <a class="m2-row" href="#">
+                        <span class="m2-row__rank">#6</span>
+                        <span class="m2-row__thumb mk-thumb mk-thumb--f"></span>
+                        <span class="m2-row__body">
+                            <span class="mh-row__head">
+                                <span class="m2-row__name">Vehemence</span>
+                                <span class="u-pill u-pill--red"><i></i>Verifying</span>
+                            </span>
+                            <span class="m2-row__sub">TBT &middot; verification race</span>
+                            <span class="mh-row__foot"><span class="u-bar u-bar--thin"><i style="width:100%"></i></span><span class="mh-row__pct">60% furthest</span></span>
+                        </span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- No max-height, no overflow: the feed is part of the page, and
+                 the page is the only thing that scrolls. -->
+            <section>
+                <div class="m2-sec__head">
+                    <h2 class="u-eyebrow">Recent changes</h2>
+                    <span class="m2-more">18 on 23 Aug</span>
+                </div>
+                <div class="mh-feed">
+                    <div class="mh-feed__date">23 August 2026</div>
+                    <div class="mh-change is-down"><span class="mh-change__dot"></span><div><b>Tunnel of Serpent</b> <span class="dim">moved down, #54 &rarr; #59</span></div></div>
+                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Cyberpsychosis (Sobeann)</b> <span class="dim">moved up, #97 &rarr; #91</span></div></div>
+                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Ex Vacuo</b> <span class="dim">moved up, #233 &rarr; #113</span></div></div>
+                    <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>ARE</b> <span class="dim">moved up, #257 &rarr; #142</span></div></div>
+                    <div class="mh-change is-down"><span class="mh-change__dot"></span><div><b>AICHMIRA</b> <span class="dim">moved down, #261 &rarr; #476</span></div></div>
+                    <details class="hm-fold">
+                        <summary><span class="hm-fold__more">Show 37 older changes &darr;</span><span class="hm-fold__less">Show fewer &uarr;</span></summary>
+                        <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>Silentman Adventures</b> <span class="dim">moved up, #185 &rarr; #157</span></div></div>
+                        <div class="mh-change is-up"><span class="mh-change__dot"></span><div><b>The Lightning Rod</b> <span class="dim">moved up, #253 &rarr; #237</span></div></div>
+                        <div class="mh-feed__date">22 August 2026</div>
+                        <div class="mh-change is-new"><span class="mh-change__dot"></span><div><b>Cyberpsychosis (Karma)</b> <span class="dim">placed at #88</span></div></div>
+                        <div class="mh-change is-new"><span class="mh-change__dot"></span><div><b>Control Nexus</b> <span class="dim">placed at #168</span></div></div>
+                    </details>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="mh-credit">
+            <a class="mh-credit__row" href="#">
+                <span class="mh-credit__t"><b>12</b> list editors keep this accurate</span>
+                <span class="mh-credit__go">Meet them &rarr;</span>
+            </a>
+        </div>
+
+        <div class="mh-about"><!--__B:cred2__--></div>
+
+    </div>
+
+<!--__B:tabbar__-->
+</div>

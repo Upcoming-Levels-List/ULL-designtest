@@ -13,6 +13,11 @@ These templates have since been built into the site. They stay here as the
 reference the pages were made from, and the deck now reads the shipped
 stylesheet, so it renders whatever `css/ull-v2.css` currently says.
 
+The home page has since had a **second** pass proposed on top of what shipped —
+two desktop templates and two phone ones, about the measure the page sits on and
+the weight it gives each block, in [`design/home/`](home/). Nothing from that
+pass is built.
+
 ```
 design/
   templates/*.html      one static mockup per page, with a meta block saying
