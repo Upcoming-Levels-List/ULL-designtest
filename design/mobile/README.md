@@ -91,11 +91,15 @@ deck renders is what the site renders:
   straight into rows, so its hero stays compact; home is the page a visitor
   lands on, and there the same block read as cramped — an eyebrow, a title,
   three lines of lead and five count chips wrapping onto two ragged rows, all
-  inside 230px. The counts moved out of the hero into a full-width strip, which
-  is the shape the desktop already gives them (`.home-pulse`), and the title and
-  its lead got room around them. Same five figures, same links, one calm row
-  instead of two ragged ones. The rules are scoped to `.mob-home-page`, so no
-  other page changed.
+  inside 230px. The title and its lead got room around them, and the counts
+  came out of the hero.
+- **The five counts became three credentials, and then two.** Tracked, main,
+  future, verified and pending said the same thing five times, and four of them
+  repeated the sidebar. In their place is `.u-cred` in `css/ull-v2.css` — an
+  icon and a line each for how much the list holds, how long it has been
+  running and who uses it — shared with the desktop, which draws all three; a
+  phone line holds two, so the phone takes the first two. Both are scoped to
+  `.mob-home-page`, so no other page changed.
 
 ## The expanded row is a summary
 

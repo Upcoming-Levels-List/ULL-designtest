@@ -2,6 +2,7 @@ import { store } from '../../main.js';
 import { fetchRecentChanges } from '../../content.js';
 import { levelThumbnail, levelSlug, levelStatus, decorationPercent } from '../../util.js';
 import { mobileStore } from './mobileStore.js';
+import { homeStats } from '../../home-stats.js';
 
 const roleIconMap = {
     owner: 'crown',
@@ -32,15 +33,16 @@ export default {
                 <p>A community-maintained catalogue of upcoming Top 1-100 Extreme Demons in Geometry Dash, ranked by where the staff team projects each will land on the Demonlist.</p>
             </section>
 
-            <!-- The same five counts the desktop puts under its hero, and in
-                 the same shape: a full-width strip of cells rather than five
-                 chips wrapping onto two ragged rows inside the hero. -->
-            <div v-if="counts" class="mob-home-pulse">
-                <div class="mob-home-pulse__cell mob-home-pulse__cell--lead"><b>{{ counts.all }}</b><span>Tracked</span></div>
-                <router-link class="mob-home-pulse__cell" to="/mobile/main"><b>{{ counts.main }}</b><span>Main</span></router-link>
-                <router-link class="mob-home-pulse__cell" to="/mobile/future"><b>{{ counts.future }}</b><span>Future</span></router-link>
-                <div class="mob-home-pulse__cell"><b>{{ counts.verified }}</b><span>Verified</span></div>
-                <router-link class="mob-home-pulse__cell" to="/mobile/pending"><b>{{ counts.pending }}</b><span>Pending</span></router-link>
+            <!-- The desktop's credentials bar, minus its third item: a phone
+                 has room for two of these on one line, and the third is the
+                 one a visitor can do least with. -->
+            <div v-if="counts" class="u-cred">
+                <div v-for="stat in stats" :key="stat.key" class="u-cred__item">
+                    <svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path v-for="d in stat.paths" :key="d" :d="d" />
+                    </svg>
+                    <span class="u-cred__t"><b v-if="stat.value">{{ stat.value }}</b>{{ stat.label }}</span>
+                </div>
             </div>
 
             <div class="m2-body">
@@ -109,14 +111,10 @@ export default {
         counts() {
             const levels = (mobileStore.rawList || []).map(([level]) => level).filter(Boolean);
             if (!levels.length) return null;
-            return {
-                all: levels.length,
-                main: levels.filter((l) => l.isMain || l.isVerified).length,
-                future: levels.filter((l) => l.isFuture || l.isVerified).length,
-                verified: levels.filter((l) => l.isVerified).length,
-                pending: (mobileStore.pending || []).length,
-            };
+            return { all: levels.length };
         },
+        // The desktop's three, first two only: js/home-stats.js.
+        stats() { return homeStats(this.counts && this.counts.all).slice(0, 2); },
         topLevels() {
             const levels = (mobileStore.rawList || []).map(([level]) => level).filter(Boolean);
             const paths = levels.map((l) => l.path);

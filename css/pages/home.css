@@ -87,39 +87,16 @@
 /* ── COUNT STRIP ──
    Five readings of the list as it stands, each one a length of an array the
    page already holds. Three of them are the pages they count. */
-.home-pulse {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    border-bottom: 1px solid rgba(128,128,128,0.15);
-}
-.home-pulse__cell {
-    display: block;
-    padding: 1.1rem 1.5rem;
-    color: var(--color-on-background);
-    text-decoration: none;
-    transition: background-color 120ms ease;
-}
-a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
-.home-pulse__cell + .home-pulse__cell { border-left: 1px solid rgba(128,128,128,0.15); }
-.home-pulse__cell b {
-    display: block;
-    font-size: 1.6rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    font-variant-numeric: tabular-nums;
-}
-.home-pulse__cell span {
-    display: block;
-    margin-top: 0.4rem;
-    font-size: 0.58rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    opacity: 0.4;
-}
-.home-pulse__cell--lead b { color: color-mix(in srgb, var(--color-primary) 45%, white); }
-.root.dark .home-pulse__cell--lead b { color: color-mix(in srgb, var(--color-primary) 75%, black); }
+/* ── The credentials bar ──
+   Three things about the list rather than five counts of it: how much it holds,
+   how long it has been running, and who uses it. The five-cell grid it replaces
+   read as a dashboard — five figures in five boxes, four of which repeated what
+   the sidebar already says — on a page nobody arrives at to read a dashboard.
+
+   The component is .u-cred in css/ull-v2.css, shared with the phone, which
+   takes the first two of the same three (js/home-stats.js). What the page adds
+   is the gutter it shares with the hero, and the rule under it. */
+.home-page .u-cred { padding: 1.15rem 2.5rem; border-bottom: 1px solid rgba(128,128,128,0.15); }
 
 /* ── SECTIONS ── */
 .home-section__head {
@@ -328,9 +305,8 @@ a.home-pulse__cell:hover { background: rgba(128,128,128,0.06); }
    visitors to /mobile), but the window can still be dragged narrower. */
 @media (max-width: 1000px) {
     .home-hero { padding: 2.5rem 1.5rem 2rem; }
-    .home-pulse { grid-template-columns: repeat(3, 1fr); }
-    .home-pulse__cell + .home-pulse__cell { border-left: 0; }
-    .home-pulse__cell { border-top: 1px solid rgba(128,128,128,0.12); }
+    /* The bar wraps on its own; it only needs the narrower gutter. */
+    .home-page .u-cred { padding-inline: 1.5rem; gap: 0.7rem 2rem; }
     .home-content { padding-inline: 1.5rem; }
     .home-grid-2col { grid-template-columns: 1fr; }
 }

@@ -679,44 +679,25 @@ button.m2-fig:active { background: var(--u-fill-2); }
 
    So these rules — and only these, scoped to the home page, since every other
    page keeps the compact hero — give the opening room: a larger title with more
-   air around it, and the counts lifted out of the hero into a full-width strip,
-   which is the shape the desktop gives them (.home-pulse in css/pages/home.css).
-   Same five figures, same links, one calm row instead of two ragged ones. */
+   air around it, and the counts replaced by the credentials bar the desktop
+   carries (.u-cred in css/ull-v2.css), which is a row of icons and lines rather
+   than a grid of cells. The phone takes the first two of its three. */
 .mob-home-page .m2-hero { padding: 2rem var(--m-pad) 1.6rem; }
 .mob-home-page .m2-hero__eyebrow { margin-bottom: 0.7rem; letter-spacing: 0.16em; }
 .mob-home-page .m2-hero h1 { font-size: 1.85rem; line-height: 1.05; letter-spacing: -0.035em; }
 .mob-home-page .m2-hero p { margin-top: 0.8rem; font-size: 0.82rem; line-height: 1.7; opacity: 0.55; }
 
-.mob-home-pulse {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+/* The bar itself is the desktop's; what differs at 390px is its gutter, its
+   type size and the gap between two items rather than three. */
+.mob-home-page .u-cred {
+    gap: 0.6rem 1.5rem;
+    padding: 0.95rem var(--m-pad);
     border-bottom: 1px solid var(--u-line);
 }
-.mob-home-pulse__cell {
-    display: block;
-    padding: 0.9rem 0.2rem;
-    color: var(--color-on-background);
-    text-align: center;
-}
-.mob-home-pulse__cell + .mob-home-pulse__cell { border-left: 1px solid var(--u-line); }
-.mob-home-pulse__cell b {
-    display: block;
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    font-variant-numeric: tabular-nums;
-}
-.mob-home-pulse__cell span {
-    display: block;
-    margin-top: 0.4rem;
-    font-size: 0.5rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.4;
-}
-.mob-home-pulse__cell--lead b { color: var(--u-accent); }
+.mob-home-page .u-cred__item { gap: 0.55rem; }
+.mob-home-page .u-cred__ic { width: 1.05rem; height: 1.05rem; }
+.mob-home-page .u-cred__t { font-size: 0.8rem; }
+.mob-home-page .u-cred__t b { margin-right: 0.35em; font-size: 1.15em; }
 
 /* The sections below start a little further down, and stand a little further
    apart, than on the pages that are all rows. */

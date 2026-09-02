@@ -3,7 +3,7 @@ title: Home
 route: /mobile/home
 files: js/pages/mobile/MobileHome.js · css/pages/mobile.css
 problem: A purple centred headline, four full-width stacked buttons and an "Other Pages ▼" accordion fill the whole first screen without showing a single level. Below that, Recent Changes is a flat run of em-dashes inside a bordered scroll box and the editors are one undifferentiated list. The desktop home gained a count strip, the top five levels, a dated timeline and editors grouped by role; none of it crossed over.
-change: The same four blocks as the desktop, stacked: hero, the count strip, the top five levels as tap rows with their status pill, the timeline with its coloured dots, the editors grouped. The four navigation buttons go: those destinations are the tab bar at the bottom of every page now. The counts are a full-width strip under the hero rather than chips inside it, which is the shape the desktop gives them and the one that leaves the opening room to breathe — home is the only page with a hero this size, so it is the only one that gets it.
+change: The same four blocks as the desktop, stacked: hero, the count strip, the top five levels as tap rows with their status pill, the timeline with its coloured dots, the editors grouped. The four navigation buttons go: those destinations are the tab bar at the bottom of every page now. Under the hero sits the desktop's credentials bar — how much the list holds, how long it has been running — rather than five count chips inside it: home is the only page with a hero this size, so it is the only one that gets the room. The desktop's third item, who uses it, does not fit a phone line and is dropped.
 -->
 <div class="m2 ull2">
     <header class="m2-top">
@@ -21,12 +21,9 @@ change: The same four blocks as the desktop, stacked: hero, the count strip, the
             <p>A community-maintained catalogue of upcoming Top 1&ndash;100 Extreme Demons, ranked by where the staff team projects each will land on the Demonlist.</p>
         </section>
 
-        <div class="mob-home-pulse">
-            <div class="mob-home-pulse__cell mob-home-pulse__cell--lead"><b>479</b><span>Tracked</span></div>
-            <a class="mob-home-pulse__cell" href="#"><b>406</b><span>Main</span></a>
-            <a class="mob-home-pulse__cell" href="#"><b>291</b><span>Future</span></a>
-            <div class="mob-home-pulse__cell"><b>178</b><span>Verified</span></div>
-            <a class="mob-home-pulse__cell" href="#"><b>32</b><span>Pending</span></a>
+        <div class="u-cred">
+            <div class="u-cred__item"><svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.2 13.5 5.2 8 8.2 2.5 5.2Z"/><path d="M2.5 8 8 11 13.5 8"/><path d="M2.5 10.6 8 13.6 13.5 10.6"/></svg><span class="u-cred__t"><b>479</b>levels total</span></div>
+            <div class="u-cred__item"><svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.2 8A6.2 6.2 0 1 1 1.8 8a6.2 6.2 0 0 1 12.4 0Z"/><path d="M8 4.6V8l2.4 1.4"/></svg><span class="u-cred__t"><b>3+</b>years</span></div>
         </div>
 
         <div class="m2-body">

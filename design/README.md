@@ -106,3 +106,8 @@ is what ships:
   figure is centred in its own box.
 - **Senior moderators are Elder moderators**, matching `js/_guidelines.js`.
 - An empty list says so whether a search or a **filter** emptied it.
+- Home's count strip is **three credentials, not five counts**: how much the
+  list holds, how long it has been running and who uses it, as an icon and a
+  line each. Five figures in five cells read as a dashboard, and four of them
+  repeated what the sidebar already says. The component is `.u-cred`, shared
+  with the phone, which shows the first two.

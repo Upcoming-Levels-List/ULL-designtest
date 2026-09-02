@@ -1,6 +1,7 @@
 import { store } from '../main.js';
-import { fetchEditors, fetchRecentChanges, fetchList, fetchPending } from '../content.js';
+import { fetchEditors, fetchRecentChanges, fetchList } from '../content.js';
 import { levelThumbnail, levelSlug, levelStatus } from '../util.js';
+import { homeStats } from '../home-stats.js';
 import Footer from '../components/Footer.js';
 
 const roleIconMap = {
@@ -64,14 +65,13 @@ export default {
         </div>
     </section>
 
-    <div v-if="counts" class="home-pulse">
-        <div class="home-pulse__cell home-pulse__cell--lead">
-            <b>{{ counts.all }}</b><span>Levels tracked</span>
+    <div v-if="counts" class="u-cred">
+        <div v-for="stat in stats" :key="stat.key" class="u-cred__item">
+            <svg class="u-cred__ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path v-for="d in stat.paths" :key="d" :d="d" />
+            </svg>
+            <span class="u-cred__t"><b v-if="stat.value">{{ stat.value }}</b>{{ stat.label }}</span>
         </div>
-        <router-link class="home-pulse__cell" to="/listmain"><b>{{ counts.main }}</b><span>Main List</span></router-link>
-        <router-link class="home-pulse__cell" to="/listfuture"><b>{{ counts.future }}</b><span>Future List</span></router-link>
-        <div class="home-pulse__cell"><b>{{ counts.verified }}</b><span>Verified</span></div>
-        <router-link class="home-pulse__cell" to="/pending"><b>{{ counts.pending }}</b><span>Pending</span></router-link>
     </div>
 
     <div class="home-content">
@@ -162,6 +162,8 @@ export default {
         roleIconMap,
     }),
     computed: {
+        // Three things about the list, shared with the phone (js/home-stats.js).
+        stats() { return homeStats(this.counts && this.counts.all); },
         // Grouped for the sub-headings, but never reordered inside a group: the
         // e2e test pins editors to the order the database returns.
         editorGroups() {
@@ -171,11 +173,10 @@ export default {
         },
     },
     async mounted() {
-        const [editors, recentChanges, list, pending] = await Promise.all([
+        const [editors, recentChanges, list] = await Promise.all([
             fetchEditors(),
             fetchRecentChanges(),
             fetchList(),
-            fetchPending(),
         ]);
 
         this.editors = (editors || []).map((e) => (typeof e === 'string' ? { name: e, role: 'mod', link: '' } : e));
@@ -184,13 +185,7 @@ export default {
         const levels = (list || []).map(([level]) => level).filter(Boolean);
         if (!levels.length) return;
 
-        this.counts = {
-            all: levels.length,
-            main: levels.filter((l) => l.isMain || l.isVerified).length,
-            future: levels.filter((l) => l.isFuture || l.isVerified).length,
-            verified: levels.filter((l) => l.isVerified).length,
-            pending: (pending || []).length,
-        };
+        this.counts = { all: levels.length };
 
         const paths = levels.map((l) => l.path);
         this.topLevels = levels.slice(0, 5).map((level, i) => ({
