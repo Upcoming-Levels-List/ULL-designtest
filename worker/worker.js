@@ -743,22 +743,6 @@ async function handle(req, env) {
       }
     }
 
-    // ── GET /api/leaderboard ───────────────────────────────────
-    if (method === 'GET' && path === '/api/leaderboard') {
-      const { results } = await db.prepare(
-        'SELECT * FROM leaderboard ORDER BY score DESC'
-      ).all();
-      return json(results);
-    }
-
-    // ── GET /api/upcoming ──────────────────────────────────────
-    if (method === 'GET' && path === '/api/upcoming') {
-      const { results } = await db.prepare(
-        'SELECT * FROM upcoming ORDER BY sort_order ASC'
-      ).all();
-      return json(results.map(r => ({ ...r, tags: tryJSON(r.tags, []) })));
-    }
-
     // ── PUT /api/levels (insert or update) ────────────────────
     if (method === 'PUT' && path === '/api/levels') {
       const editor = await authed(req, db);

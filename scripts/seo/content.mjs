@@ -108,8 +108,8 @@ ${TIERS}
   placement decision from the staff team.</li>
   <li><strong><a href="/leaderboard">Leaderboard</a></strong> &mdash; players ranked by the
   verifications, records and runs they hold on listed levels.</li>
-  <li><strong><a href="/events">Events</a></strong> &mdash; the current Level of the Month and the
-  level Closest to Verification.</li>
+  <li><strong><a href="/events">Events</a></strong> &mdash; the Level of the Day, the Level of the
+  Month and the level Closest to Verification.</li>
   <li><strong><a href="/information">Information</a></strong> &mdash; the full guidelines: record
   acceptance, proof requirements, list procedures and staff duties.</li>
 </ul>
@@ -265,15 +265,17 @@ penalty system are set out in the <a href="/information">guidelines</a>.</p>`,
         priority: '0.7',
         changefreq: 'weekly',
         title: 'ULL — Events',
-        socialTitle: 'Events — Level of the Month & Closest to Verification | Upcoming Levels List',
+        socialTitle: 'Events — Level of the Day, Month & Closest to Verification | Upcoming Levels List',
         description:
-            'The current Level of the Month and the upcoming Geometry Dash Extreme Demon closest to verification, picked by the Upcoming Levels List staff team.',
+            'The current Level of the Day and Level of the Month, and the upcoming Geometry Dash Extreme Demon closest to verification, picked by the Upcoming Levels List staff team.',
         h1: 'Events',
         type: 'WebPage',
         body: `
-<p>The <strong>Events</strong> page highlights two picks from the Upcoming Levels List staff team,
-refreshed as the list moves.</p>
+<p>The <strong>Events</strong> page highlights three picks from the Upcoming Levels List staff
+team, refreshed as the list moves.</p>
 <ul>
+  <li><strong>Level of the Day</strong> &mdash; the upcoming <strong>Geometry Dash Extreme
+  Demon</strong> the staff are pointing at today.</li>
   <li><strong>Level of the Month</strong> &mdash; the upcoming <strong>Geometry Dash Extreme
   Demon</strong> the staff have singled out this month, whether for its progress, its quality or
   the attention it has drawn.</li>

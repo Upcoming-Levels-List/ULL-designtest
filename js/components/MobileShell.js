@@ -54,6 +54,7 @@ export default {
             <div class="mob-footer-bottom">
                 <p>&copy; 2023–2026 Upcoming Levels List. Not affiliated with RobTop Games.</p>
             </div>
+        </div>
     </div>
     <!-- Tab bar -->
     <nav class="m2-nav">
@@ -209,6 +210,7 @@ export default {
         setBenchmarkMode(value) {
             store.benchmarkMode = value;
             mobileStore.benchmarkMode = value;
+            store.saveSetting('benchmarkMode', value);
             applyFilters();
         },
     },

@@ -6,7 +6,7 @@ export const store = Vue.reactive({
     dark: localStorage.getItem('dark') === null ? false : JSON.parse(localStorage.getItem('dark')),
     thumbnails: localStorage.getItem('thumbnails') === null ? true : JSON.parse(localStorage.getItem('thumbnails')),
     levelColoring: localStorage.getItem('levelColoring') === null ? true : JSON.parse(localStorage.getItem('levelColoring')),
-    benchmarkMode: false,
+    benchmarkMode: localStorage.getItem('benchmarkMode') === null ? false : JSON.parse(localStorage.getItem('benchmarkMode')),
     // /level/<slug> is the one route that renders on both surfaces — it never
     // redirects, because every shared link and search result points at it — so
     // it has to know which chrome to wear. Set below, next to the redirect that

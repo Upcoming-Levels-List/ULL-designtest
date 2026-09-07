@@ -14,7 +14,7 @@ export const mobileStore = Vue.reactive({
     levelVerif: null,
     showThumbnails: true,
     showColors: true,
-    benchmarkMode: false,
+    benchmarkMode: localStorage.getItem('benchmarkMode') === null ? false : JSON.parse(localStorage.getItem('benchmarkMode')),
     filtersList: [
         ...baseFiltersList.map(f => ({ ...f })),
         { active: false, name: "Pending Removal", key: "Pending Removal" },

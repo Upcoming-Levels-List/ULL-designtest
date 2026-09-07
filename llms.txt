@@ -19,7 +19,7 @@ and List Moderators) and updated continuously.
 - [Upcoming Levels](https://ull.pages.dev/upcoming): Which upcoming Geometry Dash Extreme Demon is closest to being verified? Unverified levels ranked by the best record and longest run anyone has achieved on them, updated as new progress comes in.
 - [Pending List](https://ull.pages.dev/pending): Levels submitted to the Upcoming Levels List and awaiting a placement decision from the staff team, with their expected placement range and whether they are moving up or down.
 - [Leaderboard](https://ull.pages.dev/leaderboard): Players ranked by the verifications, layout completions, records and runs they hold on upcoming Geometry Dash Extreme Demons, scored by each level’s position on the Upcoming Levels List.
-- [Events](https://ull.pages.dev/events): The current Level of the Month and the upcoming Geometry Dash Extreme Demon closest to verification, picked by the Upcoming Levels List staff team.
+- [Events](https://ull.pages.dev/events): The current Level of the Day and Level of the Month, and the upcoming Geometry Dash Extreme Demon closest to verification, picked by the Upcoming Levels List staff team.
 - [Information & Guidelines](https://ull.pages.dev/information): How the Upcoming Levels List works: record acceptance and proof requirements, permitted and prohibited software, level placement procedure, level colouring, staff duties and the full ULL guidelines.
 
 ## Public API

@@ -39,8 +39,8 @@ export const PAGE_META = {
     },
     "/events": {
         "title": "ULL — Events",
-        "socialTitle": "Events — Level of the Month & Closest to Verification | Upcoming Levels List",
-        "description": "The current Level of the Month and the upcoming Geometry Dash Extreme Demon closest to verification, picked by the Upcoming Levels List staff team."
+        "socialTitle": "Events — Level of the Day, Month & Closest to Verification | Upcoming Levels List",
+        "description": "The current Level of the Day and Level of the Month, and the upcoming Geometry Dash Extreme Demon closest to verification, picked by the Upcoming Levels List staff team."
     },
     "/information": {
         "title": "ULL — Information",
