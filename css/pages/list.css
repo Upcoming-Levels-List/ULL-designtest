@@ -367,23 +367,6 @@ main.page-list--pending .list-container {
     scrollbar-width: thin;
 }
 
-/* Shitty (legacy) */
-
-.shitty .page-list .list .level button {
-    background-color: transparent;
-    padding: 1rem 0;
-}
-
-.shitty .page-list .list .level button:hover {
-    background-color: #eee;
-    color: black !important;
-}
-
-.shitty .page-list .list .level.active button {
-    background-color: transparent;
-    color: orange;
-}
-
 .unlisted-name {
     margin: 0 0 1.3rem 0;
 }

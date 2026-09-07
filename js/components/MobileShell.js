@@ -136,15 +136,15 @@ export default {
                     <div class="m2-setting mob-setting-row">
                         <span class="m2-setting__label mob-setting-label">Thumbnails</span>
                         <div class="m2-toggle mob-toggle">
-                            <button :class="{ 'is-on': !mobileStore.showThumbnails, active: !mobileStore.showThumbnails }" @click="mobileStore.showThumbnails = false">OFF</button>
-                            <button :class="{ 'is-on': mobileStore.showThumbnails, active: mobileStore.showThumbnails }" @click="mobileStore.showThumbnails = true">ON</button>
+                            <button :class="{ 'is-on': !mobileStore.showThumbnails, active: !mobileStore.showThumbnails }" @click="setThumbnails(false)">OFF</button>
+                            <button :class="{ 'is-on': mobileStore.showThumbnails, active: mobileStore.showThumbnails }" @click="setThumbnails(true)">ON</button>
                         </div>
                     </div>
                     <div class="m2-setting mob-setting-row">
                         <span class="m2-setting__label mob-setting-label">Level Coloring</span>
                         <div class="m2-toggle mob-toggle">
-                            <button :class="{ 'is-on': !mobileStore.showColors, active: !mobileStore.showColors }" @click="mobileStore.showColors = false">OFF</button>
-                            <button :class="{ 'is-on': mobileStore.showColors, active: mobileStore.showColors }" @click="mobileStore.showColors = true">ON</button>
+                            <button :class="{ 'is-on': !mobileStore.showColors, active: !mobileStore.showColors }" @click="setColors(false)">OFF</button>
+                            <button :class="{ 'is-on': mobileStore.showColors, active: mobileStore.showColors }" @click="setColors(true)">ON</button>
                         </div>
                     </div>
                     <div class="m2-setting mob-setting-row">
@@ -207,6 +207,19 @@ export default {
             mobileStore.filtersList[index].active = !mobileStore.filtersList[index].active;
         },
         doResetFilters() { resetFilters(); mobileStore.openMenu = null; },
+        // Each of these is one setting under two names: the phone reads
+        // mobileStore, the desktop reads store, and both persist under the
+        // desktop's key so a choice made on one surface holds on the other.
+        setThumbnails(value) {
+            mobileStore.showThumbnails = value;
+            store.thumbnails = value;
+            store.saveSetting('thumbnails', value);
+        },
+        setColors(value) {
+            mobileStore.showColors = value;
+            store.levelColoring = value;
+            store.saveSetting('levelColoring', value);
+        },
         setBenchmarkMode(value) {
             store.benchmarkMode = value;
             mobileStore.benchmarkMode = value;

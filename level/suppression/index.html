@@ -191,11 +191,10 @@
     <!-- <link rel="stylesheet" type="text/css" href="/css/components/level-generator.css" /> -->
     <!-- <link rel="stylesheet" type="text/css" href="/css/components/coloring-hint.css" /> -->
     <!-- <link rel="stylesheet" type="text/css" href="/css/components/level-share.css" /> -->
-    <!-- <link rel="stylesheet" type="text/css" href="/css/typography-shitty.css" /> -->
     <!-- <link rel="stylesheet" type="text/css" href="/css/components/seo-fallback.css" /> -->
     <!-- css:end -->
     <link rel="stylesheet" type="text/css" href="/css/bundle.css" />
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-router@4.0.14/dist/vue-router.global.prod.js"></script>
     <script type="module" src="/js/main.js"></script>
 </head>
@@ -257,7 +256,7 @@ moves as the level progresses.</p>
   </div>
 </div>
     <!-- seo:content:end -->
-<div v-cloak class="root" :class="{ dark: store.dark, shitty: store.shitty }">
+<div v-cloak class="root" :class="{ dark: store.dark }">
     <!-- Vertical Sidebar (PC only) -->
     <!-- Sidebar toggle (visible only when sidebar is collapsed) -->
     <button v-if="!$route.path.startsWith('/mobile') && !store.mobile" class="sidebar-toggle" @click="store.sidebarOpen = !store.sidebarOpen">&#9776;</button>

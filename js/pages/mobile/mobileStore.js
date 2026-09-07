@@ -12,8 +12,8 @@ export const mobileStore = Vue.reactive({
     openMenu: null,
     levelMonth: null,
     levelVerif: null,
-    showThumbnails: true,
-    showColors: true,
+    showThumbnails: localStorage.getItem('thumbnails') === null ? true : JSON.parse(localStorage.getItem('thumbnails')),
+    showColors: localStorage.getItem('levelColoring') === null ? true : JSON.parse(localStorage.getItem('levelColoring')),
     benchmarkMode: localStorage.getItem('benchmarkMode') === null ? false : JSON.parse(localStorage.getItem('benchmarkMode')),
     filtersList: [
         ...baseFiltersList.map(f => ({ ...f })),
