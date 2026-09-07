@@ -22,17 +22,17 @@ export const navigationData = [
             {
                 name: 'All Levels',
                 to: '/list',
-                desc: 'The most comprehensive tier, offering the largest level count and lowest bar for entry. It catalogues every level with a conceivable shot at verification, mapping the broader upcoming landscape.',
+                desc: 'The widest of the three tiers, with the lowest bar for entry: every level with a conceivable chance of being verified and published, hardest first. A level’s rank here is what its records are worth on the leaderboard.',
             },
             {
                 name: 'Main List',
                 to: '/listmain',
-                desc: 'The Main List highlights levels that meet the fundamental standards required to be considered for an official rating by the developer (“Rate”). It acts as a curated filter for higher-potential candidates.',
+                desc: 'Levels that meet the standards required to be considered for an official rating by the developer (a “Rate”). The same order as All Levels, with everything below that bar left out.',
             },
             {
                 name: 'Future List',
                 to: '/listfuture',
-                desc: 'This tier functions as a focused preview, listing only levels with a very high likelihood of soon verification and publication. It represents the most immediate and probable future additions to the Demonlist.',
+                desc: 'The strictest of the three tiers: only levels with a very high likelihood of being verified and published soon. Read this one for what is coming out next.',
             },
             {
                 name: 'A level’s page',
@@ -248,7 +248,6 @@ export const apiData = {
         'Cache what you fetch. The list changes a few times a day.',
         'Identify your bot in the user agent if you are polling on a schedule.',
         'The data is community work, so credit the list and link back to it.',
-        'Positions are estimates and they change, so treat a stored rank as a snapshot.',
     ],
 };
 

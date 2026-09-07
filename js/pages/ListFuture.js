@@ -24,7 +24,7 @@ export default {
         <div class="u-phero">
             <div class="u-phero__body">
                 <h1>Future List</h1>
-                <p>This tier functions as a focused preview, listing only levels with a very high likelihood of soon verification and publication. It represents the most immediate and probable future additions to the Demonlist.</p>
+                <p>The strictest of the three tiers: only levels with a very high likelihood of being verified and published soon. Read this one for what is coming out next.</p>
             </div>
             <div class="u-phero__side">
                 <div class="u-stat"><div class="u-stat__k">levels total</div><span class="u-stat__v">{{ heroCount }}</span></div>

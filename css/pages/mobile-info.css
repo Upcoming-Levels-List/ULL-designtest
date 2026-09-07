@@ -84,6 +84,7 @@
    cards look like a different kind of thing — so here it is the same grey as
    the rest. */
 .mob-info .info-block--gl { padding: 1rem 1.1rem; background: var(--u-fill); }
+.mob-info .info-block--gl::before { content: none; }
 .mob-info .info-block--gl h2 { font-size: 1.25rem; }
 .mob-info .info-block--gl p { font-size: 0.78rem; }
 .mob-info .info-groups { margin: 0.85rem 0 0.9rem; }

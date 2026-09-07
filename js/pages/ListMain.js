@@ -24,7 +24,7 @@ export default {
         <div class="u-phero">
             <div class="u-phero__body">
                 <h1>Main List</h1>
-                <p>The Main List highlights levels that meet the fundamental standards required to be considered for an official rating by the developer (“Rate”). It acts as a curated filter for higher-potential candidates.</p>
+                <p>Levels that meet the standards required to be considered for an official rating by the developer (a “Rate”). The same order as All Levels, with everything below that bar left out.</p>
             </div>
             <div class="u-phero__side">
                 <div class="u-stat"><div class="u-stat__k">levels total</div><span class="u-stat__v">{{ heroCount }}</span></div>
