@@ -8,6 +8,7 @@ import {
     sectionCount, faqCount, pageCount, markCount, endpointCount, roleIconMap, roleLabel,
 } from '../../info-windows.js';
 import { mobileStore } from './mobileStore.js';
+import MarksLegend from '../../components/MarksLegend.js';
 
 // /mobile/info is the desktop hub stacked: the same hero, the same search over
 // everything on the page, and the same six faces in the same order — but in one
@@ -21,6 +22,7 @@ import { mobileStore } from './mobileStore.js';
 // nothing it does not — bar the Ctrl K hint on the search field, since there is
 // no Ctrl key on a phone.
 export default {
+    components: { MarksLegend },
     template: `
 <div class="info-page mob-info m2-page-body">
 
@@ -252,37 +254,7 @@ export default {
 
             <!-- Reference -->
             <template v-else-if="openKey === 'reference'">
-                <div class="info-cols">
-                    <div>
-                        <div class="u-eyebrow">Level colouring</div>
-                        <p class="info-note">
-                            A level&rsquo;s name is coloured by its state when Level Colouring is on in
-                            Settings. It is the same scale as the status pill on the level&rsquo;s own
-                            page.
-                        </p>
-                        <div class="info-legend">
-                            <div v-for="row in coloringLegend" :key="row.label + row.meaning">
-                                <span class="u-pill" :class="row.pill">
-                                    <i v-if="!row.glyph"></i>{{ row.label }}
-                                </span>
-                                <span>{{ row.meaning }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="u-eyebrow">Pending list icons</div>
-                        <p class="info-note">
-                            The icons on the Pending List show the range a level is expected to land in,
-                            and which way it is moving inside that range.
-                        </p>
-                        <div class="info-legend info-legend--icons">
-                            <div v-for="row in pendingLegend" :key="row.icon">
-                                <img :src="'/assets/' + row.icon + '.svg'" alt="" />
-                                <span>{{ row.label }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <MarksLegend />
             </template>
 
             <!-- Staff & contact -->

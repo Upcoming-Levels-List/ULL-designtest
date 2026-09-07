@@ -1,5 +1,6 @@
 import routes from './routes.js';
 import { PAGE_META } from './seo-meta.js';
+import MarksWindow from './components/MarksWindow.js';
 
 export const store = Vue.reactive({
     dark: localStorage.getItem('dark') === null ? false : JSON.parse(localStorage.getItem('dark')),
@@ -14,6 +15,7 @@ export const store = Vue.reactive({
     authKey: '',
     sidebarOpen: false,
     showSettings: false,
+    showMarks: false,
     showColoringHint: false,
     coloringHintDismissed: localStorage.getItem('coloringHintDismissed') === 'true',
     coloringHintCooldown: (() => {
@@ -57,6 +59,9 @@ document.getElementById('seo-fallback')?.remove();
 const app = Vue.createApp({
     data: () => ({ store }),
 });
+// The marks reader is raised from the shell, not from a page, so the question
+// mark in Settings can answer without navigating away from wherever we are.
+app.component('MarksWindow', MarksWindow);
 // Cloudflare Pages serves a directory URL with a trailing slash, so arriving
 // straight at ull.pages.dev/listmain lands the router on "/listmain/". Every
 // lookup here is keyed without one, and the canonical URL must not grow one

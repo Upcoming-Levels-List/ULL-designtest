@@ -83,31 +83,37 @@ export const faqData = [
                 a: `<p>Check the level against the standards in <code>#list-standards</code> on the Discord
                     server, then post it in <code>#level-reporting</code> following the template there.
                     Moderators review submissions within a few days and either reject the level or put it
-                    in the queue.</p>`,
+                    in the queue for quality control.</p>`,
             },
             {
                 q: 'How does a level get on the list?',
                 a: `<p>Staff select it. Moderators assess levels against the Level Selection criteria in the
                     guidelines — classic gameplay, a public recording, an intended release on the official
-                    servers and a credible chance of being rated. Levels that pass are put on the Pending
-                    List until an exact position is settled.</p>`,
+                    servers and a credible chance of being rated. A level that meets the criteria joins the
+                    quality control queue, where the quality judges vote on accepting or rejecting it.
+                    Accepted levels go on the Pending List until an exact position is settled.</p>`,
             },
             {
                 q: 'Why is a level on Pending and not on the list?',
                 a: `<p>It passed selection but has no exact position yet. The Pending List shows the range it is
-                    expected to land in and an arrow for which way it is moving inside that range. A level with
-                    no usable estimate at all sits under <em>Pending Indefinitely</em>.</p>`,
+                    expected to land in and an arrow for which way it is moving inside that range.</p>
+                    <p><em>Pending Indefinitely</em> covers two cases: levels no usable estimate could be made
+                    for, and levels that are accepted but cannot be placed yet because something is still
+                    missing, such as a full video of the level.</p>`,
             },
             {
                 q: 'A level’s information is wrong or out of date.',
                 a: `<p>Report it in <code>#level-update-reporting</code> with something to back it up: gameplay
                     footage, a statement from the creator, or tester feedback. The same channel takes new
-                    decoration previews, verifications and other significant news about a listed level.</p>`,
+                    decoration previews, verifications and other significant news about a listed level.</p>
+                    <p>If the correct information is already widely known, tagging any moderator in any channel
+                    is enough to get it fixed.</p>`,
             },
             {
                 q: 'Why is a level marked 🚫?',
-                a: `<p>It is pending removal. It no longer meets the criteria it was added under, and it will
-                    come off the list unless that changes.</p>`,
+                a: `<p>The level is close to being removed under the activity standards. The mark is applied
+                    automatically once a level has gone a year without progress, and the level comes off the
+                    list unless progress resumes.</p>`,
             },
         ],
     },
@@ -133,13 +139,17 @@ export const faqData = [
                 q: 'What counts as a world record here?',
                 a: `<p>Two records are tracked separately. The world record is the highest completion from 0%.
                     The world record run is the longest single segment on the current version of the level,
-                    measured from where it started to where it ended.</p>`,
+                    measured from where it started to where it ended.</p>
+                    <p>Insignificant changes to a level do not affect either: an existing record stands, and a
+                    new one set on the changed version is still accepted. If the level is buffed or nerfed
+                    enough that its difficulty is no longer the same, the old world record is removed.</p>`,
             },
             {
                 q: 'My record was rejected. Can it be reviewed?',
-                a: `<p>A record rejected because the player changed the level can be reviewed if the creator
-                    later made the same change in a new version; ask the staff. A record rejected for missing
-                    proof has to be submitted again with the proof.</p>`,
+                a: `<p>Ask any staff member why it was rejected. You can appeal the decision or send
+                    additional information for it to be looked at again. A record rejected because the player
+                    changed the level can be reviewed if the creator later made the same change in a new
+                    version. A record rejected for missing proof has to be submitted again with the proof.</p>`,
             },
         ],
     },
@@ -152,15 +162,15 @@ export const faqData = [
                     your record. A verification is worth twice a 100% record on the same level, and a layout
                     completion — beating a level that is not verified yet — is worth 0.8 of a verification.</p>
                     <table class="info-tbl info-tbl--num">
-                        <thead><tr><th></th><th>#1</th><th>#10</th><th>#50</th><th>#100</th></tr></thead>
+                        <thead><tr><th></th><th>#10</th><th>#50</th><th>#150</th><th>#400</th></tr></thead>
                         <tbody>
-                            <tr><td>100% record</td><td>1459</td><td>1196</td><td>663</td><td>425</td></tr>
-                            <tr><td>50% record</td><td>851</td><td>698</td><td>387</td><td>248</td></tr>
-                            <tr><td>Verification</td><td>2919</td><td>2392</td><td>1325</td><td>849</td></tr>
+                            <tr><td>100% record</td><td>1196</td><td>663</td><td>312</td><td>132</td></tr>
+                            <tr><td>50% record</td><td>698</td><td>387</td><td>182</td><td>77</td></tr>
+                            <tr><td>Verification</td><td>2392</td><td>1325</td><td>624</td><td>265</td></tr>
                         </tbody>
                     </table>
-                    <p>Position counts for much more than percentage: a 50% on #1 is worth more than a 100%
-                    on #100.</p>`,
+                    <p>Position counts for much more than percentage: a 50% on #10 is worth more than a 100%
+                    on #50.</p>`,
             },
             {
                 q: 'Why did my total change when I didn’t submit anything?',
@@ -187,12 +197,12 @@ export const faqData = [
                     turn it on in Settings.</p>`,
             },
             {
-                q: 'Is this the Demonlist? Is it official?',
-                a: `<p>No. ULL is a community project and is not affiliated with RobTop Games. Levels that are
-                    already rated are placed in strict accordance with their ranking on
-                    <a href="https://pointercrate.com" target="_blank" rel="noopener">Pointercrate</a>, and
-                    these guidelines are adapted from the Global Demonlist Guidelines with credit to their
-                    authors. Nothing here is an official ranking.</p>`,
+                q: 'Is the list official?',
+                a: `<p>No, and no list of this kind is. ULL is a community project and is not affiliated with
+                    RobTop Games. Levels that are already rated are placed in strict accordance with their
+                    ranking on <a href="https://pointercrate.com" target="_blank" rel="noopener">Pointercrate</a>,
+                    and unrated levels by their ranking on the Global Demonlist. These guidelines are adapted
+                    from the Global Demonlist Guidelines with credit to their authors.</p>`,
             },
             {
                 q: 'The rules changed and I didn’t know.',

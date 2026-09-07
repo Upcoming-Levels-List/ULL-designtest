@@ -2208,6 +2208,11 @@ a.pending-row__name:hover { text-decoration: underline; }
 }
 /* While the reader is open the page behind it must not scroll under it. */
 .info-page--locked { overflow: hidden; }
+/* The marks reader is raised from the app shell, where .info-page is a carrier
+   for the prose settings rather than a page. `display: contents` keeps it out
+   of the shell's layout while the descendant selectors below still reach into
+   the window. */
+.info-page--bare { display: contents; }
 
 .info-page, .info-page * { font-family: "Lexend Deca", sans-serif; box-sizing: border-box; }
 .info-page h1, .info-page h2, .info-page h3, .info-page h4, .info-page p { margin: 0; padding: 0; }
@@ -2490,6 +2495,9 @@ a.pending-row__name:hover { text-decoration: underline; }
     background: color-mix(in srgb, var(--color-background) 82%, transparent);
     backdrop-filter: blur(0.35rem);
 }
+/* Above the settings popup, which is also z-index 300 — the question mark there
+   is what raises this, so it has to land on top of it. */
+.info-win--over { z-index: 400; }
 .info-win__box {
     position: relative;
     margin: auto;
@@ -5300,6 +5308,8 @@ html.desktop {
 }
 
 .settings-popup__question {
+    border: 0;
+    font-family: inherit;
     display: inline-flex;
     align-items: center;
     justify-content: center;

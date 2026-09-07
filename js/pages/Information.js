@@ -9,9 +9,10 @@ import {
     sectionCount, faqCount, pageCount, markCount, roleIconMap, roleLabel,
 } from '../info-windows.js';
 import Footer from '../components/Footer.js';
+import MarksLegend from '../components/MarksLegend.js';
 
 export default {
-    components: { Footer },
+    components: { Footer, MarksLegend },
     template: `
 <main class="info-page surface ull2" :class="{ 'info-page--locked': openKey }" ref="page">
 
@@ -234,37 +235,7 @@ export default {
 
                 <!-- Reference -->
                 <template v-else-if="openKey === 'reference'">
-                    <div class="info-cols">
-                        <div>
-                            <div class="u-eyebrow">Level colouring</div>
-                            <p class="info-note">
-                                A level&rsquo;s name is coloured by its state when Level Colouring is on
-                                in Settings. It is the same scale as the status pill on the
-                                level&rsquo;s own page.
-                            </p>
-                            <div class="info-legend">
-                                <div v-for="row in coloringLegend" :key="row.label + row.meaning">
-                                    <span class="u-pill" :class="row.pill">
-                                        <i v-if="!row.glyph"></i>{{ row.label }}
-                                    </span>
-                                    <span>{{ row.meaning }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="u-eyebrow">Pending list icons</div>
-                            <p class="info-note">
-                                The icons on the Pending List show the range a level is expected to land
-                                in, and which way it is moving inside that range.
-                            </p>
-                            <div class="info-legend info-legend--icons">
-                                <div v-for="row in pendingLegend" :key="row.icon">
-                                    <img :src="'/assets/' + row.icon + '.svg'" alt="" />
-                                    <span>{{ row.label }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <MarksLegend />
                 </template>
 
                 <!-- Staff & contact -->
