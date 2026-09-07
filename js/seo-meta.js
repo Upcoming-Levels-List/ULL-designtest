@@ -5,7 +5,7 @@ export const PAGE_META = {
     "/": {
         "title": "Upcoming Levels List",
         "socialTitle": "Upcoming Levels List — Upcoming Geometry Dash Extreme Demons",
-        "description": "Upcoming Levels List (ULL) tracks every upcoming Top 1–100 Extreme Demon in Geometry Dash — levels in development, their creators, verifiers, decoration progress and best records, ranked by where they are projected to land on the Demonlist."
+        "description": "Upcoming Levels List (ULL) tracks every upcoming Top 1–135 Extreme Demon in Geometry Dash — levels in development, their creators, verifiers, decoration progress and best records, ranked by where they are projected to land on the Demonlist."
     },
     "/list": {
         "title": "ULL — All Levels",

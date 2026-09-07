@@ -5,6 +5,11 @@
 // changes on its own schedule, edited by people who are not editing components.
 // Nothing here is fetched; the editor list on the same page comes from the API.
 //
+// The page descriptions below are the hero paragraph of the page they point at,
+// copied word for word, so the menu entry and the page itself say the same
+// thing. Home and a level's page have no hero paragraph about themselves, so
+// those two are written here.
+//
 // The legends are DATA, not markup, and the colouring one names the .u-pill
 // modifier from css/ull-v2.css rather than repeating a hex value. The pill scale
 // and the list's own name colouring are the same scale, so a colour can only be
@@ -17,23 +22,23 @@ export const navigationData = [
             {
                 name: 'All Levels',
                 to: '/list',
-                desc: 'Every level with a conceivable chance of being verified and published, hardest first. The widest of the three tiers, and the one a level’s leaderboard points are calculated from — a record is worth what it is worth because of the level’s rank here.',
+                desc: 'The most comprehensive tier, offering the largest level count and lowest bar for entry. It catalogues every level with a conceivable shot at verification, mapping the broader upcoming landscape.',
             },
             {
                 name: 'Main List',
                 to: '/listmain',
-                desc: 'The same order with a higher bar: levels that already meet the standards required to be considered for an official rating. Shorter, and every entry is a serious candidate.',
+                desc: 'The Main List highlights levels that meet the fundamental standards required to be considered for an official rating by the developer (“Rate”). It acts as a curated filter for higher-potential candidates.',
             },
             {
                 name: 'Future List',
                 to: '/listfuture',
-                desc: 'The strictest tier — levels with a very high likelihood of being verified and published soon. Read this one if you only want what is about to happen.',
+                desc: 'This tier functions as a focused preview, listing only levels with a very high likelihood of soon verification and publication. It represents the most immediate and probable future additions to the Demonlist.',
             },
             {
                 name: 'A level’s page',
                 to: '/list',
                 path: '/level/…',
-                desc: 'One page per level: its state, how much of the decoration is done and how far the best run has got, every record and run with proof, its creators, and its rank in each tier at once.',
+                desc: 'One page per level: its state, how much of its decoration is finished and how far the best run has got, every record and run with the proof behind it, its creators, and its rank in each tier.',
             },
         ],
     },
@@ -43,27 +48,27 @@ export const navigationData = [
             {
                 name: 'Upcoming Levels',
                 to: '/upcoming',
-                desc: 'The same unverified levels, reordered by how close they actually are to being verified rather than by how hard they are. The list of what is about to fall.',
+                desc: 'Catalogue of levels on the Upcoming Levels List closest to verification, ranked by highest progress achieved toward completing the level.',
             },
             {
                 name: 'Pending List',
                 to: '/pending',
-                desc: 'Levels that passed selection but have no exact position yet, with the range each is expected to land in and an arrow for which way it is moving inside it.',
+                desc: 'Levels awaiting a decision from the staff team — a first placement, a move up or down, a removal, or a hold with no decision expected soon.',
             },
             {
                 name: 'Leaderboard',
                 to: '/leaderboard',
-                desc: 'Players ranked by the verifications, records and runs they hold on listed levels. Open a player to see every record behind their total and what each one is worth.',
+                desc: 'This page shows the top players ranked according to their records set on upcoming levels as well as according to their verifications of levels on the Demonlist.',
             },
             {
                 name: 'Events',
                 to: '/events',
-                desc: 'Three levels the list is pointing at right now: one picked for the day, one for the month, and the one closest to being verified.',
+                desc: 'Three levels the list is pointing at right now — one picked for the day, one for the month, and the one closest to being verified.',
             },
             {
                 name: 'Home',
                 to: '/',
-                desc: 'The size of each tier at a glance, the top of the list, the recent changes feed and the staff team.',
+                desc: 'The size of each tier, the level at the top of the list, the recent changes feed and the staff team.',
             },
         ],
     },
@@ -74,17 +79,18 @@ export const faqData = [
         group: 'Getting on the list',
         questions: [
             {
-                q: 'How does a level get on the list?',
-                a: `<p>Staff select it. There is no queue a creator joins: moderators assess levels against the
-                    Level Selection criteria in the guidelines — classic gameplay, a public recording, an
-                    intended release on the official servers and a credible chance of being rated — and place
-                    the ones that pass on the Pending List until an exact position is settled.</p>`,
+                q: 'How and where do I submit a level to the list?',
+                a: `<p>Check the level against the standards in <code>#list-standards</code> on the Discord
+                    server, then post it in <code>#level-reporting</code> following the template there.
+                    Moderators review submissions within a few days and either reject the level or put it
+                    in the queue.</p>`,
             },
             {
-                q: 'My level isn’t listed. Can I put it forward?',
-                a: `<p>Raise it in <code>#list-discussion</code> on the Discord server with a public recording of
-                    its current state. It is not a submission form and the staff are not obliged to add it; it
-                    goes through the same criteria as everything else.</p>`,
+                q: 'How does a level get on the list?',
+                a: `<p>Staff select it. Moderators assess levels against the Level Selection criteria in the
+                    guidelines — classic gameplay, a public recording, an intended release on the official
+                    servers and a credible chance of being rated. Levels that pass are put on the Pending
+                    List until an exact position is settled.</p>`,
             },
             {
                 q: 'Why is a level on Pending and not on the list?',
@@ -94,14 +100,14 @@ export const faqData = [
             },
             {
                 q: 'A level’s information is wrong or out of date.',
-                a: `<p>Report it in <code>#level-update-reporting</code> with something to back it up — gameplay
-                    footage, a statement from the creator, tester feedback. Positions are adjusted on that kind
-                    of evidence.</p>`,
+                a: `<p>Report it in <code>#level-update-reporting</code> with something to back it up: gameplay
+                    footage, a statement from the creator, or tester feedback. The same channel takes new
+                    decoration previews, verifications and other significant news about a listed level.</p>`,
             },
             {
                 q: 'Why is a level marked 🚫?',
-                a: `<p>It is pending removal: it no longer meets the criteria it was added under, and will come
-                    off the list unless that changes.</p>`,
+                a: `<p>It is pending removal. It no longer meets the criteria it was added under, and it will
+                    come off the list unless that changes.</p>`,
             },
         ],
     },
@@ -109,30 +115,31 @@ export const faqData = [
         group: 'Records',
         questions: [
             {
-                q: 'How do I submit a record?',
-                a: `<p>Through the list’s Discord server. Read <em>Acceptance of Records</em> in the guidelines
-                    first — a record that arrives without the required proof is rejected before anyone assesses
-                    it, not sent back for more.</p>`,
+                q: 'How do I submit a record or a world record?',
+                a: `<p>Post the video in <code>#level-update-reporting</code> on the Discord server with the
+                    additional information the template there asks for. Read <em>Acceptance of Records</em> in
+                    the guidelines first: a record that arrives without the required proof is rejected before
+                    anyone assesses it. Moderators review submissions within a few days.</p>`,
             },
             {
                 q: 'What proof does a record need?',
-                a: `<p>A complete, uncut playthrough of the record (if your video has cuts, attach the raw
-                    footage as well), the level’s audio or your clicks, and a cheat indicator and fps/tps
-                    display where your mod menu provides them. The record has to be on the version of the level
-                    this site lists. The full requirements, including what may be blurred and what may not, are
-                    in <em>Requirements for proof of legitimacy</em>.</p>`,
+                a: `<p>A complete, uncut playthrough of the record; if your video has cuts, attach the raw
+                    footage as well. It also needs the level’s audio or the sound of your clicks, and a cheat
+                    indicator and an fps/tps display where your mod menu provides them. The record has to be
+                    set on the version of the level this site lists. The full requirements, including what may
+                    be blurred and what may not, are in <em>Requirements for proof of legitimacy</em>.</p>`,
             },
             {
                 q: 'What counts as a world record here?',
-                a: `<p>Two things are tracked separately: the best completion from 0%, and the world record run
-                    — the longest single segment on the current version of the level, measured from where it
-                    started to where it ended.</p>`,
+                a: `<p>Two records are tracked separately. The world record is the highest completion from 0%.
+                    The world record run is the longest single segment on the current version of the level,
+                    measured from where it started to where it ended.</p>`,
             },
             {
                 q: 'My record was rejected. Can it be reviewed?',
                 a: `<p>A record rejected because the player changed the level can be reviewed if the creator
-                    later made the same change in a new version; ask the staff. Anything rejected for missing
-                    proof needs to be resubmitted with the proof.</p>`,
+                    later made the same change in a new version; ask the staff. A record rejected for missing
+                    proof has to be submitted again with the proof.</p>`,
             },
         ],
     },
@@ -142,8 +149,8 @@ export const faqData = [
             {
                 q: 'How are leaderboard points calculated?',
                 a: `<p>From two things: the level’s rank in <strong>All Levels</strong>, and the percentage of
-                    your record. A verification is worth twice a 100% record on the same level, and completing
-                    a level that is not verified yet — a layout completion — is worth 0.8 of a verification.</p>
+                    your record. A verification is worth twice a 100% record on the same level, and a layout
+                    completion — beating a level that is not verified yet — is worth 0.8 of a verification.</p>
                     <table class="info-tbl info-tbl--num">
                         <thead><tr><th></th><th>#1</th><th>#10</th><th>#50</th><th>#100</th></tr></thead>
                         <tbody>
@@ -152,18 +159,20 @@ export const faqData = [
                             <tr><td>Verification</td><td>2919</td><td>2392</td><td>1325</td><td>849</td></tr>
                         </tbody>
                     </table>
-                    <p>Position is worth far more than percentage: a 50% on #1 beats a 100% on #100.</p>`,
+                    <p>Position counts for much more than percentage: a 50% on #1 is worth more than a 100%
+                    on #100.</p>`,
             },
             {
                 q: 'Why did my total change when I didn’t submit anything?',
-                a: `<p>Because points are calculated from a level’s <em>current</em> rank, and on a list of
-                    upcoming levels ranks move constantly. Every record on a level that moves is worth a
-                    different number of points afterwards.</p>`,
+                a: `<p>Points are calculated from a level’s <em>current</em> rank, and ranks on a list of
+                    upcoming levels move often. When a level moves, every record on it is worth a different
+                    number of points afterwards.</p>`,
             },
             {
                 q: 'What is “layout verified”?',
-                a: `<p>A 100% completion of a level that has not been verified yet — someone beat it in its
-                    undecorated state. It is scored as its own thing, at 0.8 of a verification.</p>`,
+                a: `<p>A 100% completion of a level that has not been verified yet, so the level was beaten in
+                    its undecorated state. It is scored separately from an ordinary record, at 0.8 of a
+                    verification.</p>`,
             },
         ],
     },
@@ -172,10 +181,10 @@ export const faqData = [
         questions: [
             {
                 q: 'What do the colours in the list mean?',
-                a: `<p>They are the level’s state, from layout through decoration and verification to rated. The
-                    full scale is in the Reference block on this page, and it is the same scale as the status
-                    pill on a level’s own page. Level colouring is a setting — if names look plain, turn it on
-                    in Settings.</p>`,
+                a: `<p>They show the level’s state, from layout through decoration and verification to rated.
+                    The full scale is in the Reference block on this page, and it is the same scale as the
+                    status pill on a level’s own page. Level colouring is a setting: if names look plain,
+                    turn it on in Settings.</p>`,
             },
             {
                 q: 'Is this the Demonlist? Is it official?',
@@ -183,7 +192,7 @@ export const faqData = [
                     already rated are placed in strict accordance with their ranking on
                     <a href="https://pointercrate.com" target="_blank" rel="noopener">Pointercrate</a>, and
                     these guidelines are adapted from the Global Demonlist Guidelines with credit to their
-                    authors — but nothing here is an official ranking.</p>`,
+                    authors. Nothing here is an official ranking.</p>`,
             },
             {
                 q: 'The rules changed and I didn’t know.',
@@ -236,10 +245,10 @@ export const apiData = {
   …
 ]`,
     fairUse: [
-        'Cache what you fetch: the list changes a few times a day, not a few times a second.',
+        'Cache what you fetch. The list changes a few times a day.',
         'Identify your bot in the user agent if you are polling on a schedule.',
-        'The data is community work — credit the list and link back to it.',
-        'Positions are estimates and change, so treat a stored rank as a snapshot, not a fact.',
+        'The data is community work, so credit the list and link back to it.',
+        'Positions are estimates and they change, so treat a stored rank as a snapshot.',
     ],
 };
 
@@ -270,9 +279,10 @@ export const pendingLegend = [
 ];
 
 export const contactRouting = [
-    { what: 'A record', where: 'The Discord server' },
-    { what: 'A level that should be listed', where: '#list-discussion' },
+    { what: 'A level that should be listed', where: '#level-reporting' },
+    { what: 'A record or a world record', where: '#level-update-reporting' },
     { what: 'Information that is out of date', where: '#level-update-reporting' },
+    { what: 'A question about the list', where: '#list-discussion' },
     { what: 'Something broken on the site', where: 'The site’s developer' },
     { what: 'A complaint about a staff member', where: 'An Admin, or the List Leader' },
 ];

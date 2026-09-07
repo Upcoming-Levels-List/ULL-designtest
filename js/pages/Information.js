@@ -18,9 +18,9 @@ export default {
     <section class="info-hero">
         <h1>Information</h1>
         <p>
-            The Upcoming Levels List forecasts which Extreme Demons are about to be verified and placed on
-            the Demonlist. This page says how that is decided, what everything on the site means, who to
-            ask, and how to read the whole list as JSON.
+            The Upcoming Levels List predicts which Extreme Demons will be verified and placed on the
+            Demonlist. This page covers how those positions are decided, what the pages and the marks on
+            the site mean, who to contact, and how to read the list through the API.
             <button type="button" class="info-more" @click="open('about')">What this list is, in full &rarr;</button>
         </p>
 
@@ -58,9 +58,8 @@ export default {
             <div class="u-eyebrow">Answers &middot; {{ faqCount }} questions</div>
             <h2>FAQ</h2>
             <p>
-                Submitting a record and what proof it needs, how a level gets listed, how leaderboard points
-                are worked out, and why a total changes when you have submitted nothing. {{ faqCount }} questions
-                in {{ faqData.length }} groups, each answered here rather than pointed at the guidelines.
+                How to submit a level and a record, what proof a record needs, how leaderboard points
+                are calculated, and why a total changes when you have submitted nothing. {{ faqCount }} questions in {{ faqData.length }} groups.
             </p>
             <span class="info-block__more">All {{ faqCount }} questions &rarr;</span>
         </button>
@@ -69,9 +68,8 @@ export default {
             <div class="u-eyebrow">Navigation &middot; {{ pageCount }} pages</div>
             <h2>What is on each page</h2>
             <p>
-                Every page on the site and what you will find on it &mdash; the three list tiers and how they
-                differ from each other, pending and upcoming, the leaderboard, events, and a level&rsquo;s own
-                page. Written so you can tell which page answers your question before you open it.
+                Every page on the site and what is on it: the three list tiers and how they differ, the
+                Pending and Upcoming pages, the leaderboard, events, and a level&rsquo;s own page.
             </p>
             <div class="info-chips">
                 <span v-for="page in navPreview" :key="page" class="u-chip">{{ page }}</span>
@@ -83,8 +81,8 @@ export default {
             <div class="u-eyebrow">The rules</div>
             <h2>Guidelines</h2>
             <p>
-                How records are accepted, how levels are chosen and positioned, what the staff may and may not
-                do. {{ sectionCount }} sections, and the answer to most arguments.
+                How records are accepted, how levels are chosen and positioned, and what the staff may
+                and may not do. {{ sectionCount }} sections in total.
             </p>
             <div class="info-groups">
                 <div v-for="group in guidelinesData" :key="group.id">
@@ -97,7 +95,8 @@ export default {
         <button type="button" class="info-block info-block--ref" @click="open('reference')">
             <div class="u-eyebrow">Reference &middot; {{ markCount }} marks</div>
             <h2>What the marks mean</h2>
-            <p>The colour a level&rsquo;s name is drawn in, and the icons on the Pending List.</p>
+            <p>What the colour of a level&rsquo;s name stands for, and what the icons on the Pending List
+            mean.</p>
             <div class="info-marks">
                 <div class="info-dots">
                     <i v-for="row in coloringLegend.slice(0, 8)" :key="row.label" :class="['info-dot', row.pill]"></i>
@@ -111,13 +110,14 @@ export default {
         <button type="button" class="info-block info-block--staff" @click="open('staff')">
             <div class="u-eyebrow">Who to talk to<template v-if="editors.length"> &middot; {{ editors.length }} people</template></div>
             <h2>Staff &amp; contact</h2>
-            <p>The team that maintains the list, and where to take a record, a correction, a site bug or a complaint.</p>
+            <p>The team that maintains the list, and where to take a submission, a record, a correction
+            or a complaint.</p>
         </button>
 
         <button type="button" class="info-block info-block--api" @click="open('api')">
             <div class="u-eyebrow">Build on it &middot; {{ apiData.endpoints.length }} endpoints</div>
             <h2>API documentation</h2>
-            <p>The whole list as public JSON &mdash; no key, no signup, CORS open.</p>
+            <p>The whole list as public JSON. No key and no signup are needed.</p>
             <div class="info-chips">
                 <span class="u-chip">/api/list</span>
                 <span class="u-chip">/api/pending</span>
@@ -172,19 +172,21 @@ export default {
                 <!-- What this list is -->
                 <template v-if="openKey === 'about'">
                     <p class="info-lead">
-                        The Upcoming Levels List catalogues upcoming Top 1&ndash;100 Extreme Demons projected to
-                        be verified and placed on the Demonlist, along with unrated Extreme Demons that would
-                        have qualified for a rating when they were made. It is a forecast of what the Demonlist
-                        is about to look like &mdash; not a record of what has already happened.
+                        The Upcoming Levels List catalogues upcoming Top 1&ndash;135 Extreme Demons
+                        projected to be verified and placed on the Demonlist, along with unrated Extreme
+                        Demons that would have qualified for a rating when they were made. The positions
+                        on it are predictions of where these levels will rank once they are released.
                     </p>
                     <div class="info-prose">
                         <p>
-                            Nothing here is official. Positions are estimates made by the list staff against the
-                            criteria written in the guidelines, and they move as levels progress. Levels that are
-                            already rated are placed in strict accordance with their ranking on Pointercrate.
+                            Nothing here is official. Positions are estimates made by the list staff
+                            against the criteria written in the guidelines, and they change as levels
+                            progress. Levels that are already rated are placed in strict accordance with
+                            their ranking on Pointercrate.
                         </p>
                         <h4>The three tiers</h4>
-                        <p>The order of levels is the same in all three. What changes is the threshold to appear at all.</p>
+                        <p>All three tiers use the same order. They differ only in how strict the
+                        threshold to appear on them is.</p>
                         <ul>
                             <li><strong>All Levels</strong> &mdash; every level with a conceivable chance of being verified and published. A level&rsquo;s rank here is what leaderboard points are calculated from.</li>
                             <li><strong>Main List</strong> &mdash; levels that meet the standards required to be considered for an official rating.</li>
@@ -192,10 +194,11 @@ export default {
                         </ul>
                         <h4>How to read a level</h4>
                         <p>
-                            The colour of a name is the level&rsquo;s state, from layout through decoration and
-                            verification to rated. Two percentages follow every level &mdash; how much of the
-                            decoration is done, and how far the best run has got. The badges are its position in
-                            each tier: a level can be #4 in All Levels and #2 in Future List at once.
+                            The colour of a level&rsquo;s name shows its state, from layout through
+                            decoration and verification to rated. Every level carries two percentages:
+                            how much of its decoration is finished, and how far the best run on it has
+                            got. The badges are its position in each tier, so a level can be #4 in All
+                            Levels and #2 in the Future List at the same time.
                         </p>
                     </div>
                     <div class="info-winlinks">
@@ -235,9 +238,9 @@ export default {
                         <div>
                             <div class="u-eyebrow">Level colouring</div>
                             <p class="info-note">
-                                A level&rsquo;s name is coloured by its state when Level Coloring is on &mdash; the
-                                same scale as the status pill on the level&rsquo;s own page. If names look plain,
-                                turn the setting on.
+                                A level&rsquo;s name is coloured by its state when Level Colouring is on
+                                in Settings. It is the same scale as the status pill on the
+                                level&rsquo;s own page.
                             </p>
                             <div class="info-legend">
                                 <div v-for="row in coloringLegend" :key="row.label + row.meaning">
@@ -251,8 +254,8 @@ export default {
                         <div>
                             <div class="u-eyebrow">Pending list icons</div>
                             <p class="info-note">
-                                Icons on the Pending List say where a level is expected to land and which way it is
-                                moving inside that range.
+                                The icons on the Pending List show the range a level is expected to land
+                                in, and which way it is moving inside that range.
                             </p>
                             <div class="info-legend info-legend--icons">
                                 <div v-for="row in pendingLegend" :key="row.icon">
@@ -267,9 +270,9 @@ export default {
                 <!-- Staff & contact -->
                 <template v-else-if="openKey === 'staff'">
                     <p class="info-lead">
-                        Moderators and Elder Moderators determine level positions, place levels, take part in
-                        quality control and keep the site up to date. Admins manage a sector of the project&rsquo;s
-                        operation; the List Leader oversees the list and its staff.
+                        Moderators and Elder Moderators decide level positions, place levels, take part
+                        in quality control and keep the site up to date. Each Admin manages one area of
+                        the project; the List Leader oversees the list and its staff.
                     </p>
                     <div class="info-cols">
                         <div>
@@ -309,9 +312,9 @@ export default {
                 <!-- API -->
                 <template v-else-if="openKey === 'api'">
                     <p class="info-lead">
-                        Everything this site shows comes from a public JSON API. It needs no key, no signup and
-                        no referrer, and it sends <code>Access-Control-Allow-Origin: *</code>, so a page or a bot
-                        can read the list straight from the browser.
+                        Everything on this site comes from a public JSON API. It needs no key and no
+                        signup, and it sends <code>Access-Control-Allow-Origin: *</code>, so a page or a
+                        bot can read the list directly from a browser.
                     </p>
                     <h4 class="info-h4">Base URL</h4>
                     <pre class="info-pre">{{ apiData.base }}</pre>
@@ -326,9 +329,10 @@ export default {
                         </tbody>
                     </table>
                     <p class="info-note">
-                        Writing to the list needs a staff API key and is not part of the public API. There is no
-                        public leaderboard endpoint: the leaderboard is derived from <code>/api/list</code>, by the
-                        rules written out under &ldquo;How are leaderboard points calculated?&rdquo; in the FAQ.
+                        Writing to the list needs a staff API key and is not part of the public API.
+                        There is no leaderboard endpoint either; the leaderboard is calculated from
+                        <code>/api/list</code> by the rules under &ldquo;How are leaderboard points
+                        calculated?&rdquo; in the FAQ.
                     </p>
                     <h4 class="info-h4">Example</h4>
                     <pre class="info-pre">{{ apiData.example }}</pre>

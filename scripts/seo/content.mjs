@@ -46,11 +46,11 @@ probability and quality.</p>
 export const FAQ = [
     {
         q: 'What is the Upcoming Levels List?',
-        a: 'The Upcoming Levels List (ULL) is a community-maintained catalogue of upcoming Top 1–100 Extreme Demons in Geometry Dash — levels that are still in development, decoration or verification and are projected to place on the Demonlist once they are released. It also includes worthy unrated Extreme Demons that would have qualified for a rating at the time they were made.',
+        a: 'The Upcoming Levels List (ULL) is a community-maintained catalogue of upcoming Top 1–135 Extreme Demons in Geometry Dash — levels that are still in development, decoration or verification and are projected to place on the Demonlist once they are released. It also includes worthy unrated Extreme Demons that would have qualified for a rating at the time they were made.',
     },
     {
         q: 'What are upcoming levels in Geometry Dash?',
-        a: 'Upcoming levels are Geometry Dash levels that have been announced or are visibly in development but have not been verified and published yet. In the Extreme Demon community the term usually refers to future Top 1–100 Demonlist contenders: levels still being built, decorated, or attempted by a verifier. The Upcoming Levels List tracks these levels with their creators, verifier, decoration progress, best records and projected placement.',
+        a: 'Upcoming levels are Geometry Dash levels that have been announced or are visibly in development but have not been verified and published yet. In the Extreme Demon community the term usually refers to future Top 1–135 Demonlist contenders: levels still being built, decorated, or attempted by a verifier. The Upcoming Levels List tracks these levels with their creators, verifier, decoration progress, best records and projected placement.',
     },
     {
         q: 'How do I find out which Extreme Demon is coming out next?',
@@ -87,13 +87,13 @@ export const PAGES = [
         title: 'Upcoming Levels List',
         socialTitle: 'Upcoming Levels List — Upcoming Geometry Dash Extreme Demons',
         description:
-            'Upcoming Levels List (ULL) tracks every upcoming Top 1–100 Extreme Demon in Geometry Dash — levels in development, their creators, verifiers, decoration progress and best records, ranked by where they are projected to land on the Demonlist.',
+            'Upcoming Levels List (ULL) tracks every upcoming Top 1–135 Extreme Demon in Geometry Dash — levels in development, their creators, verifiers, decoration progress and best records, ranked by where they are projected to land on the Demonlist.',
         h1: 'Upcoming Levels List',
         type: 'WebPage',
         faq: true,
         body: `
 <p><strong>Upcoming Levels List (ULL)</strong> is a community-maintained catalogue of upcoming
-Top 1&ndash;100 Extreme Demons in <strong>Geometry Dash</strong>, projected to place on the
+Top 1&ndash;135 Extreme Demons in <strong>Geometry Dash</strong>, projected to place on the
 Demonlist once they are verified and published. It forecasts the future of the Demonlist and
 also catalogues worthy unrated Extreme Demons.</p>
 <p>Every entry records the level&rsquo;s creators, its verifier, how far decoration has

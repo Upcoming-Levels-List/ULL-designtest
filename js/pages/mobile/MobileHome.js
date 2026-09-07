@@ -36,7 +36,7 @@ export default {
             <section class="m2-hero">
                 <div class="m2-hero__eyebrow">Geometry Dash · Extreme Demons</div>
                 <h1>Upcoming Levels List</h1>
-                <p>Every upcoming Top 1-100 Extreme Demon, ranked by where it is projected to land on the Demonlist.</p>
+                <p>Every upcoming Top 1-135 Extreme Demon, ranked by where it is projected to land on the Demonlist.</p>
             </section>
 
             <!-- The desktop's credentials bar, minus its third item: a phone

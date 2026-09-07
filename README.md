@@ -1,7 +1,7 @@
 # Upcoming Levels List (ULL)
 
 **Upcoming Levels List (ULL)** is a community-maintained catalogue of upcoming
-Top 1–100 Extreme Demons in Geometry Dash projected to place on the Demonlist.
+Top 1–135 Extreme Demons in Geometry Dash projected to place on the Demonlist.
 It aims to forecast future rankings, including worthy unrated levels.
 
 🌐 **Website:** https://ull.pages.dev  ·  💬 **Discord:** https://discord.gg/QRX47v2qyC  ·  𝕏 **X:** [@ull_gd](https://x.com/ull_gd)
