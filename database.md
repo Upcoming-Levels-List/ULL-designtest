@@ -12,7 +12,8 @@
 ## 1. Architecture at a glance
 
 - **Frontend**: static site in this repo. Vue 3 (CDN global build, no bundler), Vue Router
-  (hash mode), plain ES modules. Entry point: `index.html` → `js/main.js`.
+  (history mode — `createWebHistory`, see §Routing), plain ES modules. Entry point:
+  `index.html` → `js/main.js`.
 - **Backend**: a single **Cloudflare Worker** (plain JavaScript) that exposes a REST-ish JSON
   API. **Its source code is NOT in this repo** — it is edited via the Cloudflare dashboard
   ("Workers & Pages" → the worker → **Quick Edit**).
@@ -159,7 +160,7 @@ Some tags are **auto-assigned by the frontend** and are NOT manually editable: `
 | `editor_name` | TEXT    | display name, shown in "List Editors" and audit log. **The column is `editor_name`, NOT `name`.** |
 | `key_hash`    | TEXT    | SHA-256 hex of the editor's API key |
 | `role`        | TEXT    | one of `owner, admin, seniormod, mod, dev` (DEFAULT `'mod'`) |
-|               |         | `seniormod` displays as **Elder Mod**, matching `js/_guidelines.js`; the stored key is unchanged |
+|               |         | `seniormod` displays as **Elder Mod** (`roleLabelMap`, `js/info-windows.js`); the stored key is unchanged |
 | `link`        | TEXT    | profile URL (YouTube etc.), DEFAULT `''` |
 | `sort_order`  | INTEGER | **added 2026-08-24** — manual display order, DEFAULT `0`. `GET /api/editors` sorts by `sort_order ASC, id ASC`; the list is **never alphabetical**. |
 
@@ -358,9 +359,13 @@ from `data/_recentChanges.json`, then
 It is a `DELETE` + `INSERT` replace, so run it **before** staff start editing the feed
 in the admin panel, not after.
 
-### `leaderboard` / `upcoming`
-Referenced by the reconstructed Worker; the live leaderboard computation in `content.js` is
-largely commented out. Treat as low-priority / verify before relying on them.
+### `leaderboard` / `upcoming` — **do not exist**
+Neither table is created by `scripts/migrate.sql` or `scripts/schema-migrations.sql`, and
+neither ever was. The reconstructed Worker carried a `GET /api/leaderboard` and a
+`GET /api/upcoming` that selected from them, so both answered 500; nothing called either,
+since the site computes both client-side from `/api/list` (`js/leaderboard.js`,
+`js/pages/UpcomingLevels.js`). Both routes were removed. If you see them in an older
+Worker build, that build predates the removal.
 
 ---
 
@@ -526,8 +531,8 @@ missing.
 - `POST /api/admin/snapshots/:id/restore` — put the list back to it. Snapshots the
   live state first, so the restore itself can be restored
 - `POST /api/admin/audit-log/:id/undo` — put back a row a deletion removed
-- `PUT /api/levels` — insert (with `insertAt`) or update (by `path`). 25 columns incl.
-  `frameCounter` and `benchmark`.
+- `PUT /api/levels` — insert (with `insertAt`) or update (by `path`). 23 columns incl.
+  `frameCounter` and `benchmark` (it was 25 before the 2026-08-24 trim; see §4b).
 - `POST /api/levels/move` — body `{path, newPosition}`. Uses rank-lookup (fetch all
   sort_orders, shift the range between current and target) to avoid off-by-N bugs.
 - `DELETE /api/levels/:path` — delete + close the `sort_order` gap. Must NOT match numeric
@@ -674,16 +679,17 @@ the real message reaches the panel. Never remove it.
   check-box per line. The scrim keeps its old class name, `.mob-popup-overlay` —
   `js/list-ui.test.mjs` taps it to dismiss the sheet, from **above** it, since the sheet
   itself occupies the lower 78vh.
-- **Recent Changes window** (`Home.js`, `css/pages/home.css`): the feed is a scroll
-  window whose height is set by the **List Editors card beside it**, not by its own
-  length. `.home-changes` is positioned absolutely inside `.home-changes-wrap`, so it
-  contributes nothing to the card's intrinsic height; the grid row is sized by the
-  editors card, the wrapper takes what is left, and the feed scrolls inside it. In
-  normal flow the card grew to fit every entry instead — the window never scrolled and
-  the editors card was stretched to match, with a screen of empty space under it.
-  `.home-card--scroll { min-height: 20rem }` is the floor for a short editors list.
-  The mobile equivalent is simpler: `.m2-changes` is a plain `max-height: 18rem` box,
-  since nothing sits beside it to match.
+- **Recent Changes window** (`Home.js`, `css/pages/home.css`): the feed is a framed
+  scroll box — `.home-feed`, `max-height: 26rem; overflow-y: auto` — sitting in the
+  `.home-cols` grid beside the editors card. Unrolled it ran past the editors and made
+  a page that is already three screens most of a fourth, for a log nobody reads to the
+  end. The mobile equivalent is the same idea one step down: `.m2-changes`,
+  `max-height: 18rem` (`css/pages/mobile-v2.css`).
+
+  > Earlier versions tied the feed's height to the editors card beside it, with
+  > `.home-changes` absolutely positioned inside a `.home-changes-wrap` and a
+  > `.home-card--scroll { min-height: 20rem }` floor. None of those three classes exist
+  > any more; a fixed `max-height` replaced the whole mechanism.
 - **Mobile footer gap** (`css/pages/mobile.css`): `.mob-footer` carries a **fixed**
   `margin-top: calc(var(--mob-level-h) * 2)` — two level rows' worth of blank space,
   always present, whether the page is one search result or the whole list.
@@ -707,7 +713,7 @@ the real message reaches the panel. Never remove it.
     path already exists, so without the guard a new level sharing a name would silently
     overwrite the existing one. Create is disabled and the field turns red.
   - New levels default to the **bottom** of the list, not the top — saving by accident
-    then doesn't shift all 480 levels down.
+    then doesn't shift the whole list down.
   - The standalone `/generator` page still exists and still works, but it is unlinked and
     lacks `rating` and `benchmark`. The admin modal is the complete one.
 - **Add forms sit above their lists** on the Pending and Recent Changes tabs (the card
@@ -779,8 +785,10 @@ the real message reaches the panel. Never remove it.
   > lower-ranked level. `upcomingScore()` lost its third argument (`rank`) with it — both
   > call sites now pass two. Ordering depends **only** on progress, so two levels with the
   > same records tie regardless of list position. `node js/upcoming.test.mjs` pins this.
-- **Frame Windows Counter**: if `level.frameCounter` is set, the level card shows a
-  "Frame Windows Counter" row with a "Watch Here" link (List/ListMain/ListFuture pages).
+- **Frame Windows Counter**: if `level.frameCounter` is set, a "Frame Windows Counter"
+  row with a "Watch Here" link appears in the level panel
+  (`js/components/List/LevelPanel.js`) and on the level's own page
+  (`js/pages/LevelPage.js`).
 - **Social links**: the community links are **Discord** (`https://discord.gg/QRX47v2qyC`)
   and **X** (`https://x.com/ull_gd`). Discord alone sits in the desktop sidebar and the
   mobile top bar; **X is deliberately not in either** — it appears in the desktop settings

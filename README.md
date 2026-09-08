@@ -51,7 +51,12 @@ its staff team.
 | List Moderator | **Qponn** | Discord `@q.ponn` · X `@qponnx` |
 | List Moderator | **Blaster1337** | Discord `@blastuh` · X `@TheFakeBlaster` |
 | Website Coder | **Prometheus** | Discord `@prometheus.dev` |
+| Developer | **Niko** | — |
 
+> This table is a copy. The roster the site shows comes from `GET /api/editors`, which
+> is what to trust if the two disagree — a name added in the admin panel appears on the
+> site immediately and here only when someone remembers.
+>
 > The order staff appear in on the site is set by hand in the admin panel
 > (Editors tab → ▲ / ▼) and is stored on `editor_keys.sort_order` — the site never
 > sorts them alphabetically. Renaming an editor there keeps their API key, role,
@@ -121,7 +126,7 @@ no authentication.
 | `GET /api/list/future` | Levels on the Future List |
 | `GET /api/levels/{position}` | The single level at a given 1-based rank |
 | `GET /api/pending` | Pending List entries |
-| `GET /api/editors` | The staff/editor list (`{name, role, link}`) |
+| `GET /api/editors` | The staff/editor list (`{name, role, link, sort_order}`) |
 | `GET /api/level-month` | The current Level of the Month (or `null`) |
 | `GET /api/level-verif` | The current Closest to Verification (or `null`) |
 | `GET /api/recent-changes` | Recent changes feed, grouped by date |
@@ -198,10 +203,11 @@ Generated — **do not edit by hand**:
 | `llms.txt` | Plain-text brief for AI crawlers and answer engines |
 | `js/seo-meta.js` | Titles/descriptions for client-side navigations |
 
-### The hourly refresh
+### Refreshing the pre-rendered HTML
 
-`.github/workflows/refresh-content.yml` keeps the pre-rendered HTML in step with
-the live list:
+There is no CI — this repository has no `.github/` directory and nothing runs on a
+schedule. Keeping the pre-rendered HTML in step with the live list is three commands,
+run by hand and committed:
 
 ```bash
 node scripts/fetch-data.mjs     # API -> data/_seo-snapshot.json
@@ -323,6 +329,8 @@ Every page is built from one set of components rather than its own styling.
 | `css/pages/mobile-info.css` | The phone's Information page. It carries `.info-page` as well as `.mob-info`, so the prose, legends, tables and people rows come from `css/pages/information.css` unchanged and this file holds only the 390px differences. |
 | `js/util.js` | The shared readings a level page and a list row both need: `levelStatus`, `decorationPercent`, `verificationEvidence`, `verificationPercent`, `verificationLabel`, `bestRecord`, `bestRun`, `recordLink`, `levelLength`, `levelId`, `hasVerifier`, `isOpenVerification`, `verifierLabel`, `verifierLine`, `levelRanks`. Derive nothing twice. |
 | `js/info-windows.js` | The Information page's seven windows, their counts and the one search index over the guidelines, the FAQ, the endpoints, the level fields and both legends. Read by the desktop page and the phone. |
+| `js/components/MarksLegend.js` | The two legends — the colour scale and the Pending icons — without a window around them. Used by the Information page's reader, the phone's sheet and `MarksWindow`, so the three cannot drift. |
+| `js/components/MarksWindow.js` | The same legends raised over whatever page you are on, above the settings popup. The `?` beside Level Coloring in Settings sets `store.showMarks` rather than linking away. Registered globally in `js/main.js`. |
 | `js/home-stats.js` | The three things the home page says about the list, their icons and their copy. The desktop shows all three, the phone the first two. |
 | `js/leaderboard.js` | Scoring, plus `recordProgress` and `recordTypeLabel` — how far a record got and what kind of record it is, on both surfaces. |
 

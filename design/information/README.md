@@ -91,9 +91,10 @@ guidelines block and the right-hand stack balance to within a pixel.
    questions here, not sections of their own.
 5. Staff and contact points — **new** as a block; the editor list exists.
 6. **Navigation** and **API documentation** — new. The API block is taken from
-   `worker/worker.js` and the repository README, not invented; `copy.md` flags
-   the two undocumented routes (`/api/leaderboard`, `/api/upcoming`) that answer
-   but that the site never calls, and that public reads have no rate limit.
+   `worker/worker.js` and the repository README, not invented; `copy.md` flagged
+   two undocumented routes (`/api/leaderboard`, `/api/upcoming`) that answered but
+   that the site never called — both have since been removed from the Worker —
+   and that public reads have no rate limit, which still holds.
 
 A glossary belongs inside the guidelines, as a section of *General*.
 

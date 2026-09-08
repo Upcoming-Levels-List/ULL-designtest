@@ -23,7 +23,7 @@ before it goes live.
 
 ## 3. What this list is
 
-**Lead.** The Upcoming Levels List catalogues upcoming Top 1–100 Extreme Demons
+**Lead.** The Upcoming Levels List catalogues upcoming Top 1–135 Extreme Demons
 in Geometry Dash that are projected to be verified and placed on the Demonlist,
 along with unrated Extreme Demons that would have qualified for a rating when
 they were made. It is a forecast of what the Demonlist is about to look like —
