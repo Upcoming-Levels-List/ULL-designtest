@@ -1,5 +1,12 @@
 # /information — draft copy
 
+> **Superseded.** This was the first draft, written when sections 3, 4 and 6 did
+> not exist. All of it shipped and has since been rewritten against what the
+> staff actually do — the live copy is `js/_info.js` (navigation, FAQ, API,
+> legends, contact routing) and `js/_guidelines.js` (the guidelines). Where the
+> two disagree, `js/_info.js` is right. This file stays as the record of what was
+> drafted, not as a source to copy from.
+
 Sections 3 (what the list is, where is what), 4 (FAQ) and 6 (the API) did not
 exist, so this is the first draft of all three, plus the contact block section 5
 needs. It is
@@ -266,13 +273,12 @@ in the repository README, which the page should link to rather than repeat.
 
 ### Two things for the team to decide **[confirm]**
 
-1. `GET /api/leaderboard` and `GET /api/upcoming` also answer without a key, but
-   the site does not use either — it derives both from `/api/list`
-   (`js/leaderboard.js`, `js/pages/UpcomingLevels.js`). The templates therefore
-   document nine endpoints and say plainly that there is no public leaderboard
-   endpoint. If those two tables are in fact maintained, they should be
-   documented as well; if they are not, they are better removed from the worker
-   than left answering with stale rows.
+1. ~~`GET /api/leaderboard` and `GET /api/upcoming`~~ — **decided: removed.**
+   Neither table was ever created by any migration, so both routes answered 500,
+   and nothing called them; the site derives both from `/api/list`
+   (`js/leaderboard.js`, `js/pages/UpcomingLevels.js`). They were deleted from
+   `worker/worker.js`. The API reader documents nine endpoints and says there is
+   no leaderboard endpoint, which is now literally true.
 2. There is no rate limit on the public reads (the throttle in
    `worker/worker.js` covers failed *auth* attempts only). The "fair use" list
    above is a request, not a rule. If the team wants a real limit, the wording

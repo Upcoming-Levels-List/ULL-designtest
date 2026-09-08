@@ -13,9 +13,9 @@ design/information/
                           how it settles the weighting, what it costs and what
                           to watch for
   templates/_modals.html  the reader the blocks open
-  copy.md                 draft copy for the sections that do not exist yet —
-                          what the list is, the navigation, the FAQ, the API —
-                          plus the contact block
+  copy.md                 SUPERSEDED — the first draft of the sections that did
+                          not exist yet. All of it shipped and was then rewritten;
+                          the live copy is js/_info.js
   page.shell.html         chrome-free wrapper: the page as the route renders it
   preview.shell.html      the review deck's chrome
   build-preview.mjs       builds both outputs from the template + css/ull-v2.css

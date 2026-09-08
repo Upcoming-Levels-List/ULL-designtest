@@ -96,7 +96,9 @@ export const faqData = [
             {
                 q: 'Why is a level on Pending and not on the list?',
                 a: `<p>It passed selection but has no exact position yet. The Pending List shows the range it is
-                    expected to land in and an arrow for which way it is moving inside that range.</p>
+                    expected to land in and an arrow for which way it is moving inside that range. Those
+                    ranges — Pending #1, Top 10, Top 20 and the rest — are estimated positions on the
+                    <strong>Demonlist</strong>, not positions on this list.</p>
                     <p><em>Pending Indefinitely</em> covers two cases: levels no usable estimate could be made
                     for, and levels that are accepted but cannot be placed yet because something is still
                     missing, such as a full video of the level.</p>`,

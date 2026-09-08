@@ -224,7 +224,8 @@ that have been submitted to the Upcoming Levels List but have not yet been given
 Staff assess each one against the levels already listed before it is placed.</p>
 <p>Entries are marked with the placement range they are expected to land in &mdash; Pending #1,
 Top 10, Top 20, Top 30, Top 50, Top 75, or unknown &mdash; and with whether the staff&rsquo;s
-current reading is moving them up or down. Once a decision is made the level moves onto
+current reading is moving them up or down. Each of those ranges is an estimated position on the
+<strong>Demonlist</strong>, not a position on the Upcoming Levels List. Once a decision is made the level moves onto
 <a href="/list">All Levels</a> and, if it qualifies, the <a href="/listmain">Main</a> and
 <a href="/listfuture">Future</a> lists.</p>
 <p>The rules that govern submissions and placement decisions are documented in the

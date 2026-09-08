@@ -29,7 +29,8 @@ export default {
         <div class="u-eyebrow">Pending list icons</div>
         <p class="info-note">
             The icons on the Pending List show the range a level is expected to land in, and which way
-            it is moving inside that range.
+            it is moving inside that range. Every one of them is an estimated position on the
+            <strong>Demonlist</strong>, not on this list.
         </p>
         <div class="info-legend info-legend--icons">
             <div v-for="row in pendingLegend" :key="row.icon">

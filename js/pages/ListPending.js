@@ -14,7 +14,7 @@ export default {
             <!-- Hero -->
             <section class="pending-hero">
                 <h1>Pending List</h1>
-                <p>Levels awaiting a decision from the staff team &mdash; a first placement, a move up or down, a removal, or a hold with no decision expected soon.</p>
+                <p>Levels awaiting a decision from the staff team &mdash; a first placement, a move up or down, a removal, or a hold with no decision expected soon. Each marker is the level&rsquo;s estimated position on the <strong>Demonlist</strong>, not on this list.</p>
                 <div class="pending-counts">
                     <button class="pending-count" type="button" @click="jumpTo('place')"><b>{{ placements.length }}</b><span>placements</span></button>
                     <button class="pending-count" type="button" @click="jumpTo('move')"><b>{{ movements.length }}</b><span>movements</span></button>
